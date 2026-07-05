@@ -13,6 +13,7 @@
     <nav class="tabs">
       <button class="tab active" data-view="bibliotheque">📚 Bibliothèque</button>
       <button class="tab" data-view="programme">🎯 Mon programme</button>
+      <button class="tab" data-view="seance">⏱ Séance</button>
       <button class="tab" data-view="ajouter">➕ Ajouter un exercice</button>
     </nav>
   </header>
@@ -128,6 +129,91 @@
     <section id="program-output"></section>
   </main>
 
+  <!-- ==================== VUE SÉANCE ==================== -->
+  <main id="view-seance" class="view">
+
+    <!-- Écran 1 : démarrage -->
+    <section id="seance-setup">
+      <section class="hero">
+        <h1>Séance d'entraînement</h1>
+        <p>Lance une séance en direct : chronomètre global, chrono par exercice et minuteur de repos précis. Tout ce que tu fais réellement est enregistré, même si tu t'écartes du programme.</p>
+      </section>
+
+      <div class="card">
+        <label class="rest-setting">
+          ⏱ Temps de repos par défaut entre les séries
+          <div class="rest-input-row">
+            <input type="number" id="default-rest" min="5" max="600" step="5" value="90"> secondes
+          </div>
+        </label>
+        <div class="start-buttons">
+          <button class="btn btn-primary btn-lg" id="start-free">🏁 Démarrer une séance libre</button>
+        </div>
+        <div id="program-day-buttons" class="start-buttons"></div>
+      </div>
+
+      <section id="seance-history" class="custom-list"></section>
+    </section>
+
+    <!-- Écran 2 : séance en cours -->
+    <section id="seance-live" class="hidden">
+      <div class="live-header card">
+        <div class="live-title-row">
+          <h2 id="live-title">Séance en cours</h2>
+          <span class="live-dot">● EN DIRECT</span>
+        </div>
+        <div class="live-chronos">
+          <div class="chrono-block">
+            <span class="chrono-label">Durée totale</span>
+            <span class="chrono-value" id="chrono-session">00:00</span>
+          </div>
+          <div class="chrono-block">
+            <span class="chrono-label">Repos cumulé</span>
+            <span class="chrono-value" id="chrono-rest-total">00:00</span>
+          </div>
+          <div class="chrono-block">
+            <span class="chrono-label">Séries validées</span>
+            <span class="chrono-value" id="live-set-count">0</span>
+          </div>
+        </div>
+        <div class="program-actions">
+          <button class="btn btn-ghost" id="live-add-ex">➕ Ajouter un exercice</button>
+          <button class="btn btn-primary" id="live-finish">✅ Terminer la séance</button>
+          <button class="btn btn-danger-ghost" id="live-abort">✖ Abandonner</button>
+        </div>
+      </div>
+      <div id="live-exercises"></div>
+    </section>
+
+    <!-- Écran 3 : résumé -->
+    <section id="seance-summary" class="hidden"></section>
+  </main>
+
+  <!-- Overlay minuteur de repos -->
+  <div id="rest-overlay" class="rest-overlay hidden">
+    <div class="rest-box">
+      <p class="rest-label">⏸ REPOS</p>
+      <p class="rest-exercise" id="rest-exercise-name"></p>
+      <p class="rest-countdown" id="rest-countdown">01:30</p>
+      <div class="rest-controls">
+        <button class="btn btn-ghost" id="rest-minus">−15 s</button>
+        <button class="btn btn-ghost" id="rest-plus">+15 s</button>
+      </div>
+      <button class="btn btn-primary btn-lg" id="rest-resume">▶ Reprendre l'entraînement</button>
+    </div>
+  </div>
+
+  <!-- Sélecteur d'exercice pour la séance -->
+  <div id="picker" class="modal hidden">
+    <div class="modal-backdrop" id="picker-backdrop"></div>
+    <div class="modal-box">
+      <button class="modal-close" id="picker-close" aria-label="Fermer">✕</button>
+      <h2>Ajouter un exercice à la séance</h2>
+      <input type="search" id="picker-search" placeholder="🔍 Rechercher parmi tous les exercices…">
+      <div id="picker-list" class="picker-list"></div>
+    </div>
+  </div>
+
   <!-- ==================== VUE AJOUTER ==================== -->
   <main id="view-ajouter" class="view">
     <section class="hero">
@@ -204,7 +290,9 @@
   </footer>
 
   <script src="js/data.js"></script>
+  <script src="js/data-extra.js"></script>
   <script src="js/program.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/workout.js"></script>
 </body>
 </html>
