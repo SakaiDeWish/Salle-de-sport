@@ -370,6 +370,88 @@ input:focus, select:focus, textarea:focus {
 .video-form { display: flex; gap: 8px; width: 100%; flex-wrap: wrap; }
 .video-form input { flex: 1; min-width: 200px; }
 
+/* ---------- Séance en direct ---------- */
+.hidden { display: none !important; }
+
+.rest-setting { display: flex; flex-direction: column; gap: 8px; font-weight: 600; color: var(--text-soft); font-size: 0.9rem; }
+.rest-input-row { display: flex; align-items: center; gap: 10px; color: var(--text); }
+.rest-input-row input { max-width: 110px; }
+
+.start-buttons { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+
+.live-header { position: sticky; top: 74px; z-index: 40; }
+.live-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.live-dot { color: var(--red); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; animation: pulse 1.6s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.live-chronos {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  margin-top: 14px;
+}
+.chrono-block { display: flex; flex-direction: column; }
+.chrono-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-soft); }
+.chrono-value { font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+#live-exercises { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+
+.live-ex { transition: border-color 0.2s ease; }
+.live-ex-current { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.live-ex-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.live-ex-right { display: flex; align-items: center; gap: 10px; }
+.ex-chrono { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); }
+
+.sets-table { margin-top: 12px; }
+.set-form { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+.set-input { max-width: 130px; flex: 1; }
+.btn-sm { padding: 6px 12px; font-size: 0.85rem; }
+.btn-danger-ghost {
+  background: transparent; border: 1px solid var(--border); color: var(--red);
+  border-radius: 10px; padding: 10px 14px; cursor: pointer; font-family: inherit;
+}
+.btn-danger-ghost:hover { border-color: var(--red); background: rgba(239, 85, 97, 0.1); }
+
+.empty-live { text-align: center; color: var(--text-soft); }
+
+/* Overlay de repos */
+.rest-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(10, 12, 16, 0.96);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.rest-box { text-align: center; display: flex; flex-direction: column; gap: 18px; align-items: center; max-width: 420px; width: 100%; }
+.rest-label { color: var(--accent); font-weight: 800; letter-spacing: 3px; }
+.rest-exercise { color: var(--text-soft); }
+.rest-countdown {
+  font-size: clamp(4rem, 18vw, 7rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.rest-countdown.overtime { color: var(--red); }
+.rest-controls { display: flex; gap: 12px; }
+
+/* Sélecteur d'exercice */
+.picker-list { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; max-height: 55vh; overflow-y: auto; }
+.picker-item {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  background: var(--bg-soft); border: 1px solid var(--border); border-radius: 10px;
+  color: var(--text); padding: 12px 14px; cursor: pointer; font-family: inherit;
+  font-size: 0.95rem; text-align: left;
+}
+.picker-item:hover { border-color: var(--accent); }
+#picker h2 { margin-bottom: 14px; padding-right: 40px; }
+
+/* Résumé & historique */
+.summary-card h2 { font-size: 1.4rem; }
+.summary-stats { margin: 18px 0; }
+.session-detail { display: flex; flex-direction: column; gap: 16px; margin: 16px 0; }
+.session-ex h4 { display: flex; justify-content: space-between; gap: 10px; font-size: 1rem; }
+.history-item { margin-bottom: 12px; }
+.history-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.history-actions { display: flex; gap: 8px; }
+#seance-history h2 { margin: 28px 0 14px; font-size: 1.2rem; }
+
 /* ---------- Pied de page ---------- */
 .footer {
   border-top: 1px solid var(--border);
