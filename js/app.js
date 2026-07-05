@@ -1,8 +1,9 @@
 /* =========================================================
    GymCoach — Logique de l'interface
+   (design NTC : chips, cartes-posters, collections)
    ========================================================= */
 
-/* ---------- Stockage local ---------- */
+/* ---------- Stockage local (structure inchangée) ---------- */
 const STORAGE_KEYS = {
   custom: "gymcoach.customExercises",
   videos: "gymcoach.videoOverrides",
@@ -22,7 +23,6 @@ function getCustomExercises() { return loadJSON(STORAGE_KEYS.custom, []); }
 function getVideoOverrides() { return loadJSON(STORAGE_KEYS.videos, {}); }
 
 /* ---------- Vidéos ---------- */
-/* Extrait l'identifiant d'une URL YouTube (watch, youtu.be, shorts, embed). */
 function parseYouTubeId(url) {
   if (!url) return null;
   const m = url.match(
@@ -53,14 +53,48 @@ function allExercisesForUI() {
   return EXERCISES.concat(getCustomExercises());
 }
 
-/* ---------- Navigation par onglets ---------- */
+function normalize(s) {
+  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+/* Convertit un repos affiché ("90 s", "3 min", "60-75 s") en secondes
+   (copie locale : utilisée pour estimer la durée des séances) */
+function restToSecondsFR(str) {
+  const m = String(str || "").match(/(\d+)/);
+  if (!m) return 90;
+  const n = parseInt(m[1], 10);
+  return /min/i.test(str) ? n * 60 : n;
+}
+
+/* Durée estimée d'une séance : ~40 s d'effort par série + le repos prescrit */
+function estimateDayMinutes(day) {
+  let sec = 0;
+  for (const l of day.exercices) sec += l.series * (40 + restToSecondsFR(l.repos));
+  return Math.max(10, Math.round(sec / 60));
+}
+
+/* ---------- Navigation (nav desktop + barre mobile synchronisées) ---------- */
+function activateView(view) {
+  document.querySelectorAll(".tab").forEach(t =>
+    t.classList.toggle("active", t.dataset.view === view));
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + view).classList.add("active");
+  window.scrollTo({ top: 0 });
+}
+
 document.querySelectorAll(".tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById("view-" + tab.dataset.view).classList.add("active");
-    window.scrollTo({ top: 0 });
+  tab.addEventListener("click", () => activateView(tab.dataset.view));
+});
+
+/* ---------- Filtres : chips → selects cachés ---------- */
+document.querySelectorAll(".chip-row").forEach(row => {
+  row.addEventListener("click", e => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    row.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    document.getElementById(row.dataset.for).value = chip.dataset.value;
+    renderLibrary();
   });
 });
 
@@ -72,8 +106,32 @@ const filterMateriel = document.getElementById("filter-materiel");
 const filterNiveau = document.getElementById("filter-niveau");
 const resultCount = document.getElementById("result-count");
 
-function normalize(s) {
-  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+/* Carte-poster : dégradé par groupe, pictogramme géant en filigrane,
+   badge de niveau en overlay, titre display en bas */
+function exerciseCardHTML(ex) {
+  return `
+    <article class="ex-card grad-${esc(ex.groupe)}" data-id="${esc(ex.id)}" tabindex="0"
+             role="button" aria-label="${esc(ex.nom)}">
+      <span class="ex-card-bg" aria-hidden="true">${GROUP_ICONS[ex.groupe] || "🏋️"}</span>
+      <div class="ex-card-top">
+        <span class="badge badge-${esc(ex.niveau)}">${LABELS.niveaux[ex.niveau]}</span>
+        ${ex.custom ? '<span class="tag tag-custom">Perso</span>' : ""}
+      </div>
+      <div class="ex-card-info">
+        <p class="ex-card-group">${LABELS.groupes[ex.groupe]} · ${LABELS.materiel[ex.materiel]}</p>
+        <h3>${esc(ex.nom)}</h3>
+        <p class="ex-muscles">${esc(ex.muscles || "")}</p>
+      </div>
+    </article>`;
+}
+
+function bindCardClicks(container) {
+  container.querySelectorAll(".ex-card").forEach(card => {
+    card.addEventListener("click", () => openExercise(card.dataset.id));
+    card.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openExercise(card.dataset.id); }
+    });
+  });
 }
 
 function renderLibrary() {
@@ -89,32 +147,13 @@ function renderLibrary() {
   });
 
   resultCount.textContent = list.length + " exercice" + (list.length > 1 ? "s" : "") + " trouvé" + (list.length > 1 ? "s" : "");
-
-  grid.innerHTML = list.map(ex => `
-    <article class="ex-card" data-id="${esc(ex.id)}">
-      <div class="ex-card-head">
-        <span class="ex-icon">${GROUP_ICONS[ex.groupe] || "🏋️"}</span>
-        <span class="badge badge-${esc(ex.niveau)}">${LABELS.niveaux[ex.niveau]}</span>
-      </div>
-      <h3>${esc(ex.nom)}</h3>
-      <p class="ex-muscles">${esc(ex.muscles || LABELS.groupes[ex.groupe])}</p>
-      <div class="ex-tags">
-        <span class="tag">${LABELS.groupes[ex.groupe]}</span>
-        <span class="tag">${LABELS.materiel[ex.materiel]}</span>
-        ${ex.custom ? '<span class="tag tag-custom">Perso</span>' : ""}
-      </div>
-      <button class="btn btn-ghost">📋 Fiche + 🎬 Vidéo</button>
-    </article>
-  `).join("");
-
-  grid.querySelectorAll(".ex-card").forEach(card => {
-    card.addEventListener("click", () => openExercise(card.dataset.id));
-  });
+  grid.innerHTML = list.map(exerciseCardHTML).join("");
+  bindCardClicks(grid);
 }
 
-[searchInput, filterGroupe, filterMateriel, filterNiveau].forEach(el =>
-  el.addEventListener("input", renderLibrary)
-);
+searchInput.addEventListener("input", renderLibrary);
+[filterGroupe, filterMateriel, filterNiveau].forEach(el =>
+  el.addEventListener("input", renderLibrary));
 
 /* ---------- Modale détail exercice ---------- */
 const modal = document.getElementById("modal");
@@ -268,24 +307,9 @@ function renderCustomList() {
     return;
   }
   container.innerHTML = `
-    <h2>Tes exercices personnalisés (${list.length})</h2>
-    <div class="grid">${list.map(ex => `
-      <article class="ex-card" data-id="${esc(ex.id)}">
-        <div class="ex-card-head">
-          <span class="ex-icon">${GROUP_ICONS[ex.groupe] || "🏋️"}</span>
-          <span class="badge badge-${esc(ex.niveau)}">${LABELS.niveaux[ex.niveau]}</span>
-        </div>
-        <h3>${esc(ex.nom)}</h3>
-        <div class="ex-tags">
-          <span class="tag">${LABELS.groupes[ex.groupe]}</span>
-          <span class="tag">${LABELS.materiel[ex.materiel]}</span>
-          <span class="tag tag-custom">Perso</span>
-        </div>
-      </article>`).join("")}
-    </div>`;
-  container.querySelectorAll(".ex-card").forEach(card =>
-    card.addEventListener("click", () => openExercise(card.dataset.id))
-  );
+    <h2>Tes exercices (${list.length})</h2>
+    <div class="grid">${list.map(exerciseCardHTML).join("")}</div>`;
+  bindCardClicks(container);
 }
 
 /* ---------- Programme personnalisé ---------- */
@@ -309,6 +333,8 @@ programForm.addEventListener("submit", e => {
   programOutput.scrollIntoView({ behavior: "smooth" });
 });
 
+/* Le programme s'affiche en « collection » de séances-cartes,
+   avec durée estimée et nombre d'exercices */
 function renderProgram(pr) {
   const materielLabels = {
     salle: "Salle de sport complète",
@@ -318,14 +344,15 @@ function renderProgram(pr) {
 
   programOutput.innerHTML = `
     <div class="program-header card">
-      <h2>${pr.objectifIcone} Programme de ${esc(pr.prenom)} — ${esc(pr.objectifLabel)}</h2>
+      <p class="kicker">${pr.objectifIcone} ${esc(pr.objectifLabel)}</p>
+      <h2>Programme de ${esc(pr.prenom)}</h2>
       <p class="program-meta">
         ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${materielLabels[pr.materiel]}
         ${pr.priorite ? " · Priorité : " + LABELS.groupes[pr.priorite] : ""}
         · Généré le ${esc(pr.genereLe)}
       </p>
       <div class="program-actions">
-        <button class="btn btn-ghost" id="btn-regen">🔄 Régénérer (varier les exercices)</button>
+        <button class="btn btn-ghost" id="btn-regen">🔄 Régénérer</button>
         <button class="btn btn-ghost" id="btn-print">🖨 Imprimer / PDF</button>
       </div>
     </div>
@@ -334,8 +361,15 @@ function renderProgram(pr) {
       ${pr.days.map(day => `
         <div class="day-card card">
           <div class="day-head">
-            <h3>Séance ${day.numero} — ${esc(day.titre)}</h3>
-            <p class="day-focus">${esc(day.focus)}</p>
+            <span class="day-num">${String(day.numero).padStart(2, "0")}</span>
+            <div>
+              <h3>${esc(day.titre)}</h3>
+              <p class="day-focus">${esc(day.focus)}</p>
+            </div>
+          </div>
+          <div class="day-meta">
+            <span>⏱ <strong>~${estimateDayMinutes(day)} min</strong></span>
+            <span>💪 <strong>${day.exercices.length}</strong> exercices</span>
           </div>
           <table class="day-table">
             <thead>
@@ -351,7 +385,7 @@ function renderProgram(pr) {
                   <td>${l.series}</td>
                   <td>${esc(l.reps)}</td>
                   <td>${esc(l.repos)}</td>
-                  <td><a class="video-link" href="${youtubeSearchUrl(l.exercice)}" target="_blank" rel="noopener" title="Vidéo de démonstration">🎬</a></td>
+                  <td><a class="video-link" href="${youtubeSearchUrl(l.exercice)}" target="_blank" rel="noopener" title="Vidéo de démonstration" aria-label="Vidéo de démonstration">🎬</a></td>
                 </tr>`).join("")}
             </tbody>
           </table>
@@ -359,7 +393,7 @@ function renderProgram(pr) {
     </div>
 
     <div class="card conseils-card">
-      <h3>📌 Conseils pour ton objectif « ${esc(pr.objectifLabel)} »</h3>
+      <h3>📌 Conseils — ${esc(pr.objectifLabel)}</h3>
       <ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
       <p class="disclaimer">⚠️ Échauffe-toi 5-10 minutes avant chaque séance. Clique sur un exercice pour ouvrir sa fiche technique complète avec vidéo.</p>
     </div>
