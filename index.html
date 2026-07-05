@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GymCoach — Ton coach de musculation</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="logo">🏋️ Gym<span>Coach</span></div>
+    <nav class="tabs">
+      <button class="tab active" data-view="bibliotheque">📚 Bibliothèque</button>
+      <button class="tab" data-view="programme">🎯 Mon programme</button>
+      <button class="tab" data-view="ajouter">➕ Ajouter un exercice</button>
+    </nav>
+  </header>
+
+  <!-- ==================== VUE BIBLIOTHÈQUE ==================== -->
+  <main id="view-bibliotheque" class="view active">
+    <section class="hero">
+      <h1>Bibliothèque d'exercices</h1>
+      <p>Tous les exercices de musculation référencés : technique, muscles ciblés, erreurs à éviter et vidéo de démonstration pour chacun.</p>
+    </section>
+
+    <section class="filters">
+      <input type="search" id="search" placeholder="🔍 Rechercher un exercice (ex : squat, développé couché…)">
+      <select id="filter-groupe">
+        <option value="">Tous les muscles</option>
+        <option value="pectoraux">Pectoraux</option>
+        <option value="dos">Dos</option>
+        <option value="epaules">Épaules</option>
+        <option value="biceps">Biceps</option>
+        <option value="triceps">Triceps</option>
+        <option value="quadriceps">Quadriceps</option>
+        <option value="ischios-fessiers">Ischios / Fessiers</option>
+        <option value="mollets">Mollets</option>
+        <option value="abdos">Abdominaux</option>
+        <option value="lombaires">Lombaires</option>
+      </select>
+      <select id="filter-materiel">
+        <option value="">Tout matériel</option>
+        <option value="barre">Barre</option>
+        <option value="halteres">Haltères</option>
+        <option value="machine">Machine</option>
+        <option value="poulie">Poulie</option>
+        <option value="poids-du-corps">Poids du corps</option>
+      </select>
+      <select id="filter-niveau">
+        <option value="">Tous niveaux</option>
+        <option value="debutant">Débutant</option>
+        <option value="intermediaire">Intermédiaire</option>
+        <option value="avance">Avancé</option>
+      </select>
+    </section>
+
+    <p id="result-count" class="result-count"></p>
+    <section id="exercise-grid" class="grid"></section>
+  </main>
+
+  <!-- ==================== VUE PROGRAMME ==================== -->
+  <main id="view-programme" class="view">
+    <section class="hero">
+      <h1>Programme personnalisé</h1>
+      <p>Réponds à quelques questions et reçois un programme hebdomadaire adapté à ton objectif, ton niveau et ton matériel.</p>
+    </section>
+
+    <form id="program-form" class="program-form card">
+      <div class="form-grid">
+        <label>
+          Ton prénom
+          <input type="text" id="p-prenom" placeholder="Ex : Ethan" required>
+        </label>
+        <label>
+          Ton objectif
+          <select id="p-objectif" required>
+            <option value="masse">💪 Prise de masse musculaire</option>
+            <option value="force">🏋️ Force maximale</option>
+            <option value="seche">🔥 Sèche / Perte de gras</option>
+            <option value="forme">⚡ Remise en forme / Tonification</option>
+          </select>
+        </label>
+        <label>
+          Ton niveau
+          <select id="p-niveau" required>
+            <option value="debutant">Débutant (&lt; 1 an)</option>
+            <option value="intermediaire">Intermédiaire (1 à 3 ans)</option>
+            <option value="avance">Avancé (3 ans et +)</option>
+          </select>
+        </label>
+        <label>
+          Séances par semaine
+          <select id="p-jours" required>
+            <option value="2">2 séances</option>
+            <option value="3" selected>3 séances</option>
+            <option value="4">4 séances</option>
+            <option value="5">5 séances</option>
+            <option value="6">6 séances</option>
+          </select>
+        </label>
+        <label>
+          Matériel disponible
+          <select id="p-materiel" required>
+            <option value="salle">Salle de sport complète</option>
+            <option value="halteres">Haltères + banc (maison)</option>
+            <option value="corps">Poids du corps uniquement</option>
+          </select>
+        </label>
+        <label>
+          Point faible à prioriser (optionnel)
+          <select id="p-priorite">
+            <option value="">Aucun — programme équilibré</option>
+            <option value="pectoraux">Pectoraux</option>
+            <option value="dos">Dos</option>
+            <option value="epaules">Épaules</option>
+            <option value="biceps">Bras (biceps)</option>
+            <option value="triceps">Bras (triceps)</option>
+            <option value="quadriceps">Jambes (quadriceps)</option>
+            <option value="ischios-fessiers">Ischios / Fessiers</option>
+            <option value="abdos">Abdominaux</option>
+          </select>
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">⚡ Générer mon programme</button>
+    </form>
+
+    <section id="program-output"></section>
+  </main>
+
+  <!-- ==================== VUE AJOUTER ==================== -->
+  <main id="view-ajouter" class="view">
+    <section class="hero">
+      <h1>Référencer un exercice</h1>
+      <p>Ajoute tes propres exercices à la bibliothèque : ils seront sauvegardés sur cet appareil et pourront être utilisés dans tes programmes.</p>
+    </section>
+
+    <form id="add-form" class="program-form card">
+      <div class="form-grid">
+        <label>
+          Nom de l'exercice *
+          <input type="text" id="a-nom" required placeholder="Ex : Curl marteau à la corde">
+        </label>
+        <label>
+          Groupe musculaire *
+          <select id="a-groupe" required>
+            <option value="pectoraux">Pectoraux</option>
+            <option value="dos">Dos</option>
+            <option value="epaules">Épaules</option>
+            <option value="biceps">Biceps</option>
+            <option value="triceps">Triceps</option>
+            <option value="quadriceps">Quadriceps</option>
+            <option value="ischios-fessiers">Ischios / Fessiers</option>
+            <option value="mollets">Mollets</option>
+            <option value="abdos">Abdominaux</option>
+            <option value="lombaires">Lombaires</option>
+          </select>
+        </label>
+        <label>
+          Matériel *
+          <select id="a-materiel" required>
+            <option value="barre">Barre</option>
+            <option value="halteres">Haltères</option>
+            <option value="machine">Machine</option>
+            <option value="poulie">Poulie</option>
+            <option value="poids-du-corps">Poids du corps</option>
+          </select>
+        </label>
+        <label>
+          Niveau *
+          <select id="a-niveau" required>
+            <option value="debutant">Débutant</option>
+            <option value="intermediaire">Intermédiaire</option>
+            <option value="avance">Avancé</option>
+          </select>
+        </label>
+        <label class="span2">
+          Description / conseils d'exécution
+          <textarea id="a-description" rows="3" placeholder="Position de départ, mouvement, respiration…"></textarea>
+        </label>
+        <label class="span2">
+          Lien vidéo YouTube (optionnel)
+          <input type="url" id="a-video" placeholder="https://www.youtube.com/watch?v=…">
+        </label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">💾 Enregistrer l'exercice</button>
+      <p id="add-feedback" class="feedback"></p>
+    </form>
+
+    <section id="custom-list" class="custom-list"></section>
+  </main>
+
+  <!-- ==================== MODALE DÉTAIL EXERCICE ==================== -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <button class="modal-close" aria-label="Fermer">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>GymCoach — Entraîne-toi intelligemment. Échauffe-toi toujours avant une séance et consulte un professionnel de santé en cas de doute.</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/program.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
