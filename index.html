@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0a0b0d">
+  <meta name="theme-color" content="#0a0a0b">
   <title>GymCoach — Entraîne-toi comme un athlète</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Applique le thème mémorisé AVANT le premier rendu (évite le flash) -->
+  <script>
+    document.documentElement.className =
+      "theme-" + (localStorage.getItem("gymcoach.theme") || "gamifie");
+  </script>
   <!-- Typographies : Anton (display condensé) + Inter (corps) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,16 +27,22 @@
       <button class="tab active" data-view="bibliotheque">Bibliothèque</button>
       <button class="tab" data-view="programme">Programme</button>
       <button class="tab" data-view="seance">Séance</button>
+      <button class="tab" data-view="suivi">Suivi</button>
       <button class="tab" data-view="ajouter">Ajouter</button>
     </nav>
+    <!-- Bascule de thème : Gamifié <-> Épuré, mémorisée en localStorage -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Changer de thème">
+      <span id="theme-toggle-label">Épuré</span>
+    </button>
   </header>
 
   <!-- Barre d'onglets mobile, fixée en bas (usage téléphone en salle) -->
   <nav class="bottom-nav" aria-label="Navigation principale">
-    <button class="tab active" data-view="bibliotheque"><span class="bn-icon">📚</span><span class="bn-label">Exos</span></button>
-    <button class="tab" data-view="programme"><span class="bn-icon">🎯</span><span class="bn-label">Programme</span></button>
-    <button class="tab" data-view="seance"><span class="bn-icon">⏱</span><span class="bn-label">Séance</span></button>
-    <button class="tab" data-view="ajouter"><span class="bn-icon">➕</span><span class="bn-label">Ajouter</span></button>
+    <button class="tab active" data-view="bibliotheque"><span class="bn-icon ico">📚</span><span class="bn-label">Exos</span></button>
+    <button class="tab" data-view="programme"><span class="bn-icon ico">🎯</span><span class="bn-label">Programme</span></button>
+    <button class="tab" data-view="seance"><span class="bn-icon ico">⏱</span><span class="bn-label">Séance</span></button>
+    <button class="tab" data-view="suivi"><span class="bn-icon ico">📈</span><span class="bn-label">Suivi</span></button>
+    <button class="tab" data-view="ajouter"><span class="bn-icon ico">➕</span><span class="bn-label">Ajouter</span></button>
   </nav>
 
   <!-- ==================== VUE BIBLIOTHÈQUE ==================== -->
@@ -331,6 +343,38 @@
     <section id="custom-list" class="custom-list"></section>
   </main>
 
+  <!-- ==================== VUE SUIVI ==================== -->
+  <main id="view-suivi" class="view">
+    <section class="hero">
+      <p class="kicker">Progression</p>
+      <h1 class="display">Ton<br>suivi<span class="accent">.</span></h1>
+      <p class="hero-sub">Chaque séance compte. Statistiques, records, calendrier et objectif hebdomadaire — tout est là.</p>
+    </section>
+
+    <div class="segmented" role="tablist" aria-label="Vues du suivi">
+      <button class="seg active" data-panel="dashboard" role="tab">Tableau de bord</button>
+      <button class="seg" data-panel="seances" role="tab">Mes séances</button>
+      <button class="seg" data-panel="calendrier" role="tab">Calendrier</button>
+    </div>
+
+    <!-- Contenus rendus par js/tracking.js -->
+    <section id="panel-dashboard" class="suivi-panel"></section>
+    <section id="panel-seances" class="suivi-panel hidden"></section>
+    <section id="panel-calendrier" class="suivi-panel hidden"></section>
+
+    <!-- Import de sauvegarde JSON (déclenché par le bouton du tableau de bord) -->
+    <input type="file" id="import-file" accept="application/json" class="visually-hidden" aria-hidden="true">
+  </main>
+
+  <!-- Modale détail / édition d'une séance enregistrée -->
+  <div id="session-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <button class="modal-close" aria-label="Fermer">✕</button>
+      <div id="session-modal-content"></div>
+    </div>
+  </div>
+
   <!-- ==================== MODALE DÉTAIL EXERCICE ==================== -->
   <div id="modal" class="modal hidden">
     <div class="modal-backdrop"></div>
@@ -349,5 +393,6 @@
   <script src="js/program.js"></script>
   <script src="js/app.js"></script>
   <script src="js/workout.js"></script>
+  <script src="js/tracking.js"></script>
 </body>
 </html>

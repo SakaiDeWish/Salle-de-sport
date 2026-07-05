@@ -38,6 +38,17 @@ Lance une séance chronométrée et enregistre **exactement** ce que tu fais, m�
 ### ➕ Référence tes propres exercices
 Ajoute tes exercices personnels (nom, muscle, matériel, description, lien vidéo) : ils rejoignent la bibliothèque et peuvent être intégrés à tes programmes. Tout est stocké localement dans ton navigateur.
 
+### 🎨 Deux thèmes au choix
+- **Gamifié** (défaut) : sombre, accent vert volt, cartes-posters, anneaux, XP et badges.
+- **Épuré** : éditorial clair (blanc cassé + noir + terracotta), typographie magazine, zéro emoji décoratif.
+- Bascule dans l'en-tête, mémorisée sur l'appareil. Mêmes fonctionnalités et mêmes données dans les deux.
+
+### 📊 Suivi, gamification & sauvegarde
+- **Tableau de bord** : objectif hebdomadaire ajustable avec « ✓ Objectif atteint » et streak de semaines validées, niveau/XP, badges, statistiques globales, répartition par muscle, records personnels (PR) avec graphique d'évolution, suivi du poids de corps.
+- **Mes séances** : liste ou tableau triable, recherche et filtre par période, détail complet, RPE (1-10) + notes, modification, duplication (rejouer une séance), suppression.
+- **Calendrier** mensuel : pastilles sur les jours entraînés, détail au clic, statut d'objectif par semaine.
+- **Export / import JSON** de toutes les données, et **PWA légère** (installable, fonctionne hors ligne en salle).
+
 ## 🗂 Structure du projet
 
 ```
@@ -47,7 +58,9 @@ js/data.js        Base de données des exercices (socle)
 js/data-extra.js  Extension de la base (116 exercices au total)
 js/program.js     Générateur de programme personnalisé
 js/app.js         Logique de l'interface et stockage local
-js/workout.js     Séance en direct : chronos, repos, historique
+js/workout.js     Séance en direct : chronos, repos, RPE, historique
+js/tracking.js    Suivi : stats, XP/badges, PR, calendrier, thèmes, export
+manifest.webmanifest + sw.js + icon.svg   PWA (hors-ligne)
 ```
 
 ## ⚠️ Avertissement

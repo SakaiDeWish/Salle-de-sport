@@ -4,18 +4,24 @@
    condensée (Anton) + Inter pour le corps. Mobile-first.
    ========================================================= */
 
-:root {
-  --bg: #0a0b0d;
+/* =========================================================
+   THÈME B « GAMIFIÉ » (défaut) : sombre + vert volt électrique.
+   Le thème A « ÉPURÉ » redéfinit ces variables plus bas.
+   ========================================================= */
+:root, .theme-gamifie {
+  --bg: #0a0a0b;
   --bg-soft: #121316;
   --card: #17181c;
   --card-hover: #1e2025;
   --border: #26282e;
   --text: #f4f5f7;
   --text-soft: #9aa1ad;
-  --accent: #ff4d00;
-  --accent-2: #ff8a00;
-  --accent-grad: linear-gradient(100deg, #ff4d00, #ff8a00);
-  --accent-soft: rgba(255, 77, 0, 0.14);
+  --accent: #ceff00;
+  --accent-2: #b8f227;
+  --accent-grad: linear-gradient(100deg, #ceff00, #6ef05a);
+  --accent-soft: rgba(206, 255, 0, 0.12);
+  --accent-contrast: #0c0e05; /* texte posé SUR l'accent volt */
+  --glow: rgba(206, 255, 0, 0.07);
   --green: #3ecf8e;
   --yellow: #f5b83d;
   --red: #ef5561;
@@ -33,7 +39,7 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   background:
-    radial-gradient(1200px 500px at 80% -10%, rgba(255, 77, 0, 0.08), transparent 60%),
+    radial-gradient(1200px 500px at 80% -10%, var(--glow), transparent 60%),
     var(--bg);
   color: var(--text);
   line-height: 1.6;
@@ -130,7 +136,7 @@ body {
 .desktop-nav .tab:hover { color: var(--text); }
 .desktop-nav .tab.active {
   background: var(--accent-grad);
-  color: #fff;
+  color: var(--accent-contrast);
 }
 
 /* ---------- Barre d'onglets mobile (bas d'écran) ---------- */
@@ -232,10 +238,11 @@ body {
 .chip.active {
   background: var(--accent-grad);
   border-color: transparent;
-  color: #fff;
+  color: var(--accent-contrast);
 }
 .chip-deb.active { background: var(--green); }
 .chip-int.active { background: var(--yellow); color: #1a1a1a; }
+.chip-deb.active, .chip-adv.active { color: #fff; }
 .chip-adv.active { background: var(--red); }
 
 .result-count {
@@ -401,7 +408,7 @@ body {
 .btn-primary {
   background: var(--accent-grad);
   border-color: transparent;
-  color: #fff;
+  color: var(--accent-contrast);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -831,3 +838,317 @@ textarea { min-height: 90px; resize: vertical; }
   .linklike { color: #000; text-decoration: none; }
   .video-link { display: none; }
 }
+
+/* =========================================================
+   NOUVEAUX COMPOSANTS — Suivi, gamification, calendrier
+   ========================================================= */
+
+/* Bascule de thème (en-tête) */
+.theme-toggle {
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+.theme-toggle::before { content: "◐ "; }
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent-2); }
+
+/* Contrôle segmenté */
+.segmented {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 20px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.seg {
+  border: none;
+  background: transparent;
+  color: var(--text-soft);
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.16s ease;
+}
+.seg.active { background: var(--accent-grad); color: var(--accent-contrast); }
+.segmented-sm { margin-bottom: 0; }
+
+.suivi-panel { display: flex; flex-direction: column; gap: 18px; }
+.panel-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+}
+
+/* Objectif hebdo */
+.goal-row { display: flex; gap: 28px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+.goal-big {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  line-height: 1.1;
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.goal-sep { color: var(--text-soft); }
+.goal-ok { color: var(--green); font-family: var(--font-body); font-size: 0.85rem; font-weight: 800; }
+.goal-left { color: var(--text-soft); font-family: var(--font-body); font-size: 0.85rem; font-weight: 600; }
+.goal-side { margin-left: auto; }
+.goal-adjust {
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-soft);
+}
+.goal-adjust input { max-width: 90px; }
+
+/* XP / niveau */
+.xp-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.xp-level {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--accent-2);
+}
+.xp-detail { color: var(--text-soft); font-size: 0.85rem; font-weight: 600; }
+
+/* Tuiles de stats */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.stat-tile { display: flex; flex-direction: column; gap: 4px; padding: 18px; }
+
+/* Répartition par muscle */
+.muscle-bars { display: flex; flex-direction: column; gap: 10px; }
+.muscle-bar-row { display: grid; grid-template-columns: 130px 1fr 40px; gap: 10px; align-items: center; }
+.muscle-bar-label { font-size: 0.82rem; font-weight: 600; color: var(--text-soft); }
+.muscle-bar-track { height: 10px; background: var(--bg-soft); border-radius: 999px; overflow: hidden; }
+.muscle-bar { height: 100%; background: var(--accent-grad); border-radius: 999px; transition: width 0.5s ease; }
+.muscle-bar-n { font-size: 0.8rem; color: var(--text-soft); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Records personnels + sparklines */
+.pr-list { display: flex; flex-direction: column; gap: 14px; }
+.pr-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 12px;
+}
+.pr-row:last-child { border-bottom: none; padding-bottom: 0; }
+.pr-info { display: flex; flex-direction: column; gap: 2px; }
+.pr-best { color: var(--text-soft); font-size: 0.82rem; }
+.spark { width: 220px; max-width: 100%; height: 48px; }
+.spark polyline { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linejoin: round; }
+.spark circle { fill: var(--accent); }
+
+/* Badges */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+.badge-tile {
+  position: relative;
+  display: flex; flex-direction: column; gap: 4px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  opacity: 0.45;
+  filter: grayscale(0.8);
+  transition: transform 0.2s ease;
+}
+.badge-tile.badge-ok { opacity: 1; filter: none; border-color: var(--accent); }
+.badge-tile.badge-ok:hover { transform: translateY(-3px); }
+.badge-ico { font-size: 1.6rem; }
+.badge-nom { font-weight: 800; font-size: 0.88rem; }
+.badge-desc { color: var(--text-soft); font-size: 0.74rem; }
+.badge-check {
+  position: absolute; top: 10px; right: 10px;
+  color: var(--accent-contrast); background: var(--accent);
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 900;
+}
+
+/* Poids de corps */
+.weight-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.weight-row input { max-width: 160px; }
+
+/* Mes séances : contrôles + tableau */
+.sessions-controls {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+}
+.sessions-controls input[type="search"] { flex: 1; min-width: 200px; border-radius: 999px; }
+.sessions-controls select { max-width: 200px; border-radius: 999px; }
+.sessions-list { display: flex; flex-direction: column; gap: 12px; }
+.session-open { cursor: pointer; }
+.table-wrap { overflow-x: auto; }
+.sessions-table { min-width: 640px; }
+.sessions-table .sortable { cursor: pointer; user-select: none; }
+.sessions-table .sortable:hover { color: var(--text); }
+.session-notes { color: var(--text-soft); font-style: italic; margin: 10px 0; }
+
+/* RPE */
+.rpe-block { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
+.rpe-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.rpe-chip {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  font-family: inherit; font-weight: 800; font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.rpe-chip:hover { border-color: var(--accent); color: var(--text); }
+.rpe-chip.active { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); transform: scale(1.08); }
+
+/* Édition de séance */
+.edit-grid { display: flex; flex-direction: column; gap: 14px; margin: 16px 0; }
+.edit-label { display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-soft); }
+.edit-ex { margin: 14px 0; }
+.edit-ex h4 { margin-bottom: 8px; }
+.edit-set { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
+.edit-set-n { width: 70px; font-size: 0.8rem; color: var(--text-soft); font-weight: 600; }
+.edit-set input { max-width: 110px; }
+
+/* Calendrier */
+.cal-nav { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+.cal-title { margin-bottom: 0; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr) 52px;
+  gap: 4px;
+  margin-bottom: 4px;
+  align-items: center;
+}
+.cal-dow { text-align: center; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; color: var(--text-soft); text-transform: uppercase; padding: 6px 0; }
+.cal-day {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: inherit; font-size: 0.85rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  cursor: default;
+}
+.cal-day.cal-out { background: transparent; }
+.cal-day.cal-today { border-color: var(--text-soft); }
+.cal-day.cal-has { cursor: pointer; border-color: var(--accent); }
+.cal-day.cal-has:hover { background: var(--accent-soft); }
+.cal-dot {
+  position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+  min-width: 8px; height: 8px; border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.6rem; font-weight: 900; line-height: 8px;
+  padding: 0 3px;
+}
+.cal-week-status {
+  text-align: center;
+  font-size: 0.78rem; font-weight: 800;
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+}
+.cal-week-status.goal-ok { color: var(--green); font-size: 1rem; }
+.cal-legend { margin-top: 12px; }
+.cal-session { border-bottom: 1px solid var(--border); padding: 10px 0; }
+.cal-session:last-child { border-bottom: none; }
+
+/* =========================================================
+   THÈME A « ÉPURÉ » — éditorial clair, terracotta réservé
+   aux CTA / états actifs, zéro emoji décoratif.
+   ========================================================= */
+.theme-epure {
+  --bg: #f6f2ea;
+  --bg-soft: #efe9dd;
+  --card: #fffdf8;
+  --card-hover: #fbf7ef;
+  --border: #e2dbcd;
+  --text: #141414;
+  --text-soft: #6f6a5f;
+  --accent: #d14836;
+  --accent-2: #b93a29;
+  --accent-grad: linear-gradient(100deg, #d14836, #c04330);
+  --accent-soft: rgba(209, 72, 54, 0.08);
+  --accent-contrast: #fffdf8;
+  --glow: rgba(209, 72, 54, 0.05);
+  --green: #2e7d32;
+  --yellow: #9a6b00;
+  --red: #b3261e;
+  --shadow: 0 14px 34px rgba(60, 50, 30, 0.12);
+}
+
+/* pas d'emoji décoratif dans l'épuré : iconographie minimale */
+.theme-epure .ico,
+.theme-epure .ex-card-bg,
+.theme-epure .ex-icon,
+.theme-epure .badge-ico { display: none !important; }
+
+.theme-epure .topbar { background: rgba(246, 242, 234, 0.88); }
+.theme-epure .bottom-nav { background: rgba(246, 242, 234, 0.94); }
+.theme-epure .bottom-nav .tab { font-size: 0.78rem; }
+.theme-epure .bottom-nav .tab.active { color: var(--accent); }
+
+/* cartes d'exercices : posters -> planches éditoriales claires */
+.theme-epure .ex-card,
+.theme-epure .grad-pectoraux, .theme-epure .grad-dos, .theme-epure .grad-epaules,
+.theme-epure .grad-biceps, .theme-epure .grad-triceps, .theme-epure .grad-quadriceps,
+.theme-epure .grad-ischios-fessiers, .theme-epure .grad-mollets,
+.theme-epure .grad-abdos, .theme-epure .grad-lombaires {
+  background: var(--card);
+}
+.theme-epure .ex-card { min-height: 200px; }
+.theme-epure .ex-card::after { display: none; }
+.theme-epure .ex-card:hover { border-color: var(--accent); }
+.theme-epure .ex-card-group { color: var(--accent); }
+
+/* badges de niveau : pleins et contrastés sur fond clair */
+.theme-epure .badge-debutant { background: #e5efe6; color: #205723; }
+.theme-epure .badge-intermediaire { background: #f4ecd7; color: #6d4c00; }
+.theme-epure .badge-avance { background: #f7e3e1; color: #8c1d16; }
+.theme-epure .tag { background: transparent; }
+
+/* niveaux (chips) : états actifs sobres, noir + terracotta seulement */
+.theme-epure .chip-deb.active,
+.theme-epure .chip-int.active,
+.theme-epure .chip-adv.active {
+  background: var(--text); color: var(--bg);
+}
+
+/* profondeur atténuée : l'épuré vit d'espace, pas d'ombres */
+.theme-epure .ex-card:hover, .theme-epure .ex-card:focus-visible { box-shadow: 0 10px 24px rgba(60, 50, 30, 0.1); }
+.theme-epure .live-header { box-shadow: 0 8px 22px rgba(60, 50, 30, 0.08); }
+.theme-epure .rest-overlay { background: rgba(246, 242, 234, 0.97); }
+.theme-epure .modal-backdrop { background: rgba(30, 25, 15, 0.4); }
+.theme-epure .day-num { -webkit-text-stroke: 1.5px var(--text); }
+.theme-epure .chrono-main .chrono-value { color: var(--text); }
+.theme-epure .xp-level { color: var(--text); }
+.theme-epure .display .accent { color: var(--accent); }
+.theme-epure .kicker { color: var(--accent); }
+.theme-epure .ex-chrono { color: var(--text); }
+.theme-epure .spark polyline { stroke: var(--accent); }
+.theme-epure .spark circle { fill: var(--accent); }
+.theme-epure .badge-tile.badge-ok { border-color: var(--text); }
+.theme-epure .badge-check { background: var(--text); color: var(--bg); }
+.theme-epure .cal-day.cal-has { border-color: var(--accent); }
+.theme-epure .live-dot { color: var(--accent); }

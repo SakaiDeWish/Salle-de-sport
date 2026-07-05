@@ -109,7 +109,7 @@ function renderProgramDayButtons() {
   }
   container.innerHTML = program.days.map((d, i) => `
     <button class="btn btn-ghost start-day" data-day="${i}">
-      ${program.objectifIcone} Lancer : Séance ${d.numero} — ${esc(d.titre)}
+      <span class="ico">${program.objectifIcone} </span>Lancer : Séance ${d.numero} — ${esc(d.titre)}
     </button>`).join("");
   container.querySelectorAll(".start-day").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -353,7 +353,7 @@ function renderPickerList(query) {
   ).slice(0, 40);
   document.getElementById("picker-list").innerHTML = list.map(ex => `
     <button class="picker-item" data-exid="${esc(ex.id)}">
-      <span>${GROUP_ICONS[ex.groupe] || "🏋️"} ${esc(ex.nom)}</span>
+      <span><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)}</span>
       <span class="tag">${LABELS.groupes[ex.groupe]}</span>
     </button>`).join("") || `<p class="video-hint">Aucun exercice trouvé.</p>`;
   document.querySelectorAll(".picker-item").forEach(btn =>
@@ -391,12 +391,17 @@ function finishSession() {
   live.endedAt = now;
   if (liveTimer) clearInterval(liveTimer);
 
+  const program = loadJSON(STORAGE_KEYS.program, null);
   const record = {
     id: "seance-" + now,
     nom: live.nom,
     date: now,
     dureeMs: now - live.startedAt,
     reposMs: totalRestMs(),
+    statut: "Terminée",
+    objectifLabel: program ? program.objectifLabel : null,
+    rpe: null,   // renseigné depuis l'écran de résumé
+    notes: "",
     exercises: live.exercises
       .filter(ex => ex.sets.length > 0)
       .map(ex => ({
@@ -435,7 +440,7 @@ function showSummary(r) {
   elSummary.innerHTML = `
     <div class="card summary-card">
       <p class="kicker">Séance terminée</p>
-      <h2>Bien joué 🎉</h2>
+      <h2>Bien joué<span class="ico"> 🎉</span></h2>
       <p class="program-meta">${esc(r.nom)} · ${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
       <div class="live-chronos summary-stats">
         <div class="chrono-block"><span class="chrono-label">Durée totale</span><span class="chrono-value">${fmtClock(r.dureeMs)}</span></div>
@@ -443,16 +448,49 @@ function showSummary(r) {
         <div class="chrono-block"><span class="chrono-label">Séries</span><span class="chrono-value">${r.nbSeries}</span></div>
         <div class="chrono-block"><span class="chrono-label">Volume total</span><span class="chrono-value">${Math.round(r.volume)} kg</span></div>
       </div>
+      <!-- Ressenti de séance : RPE 1-10 + notes, enregistrés sur la séance -->
+      <div class="rpe-block">
+        <p class="chrono-label">Ressenti de la séance (RPE)</p>
+        <div class="rpe-row" id="summary-rpe">
+          ${Array.from({ length: 10 }, (_, i) => i + 1).map(n =>
+            `<button type="button" class="rpe-chip" data-rpe="${n}">${n}</button>`).join("")}
+        </div>
+        <textarea id="summary-notes" rows="2" placeholder="Notes libres (sensations, douleurs, contexte…)"></textarea>
+        <p class="feedback" id="summary-feel-feedback"></p>
+      </div>
       ${renderSessionDetail(r)}
       <button class="btn btn-primary btn-lg" id="summary-back">↩ Retour aux séances</button>
     </div>`;
+
+  let summaryRpe = null;
+  const saveFeel = () => {
+    const history = loadJSON(STORAGE_KEYS.history, []);
+    const rec = history.find(s => s.id === r.id);
+    if (!rec) return;
+    rec.rpe = summaryRpe;
+    rec.notes = document.getElementById("summary-notes").value.trim();
+    saveJSON(STORAGE_KEYS.history, history);
+  };
+  elSummary.querySelectorAll(".rpe-chip").forEach(c =>
+    c.addEventListener("click", () => {
+      const v = parseInt(c.dataset.rpe, 10);
+      summaryRpe = (summaryRpe === v) ? null : v;
+      elSummary.querySelectorAll(".rpe-chip").forEach(x =>
+        x.classList.toggle("active", parseInt(x.dataset.rpe, 10) === summaryRpe));
+      saveFeel();
+      document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré ✓" : "";
+    }));
+  document.getElementById("summary-notes").addEventListener("change", () => {
+    saveFeel();
+    document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées ✓";
+  });
   document.getElementById("summary-back").addEventListener("click", showSetup);
 }
 
 function renderSessionDetail(r) {
   return `<div class="session-detail">${r.exercises.map(ex => `
     <div class="session-ex">
-      <h4>${GROUP_ICONS[ex.groupe] || "🏋️"} ${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
+      <h4><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
       <table class="sets-table">
         <thead><tr><th>Série</th><th>Poids</th><th>Reps</th><th>Repos pris</th></tr></thead>
         <tbody>${ex.sets.map((s, j) => `
@@ -468,9 +506,10 @@ function renderHistory() {
   const container = document.getElementById("seance-history");
   const history = loadJSON(STORAGE_KEYS.history, []);
   if (history.length === 0) { container.innerHTML = ""; return; }
+  /* Aperçu des 3 dernières séances ; la gestion complète vit dans « Suivi » */
   container.innerHTML = `
-    <h2>📖 Historique (${history.length} séance${history.length > 1 ? "s" : ""})</h2>
-    ${history.map(r => `
+    <h2><span class="ico">📖</span> Dernières séances</h2>
+    ${history.slice(0, 3).map(r => `
       <div class="card history-item" data-id="${esc(r.id)}">
         <div class="history-head">
           <div>
@@ -484,7 +523,13 @@ function renderHistory() {
           </div>
         </div>
         <div class="history-detail hidden">${renderSessionDetail(r)}</div>
-      </div>`).join("")}`;
+      </div>`).join("")}
+    <button class="btn btn-ghost" id="history-see-all">Tout voir dans « Suivi » (${history.length})</button>`;
+
+  document.getElementById("history-see-all").addEventListener("click", () => {
+    activateView("suivi");
+    document.querySelector('.seg[data-panel="seances"]').click();
+  });
 
   container.querySelectorAll(".toggle-detail").forEach(btn =>
     btn.addEventListener("click", () => {
