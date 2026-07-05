@@ -172,7 +172,7 @@ function openExercise(id) {
        </div>
        <p class="video-hint">Vidéo intégrée. <button class="linklike" id="video-change">Changer la vidéo</button></p>`
     : `<div class="video-placeholder">
-         <p>🎬 <strong>Vidéo de démonstration</strong></p>
+         <p><span class="ico">🎬 </span><strong>Vidéo de démonstration</strong></p>
          <a class="btn btn-primary" href="${youtubeSearchUrl(ex)}" target="_blank" rel="noopener">
            ▶ Voir la démonstration sur YouTube
          </a>
@@ -200,14 +200,14 @@ function openExercise(id) {
     ${videoBlock}
 
     <p class="ex-desc">${esc(ex.description || "")}</p>
-    ${ex.muscles ? `<p><strong>💪 Muscles sollicités :</strong> ${esc(ex.muscles)}</p>` : ""}
+    ${ex.muscles ? `<p><strong><span class="ico">💪 </span>Muscles sollicités :</strong> ${esc(ex.muscles)}</p>` : ""}
 
     ${(ex.execution && ex.execution.length) ? `
-      <h3>✅ Exécution</h3>
+      <h3><span class="ico">✅ </span>Exécution</h3>
       <ol class="steps">${ex.execution.map(s => `<li>${esc(s)}</li>`).join("")}</ol>` : ""}
 
     ${(ex.erreurs && ex.erreurs.length) ? `
-      <h3>⚠️ Erreurs à éviter</h3>
+      <h3><span class="ico">⚠️ </span>Erreurs à éviter</h3>
       <ul class="mistakes">${ex.erreurs.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
 
     ${ex.custom ? `<button class="btn btn-danger" id="delete-custom">🗑 Supprimer cet exercice personnalisé</button>` : ""}
@@ -344,7 +344,7 @@ function renderProgram(pr) {
 
   programOutput.innerHTML = `
     <div class="program-header card">
-      <p class="kicker">${pr.objectifIcone} ${esc(pr.objectifLabel)}</p>
+      <p class="kicker"><span class="ico">${pr.objectifIcone} </span>${esc(pr.objectifLabel)}</p>
       <h2>Programme de ${esc(pr.prenom)}</h2>
       <p class="program-meta">
         ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${materielLabels[pr.materiel]}
@@ -393,7 +393,7 @@ function renderProgram(pr) {
     </div>
 
     <div class="card conseils-card">
-      <h3>📌 Conseils — ${esc(pr.objectifLabel)}</h3>
+      <h3><span class="ico">📌 </span>Conseils — ${esc(pr.objectifLabel)}</h3>
       <ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
       <p class="disclaimer">⚠️ Échauffe-toi 5-10 minutes avant chaque séance. Clique sur un exercice pour ouvrir sa fiche technique complète avec vidéo.</p>
     </div>

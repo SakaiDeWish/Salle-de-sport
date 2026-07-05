@@ -1,0 +1,717 @@
+/* =========================================================
+   GymCoach — Suivi, gamification & thèmes
+   - Bascule de thème Épuré / Gamifié (mémorisée)
+   - Tableau de bord : stats, XP/niveau, badges, PR + graphes
+   - Mes séances : liste/tableau, recherche, éditer/dupliquer
+   - Calendrier mensuel + objectif hebdo vérifié + streak
+   - Export / import JSON, suivi du poids de corps
+   Tout est CALCULÉ à partir de l'historique : une seule
+   source de vérité, aucune stat stockée en double.
+   ========================================================= */
+
+STORAGE_KEYS.weeklyGoal = "gymcoach.weeklyGoal";
+STORAGE_KEYS.weights = "gymcoach.weights";
+STORAGE_KEYS.schema = "gymcoach.schema";
+
+/* Versionnage du schéma : v2 = ajout rpe/notes/statut sur les séances.
+   Les anciennes séances restent valides (champs simplement absents). */
+if (!localStorage.getItem(STORAGE_KEYS.schema)) {
+  localStorage.setItem(STORAGE_KEYS.schema, "2");
+}
+
+/* ---------- Thème ---------- */
+const THEME_KEY = "gymcoach.theme";
+
+function currentTheme() { return localStorage.getItem(THEME_KEY) || "gamifie"; }
+
+function applyTheme(theme) {
+  document.documentElement.className = "theme-" + theme;
+  localStorage.setItem(THEME_KEY, theme);
+  document.getElementById("theme-toggle-label").textContent =
+    theme === "gamifie" ? "Épuré" : "Gamifié"; // le bouton propose l'AUTRE thème
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = theme === "gamifie" ? "#0a0a0b" : "#f6f2ea";
+}
+
+document.getElementById("theme-toggle").addEventListener("click", () =>
+  applyTheme(currentTheme() === "gamifie" ? "epure" : "gamifie"));
+applyTheme(currentTheme());
+
+/* ---------- Accès aux données ---------- */
+function getHistory() { return loadJSON(STORAGE_KEYS.history, []); }
+function setHistory(h) { saveJSON(STORAGE_KEYS.history, h); }
+
+function getWeeklyGoal() {
+  const saved = loadJSON(STORAGE_KEYS.weeklyGoal, null);
+  if (saved) return saved;
+  const program = loadJSON(STORAGE_KEYS.program, null);
+  return program ? program.jours : 3;
+}
+
+/* ---------- Semaines ISO (objectif hebdo) ---------- */
+function mondayOf(ts) {
+  const d = new Date(ts); d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+}
+function weekKey(ts) { return mondayOf(ts).getTime(); }
+
+function sessionsPerWeek() {
+  const map = new Map();
+  for (const r of getHistory()) {
+    const k = weekKey(r.date);
+    map.set(k, (map.get(k) || 0) + 1);
+  }
+  return map;
+}
+
+/* État de l'objectif : semaine courante, streak de semaines validées */
+function goalStatus() {
+  const goal = getWeeklyGoal();
+  const perWeek = sessionsPerWeek();
+  const thisWeek = weekKey(Date.now());
+  const doneThisWeek = perWeek.get(thisWeek) || 0;
+
+  // streak : semaines consécutives validées en remontant depuis la semaine
+  // précédente ; la semaine en cours compte si elle est déjà validée
+  let streak = 0;
+  let cursor = thisWeek;
+  if (doneThisWeek >= goal) { streak = 1; }
+  cursor -= 7 * 86400000;
+  while ((perWeek.get(cursor) || 0) >= goal) { streak++; cursor -= 7 * 86400000; }
+
+  return { goal, doneThisWeek, achievedThisWeek: doneThisWeek >= goal, streak, perWeek };
+}
+
+/* ---------- Statistiques globales ---------- */
+function globalStats() {
+  const h = getHistory();
+  const stats = {
+    total: h.length,
+    tempsMs: h.reduce((s, r) => s + (r.dureeMs || 0), 0),
+    volume: h.reduce((s, r) => s + (r.volume || 0), 0),
+    series: h.reduce((s, r) => s + (r.nbSeries || 0), 0),
+    parGroupe: {}
+  };
+  for (const r of h)
+    for (const ex of r.exercises)
+      stats.parGroupe[ex.groupe] = (stats.parGroupe[ex.groupe] || 0) + ex.sets.length;
+  // régularité : moyenne de séances/semaine depuis la première séance
+  if (h.length) {
+    const first = Math.min(...h.map(r => r.date));
+    const weeks = Math.max(1, (Date.now() - first) / (7 * 86400000));
+    stats.regularite = (h.length / weeks).toFixed(1);
+  } else stats.regularite = "0";
+  return stats;
+}
+
+/* ---------- Records personnels (PR) ---------- */
+function computePRs() {
+  const byEx = new Map(); // exId -> { nom, points:[{date, poids}], best }
+  const h = getHistory().slice().sort((a, b) => a.date - b.date);
+  for (const r of h) {
+    for (const ex of r.exercises) {
+      let max = null;
+      for (const s of ex.sets)
+        if (s.poids != null && (!max || s.poids > max.poids)) max = { poids: s.poids, reps: s.reps };
+      if (!max) continue;
+      if (!byEx.has(ex.exId)) byEx.set(ex.exId, { nom: ex.nom, points: [], best: null });
+      const e = byEx.get(ex.exId);
+      e.points.push({ date: r.date, poids: max.poids });
+      if (!e.best || max.poids > e.best.poids) e.best = { ...max, date: r.date };
+    }
+  }
+  return [...byEx.values()].sort((a, b) => b.best.poids - a.best.poids);
+}
+
+/* Mini-graphique SVG (pas de librairie : une polyline suffit) */
+function sparkline(points, w = 220, h = 48) {
+  if (points.length < 2) return "";
+  const xs = points.map(p => p.date), ys = points.map(p => p.poids);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const px = x => maxX === minX ? w / 2 : 4 + (x - minX) / (maxX - minX) * (w - 8);
+  const py = y => maxY === minY ? h / 2 : h - 4 - (y - minY) / (maxY - minY) * (h - 8);
+  const pts = points.map(p => `${px(p.date).toFixed(1)},${py(p.poids).toFixed(1)}`).join(" ");
+  const last = points[points.length - 1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+    <polyline points="${pts}"></polyline>
+    <circle cx="${px(last.date).toFixed(1)}" cy="${py(last.poids).toFixed(1)}" r="3"></circle>
+  </svg>`;
+}
+
+/* ---------- XP, niveau, badges ---------- */
+function computeXP() {
+  const h = getHistory();
+  let xp = 0;
+  for (const r of h) xp += 50 + 2 * (r.nbSeries || 0) + (r.rpe ? 5 : 0);
+  // +100 par semaine où l'objectif a été atteint
+  const goal = getWeeklyGoal();
+  for (const count of sessionsPerWeek().values()) if (count >= goal) xp += 100;
+  return xp;
+}
+
+function levelFromXP(xp) {
+  let lvl = 1, need = 150, rest = xp;
+  while (rest >= need) { rest -= need; lvl++; need = 150 * lvl; }
+  return { lvl, into: rest, need };
+}
+
+function computeBadges() {
+  const h = getHistory();
+  const stats = globalStats();
+  const gs = goalStatus();
+  const weeksOK = [...gs.perWeek.values()].filter(c => c >= gs.goal).length;
+  const prs = computePRs();
+  const hasProgress = prs.some(p => p.points.length >= 2 && p.best.poids > p.points[0].poids);
+  return [
+    { ico: "🎉", nom: "Première séance", desc: "Terminer ta première séance", ok: h.length >= 1 },
+    { ico: "🔥", nom: "Lancé", desc: "5 séances terminées", ok: h.length >= 5 },
+    { ico: "💪", nom: "Habitué", desc: "10 séances terminées", ok: h.length >= 10 },
+    { ico: "🏆", nom: "Machine", desc: "25 séances terminées", ok: h.length >= 25 },
+    { ico: "👑", nom: "Légende", desc: "50 séances terminées", ok: h.length >= 50 },
+    { ico: "✅", nom: "Semaine parfaite", desc: "Objectif hebdo atteint une fois", ok: weeksOK >= 1 },
+    { ico: "📅", nom: "Régulier", desc: "Objectif hebdo atteint 3 fois", ok: weeksOK >= 3 },
+    { ico: "⚡", nom: "Inarrêtable", desc: "Streak de 4 semaines validées", ok: gs.streak >= 4 },
+    { ico: "📈", nom: "Premier PR", desc: "Progresser sur la charge d'un exercice", ok: hasProgress },
+    { ico: "🏋️", nom: "10 tonnes", desc: "10 000 kg de volume cumulé", ok: stats.volume >= 10000 },
+    { ico: "🚚", nom: "100 tonnes", desc: "100 000 kg de volume cumulé", ok: stats.volume >= 100000 },
+    { ico: "⏱", nom: "Marathonien", desc: "10 h d'entraînement cumulées", ok: stats.tempsMs >= 10 * 3600000 }
+  ];
+}
+
+/* ---------- Panneaux du suivi ---------- */
+document.querySelectorAll(".seg").forEach(seg =>
+  seg.addEventListener("click", () => {
+    document.querySelectorAll(".seg").forEach(s => s.classList.remove("active"));
+    seg.classList.add("active");
+    document.querySelectorAll(".suivi-panel").forEach(p => p.classList.add("hidden"));
+    document.getElementById("panel-" + seg.dataset.panel).classList.remove("hidden");
+    renderSuivi();
+  }));
+
+document.querySelectorAll('.tab[data-view="suivi"]').forEach(tab =>
+  tab.addEventListener("click", renderSuivi));
+
+function renderSuivi() {
+  if (!document.getElementById("panel-dashboard").classList.contains("hidden")) renderDashboard();
+  if (!document.getElementById("panel-seances").classList.contains("hidden")) renderSessionsPanel();
+  if (!document.getElementById("panel-calendrier").classList.contains("hidden")) renderCalendar();
+}
+
+/* ==================== TABLEAU DE BORD ==================== */
+function renderDashboard() {
+  const stats = globalStats();
+  const gs = goalStatus();
+  const xp = computeXP();
+  const level = levelFromXP(xp);
+  const badges = computeBadges();
+  const prs = computePRs();
+  const weights = loadJSON(STORAGE_KEYS.weights, []);
+  const maxGroupe = Math.max(1, ...Object.values(stats.parGroupe));
+
+  document.getElementById("panel-dashboard").innerHTML = `
+    <!-- Objectif de la semaine + streak -->
+    <div class="card goal-card">
+      <div class="goal-row">
+        <div>
+          <p class="chrono-label">Objectif de la semaine</p>
+          <p class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}
+            ${gs.achievedThisWeek
+              ? '<span class="goal-ok">✓ Objectif atteint</span>'
+              : `<span class="goal-left">encore ${gs.goal - gs.doneThisWeek} séance${gs.goal - gs.doneThisWeek > 1 ? "s" : ""}</span>`}
+          </p>
+        </div>
+        <div class="goal-side">
+          <p class="chrono-label">Streak</p>
+          <p class="goal-big">${gs.streak} <span class="goal-left">sem.</span></p>
+        </div>
+        <label class="goal-adjust">
+          Séances / semaine
+          <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
+        </label>
+      </div>
+      <div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, gs.doneThisWeek / gs.goal * 100)}%"></div></div>
+    </div>
+
+    <!-- Niveau / XP -->
+    <div class="card xp-card">
+      <div class="xp-row">
+        <span class="xp-level">NIV. ${level.lvl}</span>
+        <span class="xp-detail">${xp} XP · ${level.need - level.into} XP avant le niveau ${level.lvl + 1}</span>
+      </div>
+      <div class="progress-track"><div class="progress-bar" style="width:${Math.round(level.into / level.need * 100)}%"></div></div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stat-tiles">
+      <div class="card stat-tile"><span class="chrono-value">${stats.total}</span><span class="chrono-label">Séances</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${fmtClock(stats.tempsMs)}</span><span class="chrono-label">Temps total</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${Math.round(stats.volume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume soulevé</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${stats.regularite}</span><span class="chrono-label">Séances / semaine</span></div>
+    </div>
+
+    ${Object.keys(stats.parGroupe).length ? `
+    <div class="card">
+      <h3 class="panel-title">Répartition par muscle</h3>
+      <div class="muscle-bars">
+        ${Object.entries(stats.parGroupe).sort((a, b) => b[1] - a[1]).map(([g, n]) => `
+          <div class="muscle-bar-row">
+            <span class="muscle-bar-label">${LABELS.groupes[g] || g}</span>
+            <div class="muscle-bar-track"><div class="muscle-bar" style="width:${Math.round(n / maxGroupe * 100)}%"></div></div>
+            <span class="muscle-bar-n">${n}</span>
+          </div>`).join("")}
+      </div>
+    </div>` : ""}
+
+    ${prs.length ? `
+    <div class="card">
+      <h3 class="panel-title">Records personnels</h3>
+      <div class="pr-list">
+        ${prs.slice(0, 8).map(p => `
+          <div class="pr-row">
+            <div class="pr-info">
+              <strong>${esc(p.nom)}</strong>
+              <span class="pr-best">${p.best.poids} kg × ${p.best.reps} · ${new Date(p.best.date).toLocaleDateString("fr-FR")}</span>
+            </div>
+            ${sparkline(p.points)}
+          </div>`).join("")}
+      </div>
+    </div>` : ""}
+
+    <!-- Badges -->
+    <div class="card">
+      <h3 class="panel-title">Badges</h3>
+      <div class="badge-grid">
+        ${badges.map(b => `
+          <div class="badge-tile ${b.ok ? "badge-ok" : ""}" title="${esc(b.desc)}">
+            <span class="badge-ico ico">${b.ico}</span>
+            <span class="badge-nom">${esc(b.nom)}</span>
+            <span class="badge-desc">${esc(b.desc)}</span>
+            ${b.ok ? '<span class="badge-check">✓</span>' : ""}
+          </div>`).join("")}
+      </div>
+    </div>
+
+    <!-- Poids de corps -->
+    <div class="card">
+      <h3 class="panel-title">Poids de corps</h3>
+      <div class="weight-row">
+        <input type="number" id="weight-input" min="20" max="300" step="0.1" placeholder="Ex : 74.5">
+        <button class="btn btn-ghost" id="weight-add">Enregistrer</button>
+      </div>
+      ${weights.length >= 2 ? sparkline(weights.map(w => ({ date: w.date, poids: w.kg })), 400, 60) : ""}
+      ${weights.length ? `<p class="video-hint">Dernier relevé : <strong>${weights[weights.length - 1].kg} kg</strong> le ${new Date(weights[weights.length - 1].date).toLocaleDateString("fr-FR")} · ${weights.length} relevé${weights.length > 1 ? "s" : ""}</p>` : `<p class="video-hint">Aucun relevé pour l'instant.</p>`}
+    </div>
+
+    <!-- Sauvegarde -->
+    <div class="card">
+      <h3 class="panel-title">Sauvegarde des données</h3>
+      <p class="video-hint">Tes données vivent dans ce navigateur. Exporte-les régulièrement pour ne rien perdre.</p>
+      <div class="program-actions">
+        <button class="btn btn-primary" id="export-data">Exporter (JSON)</button>
+        <button class="btn btn-ghost" id="import-data">Importer une sauvegarde</button>
+      </div>
+    </div>
+  `;
+
+  // objectif hebdo ajustable
+  document.getElementById("weekly-goal-input").addEventListener("change", e => {
+    const v = Math.max(1, Math.min(14, parseInt(e.target.value, 10) || 3));
+    saveJSON(STORAGE_KEYS.weeklyGoal, v);
+    renderDashboard();
+  });
+
+  // poids de corps
+  document.getElementById("weight-add").addEventListener("click", () => {
+    const kg = parseFloat(document.getElementById("weight-input").value);
+    if (!kg || kg < 20 || kg > 300) return;
+    const weights = loadJSON(STORAGE_KEYS.weights, []);
+    weights.push({ date: Date.now(), kg });
+    weights.sort((a, b) => a.date - b.date);
+    saveJSON(STORAGE_KEYS.weights, weights);
+    renderDashboard();
+  });
+
+  // export / import
+  document.getElementById("export-data").addEventListener("click", exportData);
+  document.getElementById("import-data").addEventListener("click", () =>
+    document.getElementById("import-file").click());
+}
+
+/* ---------- Export / import JSON ---------- */
+function exportData() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith("gymcoach.")) data[k] = localStorage.getItem(k);
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "gymcoach-sauvegarde-" + new Date().toISOString().slice(0, 10) + ".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.getElementById("import-file").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const keys = Object.keys(data).filter(k => k.startsWith("gymcoach."));
+      if (!keys.length) { alert("Fichier invalide : aucune donnée GymCoach trouvée."); return; }
+      if (!confirm(`Restaurer ${keys.length} clé(s) de données ? Les données actuelles seront remplacées.`)) return;
+      keys.forEach(k => localStorage.setItem(k, data[k]));
+      location.reload();
+    } catch { alert("Fichier illisible : ce n'est pas un JSON valide."); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+});
+
+/* ==================== MES SÉANCES ==================== */
+const sessionsState = { q: "", period: "all", mode: "cartes", sortBy: "date", sortDir: -1 };
+
+function filteredSessions() {
+  const q = normalize(sessionsState.q.trim());
+  const now = Date.now();
+  const periods = { "7": 7 * 86400000, "30": 30 * 86400000, "90": 90 * 86400000 };
+  return getHistory().filter(r => {
+    if (sessionsState.period !== "all" && now - r.date > periods[sessionsState.period]) return false;
+    if (q) {
+      const hay = normalize(r.nom + " " + r.exercises.map(e => e.nom).join(" "));
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function renderSessionsPanel() {
+  const panel = document.getElementById("panel-seances");
+  const list = filteredSessions();
+
+  // tri (utilisé par la vue tableau)
+  const sorted = list.slice().sort((a, b) => {
+    const k = sessionsState.sortBy;
+    const va = k === "date" ? a.date : k === "duree" ? a.dureeMs : k === "volume" ? a.volume : a.nbSeries;
+    const vb = k === "date" ? b.date : k === "duree" ? b.dureeMs : k === "volume" ? b.volume : b.nbSeries;
+    return (va - vb) * sessionsState.sortDir;
+  });
+
+  const arrow = k => sessionsState.sortBy === k ? (sessionsState.sortDir === 1 ? " ↑" : " ↓") : "";
+
+  panel.innerHTML = `
+    <div class="sessions-controls">
+      <input type="search" id="sessions-q" placeholder="Rechercher (séance ou exercice)…" value="${esc(sessionsState.q)}">
+      <select id="sessions-period" aria-label="Période">
+        <option value="all" ${sessionsState.period === "all" ? "selected" : ""}>Toute la période</option>
+        <option value="7" ${sessionsState.period === "7" ? "selected" : ""}>7 derniers jours</option>
+        <option value="30" ${sessionsState.period === "30" ? "selected" : ""}>30 derniers jours</option>
+        <option value="90" ${sessionsState.period === "90" ? "selected" : ""}>3 derniers mois</option>
+      </select>
+      <div class="segmented segmented-sm">
+        <button class="seg ${sessionsState.mode === "cartes" ? "active" : ""}" data-mode="cartes">Cartes</button>
+        <button class="seg ${sessionsState.mode === "tableau" ? "active" : ""}" data-mode="tableau">Tableau</button>
+      </div>
+    </div>
+
+    ${list.length === 0 ? `<div class="card empty-live"><p>Aucune séance sur cette période. Va transpirer, je t'attends ici.
+    </p></div>` : ""}
+
+    ${sessionsState.mode === "cartes" ? `
+      <div class="sessions-list">
+        ${sorted.map(r => `
+          <div class="card history-item session-open" data-id="${esc(r.id)}" tabindex="0" role="button">
+            <div class="history-head">
+              <div>
+                <h3>${esc(r.nom)}</h3>
+                <p class="day-focus">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+                  · ${fmtClock(r.dureeMs)} · ${r.exercises.length} exos · ${r.nbSeries} séries · ${Math.round(r.volume)} kg
+                  ${r.rpe ? ` · RPE ${r.rpe}/10` : ""}</p>
+              </div>
+              <span class="tag">${r.statut || "Terminée"}</span>
+            </div>
+          </div>`).join("")}
+      </div>` : `
+      <div class="card table-wrap">
+        <table class="day-table sessions-table">
+          <thead><tr>
+            <th class="sortable" data-sort="date">Date${arrow("date")}</th>
+            <th>Type</th>
+            <th class="sortable" data-sort="duree">Durée${arrow("duree")}</th>
+            <th class="sortable" data-sort="series">Exos / séries${arrow("series")}</th>
+            <th class="sortable" data-sort="volume">Volume${arrow("volume")}</th>
+            <th>RPE</th><th>Statut</th>
+          </tr></thead>
+          <tbody>
+            ${sorted.map(r => `
+              <tr class="session-open" data-id="${esc(r.id)}">
+                <td>${new Date(r.date).toLocaleDateString("fr-FR")}</td>
+                <td>${esc(r.nom)}</td>
+                <td>${fmtClock(r.dureeMs)}</td>
+                <td>${r.exercises.length} / ${r.nbSeries}</td>
+                <td>${Math.round(r.volume)} kg</td>
+                <td>${r.rpe ? r.rpe + "/10" : "—"}</td>
+                <td><span class="goal-ok">✓ ${r.statut || "Terminée"}</span></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>`}
+  `;
+
+  document.getElementById("sessions-q").addEventListener("input", e => {
+    sessionsState.q = e.target.value; renderSessionsPanel();
+    const input = document.getElementById("sessions-q");
+    input.focus(); input.setSelectionRange(input.value.length, input.value.length);
+  });
+  document.getElementById("sessions-period").addEventListener("change", e => {
+    sessionsState.period = e.target.value; renderSessionsPanel();
+  });
+  panel.querySelectorAll(".seg[data-mode]").forEach(b =>
+    b.addEventListener("click", () => { sessionsState.mode = b.dataset.mode; renderSessionsPanel(); }));
+  panel.querySelectorAll(".sortable").forEach(th =>
+    th.addEventListener("click", () => {
+      const k = th.dataset.sort;
+      if (sessionsState.sortBy === k) sessionsState.sortDir *= -1;
+      else { sessionsState.sortBy = k; sessionsState.sortDir = -1; }
+      renderSessionsPanel();
+    }));
+  panel.querySelectorAll(".session-open").forEach(el => {
+    el.addEventListener("click", () => openSessionModal(el.dataset.id));
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter") openSessionModal(el.dataset.id);
+    });
+  });
+}
+
+/* ---------- Modale détail / édition / duplication ---------- */
+const sessionModal = document.getElementById("session-modal");
+const sessionModalContent = document.getElementById("session-modal-content");
+
+function closeSessionModal() {
+  sessionModal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+sessionModal.querySelector(".modal-close").addEventListener("click", closeSessionModal);
+sessionModal.querySelector(".modal-backdrop").addEventListener("click", closeSessionModal);
+
+function openSessionModal(id, edit = false) {
+  const r = getHistory().find(s => s.id === id);
+  if (!r) return;
+
+  if (!edit) {
+    sessionModalContent.innerHTML = `
+      <h2 class="display-sm">${esc(r.nom)}</h2>
+      <p class="program-meta">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+        à ${new Date(r.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+        · ${fmtClock(r.dureeMs)} · repos ${fmtClock(r.reposMs)} · ${Math.round(r.volume)} kg
+        ${r.objectifLabel ? " · Programme : " + esc(r.objectifLabel) : ""}</p>
+      ${r.rpe ? `<p class="program-meta">Ressenti : <strong>RPE ${r.rpe}/10</strong></p>` : ""}
+      ${r.notes ? `<p class="session-notes">« ${esc(r.notes)} »</p>` : ""}
+      ${renderSessionDetail(r)}
+      <div class="program-actions">
+        <button class="btn btn-ghost" id="sm-edit">Modifier</button>
+        <button class="btn btn-primary" id="sm-dup">Dupliquer (rejouer)</button>
+        <button class="btn btn-danger-ghost" id="sm-del">Supprimer</button>
+      </div>`;
+    document.getElementById("sm-edit").addEventListener("click", () => openSessionModal(id, true));
+    document.getElementById("sm-dup").addEventListener("click", () => duplicateSession(id));
+    document.getElementById("sm-del").addEventListener("click", () => {
+      if (!confirm("Supprimer définitivement cette séance ?")) return;
+      setHistory(getHistory().filter(s => s.id !== id));
+      closeSessionModal();
+      renderSuivi();
+    });
+  } else {
+    /* Mode édition : nom, RPE, notes, et chaque série (poids/reps) */
+    sessionModalContent.innerHTML = `
+      <h2 class="display-sm">Modifier la séance</h2>
+      <div class="edit-grid">
+        <label class="edit-label">Nom
+          <input type="text" id="sm-nom" value="${esc(r.nom)}">
+        </label>
+        <label class="edit-label">Ressenti (RPE 1-10)
+          <div class="rpe-row" id="sm-rpe">
+            ${Array.from({ length: 10 }, (_, i) => i + 1).map(n =>
+              `<button type="button" class="rpe-chip ${r.rpe === n ? "active" : ""}" data-rpe="${n}">${n}</button>`).join("")}
+          </div>
+        </label>
+        <label class="edit-label">Notes
+          <textarea id="sm-notes" rows="2" placeholder="Sensations, douleurs, contexte…">${esc(r.notes || "")}</textarea>
+        </label>
+      </div>
+      ${r.exercises.map((ex, i) => `
+        <div class="edit-ex">
+          <h4>${esc(ex.nom)}</h4>
+          ${ex.sets.map((s, j) => `
+            <div class="edit-set">
+              <span class="edit-set-n">Série ${j + 1}</span>
+              <input type="number" step="0.5" min="0" value="${s.poids ?? ""}" placeholder="kg" data-e="${i}" data-s="${j}" data-f="poids">
+              <input type="number" step="1" min="1" value="${s.reps}" placeholder="reps" data-e="${i}" data-s="${j}" data-f="reps">
+            </div>`).join("")}
+        </div>`).join("")}
+      <div class="program-actions">
+        <button class="btn btn-primary" id="sm-save">Enregistrer</button>
+        <button class="btn btn-ghost" id="sm-cancel">Annuler</button>
+      </div>`;
+
+    let rpe = r.rpe || null;
+    sessionModalContent.querySelectorAll(".rpe-chip").forEach(c =>
+      c.addEventListener("click", () => {
+        const v = parseInt(c.dataset.rpe, 10);
+        rpe = (rpe === v) ? null : v;
+        sessionModalContent.querySelectorAll(".rpe-chip").forEach(x =>
+          x.classList.toggle("active", parseInt(x.dataset.rpe, 10) === rpe));
+      }));
+
+    document.getElementById("sm-cancel").addEventListener("click", () => openSessionModal(id));
+    document.getElementById("sm-save").addEventListener("click", () => {
+      const h = getHistory();
+      const rec = h.find(s => s.id === id);
+      rec.nom = document.getElementById("sm-nom").value.trim() || rec.nom;
+      rec.rpe = rpe;
+      rec.notes = document.getElementById("sm-notes").value.trim();
+      sessionModalContent.querySelectorAll("input[data-f]").forEach(inp => {
+        const set = rec.exercises[+inp.dataset.e].sets[+inp.dataset.s];
+        if (inp.dataset.f === "poids") set.poids = inp.value === "" ? null : parseFloat(inp.value);
+        else set.reps = Math.max(1, parseInt(inp.value, 10) || set.reps);
+      });
+      // recalcul des agrégats après édition
+      rec.nbSeries = rec.exercises.reduce((n, e) => n + e.sets.length, 0);
+      rec.volume = rec.exercises.reduce((v, e) => v + e.sets.reduce((s, x) => s + (x.poids || 0) * x.reps, 0), 0);
+      setHistory(h);
+      openSessionModal(id);
+      renderSuivi();
+    });
+  }
+
+  sessionModal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+/* Dupliquer : relance une séance en direct avec les mêmes exercices */
+function duplicateSession(id) {
+  const r = getHistory().find(s => s.id === id);
+  if (!r) return;
+  if (live && !confirm("Une séance est déjà en cours. La remplacer ?")) return;
+  const exercises = r.exercises.map(ex => {
+    const ref = allExercisesForUI().find(e => e.id === ex.exId) || { id: ex.exId, nom: ex.nom, groupe: ex.groupe };
+    const reps = ex.sets.map(s => s.reps);
+    return newLiveExercise(ref, `${ex.sets.length} × ${Math.min(...reps)}-${Math.max(...reps)}`, getDefaultRest());
+  });
+  closeSessionModal();
+  startSession(r.nom.replace(/ \(bis\)$/, "") + " (bis)", exercises);
+  activateView("seance");
+}
+
+/* ==================== CALENDRIER ==================== */
+const calState = (() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })();
+let calSelectedDay = null;
+
+function renderCalendar() {
+  const panel = document.getElementById("panel-calendrier");
+  const gs = goalStatus();
+  const first = new Date(calState.y, calState.m, 1);
+  const monthName = first.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
+
+  // séances par jour du mois affiché
+  const byDay = new Map();
+  for (const r of getHistory()) {
+    const d = new Date(r.date);
+    if (d.getFullYear() === calState.y && d.getMonth() === calState.m) {
+      const k = d.getDate();
+      if (!byDay.has(k)) byDay.set(k, []);
+      byDay.get(k).push(r);
+    }
+  }
+
+  // grille : semaines du mois (lundi → dimanche) + statut d'objectif par semaine
+  const start = mondayOf(first.getTime());
+  const weeks = [];
+  let cursor = new Date(start);
+  while (cursor <= new Date(calState.y, calState.m + 1, 0)) {
+    const week = { days: [], key: weekKey(cursor.getTime()) };
+    for (let i = 0; i < 7; i++) {
+      week.days.push(new Date(cursor));
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    weeks.push(week);
+  }
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const monthOK = weeks.filter(w => (gs.perWeek.get(w.key) || 0) >= gs.goal).length;
+
+  panel.innerHTML = `
+    <div class="card cal-card">
+      <div class="cal-nav">
+        <button class="btn btn-ghost btn-sm" id="cal-prev" aria-label="Mois précédent">←</button>
+        <h3 class="panel-title cal-title">${monthName.charAt(0).toUpperCase() + monthName.slice(1)}</h3>
+        <button class="btn btn-ghost btn-sm" id="cal-next" aria-label="Mois suivant">→</button>
+      </div>
+      <div class="cal-grid cal-head">
+        ${["L", "M", "M", "J", "V", "S", "D"].map(d => `<span class="cal-dow">${d}</span>`).join("")}
+        <span class="cal-dow">Obj.</span>
+      </div>
+      ${weeks.map(w => `
+        <div class="cal-grid">
+          ${w.days.map(d => {
+            const inMonth = d.getMonth() === calState.m;
+            const n = inMonth ? (byDay.get(d.getDate()) || []).length : 0;
+            const isToday = d.getTime() === today.getTime();
+            return `<button class="cal-day ${inMonth ? "" : "cal-out"} ${isToday ? "cal-today" : ""} ${n ? "cal-has" : ""}"
+              ${inMonth && n ? `data-day="${d.getDate()}"` : "disabled"} aria-label="${d.toLocaleDateString("fr-FR")}${n ? ", " + n + " séance(s)" : ""}">
+              <span>${inMonth ? d.getDate() : ""}</span>
+              ${n ? `<span class="cal-dot">${n > 1 ? n : ""}</span>` : ""}
+            </button>`;
+          }).join("")}
+          <span class="cal-week-status ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "goal-ok" : ""}">
+            ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "✓" : `${gs.perWeek.get(w.key) || 0}/${gs.goal}`}
+          </span>
+        </div>`).join("")}
+      <p class="video-hint cal-legend">● = séance enregistrée · les jours vides sont tes jours de récupération ·
+        objectif atteint <strong>${monthOK}/${weeks.length}</strong> semaines ce mois · streak actuel : <strong>${gs.streak} semaine${gs.streak > 1 ? "s" : ""}</strong></p>
+    </div>
+    <div id="cal-day-detail"></div>
+  `;
+
+  document.getElementById("cal-prev").addEventListener("click", () => {
+    calState.m--; if (calState.m < 0) { calState.m = 11; calState.y--; }
+    calSelectedDay = null; renderCalendar();
+  });
+  document.getElementById("cal-next").addEventListener("click", () => {
+    calState.m++; if (calState.m > 11) { calState.m = 0; calState.y++; }
+    calSelectedDay = null; renderCalendar();
+  });
+  panel.querySelectorAll(".cal-day[data-day]").forEach(btn =>
+    btn.addEventListener("click", () => {
+      calSelectedDay = parseInt(btn.dataset.day, 10);
+      renderCalDayDetail(byDay.get(calSelectedDay) || []);
+    }));
+
+  if (calSelectedDay && byDay.has(calSelectedDay)) renderCalDayDetail(byDay.get(calSelectedDay));
+}
+
+function renderCalDayDetail(sessions) {
+  document.getElementById("cal-day-detail").innerHTML = `
+    <div class="card">
+      <h3 class="panel-title">${new Date(sessions[0].date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</h3>
+      ${sessions.map(r => `
+        <div class="history-head cal-session">
+          <div>
+            <strong>${esc(r.nom)}</strong>
+            <p class="day-focus">${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg${r.rpe ? " · RPE " + r.rpe : ""}</p>
+          </div>
+          <button class="btn btn-ghost btn-sm session-open" data-id="${esc(r.id)}">Voir</button>
+        </div>`).join("")}
+    </div>`;
+  document.querySelectorAll("#cal-day-detail .session-open").forEach(b =>
+    b.addEventListener("click", () => openSessionModal(b.dataset.id)));
+}
+
+/* ---------- Service worker (PWA hors-ligne) ---------- */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => { /* hors ligne / non supporté */ });
+}
