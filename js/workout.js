@@ -1,7 +1,7 @@
 /* =========================================================
    GymCoach — Séance en direct (style Nike Training Club)
    Chronomètre global, chrono par exercice, minuteur de repos
-   précis, journal exact de la séance et historique.
+   avec anneau de progression, journal exact et historique.
    Tous les temps sont basés sur des horodatages réels
    (Date.now) : la précision ne dérive jamais.
    ========================================================= */
@@ -13,6 +13,9 @@ STORAGE_KEYS.restDefault = "gymcoach.restDefault";
 let live = null;      // séance en cours
 let liveTimer = null; // interval d'affichage
 let rest = null;      // { setRef, exName, startAt, targetSec, beeped }
+
+/* circonférence de l'anneau SVG (r = 88) */
+const RING_CIRC = 2 * Math.PI * 88;
 
 /* ---------- Utilitaires temps ---------- */
 function fmtClock(ms) {
@@ -101,7 +104,7 @@ function renderProgramDayButtons() {
   const container = document.getElementById("program-day-buttons");
   const program = loadJSON(STORAGE_KEYS.program, null);
   if (!program) {
-    container.innerHTML = `<p class="video-hint">💡 Génère un programme dans l'onglet « Mon programme » pour lancer directement une de tes séances ici.</p>`;
+    container.innerHTML = `<p class="video-hint">💡 Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
     return;
   }
   container.innerHTML = program.days.map((d, i) => `
@@ -150,6 +153,19 @@ function exerciseElapsed(ex) {
   return (ex.endedAt || Date.now()) - ex.startedAt;
 }
 
+/* Progression type NTC : « Exercice X / Y » + barre globale */
+function updateProgress() {
+  const label = document.getElementById("live-progress-label");
+  const bar = document.getElementById("live-progress-bar");
+  if (!label || !bar || !live) return;
+  const total = live.exercises.length;
+  if (total === 0) { label.textContent = ""; bar.style.width = "0%"; return; }
+  const current = Math.min(Math.max(live.currentIndex, 0) + 1, total);
+  const done = live.exercises.filter(e => e.sets.length > 0).length;
+  label.textContent = `Exercice ${current} / ${total} · ${done} entamé${done > 1 ? "s" : ""}`;
+  bar.style.width = Math.round((done / total) * 100) + "%";
+}
+
 function tick() {
   if (!live) return;
   document.getElementById("chrono-session").textContent = fmtClock(Date.now() - live.startedAt);
@@ -162,18 +178,28 @@ function tick() {
     if (el) el.textContent = fmtClock(exerciseElapsed(ex));
   });
 
-  // minuteur de repos
+  // minuteur de repos + anneau de progression
   if (rest) {
     const elapsed = (Date.now() - rest.startAt) / 1000;
     const remaining = rest.targetSec - elapsed;
     const cd = document.getElementById("rest-countdown");
+    const ring = document.getElementById("rest-ring");
     if (remaining > 0) {
       cd.textContent = fmtSec(Math.ceil(remaining));
       cd.classList.remove("overtime");
+      if (ring) {
+        ring.classList.remove("ring-over");
+        // l'anneau se vide à mesure que le repos s'écoule
+        ring.style.strokeDashoffset = RING_CIRC * (1 - remaining / rest.targetSec);
+      }
     } else {
       if (!rest.beeped) { beep(); rest.beeped = true; }
       cd.textContent = "+" + fmtSec(Math.floor(-remaining));
       cd.classList.add("overtime");
+      if (ring) {
+        ring.classList.add("ring-over");
+        ring.style.strokeDashoffset = 0; // anneau plein, en rouge : dépassement
+      }
     }
   }
 }
@@ -183,6 +209,7 @@ function renderLiveExercises() {
     elLiveExercises.innerHTML = `<div class="card empty-live">
       <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer. 💪</p>
     </div>`;
+    updateProgress();
     return;
   }
 
@@ -207,7 +234,7 @@ function renderLiveExercises() {
       </div>
 
       ${ex.sets.length ? `
-      <table class="day-table sets-table">
+      <table class="sets-table">
         <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>Repos pris</th></tr></thead>
         <tbody>
           ${ex.sets.map((s, j) => `
@@ -221,10 +248,10 @@ function renderLiveExercises() {
       </table>` : ""}
 
       <div class="set-form">
-        <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input">
-        <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input">
+        <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes">
+        <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions">
         <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
-        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice">🗑</button>
+        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">🗑</button>
       </div>
     </div>`;
   }).join("");
@@ -237,6 +264,8 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => removeExercise(parseInt(btn.dataset.i, 10))));
   elLiveExercises.querySelectorAll(".ex-fiche").forEach(btn =>
     btn.addEventListener("click", () => openExercise(btn.dataset.exid)));
+
+  updateProgress();
 }
 
 function setCurrentExercise(i) {
@@ -405,7 +434,8 @@ function showSummary(r) {
   elSummary.classList.remove("hidden");
   elSummary.innerHTML = `
     <div class="card summary-card">
-      <h2>🎉 Séance terminée, bien joué !</h2>
+      <p class="kicker">Séance terminée</p>
+      <h2>Bien joué 🎉</h2>
       <p class="program-meta">${esc(r.nom)} · ${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
       <div class="live-chronos summary-stats">
         <div class="chrono-block"><span class="chrono-label">Durée totale</span><span class="chrono-value">${fmtClock(r.dureeMs)}</span></div>
@@ -423,7 +453,7 @@ function renderSessionDetail(r) {
   return `<div class="session-detail">${r.exercises.map(ex => `
     <div class="session-ex">
       <h4>${GROUP_ICONS[ex.groupe] || "🏋️"} ${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
-      <table class="day-table sets-table">
+      <table class="sets-table">
         <thead><tr><th>Série</th><th>Poids</th><th>Reps</th><th>Repos pris</th></tr></thead>
         <tbody>${ex.sets.map((s, j) => `
           <tr><td>${j + 1}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td>
@@ -450,7 +480,7 @@ function renderHistory() {
           </div>
           <div class="history-actions">
             <button class="btn btn-ghost btn-sm toggle-detail">Détails</button>
-            <button class="btn btn-danger-ghost btn-sm delete-session" title="Supprimer">🗑</button>
+            <button class="btn btn-danger-ghost btn-sm delete-session" title="Supprimer" aria-label="Supprimer la séance">🗑</button>
           </div>
         </div>
         <div class="history-detail hidden">${renderSessionDetail(r)}</div>
@@ -483,18 +513,23 @@ function showSetup() {
 
 /* Rafraîchit l'écran séance à chaque visite de l'onglet
    (le programme a pu être généré ou modifié entre-temps) */
-document.querySelector('.tab[data-view="seance"]').addEventListener("click", () => {
-  if (live) showLive();
-  else showSetup();
-});
+document.querySelectorAll('.tab[data-view="seance"]').forEach(tab =>
+  tab.addEventListener("click", () => {
+    if (live) showLive();
+    else showSetup();
+  }));
 
 /* ---------- Initialisation ---------- */
 (function initWorkout() {
+  // dashoffset initial de l'anneau
+  const ring = document.getElementById("rest-ring");
+  if (ring) ring.style.strokeDasharray = RING_CIRC;
+
   const saved = loadJSON(STORAGE_KEYS.live, null);
   if (saved && saved.startedAt && !saved.endedAt) {
     live = saved;
     // reprendre la séance interrompue (rafraîchissement de page)
-    document.querySelector('.tab[data-view="seance"]').click();
+    activateView("seance");
     showLive();
   } else {
     showSetup();

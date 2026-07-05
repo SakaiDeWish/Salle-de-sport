@@ -3,68 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GymCoach — Ton coach de musculation</title>
+  <meta name="theme-color" content="#0a0b0d">
+  <title>GymCoach — Entraîne-toi comme un athlète</title>
+  <!-- Typographies : Anton (display condensé) + Inter (corps) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+  <!-- ==================== NAVIGATION ==================== -->
   <header class="topbar">
-    <div class="logo">🏋️ Gym<span>Coach</span></div>
-    <nav class="tabs">
-      <button class="tab active" data-view="bibliotheque">📚 Bibliothèque</button>
-      <button class="tab" data-view="programme">🎯 Mon programme</button>
-      <button class="tab" data-view="seance">⏱ Séance</button>
-      <button class="tab" data-view="ajouter">➕ Ajouter un exercice</button>
+    <div class="logo">GYM<span>COACH</span></div>
+    <!-- Nav desktop (les mêmes .tab existent aussi dans la barre mobile en bas) -->
+    <nav class="tabs desktop-nav">
+      <button class="tab active" data-view="bibliotheque">Bibliothèque</button>
+      <button class="tab" data-view="programme">Programme</button>
+      <button class="tab" data-view="seance">Séance</button>
+      <button class="tab" data-view="ajouter">Ajouter</button>
     </nav>
   </header>
+
+  <!-- Barre d'onglets mobile, fixée en bas (usage téléphone en salle) -->
+  <nav class="bottom-nav" aria-label="Navigation principale">
+    <button class="tab active" data-view="bibliotheque"><span class="bn-icon">📚</span><span class="bn-label">Exos</span></button>
+    <button class="tab" data-view="programme"><span class="bn-icon">🎯</span><span class="bn-label">Programme</span></button>
+    <button class="tab" data-view="seance"><span class="bn-icon">⏱</span><span class="bn-label">Séance</span></button>
+    <button class="tab" data-view="ajouter"><span class="bn-icon">➕</span><span class="bn-label">Ajouter</span></button>
+  </nav>
 
   <!-- ==================== VUE BIBLIOTHÈQUE ==================== -->
   <main id="view-bibliotheque" class="view active">
     <section class="hero">
-      <h1>Bibliothèque d'exercices</h1>
-      <p>Tous les exercices de musculation référencés : technique, muscles ciblés, erreurs à éviter et vidéo de démonstration pour chacun.</p>
+      <p class="kicker">Bibliothèque · 116 mouvements</p>
+      <h1 class="display">Tous les<br>exercices<span class="accent">.</span></h1>
+      <p class="hero-sub">Technique, muscles ciblés, erreurs à éviter et vidéo de démonstration — pour chaque mouvement.</p>
     </section>
 
-    <section class="filters">
-      <input type="search" id="search" placeholder="🔍 Rechercher un exercice (ex : squat, développé couché…)">
-      <select id="filter-groupe">
-        <option value="">Tous les muscles</option>
-        <option value="pectoraux">Pectoraux</option>
-        <option value="dos">Dos</option>
-        <option value="epaules">Épaules</option>
-        <option value="biceps">Biceps</option>
-        <option value="triceps">Triceps</option>
-        <option value="quadriceps">Quadriceps</option>
-        <option value="ischios-fessiers">Ischios / Fessiers</option>
-        <option value="mollets">Mollets</option>
-        <option value="abdos">Abdominaux</option>
-        <option value="lombaires">Lombaires</option>
-      </select>
-      <select id="filter-materiel">
-        <option value="">Tout matériel</option>
-        <option value="barre">Barre</option>
-        <option value="halteres">Haltères</option>
-        <option value="machine">Machine</option>
-        <option value="poulie">Poulie</option>
-        <option value="poids-du-corps">Poids du corps</option>
-      </select>
-      <select id="filter-niveau">
-        <option value="">Tous niveaux</option>
-        <option value="debutant">Débutant</option>
-        <option value="intermediaire">Intermédiaire</option>
-        <option value="avance">Avancé</option>
-      </select>
+    <section class="filters" aria-label="Filtres">
+      <div class="search-wrap">
+        <input type="search" id="search" placeholder="Rechercher un exercice…" aria-label="Rechercher un exercice">
+      </div>
+
+      <!-- Filtres en chips : chaque rangée pilote le <select> caché correspondant -->
+      <div class="chip-row" data-for="filter-groupe" role="group" aria-label="Groupe musculaire">
+        <button class="chip active" data-value="">Tous</button>
+        <button class="chip" data-value="pectoraux">Pectoraux</button>
+        <button class="chip" data-value="dos">Dos</button>
+        <button class="chip" data-value="epaules">Épaules</button>
+        <button class="chip" data-value="biceps">Biceps</button>
+        <button class="chip" data-value="triceps">Triceps</button>
+        <button class="chip" data-value="quadriceps">Quadriceps</button>
+        <button class="chip" data-value="ischios-fessiers">Ischios · Fessiers</button>
+        <button class="chip" data-value="mollets">Mollets</button>
+        <button class="chip" data-value="abdos">Abdos</button>
+        <button class="chip" data-value="lombaires">Lombaires</button>
+      </div>
+      <div class="chip-row" data-for="filter-materiel" role="group" aria-label="Matériel">
+        <button class="chip active" data-value="">Tout matériel</button>
+        <button class="chip" data-value="barre">Barre</button>
+        <button class="chip" data-value="halteres">Haltères</button>
+        <button class="chip" data-value="machine">Machine</button>
+        <button class="chip" data-value="poulie">Poulie</button>
+        <button class="chip" data-value="poids-du-corps">Poids du corps</button>
+      </div>
+      <div class="chip-row" data-for="filter-niveau" role="group" aria-label="Niveau">
+        <button class="chip active" data-value="">Tous niveaux</button>
+        <button class="chip chip-deb" data-value="debutant">Débutant</button>
+        <button class="chip chip-int" data-value="intermediaire">Intermédiaire</button>
+        <button class="chip chip-adv" data-value="avance">Avancé</button>
+      </div>
+
+      <!-- Selects cachés : la logique de filtrage existante lit toujours ces valeurs -->
+      <div class="visually-hidden" aria-hidden="true">
+        <select id="filter-groupe">
+          <option value=""></option><option value="pectoraux"></option><option value="dos"></option>
+          <option value="epaules"></option><option value="biceps"></option><option value="triceps"></option>
+          <option value="quadriceps"></option><option value="ischios-fessiers"></option>
+          <option value="mollets"></option><option value="abdos"></option><option value="lombaires"></option>
+        </select>
+        <select id="filter-materiel">
+          <option value=""></option><option value="barre"></option><option value="halteres"></option>
+          <option value="machine"></option><option value="poulie"></option><option value="poids-du-corps"></option>
+        </select>
+        <select id="filter-niveau">
+          <option value=""></option><option value="debutant"></option>
+          <option value="intermediaire"></option><option value="avance"></option>
+        </select>
+      </div>
     </section>
 
-    <p id="result-count" class="result-count"></p>
+    <p id="result-count" class="result-count" role="status"></p>
     <section id="exercise-grid" class="grid"></section>
   </main>
 
   <!-- ==================== VUE PROGRAMME ==================== -->
   <main id="view-programme" class="view">
     <section class="hero">
-      <h1>Programme personnalisé</h1>
-      <p>Réponds à quelques questions et reçois un programme hebdomadaire adapté à ton objectif, ton niveau et ton matériel.</p>
+      <p class="kicker">Coaching personnalisé</p>
+      <h1 class="display">Ton<br>programme<span class="accent">.</span></h1>
+      <p class="hero-sub">Réponds à quelques questions : ton plan hebdomadaire s'adapte à ton objectif, ton niveau et ton matériel.</p>
     </section>
 
     <form id="program-form" class="program-form card">
@@ -123,7 +162,7 @@
           </select>
         </label>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">⚡ Générer mon programme</button>
+      <button type="submit" class="btn btn-primary btn-lg">Générer mon programme</button>
     </form>
 
     <section id="program-output"></section>
@@ -135,19 +174,20 @@
     <!-- Écran 1 : démarrage -->
     <section id="seance-setup">
       <section class="hero">
-        <h1>Séance d'entraînement</h1>
-        <p>Lance une séance en direct : chronomètre global, chrono par exercice et minuteur de repos précis. Tout ce que tu fais réellement est enregistré, même si tu t'écartes du programme.</p>
+        <p class="kicker">Mode entraînement</p>
+        <h1 class="display">Ta séance<br>en direct<span class="accent">.</span></h1>
+        <p class="hero-sub">Chrono global, chrono par exercice, minuteur de repos précis. Tout ce que tu fais réellement est enregistré, même hors programme.</p>
       </section>
 
-      <div class="card">
+      <div class="card setup-card">
         <label class="rest-setting">
-          ⏱ Temps de repos par défaut entre les séries
+          Temps de repos par défaut entre les séries
           <div class="rest-input-row">
-            <input type="number" id="default-rest" min="5" max="600" step="5" value="90"> secondes
+            <input type="number" id="default-rest" min="5" max="600" step="5" value="90"> <span>secondes</span>
           </div>
         </label>
         <div class="start-buttons">
-          <button class="btn btn-primary btn-lg" id="start-free">🏁 Démarrer une séance libre</button>
+          <button class="btn btn-primary btn-lg" id="start-free">Démarrer une séance libre</button>
         </div>
         <div id="program-day-buttons" class="start-buttons"></div>
       </div>
@@ -155,16 +195,17 @@
       <section id="seance-history" class="custom-list"></section>
     </section>
 
-    <!-- Écran 2 : séance en cours -->
+    <!-- Écran 2 : séance en cours (mode focus) -->
     <section id="seance-live" class="hidden">
       <div class="live-header card">
         <div class="live-title-row">
-          <h2 id="live-title">Séance en cours</h2>
+          <h2 id="live-title" class="display-sm">Séance en cours</h2>
           <span class="live-dot">● EN DIRECT</span>
         </div>
+
         <div class="live-chronos">
-          <div class="chrono-block">
-            <span class="chrono-label">Durée totale</span>
+          <div class="chrono-block chrono-main">
+            <span class="chrono-label">Durée</span>
             <span class="chrono-value" id="chrono-session">00:00</span>
           </div>
           <div class="chrono-block">
@@ -172,14 +213,21 @@
             <span class="chrono-value" id="chrono-rest-total">00:00</span>
           </div>
           <div class="chrono-block">
-            <span class="chrono-label">Séries validées</span>
+            <span class="chrono-label">Séries</span>
             <span class="chrono-value" id="live-set-count">0</span>
           </div>
         </div>
+
+        <!-- Progression type NTC : « Exercice X / Y » + barre globale -->
+        <div class="live-progress">
+          <span id="live-progress-label" class="progress-label"></span>
+          <div class="progress-track"><div id="live-progress-bar" class="progress-bar"></div></div>
+        </div>
+
         <div class="program-actions">
-          <button class="btn btn-ghost" id="live-add-ex">➕ Ajouter un exercice</button>
-          <button class="btn btn-primary" id="live-finish">✅ Terminer la séance</button>
-          <button class="btn btn-danger-ghost" id="live-abort">✖ Abandonner</button>
+          <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
+          <button class="btn btn-primary" id="live-finish">Terminer</button>
+          <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
         </div>
       </div>
       <div id="live-exercises"></div>
@@ -189,17 +237,23 @@
     <section id="seance-summary" class="hidden"></section>
   </main>
 
-  <!-- Overlay minuteur de repos -->
+  <!-- Overlay minuteur de repos : plein écran, anneau de progression animé -->
   <div id="rest-overlay" class="rest-overlay hidden">
     <div class="rest-box">
-      <p class="rest-label">⏸ REPOS</p>
+      <p class="rest-label">Repos</p>
       <p class="rest-exercise" id="rest-exercise-name"></p>
-      <p class="rest-countdown" id="rest-countdown">01:30</p>
+      <div class="ring-wrap" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <circle class="ring-bg" cx="100" cy="100" r="88"></circle>
+          <circle class="ring-fg" id="rest-ring" cx="100" cy="100" r="88"></circle>
+        </svg>
+        <p class="rest-countdown" id="rest-countdown">01:30</p>
+      </div>
       <div class="rest-controls">
         <button class="btn btn-ghost" id="rest-minus">−15 s</button>
         <button class="btn btn-ghost" id="rest-plus">+15 s</button>
       </div>
-      <button class="btn btn-primary btn-lg" id="rest-resume">▶ Reprendre l'entraînement</button>
+      <button class="btn btn-primary btn-lg" id="rest-resume">Reprendre l'entraînement</button>
     </div>
   </div>
 
@@ -208,8 +262,8 @@
     <div class="modal-backdrop" id="picker-backdrop"></div>
     <div class="modal-box">
       <button class="modal-close" id="picker-close" aria-label="Fermer">✕</button>
-      <h2>Ajouter un exercice à la séance</h2>
-      <input type="search" id="picker-search" placeholder="🔍 Rechercher parmi tous les exercices…">
+      <h2 class="display-sm">Ajouter un exercice</h2>
+      <input type="search" id="picker-search" placeholder="Rechercher parmi tous les exercices…">
       <div id="picker-list" class="picker-list"></div>
     </div>
   </div>
@@ -217,8 +271,9 @@
   <!-- ==================== VUE AJOUTER ==================== -->
   <main id="view-ajouter" class="view">
     <section class="hero">
-      <h1>Référencer un exercice</h1>
-      <p>Ajoute tes propres exercices à la bibliothèque : ils seront sauvegardés sur cet appareil et pourront être utilisés dans tes programmes.</p>
+      <p class="kicker">Ta bibliothèque personnelle</p>
+      <h1 class="display">Référence<br>un exercice<span class="accent">.</span></h1>
+      <p class="hero-sub">Tes exercices sont sauvegardés sur cet appareil et utilisables dans tes séances.</p>
     </section>
 
     <form id="add-form" class="program-form card">
@@ -269,8 +324,8 @@
           <input type="url" id="a-video" placeholder="https://www.youtube.com/watch?v=…">
         </label>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">💾 Enregistrer l'exercice</button>
-      <p id="add-feedback" class="feedback"></p>
+      <button type="submit" class="btn btn-primary btn-lg">Enregistrer l'exercice</button>
+      <p id="add-feedback" class="feedback" role="status"></p>
     </form>
 
     <section id="custom-list" class="custom-list"></section>
@@ -286,7 +341,7 @@
   </div>
 
   <footer class="footer">
-    <p>GymCoach — Entraîne-toi intelligemment. Échauffe-toi toujours avant une séance et consulte un professionnel de santé en cas de doute.</p>
+    <p>GYMCOACH — Entraîne-toi intelligemment. Échauffe-toi toujours avant une séance et consulte un professionnel de santé en cas de doute.</p>
   </footer>
 
   <script src="js/data.js"></script>
