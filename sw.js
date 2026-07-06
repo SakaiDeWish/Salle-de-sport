@@ -1,6 +1,7 @@
-/* GymCoach — service worker : cache-first pour un usage hors-ligne en salle.
-   Incrémenter CACHE à chaque déploiement pour invalider l'ancien shell. */
-const CACHE = "gymcoach-v1";
+/* GymCoach — service worker : RÉSEAU D'ABORD, cache en secours.
+   En ligne : le site est toujours à jour (chaque réponse rafraîchit le cache).
+   Hors ligne : tout est servi depuis le cache (usage en salle). */
+const CACHE = "gymcoach-v2";
 const ASSETS = [
   "./",
   "index.html",
@@ -27,20 +28,19 @@ self.addEventListener("activate", e => {
   );
 });
 
-/* Cache d'abord (l'app doit marcher sans réseau), réseau en secours,
-   et mise en cache au fil de l'eau des ressources même origine. */
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return; // YouTube, fonts : réseau direct
   e.respondWith(
-    caches.match(e.request).then(hit =>
-      hit ||
-      fetch(e.request).then(res => {
+    fetch(e.request)
+      .then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, copy));
         return res;
-      }).catch(() => caches.match("index.html"))
-    )
+      })
+      .catch(() =>
+        caches.match(e.request).then(hit => hit || caches.match("index.html"))
+      )
   );
 });
