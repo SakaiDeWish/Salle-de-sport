@@ -49,10 +49,17 @@ Prochaine séance du programme en un tap, anneau d'objectif hebdo, streak, derni
 ### 🍎 Nutrition
 Besoins caloriques (TDEE, Mifflin-St Jeor) et macros calculés depuis ton profil et ton objectif, conseils fondés (timing, hydratation, collations, compléments sans survente) et exemples de repas.
 
-### 🎨 Deux thèmes au choix
-- **Gamifié** (défaut) : sombre, accent vert volt, cartes-posters, anneaux, XP et badges.
-- **Épuré** : éditorial clair (blanc cassé + noir + terracotta), typographie magazine, zéro emoji décoratif.
-- Bascule dans l'en-tête, mémorisée sur l'appareil. Mêmes fonctionnalités et mêmes données dans les deux.
+### 🎨 Deux thèmes, deux sets d'icônes
+- **Sombre** (défaut) : quasi-noir, accent vert volt, cartes-posters, icônes épaisses et animées (flamme du streak, play pulsé, badges qui pop).
+- **Clair** : éditorial (blanc cassé + noir + terracotta réservé aux CTA), typographie magazine, icônes fines et discrètes.
+- Un seul jeu de glyphes SVG maison (30+ : navigation, 10 groupes musculaires, badges, actions) stylé différemment par thème. Bascule dans l'en-tête, mémorisée. Mêmes fonctionnalités et mêmes données dans les deux.
+
+### 📋 Créateur de programmes
+- **Plusieurs programmes enregistrés** : générés par questionnaire, modèles prêts à l'emploi (Full body, Haut/Bas, PPL), créés de A à Z, ou « refaire ça » depuis une séance passée.
+- **Éditeur complet** : jours, exercices depuis la bibliothèque, séries/reps/repos/notes par exercice, supersets, réorganisation par glisser-déposer (+ flèches sur mobile), suggestions d'exercices, remplacement par alternative.
+- **Programme actif** : il alimente l'accueil, l'écran Séance et les ajustements de fin de séance ; on bascule d'un programme à l'autre en un tap.
+- **Partage** : export d'un programme en JSON à envoyer à un ami, import en un clic.
+- **Projection 8 semaines** : surcharge progressive + semaines de décharge (deload), ajustée par les bilans de fin de séance.
 
 ### 📊 Suivi, gamification & sauvegarde
 - **Tableau de bord** : objectif hebdomadaire ajustable avec « ✓ Objectif atteint » et streak de semaines validées, niveau/XP, badges, statistiques globales, répartition par muscle, records personnels (PR) avec graphique d'évolution, suivi du poids de corps.
@@ -70,7 +77,9 @@ js/data-extra.js  Extension de la base (116 exercices au total)
 js/program.js     Générateur de programme personnalisé
 js/app.js         Logique de l'interface et stockage local
 js/workout.js     Séance en direct : chronos, repos, RPE, historique
+js/icons.js       Système d'icônes SVG (2 rendus par thème)
 js/tracking.js    Suivi : stats, XP/badges, PR, calendrier, thèmes, export
+js/programs.js    Créateur/gestionnaire de programmes, partage, projection
 manifest.webmanifest + sw.js + icon.svg   PWA (hors-ligne)
 ```
 

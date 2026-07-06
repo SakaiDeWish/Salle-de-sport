@@ -130,7 +130,7 @@ function renderProgramDayButtons() {
   }
   container.innerHTML = program.days.map((d, i) => `
     <button class="btn btn-ghost start-day" data-day="${i}">
-      <span class="ico">${program.objectifIcone} </span>Lancer : Séance ${d.numero} — ${esc(d.titre)}
+      ${objIcon(program.objectif)} Lancer : Séance ${d.numero} — ${esc(d.titre)}
     </button>`).join("");
   container.querySelectorAll(".start-day").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -272,8 +272,8 @@ function renderLiveExercises() {
         <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes">
         <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions">
         <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
-        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">⇄</button>
-        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">🗑</button>
+        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
+        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
       </div>
     </div>`;
   }).join("");
@@ -381,12 +381,17 @@ document.getElementById("rest-plus").addEventListener("click", () => { if (rest)
 document.getElementById("rest-minus").addEventListener("click", () => { if (rest) { rest.targetSec = Math.max(5, rest.targetSec - 15); tick(); } });
 
 /* ---------- Sélecteur d'exercice ---------- */
-function openPicker() {
+let pickerCallback = null; // si défini, le picker renvoie l'exercice choisi
+
+function openPicker(cb) {
+  pickerCallback = (typeof cb === "function") ? cb : null;
   elPicker.classList.remove("hidden");
+  // le guidage de séance libre n'a pas de sens en mode sélection simple
+  document.querySelector(".picker-suggest").classList.toggle("hidden", !!pickerCallback);
   const input = document.getElementById("picker-search");
   input.value = "";
   renderPickerList("");
-  renderSuggestions();
+  if (!pickerCallback) renderSuggestions();
   input.focus();
 }
 function closePicker() { elPicker.classList.add("hidden"); }
@@ -404,7 +409,9 @@ function renderPickerList(query) {
   document.querySelectorAll(".picker-item").forEach(btn =>
     btn.addEventListener("click", () => {
       const ex = allExercisesForUI().find(e => e.id === btn.dataset.exid);
-      if (!ex || !live) return;
+      if (!ex) return;
+      if (pickerCallback) { const cb = pickerCallback; closePicker(); cb(ex); return; }
+      if (!live) return;
       live.exercises.push(newLiveExercise(ex, null, getDefaultRest()));
       if (live.currentIndex === -1) live.currentIndex = 0;
       saveLive();
@@ -556,7 +563,7 @@ function showSummary(r) {
   elSummary.innerHTML = `
     <div class="card summary-card">
       <p class="kicker">Séance terminée</p>
-      <h2>Bien joué<span class="ico"> 🎉</span></h2>
+      <h2>Bien joué ${icon("party")}</h2>
       <p class="program-meta">${esc(r.nom)} · ${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
       <div class="live-chronos summary-stats">
         <div class="chrono-block"><span class="chrono-label">Durée totale</span><span class="chrono-value">${fmtClock(r.dureeMs)}</span></div>
@@ -673,7 +680,7 @@ function renderHistory() {
   if (history.length === 0) { container.innerHTML = ""; return; }
   /* Aperçu des 3 dernières séances ; la gestion complète vit dans « Suivi » */
   container.innerHTML = `
-    <h2><span class="ico">📖</span> Dernières séances</h2>
+    <h2>${icon("book")} Dernières séances</h2>
     ${history.slice(0, 3).map(r => `
       <div class="card history-item" data-id="${esc(r.id)}">
         <div class="history-head">
@@ -684,7 +691,7 @@ function renderHistory() {
           </div>
           <div class="history-actions">
             <button class="btn btn-ghost btn-sm toggle-detail">Détails</button>
-            <button class="btn btn-danger-ghost btn-sm delete-session" title="Supprimer" aria-label="Supprimer la séance">🗑</button>
+            <button class="btn btn-danger-ghost btn-sm delete-session" title="Supprimer" aria-label="Supprimer la séance">${icon("trash")}</button>
           </div>
         </div>
         <div class="history-detail hidden">${renderSessionDetail(r)}</div>

@@ -1098,11 +1098,10 @@ textarea { min-height: 90px; resize: vertical; }
   --shadow: 0 14px 34px rgba(60, 50, 30, 0.12);
 }
 
-/* pas d'emoji décoratif dans l'épuré : iconographie minimale */
-.theme-epure .ico,
-.theme-epure .ex-card-bg,
-.theme-epure .ex-icon,
-.theme-epure .badge-ico { display: none !important; }
+/* pas d'emoji décoratif dans le thème clair — mais les icônes SVG
+   du set « Clair » restent visibles partout */
+.theme-epure .ico { display: none !important; }
+.theme-epure .ex-card-bg { opacity: 0.1; }
 
 .theme-epure .topbar { background: rgba(246, 242, 234, 0.88); }
 .theme-epure .bottom-nav { background: rgba(246, 242, 234, 0.94); }
@@ -1250,3 +1249,146 @@ textarea { min-height: 90px; resize: vertical; }
 @media (max-width: 400px) {
   .bottom-nav .bn-label { font-size: 0.62rem; }
 }
+
+/* =========================================================
+   ICÔNES — un sprite, deux personnalités
+   Clair  : trait fin 1.5, discret, éditorial
+   Sombre : trait épais 2.4, bouts ronds, accents + animations
+   ========================================================= */
+.icon {
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.theme-gamifie .icon { stroke-width: 2.4; }
+.theme-epure .icon { stroke-width: 1.5; stroke-linecap: butt; }
+
+/* détails pleins (pointe de flamme, play, étoile de médaille…) */
+.ic-fill { fill: currentColor; stroke: none; }
+.theme-epure .ic-fill { fill: none; stroke: currentColor; } /* clair : tout en trait */
+
+.bn-icon { width: 22px; height: 22px; }
+
+/* filigrane des cartes-posters : l'icône du muscle en géant */
+.ex-card-bg .icon, .ex-card-bg.icon, .ex-card-bg svg {
+  width: 8.5rem; height: 8.5rem;
+  stroke-width: 1.2;
+}
+.ex-icon .icon, .ex-icon svg { width: 2.4rem; height: 2.4rem; }
+.badge-ico .icon, .badge-ico svg { width: 1.7rem; height: 1.7rem; }
+.home-cta-go .icon { width: 1.4em; height: 1.4em; vertical-align: middle; }
+
+/* Animations du set SOMBRE (désactivées par prefers-reduced-motion) */
+@keyframes ic-flicker {
+  0%, 100% { transform: scaleY(1) rotate(0deg); }
+  30% { transform: scaleY(1.08) rotate(-2deg); }
+  60% { transform: scaleY(0.94) rotate(2deg); }
+}
+.theme-gamifie .i-flame { animation: ic-flicker 1.4s ease-in-out infinite; transform-origin: 50% 90%; color: var(--accent-2); }
+
+@keyframes ic-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+.theme-gamifie .home-cta-go .icon { animation: ic-pulse 1.8s ease-in-out infinite; }
+
+@keyframes ic-pop {
+  0% { transform: scale(0.6) rotate(-8deg); }
+  70% { transform: scale(1.15) rotate(3deg); }
+  100% { transform: scale(1); }
+}
+.theme-gamifie .badge-ok .badge-ico .icon { animation: ic-pop 0.5s ease backwards; color: var(--accent); }
+.theme-gamifie .i-bolt { color: var(--accent-2); }
+
+/* Clair : accents d'icônes réservés, tout en retenue */
+.theme-epure .i-flame, .theme-epure .home-cta-go .icon { animation: none; }
+
+/* =========================================================
+   MES PROGRAMMES + ÉDITEUR + PROJECTION
+   ========================================================= */
+.programs-list { display: flex; flex-direction: column; gap: 12px; }
+.prog-card { transition: border-color 0.2s ease; }
+.prog-active { border-color: var(--accent); }
+.prog-name { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: 1.1rem; }
+.prog-actions { align-items: center; }
+
+/* Projection 8 semaines */
+.proj-track {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  margin-top: 14px;
+}
+@media (max-width: 640px) { .proj-track { grid-template-columns: repeat(4, 1fr); } }
+.proj-week {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+  display: flex; flex-direction: column; gap: 4px;
+  min-height: 44px;
+}
+.proj-week.proj-deload { border-color: var(--accent); background: var(--accent-soft); }
+.proj-n { font-family: var(--font-display); font-size: 1.05rem; }
+.proj-t { font-size: 0.68rem; color: var(--text-soft); font-weight: 600; line-height: 1.3; }
+
+/* Éditeur */
+.builder-box { max-width: 860px; }
+#builder-content { display: flex; flex-direction: column; gap: 16px; }
+.b-day { padding: 16px; }
+.b-day-head { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.b-day-titre { flex: 1; font-weight: 700; }
+
+.b-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  padding: 10px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+.b-row.dragging { opacity: 0.4; border-style: dashed; }
+.b-row.b-superset { border-left: 3px solid var(--accent); }
+.b-grip { cursor: grab; color: var(--text-soft); padding: 6px 2px; user-select: none; font-size: 1.05rem; }
+.b-row-main { flex: 1; min-width: 0; }
+.b-row-name { font-weight: 700; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.b-row-name .linklike { color: var(--text); text-decoration: none; }
+.b-row-name .linklike:hover { color: var(--accent-2); }
+.b-row-fields { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.b-row-fields label {
+  display: flex; flex-direction: column; gap: 3px;
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-soft);
+}
+.b-row-fields input { min-height: 40px; padding: 8px 10px; width: 76px; }
+.b-note-label { flex: 1; min-width: 140px; }
+.b-note-label input { width: 100%; }
+.b-row-actions { display: flex; flex-direction: column; gap: 4px; }
+
+.btn-ic {
+  width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.btn-ic:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-2); }
+.btn-ic:disabled { opacity: 0.3; cursor: default; }
+.b-footer { position: sticky; bottom: 0; background: var(--card); padding: 12px 0 2px; }
+
+/* Le sélecteur d'exercices est une sur-modale (ouvert depuis l'éditeur
+   de programme ou la séance) : il passe au-dessus des autres modales. */
+#picker { z-index: 140; }

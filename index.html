@@ -40,12 +40,12 @@
 
   <!-- Barre d'onglets mobile, fixée en bas (usage téléphone en salle) -->
   <nav class="bottom-nav" aria-label="Navigation principale">
-    <button class="tab active" data-view="accueil"><span class="bn-icon ico">🏠</span><span class="bn-label">Accueil</span></button>
-    <button class="tab" data-view="bibliotheque"><span class="bn-icon ico">📚</span><span class="bn-label">Exos</span></button>
-    <button class="tab" data-view="programme"><span class="bn-icon ico">🎯</span><span class="bn-label">Prog.</span></button>
-    <button class="tab" data-view="seance"><span class="bn-icon ico">⏱</span><span class="bn-label">Séance</span></button>
-    <button class="tab" data-view="suivi"><span class="bn-icon ico">📈</span><span class="bn-label">Suivi</span></button>
-    <button class="tab" data-view="nutrition"><span class="bn-icon ico">🍎</span><span class="bn-label">Nutri.</span></button>
+    <button class="tab active" data-view="accueil"><svg class="icon bn-icon"><use href="#ic-home"/></svg><span class="bn-label">Accueil</span></button>
+    <button class="tab" data-view="bibliotheque"><svg class="icon bn-icon"><use href="#ic-book"/></svg><span class="bn-label">Exos</span></button>
+    <button class="tab" data-view="programme"><svg class="icon bn-icon"><use href="#ic-target"/></svg><span class="bn-label">Prog.</span></button>
+    <button class="tab" data-view="seance"><svg class="icon bn-icon"><use href="#ic-timer"/></svg><span class="bn-label">Séance</span></button>
+    <button class="tab" data-view="suivi"><svg class="icon bn-icon"><use href="#ic-chart"/></svg><span class="bn-label">Suivi</span></button>
+    <button class="tab" data-view="nutrition"><svg class="icon bn-icon"><use href="#ic-apple"/></svg><span class="bn-label">Nutri.</span></button>
   </nav>
 
   <!-- ==================== VUE ACCUEIL ==================== -->
@@ -147,6 +147,14 @@
       <p class="hero-sub">Réponds à quelques questions : ton plan hebdomadaire s'adapte à ton objectif, ton niveau et ton matériel.</p>
     </section>
 
+    <div class="segmented" role="tablist" aria-label="Mode programme">
+      <button class="seg active" data-ppanel="generer" role="tab">Générer</button>
+      <button class="seg" data-ppanel="programmes" role="tab">Mes programmes</button>
+    </div>
+
+    <section id="panel-programmes" class="suivi-panel hidden"><!-- rendu par js/programs.js --></section>
+
+    <section id="panel-generer">
     <form id="program-form" class="program-form card">
       <div class="form-grid">
         <label>
@@ -215,6 +223,7 @@
     </form>
 
     <section id="program-output"></section>
+    </section><!-- /panel-generer -->
   </main>
 
   <!-- ==================== VUE SÉANCE ==================== -->
@@ -418,6 +427,16 @@
     <input type="file" id="import-file" accept="application/json" class="visually-hidden" aria-hidden="true">
   </main>
 
+  <!-- Éditeur de programme personnalisé -->
+  <div id="builder" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box builder-box">
+      <button class="modal-close" id="builder-close" aria-label="Fermer">✕</button>
+      <div id="builder-content"></div>
+    </div>
+  </div>
+  <input type="file" id="import-program-file" accept="application/json" class="visually-hidden" aria-hidden="true">
+
   <!-- Modale détail / édition d'une séance enregistrée -->
   <div id="session-modal" class="modal hidden">
     <div class="modal-backdrop"></div>
@@ -442,10 +461,12 @@
 
   <script src="js/data.js"></script>
   <script src="js/data-extra.js"></script>
+  <script src="js/icons.js"></script>
   <script src="js/program.js"></script>
   <script src="js/app.js"></script>
   <script src="js/workout.js"></script>
   <script src="js/tracking.js"></script>
   <script src="js/home.js"></script>
+  <script src="js/programs.js"></script>
 </body>
 </html>
