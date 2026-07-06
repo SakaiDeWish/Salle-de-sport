@@ -26,6 +26,11 @@ Réponds à quelques questions et reçois un programme hebdomadaire complet adap
 Le programme est sauvegardé sur ton appareil, régénérable pour varier les exercices, et imprimable en PDF. Chaque conseil nutrition/récupération est adapté à l'objectif choisi.
 
 ### ⏱ Séance en direct (style Nike Training Club)
+- **Repos auto-adapté** à chaque exercice (polyarticulaire/isolation × objectif × niveau), toujours modifiable.
+- **Alternatives** : chaque exercice se remplace d'un tap par un mouvement équivalent (même muscle, autre matériel).
+- **Bilan de fin** : trop dur / correct / trop facile → ajustement du volume appliqué au programme en un clic.
+- **Séance libre guidée** : choisis tes muscles, l'app propose un enchaînement cohérent (poly → isolation → gainage).
+- Outils intégrés : estimateur de 1RM et calculateur de disques.
 Lance une séance chronométrée et enregistre **exactement** ce que tu fais, même si tu t'écartes du programme :
 - **Chronomètre global** de la séance (horodatage réel, aucune dérive).
 - **Chrono par exercice** : le temps passé sur chaque mouvement est mesuré.
@@ -37,6 +42,12 @@ Lance une séance chronométrée et enregistre **exactement** ce que tu fais, m�
 
 ### ➕ Référence tes propres exercices
 Ajoute tes exercices personnels (nom, muscle, matériel, description, lien vidéo) : ils rejoignent la bibliothèque et peuvent être intégrés à tes programmes. Tout est stocké localement dans ton navigateur.
+
+### 🏠 Écran d'accueil
+Prochaine séance du programme en un tap, anneau d'objectif hebdo, streak, dernier record, résumé du mois et accroche du jour. Onboarding de 30 secondes au premier lancement.
+
+### 🍎 Nutrition
+Besoins caloriques (TDEE, Mifflin-St Jeor) et macros calculés depuis ton profil et ton objectif, conseils fondés (timing, hydratation, collations, compléments sans survente) et exemples de repas.
 
 ### 🎨 Deux thèmes au choix
 - **Gamifié** (défaut) : sombre, accent vert volt, cartes-posters, anneaux, XP et badges.

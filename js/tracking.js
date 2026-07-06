@@ -600,7 +600,7 @@ function duplicateSession(id) {
   const exercises = r.exercises.map(ex => {
     const ref = allExercisesForUI().find(e => e.id === ex.exId) || { id: ex.exId, nom: ex.nom, groupe: ex.groupe };
     const reps = ex.sets.map(s => s.reps);
-    return newLiveExercise(ref, `${ex.sets.length} × ${Math.min(...reps)}-${Math.max(...reps)}`, getDefaultRest());
+    return newLiveExercise(ref, `${ex.sets.length} × ${Math.min(...reps)}-${Math.max(...reps)}`, null); // repos auto
   });
   closeSessionModal();
   startSession(r.nom.replace(/ \(bis\)$/, "") + " (bis)", exercises);

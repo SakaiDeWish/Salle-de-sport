@@ -90,7 +90,7 @@ document.querySelectorAll(".tab").forEach(tab => {
 document.querySelectorAll(".chip-row").forEach(row => {
   row.addEventListener("click", e => {
     const chip = e.target.closest(".chip");
-    if (!chip) return;
+    if (!chip || !row.dataset.for) return; // rangées sans filtre associé (suggestions)
     row.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
     chip.classList.add("active");
     document.getElementById(row.dataset.for).value = chip.dataset.value;
@@ -151,9 +151,28 @@ function renderLibrary() {
   bindCardClicks(grid);
 }
 
+document.getElementById("goto-ajouter").addEventListener("click", () => activateView("ajouter"));
+
 searchInput.addEventListener("input", renderLibrary);
 [filterGroupe, filterMateriel, filterNiveau].forEach(el =>
   el.addEventListener("input", renderLibrary));
+
+/* Alternatives : même groupe musculaire, en privilégiant un matériel
+   différent puis le même type de mouvement (poly/iso) */
+function findAlternatives(ex, count = 2) {
+  return allExercisesForUI()
+    .filter(e => e.groupe === ex.groupe && e.id !== ex.id)
+    .map(e => {
+      let score = 0;
+      if (e.materiel !== ex.materiel) score += 2;
+      if (e.type === ex.type) score += 1;
+      if (e.niveau !== ex.niveau) score += 0.5;
+      return { e, score };
+    })
+    .sort((x, y) => y.score - x.score)
+    .slice(0, count)
+    .map(x => x.e);
+}
 
 /* ---------- Modale détail exercice ---------- */
 const modal = document.getElementById("modal");
@@ -170,7 +189,9 @@ function openExercise(id) {
                  title="Vidéo de démonstration : ${esc(ex.nom)}"
                  allowfullscreen loading="lazy"></iframe>
        </div>
-       <p class="video-hint">Vidéo intégrée. <button class="linklike" id="video-change">Changer la vidéo</button></p>`
+       <p class="video-hint">Vidéo intégrée.
+         <button class="linklike" id="video-change">Changer la vidéo</button> ·
+         <a class="linklike" href="${youtubeSearchUrl(ex)}" target="_blank" rel="noopener">Voir d'autres vidéos</a></p>`
     : `<div class="video-placeholder">
          <p><span class="ico">🎬 </span><strong>Vidéo de démonstration</strong></p>
          <a class="btn btn-primary" href="${youtubeSearchUrl(ex)}" target="_blank" rel="noopener">
@@ -210,8 +231,22 @@ function openExercise(id) {
       <h3><span class="ico">⚠️ </span>Erreurs à éviter</h3>
       <ul class="mistakes">${ex.erreurs.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
 
+    ${(() => {
+      const alts = findAlternatives(ex, 2);
+      return alts.length ? `
+        <h3>⇄ Alternatives (même muscle, autre approche)</h3>
+        <div class="alt-list">${alts.map(a2 => `
+          <button class="picker-item alt-open" data-exid="${esc(a2.id)}">
+            <span>${esc(a2.nom)}</span>
+            <span class="tag">${LABELS.materiel[a2.materiel]} · ${LABELS.niveaux[a2.niveau]}</span>
+          </button>`).join("")}</div>` : "";
+    })()}
+
     ${ex.custom ? `<button class="btn btn-danger" id="delete-custom">🗑 Supprimer cet exercice personnalisé</button>` : ""}
   `;
+
+  modalContent.querySelectorAll(".alt-open").forEach(b =>
+    b.addEventListener("click", () => openExercise(b.dataset.exid)));
 
   const saveBtn = modalContent.querySelector("#video-save");
   if (saveBtn) {
@@ -324,7 +359,8 @@ programForm.addEventListener("submit", e => {
     niveau: document.getElementById("p-niveau").value,
     jours: parseInt(document.getElementById("p-jours").value, 10),
     materiel: document.getElementById("p-materiel").value,
-    priorite: document.getElementById("p-priorite").value || null
+    priorite: document.getElementById("p-priorite").value || null,
+    split: document.getElementById("p-split").value
   };
   saveJSON(STORAGE_KEYS.profil, params);
   const program = generateProgram(params);
@@ -347,7 +383,7 @@ function renderProgram(pr) {
       <p class="kicker"><span class="ico">${pr.objectifIcone} </span>${esc(pr.objectifLabel)}</p>
       <h2>Programme de ${esc(pr.prenom)}</h2>
       <p class="program-meta">
-        ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${materielLabels[pr.materiel]}
+        ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${pr.splitLabel ? pr.splitLabel + " · " : ""}${materielLabels[pr.materiel]}
         ${pr.priorite ? " · Priorité : " + LABELS.groupes[pr.priorite] : ""}
         · Généré le ${esc(pr.genereLe)}
       </p>
@@ -424,6 +460,7 @@ if (savedProfil) {
   document.getElementById("p-jours").value = String(savedProfil.jours);
   document.getElementById("p-materiel").value = savedProfil.materiel;
   document.getElementById("p-priorite").value = savedProfil.priorite || "";
+  document.getElementById("p-split").value = savedProfil.split || "auto";
 }
 const savedProgram = loadJSON(STORAGE_KEYS.program, null);
 if (savedProgram) renderProgram(savedProgram);
