@@ -36,15 +36,26 @@ function nextProgramDay() {
   return { program, day: program.days[idx], index: idx };
 }
 
-function miniRing(frac, size = 92) {
-  const r = 40, c = 2 * Math.PI * r;
-  return `<div class="mini-ring" style="width:${size}px;height:${size}px">
-    <svg viewBox="0 0 100 100">
-      <circle class="ring-bg" cx="50" cy="50" r="${r}" stroke-width="9"></circle>
-      <circle class="ring-fg" cx="50" cy="50" r="${r}" stroke-width="9"
-        style="stroke-dasharray:${c};stroke-dashoffset:${c * (1 - Math.min(1, frac))}"></circle>
+/* Progression hebdo « barre olympique » : un disque chargé par séance
+   validée — la métaphore appartient à la salle, pas aux dashboards. */
+function plateLoader(done, goal) {
+  const g = Math.max(1, goal);
+  const W = 300, H = 84, midY = H / 2;
+  const sleeveX = 74;                       // début du manchon (zone des disques)
+  const plateW = 15, gap = 5;
+  const plates = [];
+  for (let i = 0; i < g; i++) {
+    const x = sleeveX + 14 + i * (plateW + gap);
+    const ph = 56 - i * 3;                  // disques dégressifs, comme en vrai
+    plates.push(`<rect class="plate ${i < done ? "plate-on" : ""}" x="${x}" y="${midY - ph / 2}"
+      width="${plateW}" height="${ph}" rx="4" style="animation-delay:${i * 0.08}s"></rect>`);
+  }
+  return `<div class="plate-loader" role="img" aria-label="${done} séance(s) sur ${g} cette semaine">
+    <svg viewBox="0 0 ${W} ${H}">
+      <line class="pl-bar" x1="6" y1="${midY}" x2="${W - 6}" y2="${midY}"></line>
+      <rect class="pl-collar" x="${sleeveX}" y="${midY - 9}" width="9" height="18" rx="3"></rect>
+      ${plates.join("")}
     </svg>
-    <span class="mini-ring-label"></span>
   </div>`;
 }
 
@@ -67,9 +78,16 @@ function renderHome() {
 
   document.getElementById("home-content").innerHTML = `
     <section class="hero home-hero">
-      <p class="kicker">${now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
-      <h1 class="display">Salut${prenom}<span class="accent">.</span></h1>
-      <p class="hero-sub">${esc(quote)}</p>
+      <div class="home-hero-text">
+        <p class="kicker">${now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
+        <h1 class="display">Salut${prenom}<span class="accent">.</span></h1>
+        <p class="hero-sub">${esc(quote)}</p>
+      </div>
+      <!-- pièce héros : le streak en numéral géant, décalé -->
+      <div class="streak-hero" aria-label="Streak : ${gs.streak} semaine(s)">
+        <span class="streak-num">${gs.streak}</span>
+        <span class="streak-cap">${icon("flame")} semaine${gs.streak > 1 ? "s" : ""}<br>d'affilée</span>
+      </div>
     </section>
 
     <!-- CTA principal : la prochaine séance à un tap -->
@@ -94,19 +112,14 @@ function renderHome() {
     <!-- Objectif hebdo + streak + dernier PR -->
     <div class="home-grid">
       <div class="card home-tile home-goal">
-        ${miniRing(gs.doneThisWeek / gs.goal)}
         <div>
-          <p class="chrono-label">Cette semaine</p>
-          <p class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</p>
+          <p class="chrono-label">La barre de la semaine</p>
+          ${plateLoader(gs.doneThisWeek, gs.goal)}
+          <p class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}
           ${gs.achievedThisWeek
-            ? '<p class="goal-ok">✓ Objectif atteint</p>'
-            : `<p class="goal-left">encore ${gs.goal - gs.doneThisWeek} séance${gs.goal - gs.doneThisWeek > 1 ? "s" : ""}</p>`}
+            ? '<span class="goal-ok">Barre chargée — objectif atteint</span>'
+            : `<span class="goal-left">encore ${gs.goal - gs.doneThisWeek} disque${gs.goal - gs.doneThisWeek > 1 ? "s" : ""} à charger</span>`}</p>
         </div>
-      </div>
-      <div class="card home-tile">
-        <p class="chrono-label">${icon("flame")} Streak</p>
-        <p class="chrono-value">${gs.streak}</p>
-        <p class="goal-left">semaine${gs.streak > 1 ? "s" : ""} validée${gs.streak > 1 ? "s" : ""} d'affilée</p>
       </div>
       <div class="card home-tile">
         <p class="chrono-label">${icon("trophy")} Dernier record</p>

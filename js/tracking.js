@@ -30,7 +30,7 @@ function applyTheme(theme) {
   document.getElementById("theme-toggle-label").textContent =
     theme === "gamifie" ? "Clair" : "Sombre"; // le bouton propose l'AUTRE thème
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = theme === "gamifie" ? "#0a0a0b" : "#f6f2ea";
+  if (meta) meta.content = theme === "gamifie" ? "#141210" : "#f6f1e7";
 }
 
 document.getElementById("theme-toggle").addEventListener("click", () =>
