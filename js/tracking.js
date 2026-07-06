@@ -28,7 +28,7 @@ function applyTheme(theme) {
   document.documentElement.className = "theme-" + theme;
   localStorage.setItem(THEME_KEY, theme);
   document.getElementById("theme-toggle-label").textContent =
-    theme === "gamifie" ? "Épuré" : "Gamifié"; // le bouton propose l'AUTRE thème
+    theme === "gamifie" ? "Clair" : "Sombre"; // le bouton propose l'AUTRE thème
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = theme === "gamifie" ? "#0a0a0b" : "#f6f2ea";
 }
@@ -165,25 +165,25 @@ function computeBadges() {
   const prs = computePRs();
   const hasProgress = prs.some(p => p.points.length >= 2 && p.best.poids > p.points[0].poids);
   return [
-    { ico: "🎉", nom: "Première séance", desc: "Terminer ta première séance", ok: h.length >= 1 },
-    { ico: "🔥", nom: "Lancé", desc: "5 séances terminées", ok: h.length >= 5 },
-    { ico: "💪", nom: "Habitué", desc: "10 séances terminées", ok: h.length >= 10 },
-    { ico: "🏆", nom: "Machine", desc: "25 séances terminées", ok: h.length >= 25 },
-    { ico: "👑", nom: "Légende", desc: "50 séances terminées", ok: h.length >= 50 },
-    { ico: "✅", nom: "Semaine parfaite", desc: "Objectif hebdo atteint une fois", ok: weeksOK >= 1 },
-    { ico: "📅", nom: "Régulier", desc: "Objectif hebdo atteint 3 fois", ok: weeksOK >= 3 },
-    { ico: "⚡", nom: "Inarrêtable", desc: "Streak de 4 semaines validées", ok: gs.streak >= 4 },
-    { ico: "📈", nom: "Premier PR", desc: "Progresser sur la charge d'un exercice", ok: hasProgress },
-    { ico: "🏋️", nom: "10 tonnes", desc: "10 000 kg de volume cumulé", ok: stats.volume >= 10000 },
-    { ico: "🚚", nom: "100 tonnes", desc: "100 000 kg de volume cumulé", ok: stats.volume >= 100000 },
-    { ico: "⏱", nom: "Marathonien", desc: "10 h d'entraînement cumulées", ok: stats.tempsMs >= 10 * 3600000 }
+    { ico: "party", nom: "Première séance", desc: "Terminer ta première séance", ok: h.length >= 1 },
+    { ico: "flame", nom: "Lancé", desc: "5 séances terminées", ok: h.length >= 5 },
+    { ico: "medal", nom: "Habitué", desc: "10 séances terminées", ok: h.length >= 10 },
+    { ico: "trophy", nom: "Machine", desc: "25 séances terminées", ok: h.length >= 25 },
+    { ico: "crown", nom: "Légende", desc: "50 séances terminées", ok: h.length >= 50 },
+    { ico: "check", nom: "Semaine parfaite", desc: "Objectif hebdo atteint une fois", ok: weeksOK >= 1 },
+    { ico: "calendar", nom: "Régulier", desc: "Objectif hebdo atteint 3 fois", ok: weeksOK >= 3 },
+    { ico: "bolt", nom: "Inarrêtable", desc: "Streak de 4 semaines validées", ok: gs.streak >= 4 },
+    { ico: "trend", nom: "Premier PR", desc: "Progresser sur la charge d'un exercice", ok: hasProgress },
+    { ico: "dumbbell", nom: "10 tonnes", desc: "10 000 kg de volume cumulé", ok: stats.volume >= 10000 },
+    { ico: "stack", nom: "100 tonnes", desc: "100 000 kg de volume cumulé", ok: stats.volume >= 100000 },
+    { ico: "clock", nom: "Marathonien", desc: "10 h d'entraînement cumulées", ok: stats.tempsMs >= 10 * 3600000 }
   ];
 }
 
 /* ---------- Panneaux du suivi ---------- */
-document.querySelectorAll(".seg").forEach(seg =>
+document.querySelectorAll('.seg[data-panel]').forEach(seg =>
   seg.addEventListener("click", () => {
-    document.querySelectorAll(".seg").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll('.seg[data-panel]').forEach(s => s.classList.remove("active"));
     seg.classList.add("active");
     document.querySelectorAll(".suivi-panel").forEach(p => p.classList.add("hidden"));
     document.getElementById("panel-" + seg.dataset.panel).classList.remove("hidden");
@@ -285,7 +285,7 @@ function renderDashboard() {
       <div class="badge-grid">
         ${badges.map(b => `
           <div class="badge-tile ${b.ok ? "badge-ok" : ""}" title="${esc(b.desc)}">
-            <span class="badge-ico ico">${b.ico}</span>
+            <span class="badge-ico">${icon(b.ico)}</span>
             <span class="badge-nom">${esc(b.nom)}</span>
             <span class="badge-desc">${esc(b.desc)}</span>
             ${b.ok ? '<span class="badge-check">✓</span>' : ""}
@@ -515,10 +515,17 @@ function openSessionModal(id, edit = false) {
       <div class="program-actions">
         <button class="btn btn-ghost" id="sm-edit">Modifier</button>
         <button class="btn btn-primary" id="sm-dup">Dupliquer (rejouer)</button>
+        <button class="btn btn-ghost" id="sm-to-program">Créer un programme</button>
         <button class="btn btn-danger-ghost" id="sm-del">Supprimer</button>
       </div>`;
     document.getElementById("sm-edit").addEventListener("click", () => openSessionModal(id, true));
     document.getElementById("sm-dup").addEventListener("click", () => duplicateSession(id));
+    document.getElementById("sm-to-program").addEventListener("click", () => {
+      closeSessionModal();
+      activateView("programme");
+      document.querySelector('[data-ppanel="programmes"]').click();
+      createProgramFromRecord(r);
+    });
     document.getElementById("sm-del").addEventListener("click", () => {
       if (!confirm("Supprimer définitivement cette séance ?")) return;
       setHistory(getHistory().filter(s => s.id !== id));

@@ -80,7 +80,7 @@ function renderHome() {
           <h2 class="display-sm">Séance ${next.day.numero} — ${esc(next.day.titre)}</h2>
           <p class="day-focus">${esc(next.day.focus)} · ~${estimateDayMinutes(next.day)} min · ${next.day.exercices.length} exercices</p>
         </div>
-        <span class="home-cta-go">▶</span>
+        <span class="home-cta-go">${icon("play")}</span>
       </button>` : `
       <button class="card home-cta" id="home-create-program">
         <div>
@@ -88,7 +88,7 @@ function renderHome() {
           <h2 class="display-sm">Crée ton programme</h2>
           <p class="day-focus">2 minutes de questions, un plan complet adapté à ton objectif.</p>
         </div>
-        <span class="home-cta-go">▶</span>
+        <span class="home-cta-go">${icon("play")}</span>
       </button>`}
 
     <!-- Objectif hebdo + streak + dernier PR -->
@@ -104,12 +104,12 @@ function renderHome() {
         </div>
       </div>
       <div class="card home-tile">
-        <p class="chrono-label">Streak</p>
+        <p class="chrono-label">${icon("flame")} Streak</p>
         <p class="chrono-value">${gs.streak}</p>
         <p class="goal-left">semaine${gs.streak > 1 ? "s" : ""} validée${gs.streak > 1 ? "s" : ""} d'affilée</p>
       </div>
       <div class="card home-tile">
-        <p class="chrono-label">Dernier record</p>
+        <p class="chrono-label">${icon("trophy")} Dernier record</p>
         ${lastPR
           ? `<p class="home-pr">${esc(lastPR.nom)}</p>
              <p class="goal-left"><strong>${lastPR.best.poids} kg × ${lastPR.best.reps}</strong> · ${new Date(lastPR.best.date).toLocaleDateString("fr-FR")}</p>`
@@ -220,7 +220,8 @@ function maybeOnboard() {
     document.getElementById("p-materiel").value = params.materiel;
     document.getElementById("p-split").value = params.split;
     const program = generateProgram(params);
-    saveJSON(STORAGE_KEYS.program, program);
+    if (typeof registerGeneratedProgram === "function") registerGeneratedProgram(program);
+    else saveJSON(STORAGE_KEYS.program, program);
     renderProgram(program);
     close();
   });

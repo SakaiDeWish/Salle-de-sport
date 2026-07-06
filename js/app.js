@@ -364,7 +364,9 @@ programForm.addEventListener("submit", e => {
   };
   saveJSON(STORAGE_KEYS.profil, params);
   const program = generateProgram(params);
-  saveJSON(STORAGE_KEYS.program, program);
+  // le programme généré rejoint la liste et devient actif
+  if (typeof registerGeneratedProgram === "function") registerGeneratedProgram(program);
+  else saveJSON(STORAGE_KEYS.program, program);
   renderProgram(program);
   programOutput.scrollIntoView({ behavior: "smooth" });
 });
@@ -380,8 +382,8 @@ function renderProgram(pr) {
 
   programOutput.innerHTML = `
     <div class="program-header card">
-      <p class="kicker"><span class="ico">${pr.objectifIcone} </span>${esc(pr.objectifLabel)}</p>
-      <h2>Programme de ${esc(pr.prenom)}</h2>
+      <p class="kicker">${objIcon(pr.objectif)} ${esc(pr.objectifLabel || "Programme personnalisé")}</p>
+      <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
       <p class="program-meta">
         ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${pr.splitLabel ? pr.splitLabel + " · " : ""}${materielLabels[pr.materiel]}
         ${pr.priorite ? " · Priorité : " + LABELS.groupes[pr.priorite] : ""}
@@ -442,7 +444,8 @@ function renderProgram(pr) {
     const params = loadJSON(STORAGE_KEYS.profil, null);
     if (!params) return;
     const program = generateProgram(params);
-    saveJSON(STORAGE_KEYS.program, program);
+    if (typeof registerGeneratedProgram === "function") registerGeneratedProgram(program);
+    else saveJSON(STORAGE_KEYS.program, program);
     renderProgram(program);
   });
   document.getElementById("btn-print").addEventListener("click", () => window.print());
