@@ -142,8 +142,23 @@ const DAY_TEMPLATES = {
   }
 };
 
-/* Choix du split selon le nombre de séances et le niveau */
-function chooseSplit(jours, niveau) {
+/* Choix du split selon le nombre de séances, le niveau et la préférence
+   utilisateur : "auto" (recommandé), "fullbody" ou "split". */
+function chooseSplit(jours, niveau, splitPref) {
+  if (splitPref === "fullbody") {
+    return Array(jours).fill("fullbody");
+  }
+  if (splitPref === "split") {
+    switch (jours) {
+      case 2: return ["upper", "lower"];
+      case 3: return ["push", "pull", "legs"];
+      case 4: return ["upper", "lower", "upper", "lower"];
+      case 5: return ["push", "pull", "legs", "upper", "lower"];
+      case 6: return ["push", "pull", "legs", "push", "pull", "legs"];
+      default: return ["push", "pull", "legs"];
+    }
+  }
+  // auto : full body quand la fréquence est basse ou le niveau débutant
   switch (jours) {
     case 2: return ["fullbody", "fullbody"];
     case 3: return niveau === "debutant"
@@ -197,9 +212,9 @@ function pickExercise(slot, pool, usedToday, usedThisWeek) {
 
 /* Génère le programme complet */
 function generateProgram(params) {
-  const { prenom, objectif, niveau, jours, materiel, priorite } = params;
+  const { prenom, objectif, niveau, jours, materiel, priorite, split: splitPref } = params;
   const scheme = GOAL_SCHEMES[objectif];
-  const split = chooseSplit(jours, niveau);
+  const split = chooseSplit(jours, niveau, splitPref || "auto");
   const maxExos = LEVEL_VOLUME[niveau];
 
   const allowedMateriel = EQUIPMENT_POOLS[materiel];
@@ -255,6 +270,10 @@ function generateProgram(params) {
     jours,
     materiel,
     priorite,
+    split: splitPref || "auto",
+    splitLabel: (splitPref === "fullbody") ? "Full body"
+              : (splitPref === "split") ? "Split"
+              : "Auto",
     genereLe: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
     days,
     conseils: scheme.conseils

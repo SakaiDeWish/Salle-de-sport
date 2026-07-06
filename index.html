@@ -24,10 +24,12 @@
     <div class="logo">GYM<span>COACH</span></div>
     <!-- Nav desktop (les mêmes .tab existent aussi dans la barre mobile en bas) -->
     <nav class="tabs desktop-nav">
-      <button class="tab active" data-view="bibliotheque">Bibliothèque</button>
+      <button class="tab active" data-view="accueil">Accueil</button>
+      <button class="tab" data-view="bibliotheque">Bibliothèque</button>
       <button class="tab" data-view="programme">Programme</button>
       <button class="tab" data-view="seance">Séance</button>
       <button class="tab" data-view="suivi">Suivi</button>
+      <button class="tab" data-view="nutrition">Nutrition</button>
       <button class="tab" data-view="ajouter">Ajouter</button>
     </nav>
     <!-- Bascule de thème : Gamifié <-> Épuré, mémorisée en localStorage -->
@@ -38,15 +40,39 @@
 
   <!-- Barre d'onglets mobile, fixée en bas (usage téléphone en salle) -->
   <nav class="bottom-nav" aria-label="Navigation principale">
-    <button class="tab active" data-view="bibliotheque"><span class="bn-icon ico">📚</span><span class="bn-label">Exos</span></button>
-    <button class="tab" data-view="programme"><span class="bn-icon ico">🎯</span><span class="bn-label">Programme</span></button>
+    <button class="tab active" data-view="accueil"><span class="bn-icon ico">🏠</span><span class="bn-label">Accueil</span></button>
+    <button class="tab" data-view="bibliotheque"><span class="bn-icon ico">📚</span><span class="bn-label">Exos</span></button>
+    <button class="tab" data-view="programme"><span class="bn-icon ico">🎯</span><span class="bn-label">Prog.</span></button>
     <button class="tab" data-view="seance"><span class="bn-icon ico">⏱</span><span class="bn-label">Séance</span></button>
     <button class="tab" data-view="suivi"><span class="bn-icon ico">📈</span><span class="bn-label">Suivi</span></button>
-    <button class="tab" data-view="ajouter"><span class="bn-icon ico">➕</span><span class="bn-label">Ajouter</span></button>
+    <button class="tab" data-view="nutrition"><span class="bn-icon ico">🍎</span><span class="bn-label">Nutri.</span></button>
   </nav>
 
+  <!-- ==================== VUE ACCUEIL ==================== -->
+  <main id="view-accueil" class="view active">
+    <div id="home-content"><!-- rendu par js/home.js --></div>
+  </main>
+
+  <!-- ==================== VUE NUTRITION ==================== -->
+  <main id="view-nutrition" class="view">
+    <section class="hero">
+      <p class="kicker">Carburant</p>
+      <h1 class="display">Ta<br>nutrition<span class="accent">.</span></h1>
+      <p class="hero-sub">Des repères simples et raisonnables, calculés pour toi. La régularité dans l'assiette compte autant que sous la barre.</p>
+    </section>
+    <div id="nutrition-content"><!-- rendu par js/home.js --></div>
+  </main>
+
+  <!-- Onboarding premier lancement -->
+  <div id="onboarding" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-box">
+      <div id="onboarding-content"></div>
+    </div>
+  </div>
+
   <!-- ==================== VUE BIBLIOTHÈQUE ==================== -->
-  <main id="view-bibliotheque" class="view active">
+  <main id="view-bibliotheque" class="view">
     <section class="hero">
       <p class="kicker">Bibliothèque · 116 mouvements</p>
       <h1 class="display">Tous les<br>exercices<span class="accent">.</span></h1>
@@ -106,7 +132,10 @@
       </div>
     </section>
 
-    <p id="result-count" class="result-count" role="status"></p>
+    <div class="lib-bar">
+      <p id="result-count" class="result-count" role="status"></p>
+      <button class="btn btn-ghost btn-sm" id="goto-ajouter">+ Référencer un exercice</button>
+    </div>
     <section id="exercise-grid" class="grid"></section>
   </main>
 
@@ -152,6 +181,14 @@
           </select>
         </label>
         <label>
+          Type de programme
+          <select id="p-split">
+            <option value="auto">Auto (recommandé selon ton profil)</option>
+            <option value="fullbody">Full body (tout le corps à chaque séance)</option>
+            <option value="split">Split (muscles répartis : PPL, haut/bas…)</option>
+          </select>
+        </label>
+        <label>
           Matériel disponible
           <select id="p-materiel" required>
             <option value="salle">Salle de sport complète</option>
@@ -193,11 +230,12 @@
 
       <div class="card setup-card">
         <label class="rest-setting">
-          Temps de repos par défaut entre les séries
+          Temps de repos par défaut (séances libres sans suggestion)
           <div class="rest-input-row">
             <input type="number" id="default-rest" min="5" max="600" step="5" value="90"> <span>secondes</span>
           </div>
         </label>
+        <p class="video-hint">💡 Le repos est <strong>calculé automatiquement par exercice</strong> : mouvements lourds/polyarticulaires ≈ 2-3 min, isolation ≈ 45-90 s, ajusté à ton objectif (force = plus long, sèche = plus court). Tu peux toujours le modifier avec ±15 s pendant le repos.</p>
         <div class="start-buttons">
           <button class="btn btn-primary btn-lg" id="start-free">Démarrer une séance libre</button>
         </div>
@@ -276,6 +314,20 @@
       <button class="modal-close" id="picker-close" aria-label="Fermer">✕</button>
       <h2 class="display-sm">Ajouter un exercice</h2>
       <input type="search" id="picker-search" placeholder="Rechercher parmi tous les exercices…">
+      <div class="picker-suggest">
+        <p class="chrono-label">Séance guidée — choisis tes muscles, je te propose un enchaînement :</p>
+        <div class="chip-row" id="suggest-groups">
+          <button class="chip" data-g="pectoraux">Pectoraux</button>
+          <button class="chip" data-g="dos">Dos</button>
+          <button class="chip" data-g="epaules">Épaules</button>
+          <button class="chip" data-g="biceps">Biceps</button>
+          <button class="chip" data-g="triceps">Triceps</button>
+          <button class="chip" data-g="quadriceps">Quadriceps</button>
+          <button class="chip" data-g="ischios-fessiers">Ischios·Fessiers</button>
+          <button class="chip" data-g="abdos">Abdos</button>
+        </div>
+        <div id="suggest-list"></div>
+      </div>
       <div id="picker-list" class="picker-list"></div>
     </div>
   </div>
@@ -394,5 +446,6 @@
   <script src="js/app.js"></script>
   <script src="js/workout.js"></script>
   <script src="js/tracking.js"></script>
+  <script src="js/home.js"></script>
 </body>
 </html>

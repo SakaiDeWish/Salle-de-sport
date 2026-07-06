@@ -39,6 +39,25 @@ function getDefaultRest() {
   return loadJSON(STORAGE_KEYS.restDefault, 90);
 }
 
+/* Repos auto-adapté : type de mouvement (poly/iso) x objectif x niveau
+   de l'exercice. Force = long, sèche = court ; les gros mouvements
+   avancés gagnent +30 s. Toujours modifiable pendant le repos (±15 s). */
+const SMART_REST = {
+  force: { poly: 180, iso: 90 },
+  masse: { poly: 120, iso: 75 },
+  seche: { poly: 75,  iso: 45 },
+  forme: { poly: 90,  iso: 60 }
+};
+
+function smartRest(ex) {
+  const objectif = (loadJSON(STORAGE_KEYS.profil, null) || {}).objectif || "masse";
+  const table = SMART_REST[objectif] || SMART_REST.masse;
+  let s = table[ex.type === "poly" ? "poly" : "iso"];
+  if (ex.niveau === "avance" && ex.type === "poly") s += 30;
+  if (ex.niveau === "debutant" && ex.type !== "poly") s = Math.max(30, s - 15);
+  return s;
+}
+
 /* Bip de fin de repos (WebAudio, aucun fichier nécessaire) */
 function beep() {
   try {
@@ -53,6 +72,7 @@ function beep() {
       osc.stop(ctx.currentTime + delay + 0.2);
     });
   } catch { /* audio indisponible : silencieux */ }
+  try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch { /* non supporté */ }
 }
 
 /* ---------- Éléments ---------- */
@@ -75,7 +95,8 @@ function newLiveExercise(ex, target, restSec) {
     nom: ex.nom,
     groupe: ex.groupe,
     target: target || null,        // ex : "4 × 8-12"
-    restSec: restSec || getDefaultRest(),
+    restSec: restSec || (ex.type ? smartRest(ex) : getDefaultRest()),
+    restAuto: !restSec,
     sets: [],                      // { poids, reps, doneAt, restAfter }
     startedAt: null,
     endedAt: null
@@ -116,7 +137,7 @@ function renderProgramDayButtons() {
       saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
       const day = program.days[parseInt(btn.dataset.day, 10)];
       const exercises = day.exercices.map(l =>
-        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, parseRestToSeconds(l.repos))
+        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null) // repos auto (smartRest)
       );
       startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
     });
@@ -223,7 +244,7 @@ function renderLiveExercises() {
           <p class="day-focus">
             ${LABELS.groupes[ex.groupe] || ""}
             ${ex.target ? " · Objectif : " + esc(ex.target) : ""}
-            · Repos : ${ex.restSec} s
+            · Repos : ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
           </p>
         </div>
         <div class="live-ex-right">
@@ -251,6 +272,7 @@ function renderLiveExercises() {
         <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes">
         <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions">
         <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
+        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">⇄</button>
         <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">🗑</button>
       </div>
     </div>`;
@@ -262,6 +284,8 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => setCurrentExercise(parseInt(btn.dataset.i, 10))));
   elLiveExercises.querySelectorAll(".remove-ex").forEach(btn =>
     btn.addEventListener("click", () => removeExercise(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".swap-ex").forEach(btn =>
+    btn.addEventListener("click", () => swapExercise(parseInt(btn.dataset.i, 10))));
   elLiveExercises.querySelectorAll(".ex-fiche").forEach(btn =>
     btn.addEventListener("click", () => openExercise(btn.dataset.exid)));
 
@@ -285,6 +309,26 @@ function removeExercise(i) {
   if (ex.sets.length && !confirm(`Retirer « ${ex.nom} » et ses ${ex.sets.length} série(s) enregistrée(s) ?`)) return;
   live.exercises.splice(i, 1);
   if (live.currentIndex >= live.exercises.length) live.currentIndex = live.exercises.length - 1;
+  saveLive();
+  renderLiveExercises();
+}
+
+/* Remplacer un exercice par une alternative (même muscle, autre approche).
+   Si des séries sont déjà validées, l'alternative est ajoutée à la suite
+   pour ne pas fausser l'historique et les records. */
+function swapExercise(i) {
+  const cur = live.exercises[i];
+  const ref = allExercisesForUI().find(e => e.id === cur.exId) || cur;
+  const inSession = new Set(live.exercises.map(e => e.exId));
+  const alt = findAlternatives(ref, 5).find(a => !inSession.has(a.id));
+  if (!alt) { alert("Pas d'alternative disponible pour cet exercice."); return; }
+  const fresh = newLiveExercise(alt, cur.target, null);
+  if (cur.sets.length > 0) {
+    if (!confirm(`Ajouter « ${alt.nom} » à la suite ? (les séries déjà validées de « ${cur.nom} » sont conservées)`)) return;
+    live.exercises.splice(i + 1, 0, fresh);
+  } else {
+    live.exercises.splice(i, 1, fresh);
+  }
   saveLive();
   renderLiveExercises();
 }
@@ -342,6 +386,7 @@ function openPicker() {
   const input = document.getElementById("picker-search");
   input.value = "";
   renderPickerList("");
+  renderSuggestions();
   input.focus();
 }
 function closePicker() { elPicker.classList.add("hidden"); }
@@ -367,6 +412,77 @@ function renderPickerList(query) {
       closePicker();
     }));
 }
+
+/* Séance libre guidée : à partir des muscles cochés, propose un
+   enchaînement cohérent (polyarticulaires d'abord, isolation ensuite,
+   gainage pour finir) adapté au niveau et au matériel du profil. */
+const suggestState = new Set();
+
+function buildSuggestions() {
+  const profil = loadJSON(STORAGE_KEYS.profil, null) || {};
+  const levels = { debutant: ["debutant"], intermediaire: ["debutant", "intermediaire"],
+                   avance: ["debutant", "intermediaire", "avance"] }[profil.niveau] || null;
+  const equip = { salle: null, halteres: ["halteres", "poids-du-corps"],
+                  corps: ["poids-du-corps"] }[profil.materiel] ?? null;
+  const ok = e => (!levels || levels.includes(e.niveau)) && (!equip || equip.includes(e.materiel));
+  const pool = allExercisesForUI().filter(ok);
+  // la liste reste stable même après ajout : les items ajoutés s'affichent cochés
+  const pick = (g, type, taken) =>
+    pool.find(e => e.groupe === g && e.type === type && !taken.has(e.id));
+
+  const taken = new Set();
+  const out = [];
+  for (const g of suggestState) {                     // 1. polyarticulaires
+    const e = pick(g, "poly", taken);
+    if (e) { taken.add(e.id); out.push(e); }
+  }
+  for (const g of suggestState) {                     // 2. isolation
+    const e = pick(g, "iso", taken);
+    if (e) { taken.add(e.id); out.push(e); }
+  }
+  if (suggestState.size && !suggestState.has("abdos")) {  // 3. gainage final
+    const e = pick("abdos", "iso", taken) || pick("abdos", "poly", taken);
+    if (e) out.push(e);
+  }
+  return out.slice(0, 8);
+}
+
+function renderSuggestions() {
+  const zone = document.getElementById("suggest-list");
+  if (suggestState.size === 0) { zone.innerHTML = ""; return; }
+  const sugg = buildSuggestions();
+  const inSession = new Set((live?.exercises || []).map(e => e.exId));
+  zone.innerHTML = `
+    <p class="video-hint">Enchaînement proposé (échauffe-toi 5-10 min avant) — chaque exercice s'ajoute d'un tap :</p>
+    ${sugg.map((e, i) => `
+      <button class="picker-item suggest-item ${inSession.has(e.id) ? "suggest-added" : ""}" data-exid="${esc(e.id)}">
+        <span>${i + 1}. ${esc(e.nom)}</span>
+        <span class="tag">${inSession.has(e.id) ? "✓ Ajouté" : e.type === "poly" ? "Polyarticulaire" : "Isolation"}</span>
+      </button>`).join("")}`;
+  zone.querySelectorAll(".suggest-item").forEach(b =>
+    b.addEventListener("click", () => {
+      const ex = allExercisesForUI().find(e => e.id === b.dataset.exid);
+      if (!ex || !live) return;
+      if (live.exercises.some(e => e.exId === ex.id)) {   // déjà là : on le retire
+        live.exercises = live.exercises.filter(e => e.exId !== ex.id);
+      } else {
+        live.exercises.push(newLiveExercise(ex, null, null));
+      }
+      if (live.currentIndex === -1 && live.exercises.length) live.currentIndex = 0;
+      if (live.currentIndex >= live.exercises.length) live.currentIndex = live.exercises.length - 1;
+      saveLive();
+      renderLiveExercises();
+      renderSuggestions();
+    }));
+}
+
+document.querySelectorAll("#suggest-groups .chip").forEach(chip =>
+  chip.addEventListener("click", () => {
+    const g = chip.dataset.g;
+    if (suggestState.has(g)) { suggestState.delete(g); chip.classList.remove("active"); }
+    else { suggestState.add(g); chip.classList.add("active"); }
+    renderSuggestions();
+  }));
 
 document.getElementById("picker-search").addEventListener("input", e => renderPickerList(e.target.value));
 document.getElementById("picker-close").addEventListener("click", closePicker);
@@ -448,8 +564,15 @@ function showSummary(r) {
         <div class="chrono-block"><span class="chrono-label">Séries</span><span class="chrono-value">${r.nbSeries}</span></div>
         <div class="chrono-block"><span class="chrono-label">Volume total</span><span class="chrono-value">${Math.round(r.volume)} kg</span></div>
       </div>
-      <!-- Ressenti de séance : RPE 1-10 + notes, enregistrés sur la séance -->
+      <!-- Bilan : difficulté -> proposition d'ajustement du programme -->
       <div class="rpe-block">
+        <p class="chrono-label">La séance était…</p>
+        <div class="diff-row" id="summary-diff">
+          <button type="button" class="btn btn-ghost diff-btn" data-d="facile">Trop facile</button>
+          <button type="button" class="btn btn-ghost diff-btn" data-d="correcte">Correcte</button>
+          <button type="button" class="btn btn-ghost diff-btn" data-d="dure">Trop dure</button>
+        </div>
+        <div id="summary-adjust"></div>
         <p class="chrono-label">Ressenti de la séance (RPE)</p>
         <div class="rpe-row" id="summary-rpe">
           ${Array.from({ length: 10 }, (_, i) => i + 1).map(n =>
@@ -463,14 +586,56 @@ function showSummary(r) {
     </div>`;
 
   let summaryRpe = null;
+  let summaryDiff = null;
   const saveFeel = () => {
     const history = loadJSON(STORAGE_KEYS.history, []);
     const rec = history.find(s => s.id === r.id);
     if (!rec) return;
     rec.rpe = summaryRpe;
+    rec.difficulte = summaryDiff;
     rec.notes = document.getElementById("summary-notes").value.trim();
     saveJSON(STORAGE_KEYS.history, history);
   };
+
+  /* Difficulté -> proposition d'ajustement appliquée aux prochaines séances */
+  elSummary.querySelectorAll(".diff-btn").forEach(b =>
+    b.addEventListener("click", () => {
+      summaryDiff = b.dataset.d;
+      elSummary.querySelectorAll(".diff-btn").forEach(x =>
+        x.classList.toggle("btn-primary", x === b));
+      saveFeel();
+      const zone = document.getElementById("summary-adjust");
+      const program = loadJSON(STORAGE_KEYS.program, null);
+      if (!program || summaryDiff === "correcte") {
+        zone.innerHTML = summaryDiff === "correcte"
+          ? '<p class="video-hint">Parfait, on ne change rien : la difficulté est bien calibrée. 👌</p>' : "";
+        return;
+      }
+      const dure = summaryDiff === "dure";
+      zone.innerHTML = `
+        <div class="adjust-card">
+          <p>${dure
+            ? "Séance trop dure ? Je te propose de <strong>retirer 1 série</strong> sur les exercices polyarticulaires du programme, et de baisser tes charges d'environ 5 % la prochaine fois."
+            : "Trop facile ? Surcharge progressive : je te propose d'<strong>ajouter 1 série</strong> sur les polyarticulaires — et pense à monter les charges de ~2,5 kg quand toutes les reps passent proprement."}</p>
+          <button class="btn btn-primary btn-sm" id="apply-adjust">Appliquer au programme</button>
+          <p class="feedback" id="adjust-feedback"></p>
+        </div>`;
+      document.getElementById("apply-adjust").addEventListener("click", () => {
+        const pr = loadJSON(STORAGE_KEYS.program, null);
+        if (!pr) return;
+        let touched = 0;
+        for (const day of pr.days)
+          for (const l of day.exercices)
+            if (l.exercice.type === "poly") {
+              const next = l.series + (dure ? -1 : 1);
+              if (next >= 2 && next <= 5) { l.series = next; touched++; }
+            }
+        saveJSON(STORAGE_KEYS.program, pr);
+        document.getElementById("adjust-feedback").textContent =
+          `✓ Programme ajusté : ${touched} exercice(s) ${dure ? "allégé(s)" : "renforcé(s)"} d'une série.`;
+        if (typeof renderProgram === "function") renderProgram(pr);
+      });
+    }));
   elSummary.querySelectorAll(".rpe-chip").forEach(c =>
     c.addEventListener("click", () => {
       const v = parseInt(c.dataset.rpe, 10);
