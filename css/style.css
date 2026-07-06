@@ -9,11 +9,11 @@
    Le thème A « ÉPURÉ » redéfinit ces variables plus bas.
    ========================================================= */
 :root, .theme-gamifie {
-  --bg: #0a0a0b;
-  --bg-soft: #121316;
-  --card: #17181c;
-  --card-hover: #1e2025;
-  --border: #26282e;
+  --bg: #141210;            /* charbon chaud, pas un noir d'écran */
+  --bg-soft: #1c1916;
+  --card: #211d19;
+  --card-hover: #282320;
+  --border: #34302a;
   --text: #f4f5f7;
   --text-soft: #9aa1ad;
   --accent: #ceff00;
@@ -105,7 +105,7 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 14px clamp(16px, 4vw, 40px);
-  background: rgba(10, 11, 13, 0.85);
+  background: rgba(20, 18, 16, 0.85);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
@@ -147,7 +147,7 @@ body {
   display: none;
   justify-content: space-around;
   padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
-  background: rgba(12, 13, 16, 0.92);
+  background: rgba(22, 19, 16, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--border);
@@ -1079,32 +1079,45 @@ textarea { min-height: 90px; resize: vertical; }
    aux CTA / états actifs, zéro emoji décoratif.
    ========================================================= */
 .theme-epure {
-  --bg: #f6f2ea;
-  --bg-soft: #efe9dd;
-  --card: #fffdf8;
-  --card-hover: #fbf7ef;
-  --border: #e2dbcd;
-  --text: #141414;
-  --text-soft: #6f6a5f;
+  --bg: #f6f1e7;            /* papier crème */
+  --bg-soft: #eee7d8;
+  --card: #fdfaf3;
+  --card-hover: #f9f4e9;
+  --border: #e0d7c4;
+  --text: #171310;          /* encre noire chaude */
+  --text-soft: #6f675a;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif; /* signature éditoriale */
   --accent: #d14836;
   --accent-2: #b93a29;
   --accent-grad: linear-gradient(100deg, #d14836, #c04330);
   --accent-soft: rgba(209, 72, 54, 0.08);
   --accent-contrast: #fffdf8;
   --glow: rgba(209, 72, 54, 0.05);
-  --green: #2e7d32;
+  --green: #5c6b3c;         /* olive : les états « validé » du thème clair */
   --yellow: #9a6b00;
   --red: #b3261e;
   --shadow: 0 14px 34px rgba(60, 50, 30, 0.12);
 }
+
+/* Fraunces se porte en bas de casse : plus revue, moins affiche */
+.theme-epure .display, .theme-epure .display-sm,
+.theme-epure .prog-name, .theme-epure .panel-title,
+.theme-epure .program-header h2, .theme-epure .summary-card h2,
+.theme-epure .day-head h3, .theme-epure .modal-header h2,
+.theme-epure .history-head h3, .theme-epure .ex-card h3 {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.theme-epure .display { line-height: 1.02; font-size: clamp(2.6rem, 9vw, 5.4rem); }
 
 /* pas d'emoji décoratif dans le thème clair — mais les icônes SVG
    du set « Clair » restent visibles partout */
 .theme-epure .ico { display: none !important; }
 .theme-epure .ex-card-bg { opacity: 0.1; }
 
-.theme-epure .topbar { background: rgba(246, 242, 234, 0.88); }
-.theme-epure .bottom-nav { background: rgba(246, 242, 234, 0.94); }
+.theme-epure .topbar { background: rgba(246, 241, 231, 0.88); }
+.theme-epure .bottom-nav { background: rgba(246, 241, 231, 0.94); }
 .theme-epure .bottom-nav .tab { font-size: 0.78rem; }
 .theme-epure .bottom-nav .tab.active { color: var(--accent); }
 
@@ -1137,7 +1150,7 @@ textarea { min-height: 90px; resize: vertical; }
 /* profondeur atténuée : l'épuré vit d'espace, pas d'ombres */
 .theme-epure .ex-card:hover, .theme-epure .ex-card:focus-visible { box-shadow: 0 10px 24px rgba(60, 50, 30, 0.1); }
 .theme-epure .live-header { box-shadow: 0 8px 22px rgba(60, 50, 30, 0.08); }
-.theme-epure .rest-overlay { background: rgba(246, 242, 234, 0.97); }
+.theme-epure .rest-overlay { background: rgba(246, 241, 231, 0.97); }
 .theme-epure .modal-backdrop { background: rgba(30, 25, 15, 0.4); }
 .theme-epure .day-num { -webkit-text-stroke: 1.5px var(--text); }
 .theme-epure .chrono-main .chrono-value { color: var(--text); }
@@ -1392,3 +1405,95 @@ textarea { min-height: 90px; resize: vertical; }
 /* Le sélecteur d'exercices est une sur-modale (ouvert depuis l'éditeur
    de programme ou la séance) : il passe au-dessus des autres modales. */
 #picker { z-index: 140; }
+
+/* =========================================================
+   V6 — « ATELIER / CRAIE NÉON » : signatures d'écran
+   ========================================================= */
+
+/* Grain photographique très léger sur le thème sombre :
+   il casse l'aplat numérique sans coûter un pixel de perf (SVG inline). */
+.theme-gamifie body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Transitions de vue : courbe expressive, jamais brutale */
+.view.active { animation: view-in 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.995); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Accueil : hero asymétrique + numéral géant ---------- */
+.home-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.home-hero-text { max-width: 640px; }
+
+.streak-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-left: auto;
+  transform: rotate(2deg);          /* le décalage volontaire */
+}
+.streak-num {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 16vw, 9rem);
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--accent);
+}
+.theme-epure .streak-num { -webkit-text-stroke: 0; color: var(--accent); }
+.streak-cap {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+/* CTA « Démarrer » : posé de travers, il se redresse sous le doigt */
+.home-cta { transform: rotate(-1deg); }
+.home-cta:hover { transform: rotate(0deg) translateY(-4px); }
+
+/* ---------- Barre olympique de progression hebdo ---------- */
+.plate-loader { width: min(100%, 300px); margin: 10px 0 6px; }
+.plate-loader svg { width: 100%; height: auto; display: block; overflow: visible; }
+.pl-bar { stroke: var(--text-soft); stroke-width: 5; stroke-linecap: round; opacity: 0.55; }
+.pl-collar { fill: var(--text-soft); }
+.plate {
+  fill: var(--bg-soft);
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+.plate-on {
+  fill: var(--accent);
+  stroke: none;
+  animation: plate-drop 0.5s cubic-bezier(0.22, 1.4, 0.36, 1) backwards;
+}
+.theme-epure .plate-on { fill: var(--accent); }
+@keyframes plate-drop {
+  from { transform: translateY(-14px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* la tuile objectif s'étale, les autres suivent : rythme asymétrique */
+.home-grid { grid-template-columns: 1.6fr 1fr; }
+@media (max-width: 700px) { .home-grid { grid-template-columns: 1fr; } }
+
+/* Clair : chips et pastilles moins « pilule techno », plus papier */
+.theme-epure .chip, .theme-epure .btn, .theme-epure .seg { border-radius: 10px; }
+.theme-epure .search-wrap input, .theme-epure .sessions-controls input[type="search"],
+.theme-epure .sessions-controls select { border-radius: 10px; }
+.theme-epure .goal-ok { color: var(--green); }
