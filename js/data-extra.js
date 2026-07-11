@@ -951,4 +951,79 @@ const EXERCISES_EXTRA = [
   }
 ];
 
+/* Élévation latérale égyptienne : demandée explicitement */
+EXERCISES_EXTRA.push({
+  id: "elevation-laterale-egyptienne",
+  nom: "Élévation latérale égyptienne",
+  groupe: "epaules", materiel: "halteres", niveau: "intermediaire", type: "iso",
+  muscles: "Deltoïde moyen (étirement accru, triche impossible)",
+  description: "Penché sur le côté, une main en appui sur un support : l'élévation latérale unilatérale avec un étirement de départ plus profond et zéro élan possible.",
+  execution: [
+    "Tiens-toi à un montant, incline le corps sur le côté, bras libre avec l'haltère pendu vers le sol.",
+    "Monte le bras tendu (coude souple) jusqu'à l'horizontale.",
+    "Redescends lentement en résistant, sans balancer le buste."
+  ],
+  erreurs: ["Élan du buste.", "Monter au-dessus de l'horizontale.", "Coude complètement verrouillé."],
+  videoQuery: "élévation latérale égyptienne egyptian lateral raise technique"
+});
+
 EXERCISES.push(...EXERCISES_EXTRA);
+
+/* =========================================================
+   Noms alternatifs (FR + EN) : la recherche, le sélecteur
+   et l'anti-doublon reconnaissent l'exercice sous tous
+   ses noms. Complété par ex.alias sur les exos persos.
+   ========================================================= */
+const EXERCISE_ALIASES = {
+  "developpe-couche-barre": ["bench press", "couché à la barre", "développé allongé", "barbell bench"],
+  "developpe-couche-halteres": ["dumbbell bench press", "couché haltères"],
+  "developpe-incline-halteres": ["incline dumbbell press", "incliné haltères"],
+  "developpe-decline-barre": ["decline bench press"],
+  "pompes": ["push up", "push-ups", "pushup"],
+  "pec-deck": ["butterfly", "pec butterfly", "machine fly", "papillon"],
+  "ecarte-halteres": ["dumbbell fly", "flyes", "écartés couchés"],
+  "ecarte-poulie-vis-a-vis": ["cable crossover", "crossover"],
+  "dips-pectoraux": ["chest dips", "répulsions"],
+  "tractions": ["pull up", "pull-ups", "pullup", "barre fixe"],
+  "tractions-supination": ["chin up", "chin-ups", "traction marteau"],
+  "rowing-barre": ["barbell row", "bent over row", "tirage buste penché"],
+  "rowing-haltere": ["dumbbell row", "one arm row", "rowing unilatéral"],
+  "tirage-vertical": ["lat pulldown", "pulldown", "tirage poitrine"],
+  "tirage-horizontal-poulie": ["seated cable row", "low row", "rowing assis"],
+  "souleve-de-terre": ["deadlift", "SDT"],
+  "souleve-terre-roumain": ["romanian deadlift", "RDL", "SDT roumain"],
+  "souleve-terre-sumo": ["sumo deadlift"],
+  "developpe-militaire": ["military press", "overhead press", "OHP", "développé debout"],
+  "developpe-halteres-assis": ["seated dumbbell press", "shoulder press"],
+  "developpe-arnold": ["arnold press"],
+  "elevations-laterales": ["lateral raise", "side raise", "élévations côté"],
+  "elevation-laterale-egyptienne": ["egyptian lateral raise", "égyptien latéral raise", "leaning lateral raise"],
+  "oiseau-halteres": ["reverse fly", "rear delt fly", "bent over raise"],
+  "face-pull": ["facepull", "tirage visage"],
+  "curl-barre": ["barbell curl", "curl ez"],
+  "curl-marteau": ["hammer curl"],
+  "curl-incline": ["incline curl"],
+  "curl-pupitre": ["preacher curl", "curl larry scott"],
+  "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
+  "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "developpe-couche-prise-serree": ["close grip bench press", "CGBP"],
+  "squat-barre": ["back squat", "squat arrière"],
+  "front-squat": ["squat avant", "squat clavicule"],
+  "squat-gobelet": ["goblet squat"],
+  "presse-a-cuisses": ["leg press", "presse inclinée"],
+  "fentes-marchees": ["walking lunges", "lunges", "fentes avant"],
+  "fentes-bulgares": ["bulgarian split squat", "split squat"],
+  "hip-thrust": ["glute bridge barre", "extension de hanches"],
+  "leg-curl": ["lying leg curl", "curl fémoral"],
+  "leg-extension": ["extension de jambes", "quad extension"],
+  "kettlebell-swing": ["russian swing", "swing"],
+  "planche": ["plank", "gainage ventral"],
+  "crunch": ["crunchs", "abdos au sol"],
+  "mollets-debout": ["standing calf raise", "calf raises"],
+  "hyperextension-inversee": ["reverse hyper"]
+};
+
+/* Tous les noms connus d'un exercice (nom + alias intégrés + alias perso) */
+function exAliases(ex) {
+  return (EXERCISE_ALIASES[ex.id] || []).concat(ex.alias || []);
+}

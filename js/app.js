@@ -142,7 +142,7 @@ function renderLibrary() {
     if (g && ex.groupe !== g) return false;
     if (m && ex.materiel !== m) return false;
     if (n && ex.niveau !== n) return false;
-    if (q && !normalize(ex.nom + " " + (ex.muscles || "")).includes(q)) return false;
+    if (q && !normalize(ex.nom + " " + (ex.muscles || "") + " " + exAliases(ex).join(" ")).includes(q)) return false;
     return true;
   });
 
@@ -218,6 +218,7 @@ function openExercise(id) {
       </div>
     </div>
 
+    ${typeof motionSVG === "function" ? motionSVG(ex) : ""}
     ${videoBlock}
 
     <p class="ex-desc">${esc(ex.description || "")}</p>
@@ -302,10 +303,39 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal()
 const addForm = document.getElementById("add-form");
 const addFeedback = document.getElementById("add-feedback");
 
+/* Anti-doublon : si le nom saisi correspond à un exercice existant
+   (même sous un autre nom / en anglais), on propose de l'utiliser. */
+let duplicateOverrideFor = null;
+
+function findDuplicate(nom) {
+  const nomN = normalize(nom);
+  if (nomN.length < 4) return null;
+  return allExercisesForUI().find(e =>
+    [e.nom, ...exAliases(e)].some(n => {
+      const nN = normalize(n);
+      return nN === nomN || (nomN.length >= 6 && (nN.includes(nomN) || nomN.includes(nN)));
+    }));
+}
+
 addForm.addEventListener("submit", e => {
   e.preventDefault();
   const nom = document.getElementById("a-nom").value.trim();
   if (!nom) return;
+
+  const dup = findDuplicate(nom);
+  if (dup && duplicateOverrideFor !== nom) {
+    addFeedback.innerHTML = `« ${esc(nom)} » semble déjà exister sous
+      <strong>« ${esc(dup.nom)} »</strong> —
+      <button type="button" class="linklike" id="dup-open">voir la fiche</button> ·
+      <button type="button" class="linklike" id="dup-force">ajouter quand même</button>`;
+    document.getElementById("dup-open").addEventListener("click", () => openExercise(dup.id));
+    document.getElementById("dup-force").addEventListener("click", () => {
+      duplicateOverrideFor = nom;
+      addForm.requestSubmit();
+    });
+    return;
+  }
+  duplicateOverrideFor = null;
 
   const ex = {
     id: "perso-" + Date.now(),
@@ -318,6 +348,7 @@ addForm.addEventListener("submit", e => {
     description: document.getElementById("a-description").value.trim(),
     execution: [],
     erreurs: [],
+    alias: document.getElementById("a-alias").value.split(",").map(s => s.trim()).filter(Boolean),
     videoUrl: document.getElementById("a-video").value.trim() || null,
     videoQuery: nom + " technique musculation",
     custom: true

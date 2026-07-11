@@ -259,7 +259,16 @@
       <div class="live-header card">
         <div class="live-title-row">
           <h2 id="live-title" class="display-sm">Séance en cours</h2>
-          <span class="live-dot">● EN DIRECT</span>
+          <div class="live-title-actions">
+            <button class="btn-ic" id="live-compact-toggle" title="Mode compact (chrono seul + essentiel)" aria-label="Basculer le mode compact">⌄</button>
+            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause">⏸ Pause</button>
+            <span class="live-dot">● EN DIRECT</span>
+          </div>
+        </div>
+        <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
+        <div id="pause-banner" class="pause-banner hidden">
+          <span>Séance en pause — navigue librement, rien n'est perdu.</span>
+          <button class="btn btn-primary btn-sm" id="pause-resume">▶ Reprendre</button>
         </div>
 
         <div class="live-chronos">
@@ -311,6 +320,7 @@
       <div class="rest-controls">
         <button class="btn btn-ghost" id="rest-minus">−15 s</button>
         <button class="btn btn-ghost" id="rest-plus">+15 s</button>
+        <button class="btn btn-ghost" id="rest-minimize" title="Réduire : le repos continue dans la mini-barre">⌄ Réduire</button>
       </div>
       <button class="btn btn-primary btn-lg" id="rest-resume">Reprendre l'entraînement</button>
     </div>
@@ -389,6 +399,10 @@
           </select>
         </label>
         <label class="span2">
+          Noms alternatifs (optionnel, séparés par des virgules)
+          <input type="text" id="a-alias" placeholder="Ex : bench press, couché à la barre…">
+        </label>
+        <label class="span2">
           Description / conseils d'exécution
           <textarea id="a-description" rows="3" placeholder="Position de départ, mouvement, respiration…"></textarea>
         </label>
@@ -455,6 +469,14 @@
     </div>
   </div>
 
+  <!-- Mini-barre : la séance en cours te suit dans toute l'app -->
+  <button id="live-minibar" class="live-minibar hidden" aria-label="Revenir à la séance en cours">
+    <span class="mb-dot">●</span>
+    <span id="mb-chrono" class="mb-chrono">00:00</span>
+    <span id="mb-status" class="mb-status">Séance en cours</span>
+    <span class="mb-cta">Reprendre</span>
+  </button>
+
   <footer class="footer">
     <p>GYMCOACH — Entraîne-toi intelligemment. Échauffe-toi toujours avant une séance et consulte un professionnel de santé en cas de doute.</p>
   </footer>
@@ -462,6 +484,7 @@
   <script src="js/data.js"></script>
   <script src="js/data-extra.js"></script>
   <script src="js/icons.js"></script>
+  <script src="js/motion.js"></script>
   <script src="js/program.js"></script>
   <script src="js/app.js"></script>
   <script src="js/workout.js"></script>
