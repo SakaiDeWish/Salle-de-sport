@@ -9,10 +9,27 @@
 STORAGE_KEYS.live = "gymcoach.liveSession";
 STORAGE_KEYS.history = "gymcoach.history";
 STORAGE_KEYS.restDefault = "gymcoach.restDefault";
+STORAGE_KEYS.lastWeights = "gymcoach.lastWeights"; // { exId: [{poids, reps} par numéro de série] }
 
-let live = null;      // séance en cours
-let liveTimer = null; // interval d'affichage
-let rest = null;      // { setRef, exName, startAt, targetSec, beeped }
+let live = null;          // séance en cours
+let liveTimer = null;     // interval d'affichage
+let rest = null;          // { setRef, exName, startAt, targetSec, beeped }
+let restMinimized = false; // repos réduit dans la mini-barre
+
+/* Mémoire des charges : ce que tu as mis la dernière fois pour la
+   même combinaison (exercice, numéro de série) — pré-rempli ensuite. */
+function getLastWeights() { return loadJSON(STORAGE_KEYS.lastWeights, {}); }
+function rememberSet(exId, setIndex, poids, reps) {
+  const mem = getLastWeights();
+  (mem[exId] = mem[exId] || [])[setIndex] = { poids, reps };
+  saveJSON(STORAGE_KEYS.lastWeights, mem);
+}
+function recallSet(exId, setIndex) {
+  return (getLastWeights()[exId] || [])[setIndex] || null;
+}
+
+/* Référence temporelle : figée pendant une pause */
+function nowRef() { return (live && live.pausedAt) ? live.pausedAt : Date.now(); }
 
 /* circonférence de l'anneau SVG (r = 88) */
 const RING_CIRC = 2 * Math.PI * 88;
@@ -108,6 +125,8 @@ function startSession(nom, exercises) {
     nom,
     startedAt: Date.now(),
     endedAt: null,
+    pausedAt: null,   // séance en pause ?
+    pauseMs: 0,       // temps total passé en pause (exclu du chrono)
     exercises,
     currentIndex: exercises.length ? 0 : -1
   };
@@ -149,6 +168,8 @@ function showLive() {
   elSetup.classList.add("hidden");
   elSummary.classList.add("hidden");
   elLive.classList.remove("hidden");
+  elLive.classList.toggle("live-compact", localStorage.getItem("gymcoach.liveCompact") === "1");
+  renderPauseState();
   document.getElementById("live-title").textContent = live.nom;
   renderLiveExercises();
   if (liveTimer) clearInterval(liveTimer);
@@ -161,7 +182,7 @@ function totalRestMs() {
   for (const ex of live.exercises)
     for (const s of ex.sets)
       if (s.restAfter) total += s.restAfter * 1000;
-  if (rest) total += Date.now() - rest.startAt;
+  if (rest) total += nowRef() - rest.startAt;
   return total;
 }
 
@@ -171,7 +192,35 @@ function setCount() {
 
 function exerciseElapsed(ex) {
   if (!ex.startedAt) return 0;
-  return (ex.endedAt || Date.now()) - ex.startedAt;
+  return (ex.endedAt || nowRef()) - ex.startedAt;
+}
+
+/* ---------- Pause / reprise ---------- */
+function pauseSession() {
+  if (!live || live.pausedAt) return;
+  live.pausedAt = Date.now();
+  saveLive();
+  renderPauseState();
+}
+
+function resumeSession() {
+  if (!live || !live.pausedAt) return;
+  const d = Date.now() - live.pausedAt;
+  live.pauseMs = (live.pauseMs || 0) + d;
+  const cur = live.exercises[live.currentIndex];
+  if (cur && cur.startedAt && !cur.endedAt) cur.startedAt += d; // le chrono d'exo ignore la pause
+  if (rest) rest.startAt += d;                                   // le repos aussi
+  live.pausedAt = null;
+  saveLive();
+  renderPauseState();
+}
+
+function renderPauseState() {
+  const banner = document.getElementById("pause-banner");
+  const btn = document.getElementById("live-pause");
+  if (banner) banner.classList.toggle("hidden", !live || !live.pausedAt);
+  if (btn) btn.classList.toggle("hidden", !live || !!live.pausedAt);
+  tick();
 }
 
 /* Progression type NTC : « Exercice X / Y » + barre globale */
@@ -189,7 +238,7 @@ function updateProgress() {
 
 function tick() {
   if (!live) return;
-  document.getElementById("chrono-session").textContent = fmtClock(Date.now() - live.startedAt);
+  document.getElementById("chrono-session").textContent = fmtClock(nowRef() - live.startedAt - (live.pauseMs || 0));
   document.getElementById("chrono-rest-total").textContent = fmtClock(totalRestMs());
   document.getElementById("live-set-count").textContent = setCount();
 
@@ -199,9 +248,11 @@ function tick() {
     if (el) el.textContent = fmtClock(exerciseElapsed(ex));
   });
 
+  updateMinibar();
+
   // minuteur de repos + anneau de progression
   if (rest) {
-    const elapsed = (Date.now() - rest.startAt) / 1000;
+    const elapsed = (nowRef() - rest.startAt) / 1000;
     const remaining = rest.targetSec - elapsed;
     const cd = document.getElementById("rest-countdown");
     const ring = document.getElementById("rest-ring");
@@ -224,6 +275,35 @@ function tick() {
     }
   }
 }
+
+/* Mini-barre flottante : la séance te suit partout dans l'app
+   (pause, repos réduit, ou navigation sur un autre onglet). */
+function updateMinibar() {
+  const bar = document.getElementById("live-minibar");
+  if (!bar) return;
+  const onSeance = document.getElementById("view-seance").classList.contains("active");
+  const show = !!live && (!!live.pausedAt || !onSeance || (rest && restMinimized));
+  bar.classList.toggle("hidden", !show);
+  if (!show) return;
+  const chrono = fmtClock(nowRef() - live.startedAt - (live.pauseMs || 0));
+  let status = "Séance en cours";
+  if (live.pausedAt) status = "En pause";
+  else if (rest) {
+    const remaining = rest.targetSec - (nowRef() - rest.startAt) / 1000;
+    status = remaining > 0 ? "Repos " + fmtSec(Math.ceil(remaining)) : "Repos terminé !";
+  }
+  document.getElementById("mb-chrono").textContent = chrono;
+  document.getElementById("mb-status").textContent = status;
+}
+
+document.getElementById("live-minibar").addEventListener("click", () => {
+  activateView("seance");
+  if (live) {
+    showLive();
+    if (rest && restMinimized) { restMinimized = false; elRestOverlay.classList.remove("hidden"); }
+    if (live.pausedAt) resumeSession();
+  }
+});
 
 function renderLiveExercises() {
   if (live.exercises.length === 0) {
@@ -268,9 +348,15 @@ function renderLiveExercises() {
         </tbody>
       </table>` : ""}
 
+      ${(() => {
+        const mem = recallSet(ex.exId, ex.sets.length);
+        return mem ? `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong></p>` : "";
+      })()}
       <div class="set-form">
-        <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes">
-        <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions">
+        <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
+          value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
+        <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
+          value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
         <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
@@ -355,11 +441,13 @@ function validateSet(i) {
 
   const set = { poids: isNaN(poids) ? null : poids, reps, doneAt: now, restAfter: null };
   ex.sets.push(set);
+  rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps); // mémoire (exo, série N)
   saveLive();
   renderLiveExercises();
 
   // lance le minuteur de repos
   rest = { setRef: { exIndex: i, setIndex: ex.sets.length - 1 }, exName: ex.nom, startAt: now, targetSec: ex.restSec, beeped: false };
+  restMinimized = false;
   document.getElementById("rest-exercise-name").textContent = ex.nom + " — série " + ex.sets.length + " terminée";
   elRestOverlay.classList.remove("hidden");
   tick();
@@ -367,7 +455,8 @@ function validateSet(i) {
 
 function endRest() {
   if (!rest) return;
-  const actual = Math.round((Date.now() - rest.startAt) / 1000);
+  restMinimized = false;
+  const actual = Math.round((nowRef() - rest.startAt) / 1000);
   const ex = live.exercises[rest.setRef.exIndex];
   if (ex && ex.sets[rest.setRef.setIndex]) ex.sets[rest.setRef.setIndex].restAfter = actual;
   rest = null;
@@ -377,6 +466,13 @@ function endRest() {
 }
 
 document.getElementById("rest-resume").addEventListener("click", endRest);
+/* Réduire le repos : le compte continue dans la mini-barre, on peut
+   naviguer librement (fiche, historique, nutrition…) sans le perdre. */
+document.getElementById("rest-minimize").addEventListener("click", () => {
+  restMinimized = true;
+  elRestOverlay.classList.add("hidden");
+  tick();
+});
 document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; tick(); } });
 document.getElementById("rest-minus").addEventListener("click", () => { if (rest) { rest.targetSec = Math.max(5, rest.targetSec - 15); tick(); } });
 
@@ -399,7 +495,7 @@ function closePicker() { elPicker.classList.add("hidden"); }
 function renderPickerList(query) {
   const q = normalize(query.trim());
   const list = allExercisesForUI().filter(ex =>
-    !q || normalize(ex.nom + " " + (ex.muscles || "") + " " + (LABELS.groupes[ex.groupe] || "")).includes(q)
+    !q || normalize(ex.nom + " " + (ex.muscles || "") + " " + (LABELS.groupes[ex.groupe] || "") + " " + exAliases(ex).join(" ")).includes(q)
   ).slice(0, 40);
   document.getElementById("picker-list").innerHTML = list.map(ex => `
     <button class="picker-item" data-exid="${esc(ex.id)}">
@@ -432,7 +528,10 @@ function buildSuggestions() {
   const equip = { salle: null, halteres: ["halteres", "poids-du-corps"],
                   corps: ["poids-du-corps"] }[profil.materiel] ?? null;
   const ok = e => (!levels || levels.includes(e.niveau)) && (!equip || equip.includes(e.materiel));
-  const pool = allExercisesForUI().filter(ok);
+  // en salle complète, on met les machines en avant : dispo garantie,
+  // apprentissage sûr, et ça varie des barres déjà faites
+  const pool = allExercisesForUI().filter(ok)
+    .sort((a, b) => (b.materiel === "machine" ? 1 : 0) - (a.materiel === "machine" ? 1 : 0));
   // la liste reste stable même après ajout : les items ajoutés s'affichent cochés
   const pick = (g, type, taken) =>
     pool.find(e => e.groupe === g && e.type === type && !taken.has(e.id));
@@ -497,6 +596,15 @@ document.getElementById("picker-backdrop").addEventListener("click", closePicker
 document.getElementById("live-add-ex").addEventListener("click", openPicker);
 
 /* ---------- Fin de séance ---------- */
+document.getElementById("live-pause").addEventListener("click", pauseSession);
+document.getElementById("pause-resume").addEventListener("click", resumeSession);
+/* Mode compact : chrono seul + cartes réduites à l'essentiel
+   (série / reps / poids / repos). Mémorisé. */
+document.getElementById("live-compact-toggle").addEventListener("click", () => {
+  const on = !elLive.classList.contains("live-compact");
+  elLive.classList.toggle("live-compact", on);
+  localStorage.setItem("gymcoach.liveCompact", on ? "1" : "0");
+});
 document.getElementById("live-finish").addEventListener("click", finishSession);
 document.getElementById("live-abort").addEventListener("click", () => {
   if (!confirm("Abandonner la séance ? Rien ne sera enregistré.")) return;
@@ -507,6 +615,7 @@ document.getElementById("live-abort").addEventListener("click", () => {
 });
 
 function finishSession() {
+  if (live && live.pausedAt) resumeSession(); // solde la pause avant de figer les temps
   if (rest) endRest();
   const now = Date.now();
   const cur = live.exercises[live.currentIndex];
@@ -519,7 +628,7 @@ function finishSession() {
     id: "seance-" + now,
     nom: live.nom,
     date: now,
-    dureeMs: now - live.startedAt,
+    dureeMs: now - live.startedAt - (live.pauseMs || 0),
     reposMs: totalRestMs(),
     statut: "Terminée",
     objectifLabel: program ? program.objectifLabel : null,

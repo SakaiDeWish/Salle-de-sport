@@ -1497,3 +1497,123 @@ textarea { min-height: 90px; resize: vertical; }
 .theme-epure .search-wrap input, .theme-epure .sessions-controls input[type="search"],
 .theme-epure .sessions-controls select { border-radius: 10px; }
 .theme-epure .goal-ok { color: var(--green); }
+
+/* =========================================================
+   V7 — MODE « EN SALLE » : pause, mini-barre, compact,
+   mémoire des charges, schémas animés du mouvement
+   ========================================================= */
+
+/* Bannière de pause */
+.live-title-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pause-banner {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: var(--accent-soft);
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 0.9rem; font-weight: 600;
+}
+
+/* Mini-barre flottante : la séance te suit partout */
+.live-minibar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(74px + env(safe-area-inset-bottom)); /* au-dessus de la bottom-nav mobile */
+  z-index: 90;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  padding: 10px 18px;
+  min-height: 48px;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  animation: view-in 0.3s ease;
+}
+@media (min-width: 761px) { .live-minibar { bottom: 20px; } }
+.mb-dot { color: var(--red); animation: pulse 1.6s infinite; font-size: 0.7rem; }
+.mb-chrono { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 1.05rem; }
+.mb-status { color: var(--text-soft); font-size: 0.82rem; font-weight: 600; }
+.mb-cta {
+  background: var(--accent-grad);
+  color: var(--accent-contrast);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+/* Mémoire des charges */
+.last-hint { color: var(--text-soft); font-size: 0.8rem; margin-top: 10px; }
+.last-hint strong { color: var(--accent-2); }
+.theme-epure .last-hint strong { color: var(--accent); }
+
+/* Mode compact : chrono seul, cartes à l'essentiel */
+.live-compact .live-chronos .chrono-block:not(.chrono-main) { display: none; }
+.live-compact .chrono-main .chrono-value { font-size: 2.1rem; }
+.live-compact .live-progress .progress-label { display: none; }
+.live-compact .live-header { padding: 14px 18px; }
+.live-compact .live-ex .day-focus { display: none; }
+.live-compact .live-ex .sets-table tbody tr:not(:last-child) { display: none; }
+.live-compact .live-ex .sets-table thead { display: none; }
+.live-compact .live-ex { padding: 14px; }
+#live-compact-toggle { transition: transform 0.25s ease; }
+.live-compact #live-compact-toggle { transform: rotate(180deg); }
+
+/* Schéma animé du mouvement */
+.motion-wrap {
+  position: relative;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  padding: 8px;
+}
+.motion-wrap svg { width: 100%; max-height: 150px; display: block; }
+.motion-tag {
+  position: absolute; top: 10px; right: 12px;
+  font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-soft);
+}
+.mo-ground { stroke: var(--border); stroke-width: 2.5; stroke-linecap: round; }
+.mo-body, .mo-limb { stroke: var(--text-soft); stroke-width: 3.4; stroke-linecap: round; fill: none; }
+.mo-head { fill: none; stroke: var(--text-soft); stroke-width: 3; }
+.mo-bar { stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.mo-plate { fill: var(--accent); }
+.mo-move .mo-limb { stroke: var(--text); }
+
+/* Cycles de répétition : 1,8 s aller-retour, ease naturel */
+@keyframes mo-updown { from { transform: translateY(0); } to { transform: translateY(-16px); } }
+@keyframes mo-press { from { transform: translateY(10px); } to { transform: translateY(-10px); } }
+@keyframes mo-pullup { from { transform: translateY(14px); } to { transform: translateY(0); } }
+@keyframes mo-row { from { transform: translateY(0); } to { transform: translateY(-14px); } }
+@keyframes mo-squat { from { transform: translateY(0); } to { transform: translateY(16px); } }
+@keyframes mo-hinge { from { transform: rotate(0deg); } to { transform: rotate(70deg); } }
+@keyframes mo-bridge { from { transform: rotate(14deg); } to { transform: rotate(0deg); } }
+@keyframes mo-curl { from { transform: rotate(0deg); } to { transform: rotate(-95deg); } }
+@keyframes mo-ext { from { transform: rotate(60deg); } to { transform: rotate(0deg); } }
+@keyframes mo-raise { from { transform: rotate(35deg); } to { transform: rotate(-12deg); } }
+@keyframes mo-flyL { from { transform: rotate(-55deg); } to { transform: rotate(0deg); } }
+@keyframes mo-flyR { from { transform: rotate(55deg); } to { transform: rotate(0deg); } }
+@keyframes mo-crunch { from { transform: rotate(0deg); } to { transform: rotate(-32deg); } }
+@keyframes mo-plank { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+@keyframes mo-calf { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+
+.mo-anim-updown { animation: mo-updown 1.8s ease-in-out infinite alternate; }
+.mo-anim-press { animation: mo-press 1.8s ease-in-out infinite alternate; }
+.mo-anim-pullup { animation: mo-pullup 1.8s ease-in-out infinite alternate; }
+.mo-anim-row { animation: mo-row 1.6s ease-in-out infinite alternate; }
+.mo-anim-squat { animation: mo-squat 1.9s ease-in-out infinite alternate; }
+.mo-anim-hinge { animation: mo-hinge 1.9s ease-in-out infinite alternate; }
+.mo-anim-bridge { animation: mo-bridge 1.7s ease-in-out infinite alternate; }
+.mo-anim-curl { animation: mo-curl 1.5s ease-in-out infinite alternate; }
+.mo-anim-ext { animation: mo-ext 1.5s ease-in-out infinite alternate; }
+.mo-anim-raise { animation: mo-raise 1.7s ease-in-out infinite alternate; }
+.mo-anim-flyL { animation: mo-flyL 1.8s ease-in-out infinite alternate; }
+.mo-anim-flyR { animation: mo-flyR 1.8s ease-in-out infinite alternate; }
+.mo-anim-crunch { animation: mo-crunch 1.6s ease-in-out infinite alternate; }
+.mo-anim-plank { animation: mo-plank 1.2s ease-in-out infinite alternate; }
+.mo-anim-calf { animation: mo-calf 1.3s ease-in-out infinite alternate; }
