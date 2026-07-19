@@ -27,11 +27,13 @@ function guessPattern(ex) {
         ? "pull-v"
         : (n.includes("souleve") || n.includes("rack")) ? "hinge" : "pull-h";
     case "quadriceps":
-      return "squat";
+      return n.includes("flexion de hanche") ? "leg-swing" : "squat";
     case "ischios-fessiers":
-      return (n.includes("souleve") || n.includes("good morning") || n.includes("swing") || n.includes("nordic"))
-        ? "hinge"
-        : (n.includes("hip thrust") || n.includes("pont")) ? "bridge" : "squat";
+      if (n.includes("souleve") || n.includes("good morning") || n.includes("swing") || n.includes("pull-through") || n.includes("pull through") || n.includes("nordic")) return "hinge";
+      if (n.includes("hip thrust") || n.includes("pont") || n.includes("frog pump")) return "bridge";
+      if (n.includes("donkey") || n.includes("fire hydrant") || n.includes("kickback") || n.includes("extension de hanche au banc")) return "kick";
+      if (n.includes("abduction") || n.includes("adduction") || n.includes("clamshell") || n.includes("marche laterale")) return "leg-swing";
+      return "squat";
     default: return "push-v";
   }
 }
@@ -187,6 +189,29 @@ const MOTION_SCENES = {
       <line class="mo-body" x1="70" y1="82" x2="150" y2="90"/>
       <line class="mo-limb" x1="80" y1="84" x2="78" y2="104"/>
       <line class="mo-limb" x1="150" y1="90" x2="158" y2="104"/>
+    </g>`,
+  /* abduction / adduction : jambe qui balance depuis la hanche */
+  "leg-swing": `
+    <line class="mo-ground" x1="40" y1="110" x2="180" y2="110"/>
+    <line class="mo-ground" x1="66" y1="42" x2="66" y2="110"/>
+    <circle class="mo-head" cx="98" cy="30" r="8"/>
+    <line class="mo-body" x1="98" y1="38" x2="98" y2="78"/>
+    <line class="mo-limb" x1="98" y1="50" x2="68" y2="58"/>
+    <line class="mo-body" x1="98" y1="78" x2="94" y2="110"/>
+    <g class="mo-move mo-anim-legswing" style="transform-origin:98px 78px">
+      <line class="mo-limb" x1="98" y1="78" x2="106" y2="110"/>
+      <rect class="mo-plate" x="101" y="103" width="11" height="8" rx="2"/>
+    </g>`,
+  /* kickback / donkey kick : quadrupédie, jambe qui rue vers l'arrière */
+  "kick": `
+    <line class="mo-ground" x1="30" y1="104" x2="190" y2="104"/>
+    <circle class="mo-head" cx="60" cy="64" r="7"/>
+    <line class="mo-body" x1="68" y1="68" x2="124" y2="70"/>
+    <line class="mo-limb" x1="78" y1="70" x2="78" y2="104"/>
+    <line class="mo-body" x1="120" y1="70" x2="124" y2="104"/>
+    <g class="mo-move mo-anim-kick" style="transform-origin:124px 72px">
+      <line class="mo-limb" x1="124" y1="72" x2="158" y2="86"/>
+      <rect class="mo-plate" x="152" y="80" width="11" height="8" rx="2"/>
     </g>`,
   /* extensions mollets */
   "calf": `

@@ -494,9 +494,7 @@ function closePicker() { elPicker.classList.add("hidden"); }
 
 function renderPickerList(query) {
   const q = normalize(query.trim());
-  const list = allExercisesForUI().filter(ex =>
-    !q || normalize(ex.nom + " " + (ex.muscles || "") + " " + (LABELS.groupes[ex.groupe] || "") + " " + exAliases(ex).join(" ")).includes(q)
-  ).slice(0, 40);
+  const list = allExercisesForUI().filter(ex => !q || exMatches(ex, q)).slice(0, 40);
   document.getElementById("picker-list").innerHTML = list.map(ex => `
     <button class="picker-item" data-exid="${esc(ex.id)}">
       <span><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)}</span>

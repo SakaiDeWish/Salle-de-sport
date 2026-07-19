@@ -142,7 +142,7 @@ function renderLibrary() {
     if (g && ex.groupe !== g) return false;
     if (m && ex.materiel !== m) return false;
     if (n && ex.niveau !== n) return false;
-    if (q && !normalize(ex.nom + " " + (ex.muscles || "") + " " + exAliases(ex).join(" ")).includes(q)) return false;
+    if (q && !exMatches(ex, q)) return false;
     return true;
   });
 

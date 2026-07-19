@@ -1601,6 +1601,8 @@ textarea { min-height: 90px; resize: vertical; }
 @keyframes mo-crunch { from { transform: rotate(0deg); } to { transform: rotate(-32deg); } }
 @keyframes mo-plank { from { transform: translateY(0); } to { transform: translateY(-2px); } }
 @keyframes mo-calf { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+@keyframes mo-legswing { from { transform: rotate(0deg); } to { transform: rotate(-48deg); } }
+@keyframes mo-kick { from { transform: rotate(34deg); } to { transform: rotate(-14deg); } }
 
 .mo-anim-updown { animation: mo-updown 1.8s ease-in-out infinite alternate; }
 .mo-anim-press { animation: mo-press 1.8s ease-in-out infinite alternate; }
@@ -1617,3 +1619,5 @@ textarea { min-height: 90px; resize: vertical; }
 .mo-anim-crunch { animation: mo-crunch 1.6s ease-in-out infinite alternate; }
 .mo-anim-plank { animation: mo-plank 1.2s ease-in-out infinite alternate; }
 .mo-anim-calf { animation: mo-calf 1.3s ease-in-out infinite alternate; }
+.mo-anim-legswing { animation: mo-legswing 1.6s ease-in-out infinite alternate; }
+.mo-anim-kick { animation: mo-kick 1.6s ease-in-out infinite alternate; }

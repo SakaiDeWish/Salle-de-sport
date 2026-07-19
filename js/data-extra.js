@@ -970,6 +970,257 @@ EXERCISES_EXTRA.push({
 EXERCISES.push(...EXERCISES_EXTRA);
 
 /* =========================================================
+   La hanche sous toutes les coutures : hip thrust et
+   variantes, abduction/adduction (machines, poulie, sol),
+   kickbacks, pull-through, unilatéral. Complète la famille
+   fessiers/adducteurs/fléchisseurs de hanche.
+   ========================================================= */
+const EXERCISES_HIP = [
+
+  {
+    id: "hip-thrust-machine",
+    nom: "Hip thrust à la machine",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Fessiers (maximal), ischios",
+    description: "La version guidée du hip thrust : installation rapide, dos calé, charge stable. Idéale pour progresser lourd sans gérer une barre.",
+    execution: [
+      "Règle le dossier pour que l'appui tombe sous les omoplates, coussin sur les hanches.",
+      "Pieds à plat largeur de hanches, tibias verticaux en haut du mouvement.",
+      "Pousse les hanches vers le plafond jusqu'à l'alignement épaules-hanches-genoux.",
+      "Serre les fessiers 1 seconde en haut, redescends en contrôlant sans reposer la charge."
+    ],
+    erreurs: ["Hyper-extension du bas du dos en haut.", "Pousser sur les pointes de pieds.", "Amplitude écourtée en haut."],
+    videoQuery: "hip thrust machine technique fessiers"
+  },
+  {
+    id: "hip-thrust-unilateral",
+    nom: "Hip thrust unilatéral",
+    groupe: "ischios-fessiers", materiel: "halteres", niveau: "intermediaire", type: "poly",
+    muscles: "Fessier (une jambe), ischios, stabilisateurs de hanche",
+    description: "Le hip thrust sur une jambe : corrige les asymétries et intensifie le travail du fessier sans charge lourde.",
+    execution: [
+      "Haut du dos calé sur un banc, un haltère posé sur la hanche de la jambe de travail.",
+      "L'autre jambe tendue ou genou vers la poitrine.",
+      "Pousse la hanche vers le plafond avec le talon au sol, bassin bien horizontal.",
+      "Marque 1 seconde en haut puis redescends lentement."
+    ],
+    erreurs: ["Bassin qui tourne d'un côté.", "Pousser avec le mollet plutôt que le fessier.", "Aller trop vite."],
+    videoQuery: "single leg hip thrust technique"
+  },
+  {
+    id: "frog-pumps",
+    nom: "Frog pumps",
+    groupe: "ischios-fessiers", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Fessiers (grand fessier), rotateurs externes de hanche",
+    description: "Pont fessier plantes de pieds jointes, genoux ouverts : la rotation externe de hanche cible directement le grand fessier. Parfait en fin de séance ou en activation.",
+    execution: [
+      "Allongé au sol, plantes de pieds l'une contre l'autre, genoux ouverts vers l'extérieur.",
+      "Menton rentré, bas du dos plaqué au sol.",
+      "Pousse les hanches vers le plafond en serrant fort les fessiers.",
+      "Enchaîne des répétitions rythmées sans reposer complètement le bassin."
+    ],
+    erreurs: ["Cambrer le bas du dos.", "Fermer les genoux pendant la montée.", "Amplitude trop courte."],
+    videoQuery: "frog pumps technique fessiers"
+  },
+  {
+    id: "pull-through-poulie",
+    nom: "Pull-through à la poulie",
+    groupe: "ischios-fessiers", materiel: "poulie", niveau: "debutant", type: "poly",
+    muscles: "Fessiers, ischios, lombaires (gainage)",
+    description: "Une extension de hanche à la corde, dos à la poulie basse : le geste du soulevé de terre avec une tension continue et sans stress lombaire. Excellent pour apprendre le hinge.",
+    execution: [
+      "Dos à la poulie basse, corde saisie entre les jambes, quelques pas en avant.",
+      "Pieds largeur d'épaules, genoux souples.",
+      "Pousse les hanches vers l'arrière en gardant le dos plat, la corde passe entre les cuisses.",
+      "Reviens debout en contractant les fessiers, sans tirer avec les bras."
+    ],
+    erreurs: ["Tirer avec les bras ou le dos.", "Fléchir les genoux comme un squat.", "S'arrêter avant l'extension complète de hanche."],
+    videoQuery: "cable pull through technique fessiers"
+  },
+  {
+    id: "souleve-terre-unijambiste",
+    nom: "Soulevé de terre unijambiste",
+    groupe: "ischios-fessiers", materiel: "halteres", niveau: "intermediaire", type: "poly",
+    muscles: "Ischios, fessier, stabilisateurs de hanche et de cheville",
+    description: "Le hinge sur une jambe : étirement profond des ischios, équilibre et symétrie droite/gauche. Un haltère suffit.",
+    execution: [
+      "Debout sur une jambe, haltère dans la main opposée (ou les deux mains).",
+      "Penche le buste vers l'avant en poussant la hanche vers l'arrière, jambe libre tendue derrière.",
+      "Descends jusqu'à sentir l'étirement de l'ischio, dos plat, hanches horizontales.",
+      "Reviens debout en serrant le fessier de la jambe d'appui."
+    ],
+    erreurs: ["Ouvrir la hanche de la jambe libre vers le plafond.", "Arrondir le dos.", "Verrouiller le genou d'appui."],
+    videoQuery: "soulevé de terre unijambiste single leg RDL technique"
+  },
+  {
+    id: "adduction-machine",
+    nom: "Adduction à la machine",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "debutant", type: "iso",
+    muscles: "Adducteurs (intérieur des cuisses)",
+    description: "Le pendant de l'abduction : on serre les jambes contre la résistance pour renforcer l'intérieur des cuisses, stabilisateur clé du squat et des fentes.",
+    execution: [
+      "Assis, jambes écartées contre les coussins, dos collé au dossier.",
+      "Serre les jambes l'une vers l'autre en expirant, sans à-coups.",
+      "Marque un temps jambes serrées.",
+      "Rouvre lentement en retenant la charge, sans claquer les plaques."
+    ],
+    erreurs: ["Amplitude de départ excessive (étirement forcé).", "Mouvement balistique.", "Décoller le bassin du siège."],
+    videoQuery: "adduction machine technique adducteurs"
+  },
+  {
+    id: "abduction-hanche-poulie",
+    nom: "Abduction de hanche à la poulie",
+    groupe: "ischios-fessiers", materiel: "poulie", niveau: "debutant", type: "iso",
+    muscles: "Moyen fessier, tenseur du fascia lata",
+    description: "Debout, une sangle à la cheville : la jambe s'écarte contre la résistance. Cible le moyen fessier, celui qui dessine le galbe latéral et stabilise le bassin.",
+    execution: [
+      "Sangle à la cheville extérieure, côté opposé à la poulie basse, main sur le montant.",
+      "Buste droit, jambe de travail tendue, pointe de pied vers l'avant.",
+      "Écarte la jambe sur le côté sans pencher le buste.",
+      "Reviens lentement sans reposer la tension."
+    ],
+    erreurs: ["Pencher le buste pour monter plus haut.", "Ouvrir la pointe de pied vers le plafond.", "Élan du bassin."],
+    videoQuery: "abduction hanche poulie cable hip abduction technique"
+  },
+  {
+    id: "adduction-hanche-poulie",
+    nom: "Adduction de hanche à la poulie",
+    groupe: "ischios-fessiers", materiel: "poulie", niveau: "intermediaire", type: "iso",
+    muscles: "Adducteurs (intérieur des cuisses)",
+    description: "La jambe intérieure croise devant l'autre contre la résistance : un travail d'adducteurs en amplitude complète, débout et fonctionnel.",
+    execution: [
+      "Sangle à la cheville intérieure, côté poulie basse, main sur le montant.",
+      "Laisse la jambe de travail s'écarter vers la poulie (étirement contrôlé).",
+      "Ramène la jambe vers l'intérieur en croisant légèrement devant la jambe d'appui.",
+      "Reviens lentement en retenant la charge."
+    ],
+    erreurs: ["Buste qui penche pour compenser.", "Charge trop lourde (élan).", "Amplitude écourtée au retour."],
+    videoQuery: "adduction hanche poulie cable hip adduction technique"
+  },
+  {
+    id: "kickback-fessier-machine",
+    nom: "Kickback fessier à la machine",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "debutant", type: "iso",
+    muscles: "Grand fessier, ischios",
+    description: "L'extension de hanche guidée, debout : on pousse la plateforme vers l'arrière avec le talon. Isolation du fessier avec une charge facile à régler.",
+    execution: [
+      "Buste appuyé sur les coussins, mains sur les poignées, un pied sur la plateforme.",
+      "Pousse la plateforme vers l'arrière avec le talon jusqu'à l'extension complète de hanche.",
+      "Serre le fessier 1 seconde en fin de mouvement.",
+      "Reviens lentement sans reposer complètement la charge."
+    ],
+    erreurs: ["Cambrer le bas du dos en fin de poussée.", "Pousser avec la pointe de pied.", "Amplitude incomplète."],
+    videoQuery: "glute kickback machine technique fessiers"
+  },
+  {
+    id: "donkey-kicks",
+    nom: "Donkey kicks",
+    groupe: "ischios-fessiers", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Grand fessier",
+    description: "À quatre pattes, le talon monte vers le plafond genou fléchi : la ruade. Simple, sans matériel, redoutable en séries longues ou avec lest à la cheville.",
+    execution: [
+      "À quatre pattes, mains sous les épaules, genoux sous les hanches, dos neutre.",
+      "Genou fléchi à 90°, monte le talon vers le plafond en serrant le fessier.",
+      "Arrête-toi quand la cuisse est dans l'alignement du dos.",
+      "Redescends sans poser le genou et enchaîne."
+    ],
+    erreurs: ["Cambrer le dos pour monter plus haut.", "Ouvrir la hanche sur le côté.", "Balancer le bassin."],
+    videoQuery: "donkey kicks technique fessiers"
+  },
+  {
+    id: "fire-hydrant",
+    nom: "Fire hydrant",
+    groupe: "ischios-fessiers", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Moyen fessier, rotateurs externes de hanche",
+    description: "À quatre pattes, le genou s'ouvre sur le côté : l'abduction en quadrupédie. Complément parfait des donkey kicks pour cibler le moyen fessier.",
+    execution: [
+      "À quatre pattes, mains sous les épaules, genoux sous les hanches.",
+      "Genou fléchi à 90°, ouvre la jambe sur le côté sans bouger le buste.",
+      "Monte jusqu'à la hauteur de hanche maximum, sans basculer le bassin.",
+      "Redescends lentement sans reposer le genou."
+    ],
+    erreurs: ["Basculer tout le buste sur le côté.", "Aller trop vite.", "Cambrer le bas du dos."],
+    videoQuery: "fire hydrant exercice fessiers technique"
+  },
+  {
+    id: "clamshell",
+    nom: "Clamshell",
+    groupe: "ischios-fessiers", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Moyen fessier, rotateurs externes de hanche",
+    description: "Allongé sur le côté, genoux fléchis, le genou du dessus s'ouvre comme un coquillage. L'exercice d'activation et de santé de hanche par excellence, encore mieux avec un élastique.",
+    execution: [
+      "Allongé sur le côté, hanches fléchies à 45°, genoux à 90°, pieds joints.",
+      "Garde les pieds en contact et ouvre le genou du dessus vers le plafond.",
+      "Le bassin reste empilé, sans rouler vers l'arrière.",
+      "Referme lentement. Ajoute un élastique au-dessus des genoux pour durcir."
+    ],
+    erreurs: ["Rouler le bassin vers l'arrière.", "Amplitude forcée.", "Aller trop vite pour sentir le fessier."],
+    videoQuery: "clamshell exercice moyen fessier technique"
+  },
+  {
+    id: "marche-laterale-elastique",
+    nom: "Marche latérale avec élastique",
+    groupe: "ischios-fessiers", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Moyen fessier, stabilisateurs du bassin",
+    description: "Élastique au-dessus des genoux ou aux chevilles, on marche en crabe en gardant la tension : activation des fessiers avant squat/fentes, ou finisher qui brûle.",
+    execution: [
+      "Élastique au-dessus des genoux (facile) ou aux chevilles (dur), pieds largeur de hanches.",
+      "Demi-squat léger, buste droit, tension constante dans l'élastique.",
+      "Fais des pas latéraux contrôlés d'un côté, puis reviens de l'autre.",
+      "Ne laisse jamais les genoux rentrer vers l'intérieur."
+    ],
+    erreurs: ["Pieds qui se rejoignent (perte de tension).", "Se redresser complètement entre les pas.", "Genoux qui rentrent."],
+    videoQuery: "marche latérale élastique lateral band walk technique"
+  },
+  {
+    id: "fente-croisee",
+    nom: "Fente croisée (curtsy lunge)",
+    groupe: "ischios-fessiers", materiel: "halteres", niveau: "intermediaire", type: "poly",
+    muscles: "Moyen et grand fessier, quadriceps, adducteurs",
+    description: "La jambe arrière croise derrière la jambe d'appui, comme une révérence : l'angle inhabituel charge le moyen fessier plus qu'une fente classique.",
+    execution: [
+      "Debout, haltères en mains le long du corps.",
+      "Recule une jambe en diagonale derrière l'autre, comme une révérence.",
+      "Descends jusqu'à ce que le genou arrière frôle le sol, buste droit.",
+      "Repousse sur le talon avant pour revenir debout, puis alterne."
+    ],
+    erreurs: ["Genou avant qui s'effondre vers l'intérieur.", "Buste qui tourne avec la jambe.", "Pas trop court."],
+    videoQuery: "curtsy lunge fente croisée technique fessiers"
+  },
+  {
+    id: "flexion-hanche-poulie",
+    nom: "Flexion de hanche à la poulie",
+    groupe: "quadriceps", materiel: "poulie", niveau: "intermediaire", type: "iso",
+    muscles: "Fléchisseurs de hanche (psoas), quadriceps",
+    description: "Sangle à la cheville, on monte le genou contre la résistance : le psoas est le grand oublié de la salle, pourtant décisif pour le sprint, les abdos et la santé de hanche.",
+    execution: [
+      "Dos à la poulie basse, sangle à la cheville, main sur un support.",
+      "Buste droit et gainé, monte le genou vers la poitrine contre la résistance.",
+      "Dépasse l'horizontale de la cuisse si possible.",
+      "Redescends lentement sans reposer la tension entre les répétitions."
+    ],
+    erreurs: ["Se pencher en arrière pour monter le genou.", "Élan du bassin.", "Amplitude écourtée sous l'horizontale."],
+    videoQuery: "flexion de hanche poulie hip flexion psoas technique"
+  },
+  {
+    id: "extension-hanche-banc",
+    nom: "Extension de hanche au banc (frog reverse hyper)",
+    groupe: "ischios-fessiers", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Grand fessier, ischios, lombaires (léger)",
+    description: "Allongé à plat ventre sur un banc, buste tenu, les jambes montent derrière par la seule force des fessiers. Une reverse hyper accessible sans machine dédiée.",
+    execution: [
+      "À plat ventre sur un banc, crêtes de hanche au bord, mains agrippées sous le banc.",
+      "Jambes fléchies genoux ouverts (version frog) ou tendues serrées.",
+      "Monte les talons vers le plafond en serrant les fessiers, sans cambrer violemment.",
+      "Redescends lentement jusqu'à la verticale et enchaîne."
+    ],
+    erreurs: ["Donner de l'élan avec le dos.", "Monter au-delà de l'alignement du buste.", "Relâcher les fessiers en haut."],
+    videoQuery: "frog reverse hyper banc extension hanche fessiers"
+  }
+];
+EXERCISES.push(...EXERCISES_HIP);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1013,7 +1264,26 @@ const EXERCISE_ALIASES = {
   "presse-a-cuisses": ["leg press", "presse inclinée"],
   "fentes-marchees": ["walking lunges", "lunges", "fentes avant"],
   "fentes-bulgares": ["bulgarian split squat", "split squat"],
-  "hip-thrust": ["glute bridge barre", "extension de hanches"],
+  "hip-thrust": ["glute bridge barre", "extension de hanches", "hip trust", "barbell hip thrust"],
+  "hip-thrust-machine": ["machine hip thrust", "hip thrust guidé", "hip trust machine"],
+  "hip-thrust-unilateral": ["single leg hip thrust", "hip thrust une jambe", "b-stance hip thrust"],
+  "pont-fessier": ["glute bridge", "pont", "relevé de bassin"],
+  "frog-pumps": ["frog pump", "pont grenouille"],
+  "pull-through-poulie": ["cable pull through", "pull through", "tirage entre les jambes"],
+  "souleve-terre-unijambiste": ["single leg deadlift", "single leg RDL", "SDT unijambiste", "soulevé de terre une jambe"],
+  "abduction-machine": ["hip abduction", "machine à abduction", "abducteurs assis", "écartement des jambes"],
+  "adduction-machine": ["hip adduction", "machine à adduction", "adducteurs assis", "serrage des jambes"],
+  "abduction-hanche-poulie": ["cable hip abduction", "abduction debout", "élévation latérale de jambe"],
+  "adduction-hanche-poulie": ["cable hip adduction", "adduction debout"],
+  "kickback-fessier-poulie": ["cable kickback", "glute kickback", "extension de hanche poulie"],
+  "kickback-fessier-machine": ["glute kickback machine", "extension de hanche machine", "presse fessier"],
+  "donkey-kicks": ["donkey kick", "ruade", "coup de pied d'âne"],
+  "fire-hydrant": ["fire hydrants", "abduction à quatre pattes"],
+  "clamshell": ["clam shell", "coquillage", "ouverture de genou"],
+  "marche-laterale-elastique": ["lateral band walk", "monster walk", "marche du crabe", "pas chassés élastique"],
+  "fente-croisee": ["curtsy lunge", "fente curtsy", "fente révérence"],
+  "flexion-hanche-poulie": ["hip flexion", "relevé de genou poulie", "psoas poulie"],
+  "extension-hanche-banc": ["frog reverse hyper", "reverse hyper au banc", "extension fessiers banc"],
   "leg-curl": ["lying leg curl", "curl fémoral"],
   "leg-extension": ["extension de jambes", "quad extension"],
   "kettlebell-swing": ["russian swing", "swing"],
@@ -1026,4 +1296,20 @@ const EXERCISE_ALIASES = {
 /* Tous les noms connus d'un exercice (nom + alias intégrés + alias perso) */
 function exAliases(ex) {
   return (EXERCISE_ALIASES[ex.id] || []).concat(ex.alias || []);
+}
+
+/* Recherche par mots : chaque mot de la requête doit apparaître
+   quelque part dans le nom, les muscles, le groupe, le matériel
+   ou un alias — « hip thrust machine » trouve donc bien
+   « Hip thrust à la machine ». */
+function exMatches(ex, query) {
+  const words = normalize(query).split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const hay = normalize(
+    ex.nom + " " + (ex.muscles || "") + " " +
+    ((typeof LABELS !== "undefined" && LABELS.groupes[ex.groupe]) || "") + " " +
+    ((typeof LABELS !== "undefined" && LABELS.materiel[ex.materiel]) || "") + " " +
+    exAliases(ex).join(" ")
+  );
+  return words.every(w => hay.includes(w));
 }
