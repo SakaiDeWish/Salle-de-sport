@@ -135,6 +135,8 @@ function bindCardClicks(container) {
 }
 
 function renderLibrary() {
+  const kicker = document.getElementById("biblio-kicker");
+  if (kicker) kicker.textContent = "Bibliothèque · " + allExercisesForUI().length + " mouvements";
   const q = normalize(searchInput.value.trim());
   const g = filterGroupe.value, m = filterMateriel.value, n = filterNiveau.value;
 
