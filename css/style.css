@@ -1621,3 +1621,309 @@ textarea { min-height: 90px; resize: vertical; }
 .mo-anim-calf { animation: mo-calf 1.3s ease-in-out infinite alternate; }
 .mo-anim-legswing { animation: mo-legswing 1.6s ease-in-out infinite alternate; }
 .mo-anim-kick { animation: mo-kick 1.6s ease-in-out infinite alternate; }
+
+/* =========================================================
+   V8 — ÉPURATION : densité, disclosure progressive,
+   zéro défilement latéral, code couleur des séances.
+   Cette section vient en dernier : elle affine les tailles
+   définies plus haut sans les réécrire.
+   ========================================================= */
+
+/* ---------- A1 · Échelle typographique resserrée ----------
+   Le corps descend à ~15 px (plancher de lisibilité mobile),
+   le secondaire rétrécit davantage, l'essentiel reste grand. */
+body { font-size: 0.94rem; line-height: 1.55; }
+
+.display { font-size: clamp(2.3rem, 8.2vw, 4.4rem); }
+.theme-epure .display { font-size: clamp(2rem, 7vw, 3.9rem); }
+.display-sm { font-size: clamp(1.1rem, 3.2vw, 1.5rem); }
+.kicker { font-size: 0.68rem; letter-spacing: 0.18em; margin-bottom: 8px; }
+.hero { padding: 26px 0 16px; }
+.hero-sub { font-size: 0.9rem; margin-top: 10px; max-width: 52ch; }
+.panel-title { font-size: 0.98rem; margin-bottom: 10px; }
+.card { padding: 16px; }
+.view { padding-bottom: 56px; }
+.desktop-nav .tab { font-size: 0.85rem; padding: 9px 14px; }
+.logo { font-size: 1.2rem; }
+.chip { font-size: 0.8rem; padding: 8px 13px; min-height: 40px; }
+.btn { font-size: 0.88rem; }
+.btn-lg { font-size: 0.95rem; padding: 14px 26px; min-height: 50px; margin-top: 14px; }
+.btn-sm { font-size: 0.79rem; padding: 7px 12px; min-height: 38px; }
+.seg { font-size: 0.82rem; padding: 8px 14px; min-height: 40px; }
+.result-count { font-size: 0.72rem; margin-bottom: 12px; }
+.day-focus, .video-hint, .goal-left, .xp-detail, .pr-best, .program-meta { font-size: 0.8rem; }
+.tag, .badge { font-size: 0.7rem; }
+.chrono-label { font-size: 0.64rem; }
+.chrono-value { font-size: 1.5rem; }
+.ex-card h3 { font-size: 1rem; }
+.ex-card { min-height: 168px; }
+.theme-epure .ex-card { min-height: 168px; }
+.grid { gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+.day-table, .sets-table { font-size: 0.84rem; }
+.day-table td, .sets-table td { padding: 8px 6px; }
+.conseils { gap: 7px; font-size: 0.85rem; margin-left: 18px; }
+.footer { font-size: 0.75rem; }
+.modal-box h3 { font-size: 0.98rem; }
+.steps, .mistakes { font-size: 0.86rem; gap: 6px; }
+/* l'important reste grand : chrono principal et numéraux héros */
+.chrono-main .chrono-value { font-size: clamp(2.4rem, 8vw, 3.4rem); }
+.goal-big { font-size: 1.7rem; }
+.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+/* ---------- A2/A3 · Disclosure progressive ---------- */
+.disc { border-top: 1px solid transparent; }
+.disc + .disc { border-top-color: var(--border); }
+.disc-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; width: 100%;
+  background: none; border: none; padding: 11px 0;
+  color: var(--text); font-family: inherit; font-size: inherit;
+  text-align: left; cursor: pointer; min-height: 44px;
+}
+.disc-toggle:hover .disc-more { color: var(--accent-2); }
+.disc-sum { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
+.disc-title { font-weight: 800; font-size: 0.92rem; }
+.disc-meta { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; }
+.disc-more {
+  display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+  color: var(--text-soft); font-size: 0.72rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.disc-chev { transition: transform 0.22s ease; font-size: 1rem; line-height: 1; }
+.disc-open > .disc-toggle .disc-chev { transform: rotate(180deg); }
+.disc-body { display: none; padding: 2px 0 12px; }
+.disc-open > .disc-body { display: block; animation: disc-in 0.22s ease; }
+@keyframes disc-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+/* A3 : ce que c'est / à quoi ça sert, en tête de chaque détail */
+.disc-what {
+  color: var(--text-soft); font-size: 0.82rem; line-height: 1.5;
+  border-left: 2px solid var(--accent); padding-left: 10px; margin-bottom: 12px;
+}
+.disc-what strong { color: var(--text); }
+.disc-flat { padding: 4px 0; }
+.disc-inline { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0 12px; }
+.disc-inline .disc-body { padding-bottom: 10px; }
+
+/* ---------- F1 · Aucun défilement latéral ----------
+   Les rangées de chips passent à la ligne, les tableaux gardent
+   leurs colonnes prioritaires, rien n'est caché sur le côté. */
+html, body { max-width: 100%; overflow-x: hidden; }
+.chip-row { flex-wrap: wrap; overflow-x: visible; padding-bottom: 0; }
+.segmented { flex-wrap: wrap; overflow-x: visible; }
+@media (max-width: 460px) {
+  .segmented { border-radius: var(--radius-sm); width: 100%; }
+  .seg { flex: 1 1 auto; }
+}
+.table-wrap { overflow-x: visible; }
+.sessions-table { min-width: 0; }
+.sessions-table .sess-nom { font-weight: 600; }
+.proj-track { flex-wrap: wrap; overflow-x: visible; }
+.picker-list { overflow-x: hidden; }
+@media (max-width: 620px) {
+  .col-lo { display: none; }          /* colonnes secondaires : détail au tap */
+}
+
+/* ---------- G1 · Favoris ---------- */
+.fav-btn {
+  background: none; border: none; cursor: pointer; line-height: 1;
+  color: var(--text-soft); font-size: 1.15rem; padding: 6px;
+  min-width: 36px; min-height: 36px; border-radius: 999px;
+  transition: color 0.16s ease, transform 0.16s ease;
+}
+.fav-btn:hover { color: var(--accent); transform: scale(1.15); }
+.fav-btn.fav-on { color: var(--accent); }
+.theme-gamifie .fav-btn.fav-on { text-shadow: 0 0 10px var(--glow); }
+.fav-card { margin-left: auto; }
+.fav-fiche { position: absolute; top: 14px; right: 56px; }
+.modal-header { position: relative; }
+.pick-fav { color: var(--accent); }
+
+/* ---------- B1 · Chrono réduit en pastille ---------- */
+.hdr-pill { display: none; }
+.hdr-min .live-header {
+  padding: 6px 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.hdr-min .live-title-row,
+.hdr-min .live-chronos,
+.hdr-min .live-progress,
+.hdr-min .program-actions { display: none; }
+.hdr-min .pause-banner { display: none; }
+.hdr-min .hdr-pill { display: flex; align-items: center; gap: 4px; width: 100%; }
+.hdr-pill-main {
+  display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
+  background: none; border: none; cursor: pointer; padding: 6px 8px;
+  color: var(--text); font-family: inherit; min-height: 44px; border-radius: 999px;
+  text-align: left;
+}
+.hdr-pill-main:hover { background: var(--bg-soft); }
+.hdr-pill-dot { color: var(--accent); font-size: 0.6rem; }
+.theme-gamifie .hdr-pill-dot { animation: ic-pulse 1.8s ease-in-out infinite; }
+.hdr-pill-chrono {
+  font-family: var(--font-display); font-size: 1.45rem; letter-spacing: 0.02em;
+  color: var(--accent-2); font-variant-numeric: tabular-nums;
+}
+.theme-epure .hdr-pill-chrono { color: var(--text); }
+.hdr-pill-left {
+  color: var(--text-soft); font-size: 0.78rem; font-weight: 700;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.hdr-pill-chev { margin-left: auto; color: var(--text-soft); flex-shrink: 0; }
+.hdr-pill-finish { color: var(--accent); flex-shrink: 0; }
+
+/* ---------- B2 · Série validée modifiable ---------- */
+.set-row { cursor: pointer; transition: background 0.15s ease; }
+.set-row:hover, .set-row:focus-visible { background: var(--accent-soft); }
+.set-edit-hint { color: var(--text-soft); margin-left: 8px; opacity: 0; transition: opacity 0.15s ease; }
+.set-row:hover .set-edit-hint, .set-row:focus-visible .set-edit-hint { opacity: 1; }
+.set-editing td { background: var(--accent-soft); }
+.set-edit-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 4px 0; }
+.set-edit-row input { max-width: 92px; }
+.set-edit-n { font-size: 0.78rem; font-weight: 800; color: var(--text-soft); }
+
+/* ---------- B3 · Reste à faire ---------- */
+.progress-label { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.prog-strong { color: var(--accent-2); font-size: 0.86rem; font-weight: 800; letter-spacing: 0.02em; }
+.theme-epure .prog-strong { color: var(--accent); }
+.prog-dim { color: var(--text-soft); font-size: 0.75rem; font-weight: 600; }
+
+/* ---------- C1 · Accès direct Programme / Nutrition ---------- */
+.home-access { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+@media (max-width: 520px) { .home-access { grid-template-columns: 1fr; } }
+.access-tile {
+  display: flex; align-items: center; gap: 12px; text-align: left;
+  cursor: pointer; font-family: inherit; color: var(--text);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.access-tile:hover { transform: translateY(-2px); border-color: var(--accent); }
+.access-ico { color: var(--accent); flex-shrink: 0; }
+.access-ico .icon { width: 1.6rem; height: 1.6rem; }
+.access-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.access-nom { font-weight: 800; font-size: 0.92rem; }
+.access-val { color: var(--text-soft); font-size: 0.76rem; }
+
+/* ---------- C2 · Accueil personnalisable ---------- */
+.hc-list { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.hc-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+}
+.hc-item:last-child { border-bottom: none; }
+.hc-check { display: flex; align-items: center; gap: 9px; font-size: 0.86rem; cursor: pointer; }
+.hc-check input { width: 18px; height: 18px; accent-color: var(--accent); }
+.hc-order { display: flex; gap: 2px; flex-shrink: 0; }
+
+/* ---------- D1 · Répartition sur mesure ---------- */
+.repart { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.repart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.repart-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 0.8rem; font-weight: 700; color: var(--text-soft);
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 8px 10px;
+}
+.repart-item input { max-width: 58px; text-align: center; }
+.repart-status { margin-top: 12px; font-size: 0.82rem; display: flex; flex-direction: column; gap: 6px; }
+.repart-ok { color: var(--green); }
+.repart-todo { color: var(--text-soft); }
+.repart-hint { color: var(--text-soft); font-weight: 600; }
+.repart-warn { color: var(--yellow); font-weight: 600; }
+
+/* ---------- E1 · Type de séance : palette catégorielle ----------
+   Sept teintes validées (bandes de clarté, plancher de chroma,
+   séparation daltonisme sur les paires voisines, contraste sur la
+   surface). La couleur ne porte JAMAIS l'info seule : chaque
+   pastille affiche son initiale, dans une encre à ≥ 4,5:1.
+   Ordre des créneaux = ordre d'une semaine d'entraînement, pour
+   que les types voisins soient les paires les mieux séparées. */
+:root, .theme-gamifie {
+  --t-push: #3987e5;   --t-push-ink: #0c0e05;
+  --t-pull: #d95926;   --t-pull-ink: #0c0e05;
+  --t-jambes: #199e70; --t-jambes-ink: #0c0e05;
+  --t-haut: #c98500;   --t-haut-ink: #0c0e05;
+  --t-bas: #d55181;    --t-bas-ink: #0c0e05;
+  --t-full: #008300;   --t-full-ink: #f4f5f7;
+  --t-libre: #9085e9;  --t-libre-ink: #0c0e05;
+}
+.theme-epure {
+  --t-push: #2a78d6;   --t-push-ink: #fffdf8;
+  --t-pull: #eb6834;   --t-pull-ink: #171310;
+  --t-jambes: #1baf7a; --t-jambes-ink: #171310;
+  --t-haut: #eda100;   --t-haut-ink: #171310;
+  --t-bas: #e87ba4;    --t-bas-ink: #171310;
+  --t-full: #008300;   --t-full-ink: #fffdf8;
+  --t-libre: #4a3aa7;  --t-libre-ink: #fffdf8;
+}
+.type-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 24px; height: 18px; padding: 0 5px; border-radius: 5px;
+  font-size: 0.64rem; font-weight: 800; letter-spacing: 0.04em;
+  font-family: var(--font-body); vertical-align: middle;
+}
+.t-push   { background: var(--t-push);   color: var(--t-push-ink); }
+.t-pull   { background: var(--t-pull);   color: var(--t-pull-ink); }
+.t-jambes { background: var(--t-jambes); color: var(--t-jambes-ink); }
+.t-haut   { background: var(--t-haut);   color: var(--t-haut-ink); }
+.t-bas    { background: var(--t-bas);    color: var(--t-bas-ink); }
+.t-full   { background: var(--t-full);   color: var(--t-full-ink); }
+.t-libre  { background: var(--t-libre);  color: var(--t-libre-ink); }
+
+.type-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 12px 0 4px; }
+.tl-item { display: inline-flex; align-items: center; gap: 5px; }
+.tl-nom { font-size: 0.72rem; font-weight: 600; color: var(--text-soft); }
+
+/* Cellule du calendrier : numéro du jour en haut, pastille de type dessous
+   et bien lisible — le mois se lit d'un coup d'œil sans rien ouvrir. */
+.cal-grid { grid-template-columns: repeat(7, 1fr) 44px; }
+.cal-day {
+  flex-direction: column; align-items: stretch; justify-content: flex-start;
+  gap: 4px; padding: 5px 4px; aspect-ratio: auto; min-height: 56px;
+}
+.cal-num { font-size: 0.74rem; font-variant-numeric: tabular-nums; color: var(--text-soft); text-align: left; }
+.cal-day.cal-has .cal-num, .cal-day.cal-today .cal-num { color: var(--text); font-weight: 800; }
+.cal-type {
+  display: flex; align-items: center; justify-content: center; gap: 2px;
+  width: 100%; min-height: 22px; padding: 2px 4px; border-radius: 6px;
+  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+}
+.cal-plus { font-size: 0.55rem; opacity: 0.8; }
+.cal-day.cal-has { border-color: var(--border); }
+.cal-day.cal-has:hover { border-color: var(--accent); }
+@media (max-width: 560px) {
+  .cal-grid { gap: 3px; grid-template-columns: repeat(7, 1fr) 30px; }
+  .cal-day { min-height: 48px; padding: 3px 2px; }
+  .cal-num { font-size: 0.66rem; }
+  .cal-type { font-size: 0.58rem; min-height: 18px; padding: 1px 2px; }
+}
+
+/* ---------- G2 · Graphique d'évolution ---------- */
+.evo { margin: 4px 0 12px; }
+.evo svg { width: 100%; max-width: 420px; height: auto; display: block; }
+.evo-axis, .evo-grid { stroke: var(--border); stroke-width: 1; }
+.evo-grid { stroke-dasharray: 3 4; }
+.evo-tick { fill: var(--text-soft); font-size: 8.5px; font-family: var(--font-body); font-weight: 600; }
+.evo-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.evo-dot { fill: transparent; stroke: none; }        /* cible de survol large */
+.evo-last-ring { fill: var(--card); stroke: none; }  /* anneau de surface */
+.evo-last { fill: var(--accent); }
+.evo-val { fill: var(--text); font-size: 10px; font-weight: 800; font-family: var(--font-body); }
+.theme-epure .evo-line, .theme-epure .evo-last { stroke: var(--accent); }
+.theme-epure .evo-last { fill: var(--accent); }
+
+/* Stats par exercice */
+.exs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.exs-item {
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px;
+}
+.exs-val { font-family: var(--font-display); font-size: 1.15rem; color: var(--accent-2); }
+.theme-epure .exs-val { color: var(--text); font-weight: 600; }
+.exs-lab { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text); }
+.exs-help { font-size: 0.73rem; color: var(--text-soft); line-height: 1.45; }
+
+/* ---------- Divers ---------- */
+.lib-bar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.ex-muscles-line { font-size: 0.84rem; color: var(--text-soft); margin-bottom: 10px; }
+.ex-muscles-line strong { color: var(--text); }
+.set-form { gap: 6px; }

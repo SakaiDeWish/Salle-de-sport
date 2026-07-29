@@ -15,6 +15,7 @@ let live = null;          // séance en cours
 let liveTimer = null;     // interval d'affichage
 let rest = null;          // { setRef, exName, startAt, targetSec, beeped }
 let restMinimized = false; // repos réduit dans la mini-barre
+let editingSet = null;     // { i, j } : série validée en cours de modification
 
 /* Mémoire des charges : ce que tu as mis la dernière fois pour la
    même combinaison (exercice, numéro de série) — pré-rempli ensuite. */
@@ -169,6 +170,7 @@ function showLive() {
   elSummary.classList.add("hidden");
   elLive.classList.remove("hidden");
   elLive.classList.toggle("live-compact", localStorage.getItem("gymcoach.liveCompact") === "1");
+  applyHeaderMin(headerMinimized());
   renderPauseState();
   document.getElementById("live-title").textContent = live.nom;
   renderLiveExercises();
@@ -223,7 +225,49 @@ function renderPauseState() {
   tick();
 }
 
-/* Progression type NTC : « Exercice X / Y » + barre globale */
+/* Nombre de séries prescrites pour un exercice ("4 × 8-12" -> 4).
+   Retourne null pour une séance libre (aucune prescription). */
+function targetSetsOf(ex) {
+  if (!ex.target) return null;
+  const m = String(ex.target).match(/^\s*(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+/* Reste à faire (B3) : séries restantes sur l'exercice en cours ET sur
+   toute la séance. Calculé sur les prescriptions du programme ; en séance
+   libre, on affiche ce qui a été fait. */
+function remainingInfo() {
+  if (!live || !live.exercises.length) return { texte: "", pourcent: 0 };
+  let totalTarget = 0, totalDone = 0, prescrit = false;
+  for (const ex of live.exercises) {
+    const t = targetSetsOf(ex);
+    totalDone += ex.sets.length;
+    if (t != null) { prescrit = true; totalTarget += t; }
+    else totalTarget += ex.sets.length;
+  }
+  const cur = live.exercises[Math.max(0, live.currentIndex)];
+  const curTarget = cur ? targetSetsOf(cur) : null;
+  const restant = Math.max(0, totalTarget - totalDone);
+
+  if (!prescrit) {
+    return {
+      texte: `${totalDone} série${totalDone > 1 ? "s" : ""} faite${totalDone > 1 ? "s" : ""} · séance libre`,
+      pourcent: 0
+    };
+  }
+  const serieCourante = cur
+    ? (curTarget != null
+        ? `Série ${Math.min(cur.sets.length + 1, curTarget)}/${curTarget}`
+        : `Série ${cur.sets.length + 1}`)
+    : "";
+  return {
+    texte: `${serieCourante} · ${restant} série${restant > 1 ? "s" : ""} restante${restant > 1 ? "s" : ""}`,
+    pourcent: totalTarget ? Math.round(totalDone / totalTarget * 100) : 0,
+    restant
+  };
+}
+
+/* Progression : exercice courant, reste à faire (toujours lisible) + barre */
 function updateProgress() {
   const label = document.getElementById("live-progress-label");
   const bar = document.getElementById("live-progress-bar");
@@ -231,14 +275,35 @@ function updateProgress() {
   const total = live.exercises.length;
   if (total === 0) { label.textContent = ""; bar.style.width = "0%"; return; }
   const current = Math.min(Math.max(live.currentIndex, 0) + 1, total);
-  const done = live.exercises.filter(e => e.sets.length > 0).length;
-  label.textContent = `Exercice ${current} / ${total} · ${done} entamé${done > 1 ? "s" : ""}`;
-  bar.style.width = Math.round((done / total) * 100) + "%";
+  const info = remainingInfo();
+  label.innerHTML = `<strong class="prog-strong">${esc(info.texte)}</strong>
+    <span class="prog-dim">Exercice ${current}/${total}</span>`;
+  bar.style.width = Math.min(100, info.pourcent) + "%";
+
+  const pillLeft = document.getElementById("hdr-pill-left");
+  if (pillLeft) pillLeft.textContent = info.texte;
+}
+
+/* ---------- Chrono réduit en pastille (B1) ---------- */
+function headerMinimized() { return localStorage.getItem(STORAGE_KEYS.liveHeaderMin) === "1"; }
+
+function applyHeaderMin(on) {
+  localStorage.setItem(STORAGE_KEYS.liveHeaderMin, on ? "1" : "0");
+  elLive.classList.toggle("hdr-min", on);
+  const btn = document.getElementById("live-hdr-toggle");
+  if (btn) {
+    btn.textContent = on ? "⌄" : "⌃";
+    btn.title = on ? "Agrandir le chrono" : "Réduire le chrono en pastille";
+  }
+  tick();
 }
 
 function tick() {
   if (!live) return;
-  document.getElementById("chrono-session").textContent = fmtClock(nowRef() - live.startedAt - (live.pauseMs || 0));
+  const clock = fmtClock(nowRef() - live.startedAt - (live.pauseMs || 0));
+  document.getElementById("chrono-session").textContent = clock;
+  const pillChrono = document.getElementById("hdr-pill-chrono");
+  if (pillChrono) pillChrono.textContent = clock;
   document.getElementById("chrono-rest-total").textContent = fmtClock(totalRestMs());
   document.getElementById("live-set-count").textContent = setCount();
 
@@ -336,15 +401,32 @@ function renderLiveExercises() {
 
       ${ex.sets.length ? `
       <table class="sets-table">
-        <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>Repos pris</th></tr></thead>
+        <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>Repos</th></tr></thead>
         <tbody>
-          ${ex.sets.map((s, j) => `
-            <tr>
+          ${ex.sets.map((s, j) => {
+            const editing = editingSet && editingSet.i === i && editingSet.j === j;
+            if (editing) return `
+              <tr class="set-editing">
+                <td colspan="4">
+                  <div class="set-edit-row">
+                    <span class="set-edit-n">Série ${j + 1}</span>
+                    <input type="number" inputmode="decimal" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
+                    <input type="number" inputmode="numeric" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                    <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
+                    <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
+                    <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
+                  </div>
+                </td>
+              </tr>`;
+            return `
+            <tr class="set-row" data-i="${i}" data-j="${j}" tabindex="0" role="button"
+                title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
               <td>✔ ${j + 1}</td>
-              <td>${s.poids || "—"}</td>
+              <td>${s.poids != null ? s.poids : "—"}</td>
               <td>${s.reps}</td>
-              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}</td>
-            </tr>`).join("")}
+              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
+            </tr>`;
+          }).join("")}
         </tbody>
       </table>` : ""}
 
@@ -375,7 +457,65 @@ function renderLiveExercises() {
   elLiveExercises.querySelectorAll(".ex-fiche").forEach(btn =>
     btn.addEventListener("click", () => openExercise(btn.dataset.exid)));
 
+  /* Série validée : un tap l'ouvre en édition (B2) */
+  elLiveExercises.querySelectorAll(".set-row").forEach(tr => {
+    const open = () => {
+      editingSet = { i: +tr.dataset.i, j: +tr.dataset.j };
+      renderLiveExercises();
+      const f = document.getElementById("ed-poids");
+      if (f) f.focus();
+    };
+    tr.addEventListener("click", open);
+    tr.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); open(); } });
+  });
+  elLiveExercises.querySelectorAll(".set-edit-cancel").forEach(b =>
+    b.addEventListener("click", () => { editingSet = null; renderLiveExercises(); }));
+  elLiveExercises.querySelectorAll(".set-edit-save").forEach(b =>
+    b.addEventListener("click", () => saveSetEdit(+b.dataset.i, +b.dataset.j)));
+  elLiveExercises.querySelectorAll(".set-unvalidate").forEach(b =>
+    b.addEventListener("click", () => unvalidateSet(+b.dataset.i, +b.dataset.j)));
+
   updateProgress();
+}
+
+/* Modifier une série déjà validée : poids et reps.
+   Le volume, les stats et les records sont recalculés depuis l'historique,
+   donc corriger la série suffit — rien n'est stocké en double. */
+function saveSetEdit(i, j) {
+  const ex = live.exercises[i];
+  const set = ex && ex.sets[j];
+  if (!set) return;
+  const reps = parseInt(document.getElementById("ed-reps").value, 10);
+  const poidsRaw = document.getElementById("ed-poids").value;
+  if (!reps || reps < 1) { document.getElementById("ed-reps").focus(); return; }
+  set.reps = reps;
+  set.poids = poidsRaw === "" ? null : parseFloat(poidsRaw);
+  set.editedAt = Date.now();
+  rememberSet(ex.exId, j, set.poids, set.reps);   // la mémoire des charges suit
+  editingSet = null;
+  saveLive();
+  renderLiveExercises();
+  tick();
+}
+
+/* Dé-valider : la série disparaît (erreur de saisie, série non faite). */
+function unvalidateSet(i, j) {
+  const ex = live.exercises[i];
+  if (!ex || !ex.sets[j]) return;
+  if (!confirm(`Dé-valider la série ${j + 1} de « ${ex.nom} » ? Elle sera retirée de la séance.`)) return;
+  ex.sets.splice(j, 1);
+  // le repos en cours pointait peut-être sur cette série
+  if (rest && rest.setRef.exIndex === i && rest.setRef.setIndex >= j) {
+    rest = null;
+    restMinimized = false;
+    elRestOverlay.classList.add("hidden");
+  }
+  // la mémoire des charges se recale sur les séries restantes
+  ex.sets.forEach((s, k) => rememberSet(ex.exId, k, s.poids, s.reps));
+  editingSet = null;
+  saveLive();
+  renderLiveExercises();
+  tick();
 }
 
 function setCurrentExercise(i) {
@@ -494,10 +634,13 @@ function closePicker() { elPicker.classList.add("hidden"); }
 
 function renderPickerList(query) {
   const q = normalize(query.trim());
-  const list = allExercisesForUI().filter(ex => !q || exMatches(ex, q)).slice(0, 40);
+  let list = allExercisesForUI().filter(ex => !q || exMatches(ex, q));
+  // favoris en tête du sélecteur (G1)
+  if (typeof favoritesFirst === "function") list = favoritesFirst(list);
+  list = list.slice(0, 40);
   document.getElementById("picker-list").innerHTML = list.map(ex => `
     <button class="picker-item" data-exid="${esc(ex.id)}">
-      <span><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)}</span>
+      <span>${typeof isFavorite === "function" && isFavorite(ex.id) ? '<span class="pick-fav">★</span> ' : ""}${esc(ex.nom)}</span>
       <span class="tag">${LABELS.groupes[ex.groupe]}</span>
     </button>`).join("") || `<p class="video-hint">Aucun exercice trouvé.</p>`;
   document.querySelectorAll(".picker-item").forEach(btn =>
@@ -526,10 +669,11 @@ function buildSuggestions() {
   const equip = { salle: null, halteres: ["halteres", "poids-du-corps"],
                   corps: ["poids-du-corps"] }[profil.materiel] ?? null;
   const ok = e => (!levels || levels.includes(e.niveau)) && (!equip || equip.includes(e.materiel));
-  // en salle complète, on met les machines en avant : dispo garantie,
-  // apprentissage sûr, et ça varie des barres déjà faites
-  const pool = allExercisesForUI().filter(ok)
-    .sort((a, b) => (b.materiel === "machine" ? 1 : 0) - (a.materiel === "machine" ? 1 : 0));
+  // favoris d'abord, puis les machines : dispo garantie, apprentissage sûr,
+  // et ça varie des barres déjà faites
+  const fav = (typeof getFavorites === "function") ? new Set(getFavorites()) : new Set();
+  const rank = e => (fav.has(e.id) ? 2 : 0) + (e.materiel === "machine" ? 1 : 0);
+  const pool = allExercisesForUI().filter(ok).sort((a, b) => rank(b) - rank(a));
   // la liste reste stable même après ajout : les items ajoutés s'affichent cochés
   const pick = (g, type, taken) =>
     pool.find(e => e.groupe === g && e.type === type && !taken.has(e.id));
@@ -603,6 +747,10 @@ document.getElementById("live-compact-toggle").addEventListener("click", () => {
   elLive.classList.toggle("live-compact", on);
   localStorage.setItem("gymcoach.liveCompact", on ? "1" : "0");
 });
+/* Chrono réduit en pastille et inverse (B1) */
+document.getElementById("live-hdr-toggle").addEventListener("click", () => applyHeaderMin(true));
+document.getElementById("hdr-pill-open").addEventListener("click", () => applyHeaderMin(false));
+document.getElementById("hdr-pill-finish").addEventListener("click", () => finishSession());
 document.getElementById("live-finish").addEventListener("click", finishSession);
 document.getElementById("live-abort").addEventListener("click", () => {
   if (!confirm("Abandonner la séance ? Rien ne sera enregistré.")) return;
@@ -629,6 +777,12 @@ function finishSession() {
     dureeMs: now - live.startedAt - (live.pauseMs || 0),
     reposMs: totalRestMs(),
     statut: "Terminée",
+    /* Toute séance — y compris libre — est rattachée au programme actif :
+       elle compte dans l'objectif hebdo, l'historique, le calendrier
+       et les stats, et peut devenir une séance récurrente (D2). */
+    programId: program ? (program.id || null) : null,
+    programNom: program ? (program.nom || program.objectifLabel || null) : null,
+    libre: !/^Séance \d+/.test(live.nom),
     objectifLabel: program ? program.objectifLabel : null,
     rpe: null,   // renseigné depuis l'écran de résumé
     notes: "",
@@ -678,6 +832,14 @@ function showSummary(r) {
         <div class="chrono-block"><span class="chrono-label">Séries</span><span class="chrono-value">${r.nbSeries}</span></div>
         <div class="chrono-block"><span class="chrono-label">Volume total</span><span class="chrono-value">${Math.round(r.volume)} kg</span></div>
       </div>
+      ${r.libre && r.programNom ? `
+      <div class="adjust-card">
+        <p>Cette séance libre est déjà comptée dans <strong>${esc(r.programNom)}</strong>
+          (objectif de la semaine, calendrier, statistiques). Tu veux la refaire régulièrement ?</p>
+        <button class="btn btn-primary btn-sm" id="add-to-program">+ L'ajouter comme séance du programme</button>
+        <p class="feedback" id="add-to-program-feedback"></p>
+      </div>` : ""}
+
       <!-- Bilan : difficulté -> proposition d'ajustement du programme -->
       <div class="rpe-block">
         <p class="chrono-label">La séance était…</p>
@@ -698,6 +860,41 @@ function showSummary(r) {
       ${renderSessionDetail(r)}
       <button class="btn btn-primary btn-lg" id="summary-back">↩ Retour aux séances</button>
     </div>`;
+
+  /* Séance libre -> séance récurrente du programme actif (D2) */
+  const addBtn = document.getElementById("add-to-program");
+  if (addBtn) addBtn.addEventListener("click", () => {
+    const pr = loadJSON(STORAGE_KEYS.program, null);
+    if (!pr) return;
+    const day = {
+      numero: pr.days.length + 1,
+      titre: r.nom,
+      focus: [...new Set(r.exercises.map(e => LABELS.groupes[e.groupe]))].slice(0, 4).join(" · "),
+      exercices: r.exercises.map(ex => {
+        const ref = allExercisesForUI().find(e => e.id === ex.exId) ||
+          { id: ex.exId, nom: ex.nom, groupe: ex.groupe, materiel: "halteres", niveau: "intermediaire", type: "iso" };
+        const reps = ex.sets.map(s => s.reps);
+        const lo = Math.min(...reps), hi = Math.max(...reps);
+        return {
+          exercice: { id: ref.id, nom: ref.nom, groupe: ref.groupe, materiel: ref.materiel,
+                      niveau: ref.niveau, type: ref.type, videoQuery: ref.videoQuery },
+          series: ex.sets.length,
+          reps: lo === hi ? String(lo) : `${lo}-${hi}`,
+          repos: (ref.type ? smartRest(ref) : getDefaultRest()) + " s",
+          note: "", superset: false, prioritaire: false
+        };
+      })
+    };
+    pr.days.push(day);
+    pr.jours = pr.days.length;
+    if (typeof setActiveProgram === "function") setActiveProgram(pr);
+    else saveJSON(STORAGE_KEYS.program, pr);
+    if (typeof renderProgram === "function") renderProgram(pr);
+    if (typeof renderProgramsPanel === "function") renderProgramsPanel();
+    addBtn.disabled = true;
+    document.getElementById("add-to-program-feedback").textContent =
+      `✓ Ajoutée à « ${pr.nom || "ton programme"} » comme séance ${day.numero}.`;
+  });
 
   let summaryRpe = null;
   let summaryDiff = null;

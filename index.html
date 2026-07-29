@@ -58,7 +58,7 @@
     <section class="hero">
       <p class="kicker">Carburant</p>
       <h1 class="display">Ta<br>nutrition<span class="accent">.</span></h1>
-      <p class="hero-sub">Des repères simples et raisonnables, calculés pour toi. La régularité dans l'assiette compte autant que sous la barre.</p>
+      <p class="hero-sub">Des repères calculés pour toi. L'assiette compte autant que la barre.</p>
     </section>
     <div id="nutrition-content"><!-- rendu par js/home.js --></div>
   </main>
@@ -76,7 +76,7 @@
     <section class="hero">
       <p class="kicker" id="biblio-kicker">Bibliothèque</p>
       <h1 class="display">Tous les<br>exercices<span class="accent">.</span></h1>
-      <p class="hero-sub">Technique, muscles ciblés, erreurs à éviter et vidéo de démonstration — pour chaque mouvement.</p>
+      <p class="hero-sub">Technique, muscles ciblés, erreurs et vidéo pour chaque mouvement.</p>
     </section>
 
     <section class="filters" aria-label="Filtres">
@@ -98,19 +98,33 @@
         <button class="chip" data-value="abdos">Abdos</button>
         <button class="chip" data-value="lombaires">Lombaires</button>
       </div>
-      <div class="chip-row" data-for="filter-materiel" role="group" aria-label="Matériel">
-        <button class="chip active" data-value="">Tout matériel</button>
-        <button class="chip" data-value="barre">Barre</button>
-        <button class="chip" data-value="halteres">Haltères</button>
-        <button class="chip" data-value="machine">Machine</button>
-        <button class="chip" data-value="poulie">Poulie</button>
-        <button class="chip" data-value="poids-du-corps">Poids du corps</button>
-      </div>
-      <div class="chip-row" data-for="filter-niveau" role="group" aria-label="Niveau">
-        <button class="chip active" data-value="">Tous niveaux</button>
-        <button class="chip chip-deb" data-value="debutant">Débutant</button>
-        <button class="chip chip-int" data-value="intermediaire">Intermédiaire</button>
-        <button class="chip chip-adv" data-value="avance">Avancé</button>
+      <!-- Filtres secondaires : repliés par défaut (le groupe musculaire suffit
+           dans 90 % des cas) — plus rien ne déborde sur le côté -->
+      <div class="disc disc-inline" data-disc="lib.filters">
+        <button type="button" class="disc-toggle" aria-expanded="false">
+          <span class="disc-sum"><span class="disc-title">Matériel &amp; niveau</span>
+            <span class="disc-meta" id="lib-filter-state">tout</span></span>
+          <span class="disc-more">Filtrer<span class="disc-chev" aria-hidden="true">⌄</span></span>
+        </button>
+        <div class="disc-body">
+          <p class="disc-what">Deux filtres pour coller à ta salle et à ton expérience :
+            le <strong>matériel</strong> ne garde que ce que tu as sous la main, le
+            <strong>niveau</strong> écarte les mouvements techniques qui demandent des bases.</p>
+          <div class="chip-row" data-for="filter-materiel" role="group" aria-label="Matériel">
+            <button class="chip active" data-value="">Tout matériel</button>
+            <button class="chip" data-value="barre">Barre</button>
+            <button class="chip" data-value="halteres">Haltères</button>
+            <button class="chip" data-value="machine">Machine</button>
+            <button class="chip" data-value="poulie">Poulie</button>
+            <button class="chip" data-value="poids-du-corps">Poids du corps</button>
+          </div>
+          <div class="chip-row" data-for="filter-niveau" role="group" aria-label="Niveau">
+            <button class="chip active" data-value="">Tous niveaux</button>
+            <button class="chip chip-deb" data-value="debutant">Débutant</button>
+            <button class="chip chip-int" data-value="intermediaire">Intermédiaire</button>
+            <button class="chip chip-adv" data-value="avance">Avancé</button>
+          </div>
+        </div>
       </div>
 
       <!-- Selects cachés : la logique de filtrage existante lit toujours ces valeurs -->
@@ -134,7 +148,10 @@
 
     <div class="lib-bar">
       <p id="result-count" class="result-count" role="status"></p>
-      <button class="btn btn-ghost btn-sm" id="goto-ajouter">+ Référencer un exercice</button>
+      <div class="lib-bar-actions">
+        <button class="btn btn-ghost btn-sm" id="fav-filter" aria-pressed="false">☆ Favoris</button>
+        <button class="btn btn-ghost btn-sm" id="goto-ajouter">+ Référencer</button>
+      </div>
     </div>
     <section id="exercise-grid" class="grid"></section>
   </main>
@@ -144,7 +161,7 @@
     <section class="hero">
       <p class="kicker">Coaching personnalisé</p>
       <h1 class="display">Ton<br>programme<span class="accent">.</span></h1>
-      <p class="hero-sub">Réponds à quelques questions : ton plan hebdomadaire s'adapte à ton objectif, ton niveau et ton matériel.</p>
+      <p class="hero-sub">Quelques questions, et ton plan s'adapte à ton objectif et ton matériel.</p>
     </section>
 
     <div class="segmented" role="tablist" aria-label="Mode programme">
@@ -194,6 +211,7 @@
             <option value="auto">Auto (recommandé selon ton profil)</option>
             <option value="fullbody">Full body (tout le corps à chaque séance)</option>
             <option value="split">Split (muscles répartis : PPL, haut/bas…)</option>
+            <option value="custom">Répartition sur mesure (je choisis chaque séance)</option>
           </select>
         </label>
         <label>
@@ -219,6 +237,23 @@
           </select>
         </label>
       </div>
+
+      <!-- Répartition sur mesure : on distribue ses N séances entre les blocs -->
+      <div id="p-repartition" class="repart hidden">
+        <p class="disc-what">Répartis tes séances comme tu veux — par exemple
+          <strong>3 haut du corps + 1 bas du corps</strong> sur 4 séances. Je vérifie l'équilibre
+          et je place les séances pour éviter deux fois le même bloc à la suite.</p>
+        <div class="repart-grid">
+          <label class="repart-item">Haut du corps<input type="number" id="rep-upper" min="0" max="6" value="0"></label>
+          <label class="repart-item">Bas du corps<input type="number" id="rep-lower" min="0" max="6" value="0"></label>
+          <label class="repart-item">Push (poussée)<input type="number" id="rep-push" min="0" max="6" value="0"></label>
+          <label class="repart-item">Pull (tirage)<input type="number" id="rep-pull" min="0" max="6" value="0"></label>
+          <label class="repart-item">Jambes<input type="number" id="rep-legs" min="0" max="6" value="0"></label>
+          <label class="repart-item">Full body<input type="number" id="rep-fullbody" min="0" max="6" value="0"></label>
+        </div>
+        <p class="repart-status" id="repart-status" role="status"></p>
+      </div>
+
       <button type="submit" class="btn btn-primary btn-lg">Générer mon programme</button>
     </form>
 
@@ -234,7 +269,7 @@
       <section class="hero">
         <p class="kicker">Mode entraînement</p>
         <h1 class="display">Ta séance<br>en direct<span class="accent">.</span></h1>
-        <p class="hero-sub">Chrono global, chrono par exercice, minuteur de repos précis. Tout ce que tu fais réellement est enregistré, même hors programme.</p>
+        <p class="hero-sub">Chronos, repos précis, et tout ce que tu fais vraiment enregistré.</p>
       </section>
 
       <div class="card setup-card">
@@ -244,7 +279,21 @@
             <input type="number" id="default-rest" min="5" max="600" step="5" value="90"> <span>secondes</span>
           </div>
         </label>
-        <p class="video-hint">💡 Le repos est <strong>calculé automatiquement par exercice</strong> : mouvements lourds/polyarticulaires ≈ 2-3 min, isolation ≈ 45-90 s, ajusté à ton objectif (force = plus long, sèche = plus court). Tu peux toujours le modifier avec ±15 s pendant le repos.</p>
+        <div class="disc disc-inline" data-disc="seance.repos">
+          <button type="button" class="disc-toggle" aria-expanded="false">
+            <span class="disc-sum"><span class="disc-title">Repos calculé automatiquement</span>
+              <span class="disc-meta">par exercice, selon ton objectif</span></span>
+            <span class="disc-more">Détails<span class="disc-chev" aria-hidden="true">⌄</span></span>
+          </button>
+          <div class="disc-body">
+            <p class="disc-what">Le temps de repos n'est pas un réglage unique : il change à chaque exercice
+              parce qu'un squat lourd et une élévation latérale ne demandent pas la même récupération.</p>
+            <p class="video-hint">Mouvements lourds / polyarticulaires ≈ <strong>2-3 min</strong>,
+              isolation ≈ <strong>45-90 s</strong>, ajusté à ton objectif (force = plus long, sèche = plus court).
+              Modifiable à tout moment avec ±15 s pendant le repos. Le réglage ci-dessus ne sert que
+              de secours pour les séances libres sans suggestion.</p>
+          </div>
+        </div>
         <div class="start-buttons">
           <button class="btn btn-primary btn-lg" id="start-free">Démarrer une séance libre</button>
         </div>
@@ -260,10 +309,23 @@
         <div class="live-title-row">
           <h2 id="live-title" class="display-sm">Séance en cours</h2>
           <div class="live-title-actions">
-            <button class="btn-ic" id="live-compact-toggle" title="Mode compact (chrono seul + essentiel)" aria-label="Basculer le mode compact">⌄</button>
+            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono en pastille" aria-label="Réduire le widget de temps de séance">⌃</button>
+            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit">⌄</button>
             <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause">⏸ Pause</button>
             <span class="live-dot">● EN DIRECT</span>
           </div>
+        </div>
+
+        <!-- Chrono réduit : pastille compacte (chrono + reste à faire),
+             en flux donc elle ne masque ni les exercices ni les contrôles -->
+        <div class="hdr-pill" id="hdr-pill">
+          <button type="button" class="hdr-pill-main" id="hdr-pill-open" aria-label="Agrandir le chrono de séance">
+            <span class="hdr-pill-dot">●</span>
+            <span class="hdr-pill-chrono" id="hdr-pill-chrono">00:00</span>
+            <span class="hdr-pill-left" id="hdr-pill-left"></span>
+            <span class="hdr-pill-chev" aria-hidden="true">⌄</span>
+          </button>
+          <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance">✓</button>
         </div>
         <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
         <div id="pause-banner" class="pause-banner hidden">
@@ -356,7 +418,7 @@
     <section class="hero">
       <p class="kicker">Ta bibliothèque personnelle</p>
       <h1 class="display">Référence<br>un exercice<span class="accent">.</span></h1>
-      <p class="hero-sub">Tes exercices sont sauvegardés sur cet appareil et utilisables dans tes séances.</p>
+      <p class="hero-sub">Sauvegardés sur cet appareil, utilisables dans tes séances.</p>
     </section>
 
     <form id="add-form" class="program-form card">
@@ -423,7 +485,7 @@
     <section class="hero">
       <p class="kicker">Progression</p>
       <h1 class="display">Ton<br>suivi<span class="accent">.</span></h1>
-      <p class="hero-sub">Chaque séance compte. Statistiques, records, calendrier et objectif hebdomadaire — tout est là.</p>
+      <p class="hero-sub">Statistiques, records, calendrier et objectif hebdomadaire.</p>
     </section>
 
     <div class="segmented" role="tablist" aria-label="Vues du suivi">
@@ -478,7 +540,7 @@
   </button>
 
   <footer class="footer">
-    <p>GYMCOACH — Entraîne-toi intelligemment. Échauffe-toi toujours avant une séance et consulte un professionnel de santé en cas de doute.</p>
+    <p>GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute, consulte un professionnel de santé.</p>
   </footer>
 
   <script src="js/data.js"></script>
@@ -487,6 +549,7 @@
   <script src="js/motion.js"></script>
   <script src="js/program.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/workout.js"></script>
   <script src="js/tracking.js"></script>
   <script src="js/home.js"></script>
