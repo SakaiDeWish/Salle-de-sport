@@ -210,108 +210,135 @@ function renderDashboard() {
   const weights = loadJSON(STORAGE_KEYS.weights, []);
   const maxGroupe = Math.max(1, ...Object.values(stats.parGroupe));
 
+  const badgesOK = badges.filter(b => b.ok).length;
+  const lastW = weights.length ? weights[weights.length - 1] : null;
+
+  /* Tableau de bord dense : chaque bloc montre une ligne de résumé et
+     déplie ses détails + leur explication (A2/A3/A4). */
   document.getElementById("panel-dashboard").innerHTML = `
-    <!-- Objectif de la semaine + streak -->
+    <!-- Objectif de la semaine + streak : le seul bloc ouvert d'office -->
     <div class="card goal-card">
-      <div class="goal-row">
-        <div>
-          <p class="chrono-label">Objectif de la semaine</p>
-          <p class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}
-            ${gs.achievedThisWeek
-              ? '<span class="goal-ok">✓ Objectif atteint</span>'
-              : `<span class="goal-left">encore ${gs.goal - gs.doneThisWeek} séance${gs.goal - gs.doneThisWeek > 1 ? "s" : ""}</span>`}
-          </p>
-        </div>
-        <div class="goal-side">
-          <p class="chrono-label">Streak</p>
-          <p class="goal-big">${gs.streak} <span class="goal-left">sem.</span></p>
-        </div>
-        <label class="goal-adjust">
-          Séances / semaine
-          <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
-        </label>
-      </div>
+      ${disclosure("dash.goal", {
+        dflt: true,
+        summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>
+          <span class="disc-meta">cette semaine · streak ${gs.streak} sem.
+          ${gs.achievedThisWeek ? '<span class="goal-ok">✓ atteint</span>' : ""}</span>`,
+        label: "Régler",
+        what: `L'objectif hebdomadaire est <strong>vérifié</strong> : il compte les séances réellement
+          terminées entre lundi et dimanche, séances libres incluses. Le <strong>streak</strong> est
+          le nombre de semaines consécutives où tu l'as atteint — c'est l'indicateur qui prédit
+          le mieux les résultats à long terme, bien avant les charges.`,
+        detail: `<label class="goal-adjust">Séances / semaine
+            <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
+          </label>
+          <p class="video-hint">Par défaut c'est le nombre de séances de ton programme actif.</p>`
+      })}
       <div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, gs.doneThisWeek / gs.goal * 100)}%"></div></div>
     </div>
 
     <!-- Niveau / XP -->
     <div class="card xp-card">
-      <div class="xp-row">
-        <span class="xp-level">NIV. ${level.lvl}</span>
-        <span class="xp-detail">${xp} XP · ${level.need - level.into} XP avant le niveau ${level.lvl + 1}</span>
-      </div>
+      ${disclosure("dash.xp", {
+        summary: `<span class="xp-level">NIV. ${level.lvl}</span>
+          <span class="disc-meta">${xp} XP · ${level.need - level.into} avant le niveau ${level.lvl + 1}</span>`,
+        what: `L'XP n'est qu'un compteur d'assiduité : <strong>50 XP</strong> par séance terminée,
+          <strong>2 XP</strong> par série validée, <strong>5 XP</strong> si tu notes ton ressenti, et
+          <strong>100 XP</strong> par semaine où l'objectif est atteint. Ça ne mesure pas ta force —
+          ça mesure ta régularité, et c'est fait pour te faire revenir.`,
+        detail: `<div class="badge-grid">
+          ${badges.map(b => `
+            <div class="badge-tile ${b.ok ? "badge-ok" : ""}">
+              <span class="badge-ico">${icon(b.ico)}</span>
+              <span class="badge-nom">${esc(b.nom)}</span>
+              <span class="badge-desc">${esc(b.desc)}</span>
+              ${b.ok ? '<span class="badge-check">✓</span>' : ""}
+            </div>`).join("")}
+        </div>
+        <p class="video-hint">${badgesOK} badge${badgesOK > 1 ? "s" : ""} sur ${badges.length} débloqué${badgesOK > 1 ? "s" : ""}.</p>`,
+        label: `Badges ${badgesOK}/${badges.length}`
+      })}
       <div class="progress-track"><div class="progress-bar" style="width:${Math.round(level.into / level.need * 100)}%"></div></div>
     </div>
 
-    <!-- Statistiques -->
+    <!-- Statistiques : 4 chiffres, toujours visibles (c'est déjà l'essentiel) -->
     <div class="stat-tiles">
       <div class="card stat-tile"><span class="chrono-value">${stats.total}</span><span class="chrono-label">Séances</span></div>
       <div class="card stat-tile"><span class="chrono-value">${fmtClock(stats.tempsMs)}</span><span class="chrono-label">Temps total</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${Math.round(stats.volume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume soulevé</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${stats.regularite}</span><span class="chrono-label">Séances / semaine</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${Math.round(stats.volume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${stats.regularite}</span><span class="chrono-label">Séances / sem.</span></div>
     </div>
 
     ${Object.keys(stats.parGroupe).length ? `
     <div class="card">
-      <h3 class="panel-title">Répartition par muscle</h3>
-      <div class="muscle-bars">
-        ${Object.entries(stats.parGroupe).sort((a, b) => b[1] - a[1]).map(([g, n]) => `
-          <div class="muscle-bar-row">
-            <span class="muscle-bar-label">${LABELS.groupes[g] || g}</span>
-            <div class="muscle-bar-track"><div class="muscle-bar" style="width:${Math.round(n / maxGroupe * 100)}%"></div></div>
-            <span class="muscle-bar-n">${n}</span>
-          </div>`).join("")}
-      </div>
+      ${disclosure("dash.muscles", {
+        summary: `<span class="disc-title">Répartition par muscle</span>
+          <span class="disc-meta">${Object.keys(stats.parGroupe).length} groupes travaillés</span>`,
+        what: `Le nombre de séries par groupe musculaire depuis le début. Sert à repérer les
+          <strong>oubliés</strong> : si le dos est deux fois sous les pectoraux, ta posture et
+          tes épaules finiront par le sentir. Un ratio tirage/poussée proche de 1 est un bon repère.`,
+        detail: `<div class="muscle-bars">
+          ${Object.entries(stats.parGroupe).sort((a, b) => b[1] - a[1]).map(([g, n]) => `
+            <div class="muscle-bar-row">
+              <span class="muscle-bar-label">${LABELS.groupes[g] || g}</span>
+              <div class="muscle-bar-track"><div class="muscle-bar" style="width:${Math.round(n / maxGroupe * 100)}%"></div></div>
+              <span class="muscle-bar-n">${n}</span>
+            </div>`).join("")}
+        </div>`
+      })}
     </div>` : ""}
 
     ${prs.length ? `
     <div class="card">
-      <h3 class="panel-title">Records personnels</h3>
-      <div class="pr-list">
-        ${prs.slice(0, 8).map(p => `
-          <div class="pr-row">
-            <div class="pr-info">
-              <strong>${esc(p.nom)}</strong>
-              <span class="pr-best">${p.best.poids} kg × ${p.best.reps} · ${new Date(p.best.date).toLocaleDateString("fr-FR")}</span>
-            </div>
-            ${sparkline(p.points)}
-          </div>`).join("")}
-      </div>
+      ${disclosure("dash.prs", {
+        summary: `<span class="disc-title">Records personnels</span>
+          <span class="disc-meta">${prs.length} exercice${prs.length > 1 ? "s" : ""} · top ${prs[0].best.poids} kg</span>`,
+        what: `Ta série la plus lourde sur chaque exercice, avec la courbe de progression à droite.
+          Un record ne se bat pas à chaque séance : viser <strong>+2,5 kg ou +1 rep par mois</strong>
+          sur un mouvement de base est déjà une excellente progression.`,
+        detail: `<div class="pr-list">
+          ${prs.slice(0, 10).map(p => `
+            <div class="pr-row">
+              <div class="pr-info">
+                <strong>${esc(p.nom)}</strong>
+                <span class="pr-best">${p.best.poids} kg × ${p.best.reps} · ${new Date(p.best.date).toLocaleDateString("fr-FR")}</span>
+              </div>
+              ${sparkline(p.points)}
+            </div>`).join("")}
+        </div>`
+      })}
     </div>` : ""}
-
-    <!-- Badges -->
-    <div class="card">
-      <h3 class="panel-title">Badges</h3>
-      <div class="badge-grid">
-        ${badges.map(b => `
-          <div class="badge-tile ${b.ok ? "badge-ok" : ""}" title="${esc(b.desc)}">
-            <span class="badge-ico">${icon(b.ico)}</span>
-            <span class="badge-nom">${esc(b.nom)}</span>
-            <span class="badge-desc">${esc(b.desc)}</span>
-            ${b.ok ? '<span class="badge-check">✓</span>' : ""}
-          </div>`).join("")}
-      </div>
-    </div>
 
     <!-- Poids de corps -->
     <div class="card">
-      <h3 class="panel-title">Poids de corps</h3>
-      <div class="weight-row">
-        <input type="number" id="weight-input" min="20" max="300" step="0.1" placeholder="Ex : 74.5">
-        <button class="btn btn-ghost" id="weight-add">Enregistrer</button>
-      </div>
-      ${weights.length >= 2 ? sparkline(weights.map(w => ({ date: w.date, poids: w.kg })), 400, 60) : ""}
-      ${weights.length ? `<p class="video-hint">Dernier relevé : <strong>${weights[weights.length - 1].kg} kg</strong> le ${new Date(weights[weights.length - 1].date).toLocaleDateString("fr-FR")} · ${weights.length} relevé${weights.length > 1 ? "s" : ""}</p>` : `<p class="video-hint">Aucun relevé pour l'instant.</p>`}
+      ${disclosure("dash.weight", {
+        summary: `<span class="disc-title">Poids de corps</span>
+          <span class="disc-meta">${lastW ? lastW.kg + " kg le " + new Date(lastW.date).toLocaleDateString("fr-FR") : "aucun relevé"}</span>`,
+        label: "Relever",
+        what: `Pèse-toi toujours dans les mêmes conditions (le matin, à jeun) : c'est la
+          <strong>tendance sur 2-3 semaines</strong> qui compte, jamais le chiffre d'un jour —
+          l'eau et le contenu digestif font varier de 1 à 2 kg sans que rien n'ait changé.`,
+        detail: `<div class="weight-row">
+            <input type="number" id="weight-input" min="20" max="300" step="0.1" placeholder="Ex : 74.5">
+            <button class="btn btn-ghost" id="weight-add">Enregistrer</button>
+          </div>
+          ${weights.length >= 2 ? evolutionChart(weights.map(w => ({ date: w.date, poids: w.kg })), { w: 340, unit: "kg" }) : ""}
+          ${weights.length ? `<p class="video-hint">${weights.length} relevé${weights.length > 1 ? "s" : ""} enregistré${weights.length > 1 ? "s" : ""}.</p>` : ""}`
+      })}
     </div>
 
     <!-- Sauvegarde -->
     <div class="card">
-      <h3 class="panel-title">Sauvegarde des données</h3>
-      <p class="video-hint">Tes données vivent dans ce navigateur. Exporte-les régulièrement pour ne rien perdre.</p>
-      <div class="program-actions">
-        <button class="btn btn-primary" id="export-data">Exporter (JSON)</button>
-        <button class="btn btn-ghost" id="import-data">Importer une sauvegarde</button>
-      </div>
+      ${disclosure("dash.backup", {
+        summary: `<span class="disc-title">Sauvegarde</span>
+          <span class="disc-meta">export / import JSON</span>`,
+        what: `Tes données vivent <strong>uniquement dans ce navigateur</strong> : vider le cache
+          ou changer de téléphone les efface. L'export produit un fichier unique qui contient tout
+          (séances, programmes, favoris, réglages) et que l'import restaure à l'identique.`,
+        detail: `<div class="program-actions">
+          <button class="btn btn-primary" id="export-data">Exporter (JSON)</button>
+          <button class="btn btn-ghost" id="import-data">Importer une sauvegarde</button>
+        </div>`
+      })}
     </div>
   `;
 
@@ -427,38 +454,39 @@ function renderSessionsPanel() {
           <div class="card history-item session-open" data-id="${esc(r.id)}" tabindex="0" role="button">
             <div class="history-head">
               <div>
-                <h3>${esc(r.nom)}</h3>
-                <p class="day-focus">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-                  · ${fmtClock(r.dureeMs)} · ${r.exercises.length} exos · ${r.nbSeries} séries · ${Math.round(r.volume)} kg
-                  ${r.rpe ? ` · RPE ${r.rpe}/10` : ""}</p>
+                <h3>${typeChip(sessionType(r))} ${esc(r.nom)}</h3>
+                <p class="day-focus">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}
+                  · ${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg${r.rpe ? ` · RPE ${r.rpe}` : ""}</p>
               </div>
-              <span class="tag">${r.statut || "Terminée"}</span>
             </div>
           </div>`).join("")}
       </div>` : `
-      <div class="card table-wrap">
+      <!-- Colonnes prioritaires : les secondaires disparaissent sur petit
+           écran (classe col-lo) — aucun défilement latéral, le détail
+           complet s'ouvre d'un tap sur la ligne (F1). -->
+      <div class="card">
         <table class="day-table sessions-table">
           <thead><tr>
             <th class="sortable" data-sort="date">Date${arrow("date")}</th>
             <th>Type</th>
-            <th class="sortable" data-sort="duree">Durée${arrow("duree")}</th>
-            <th class="sortable" data-sort="series">Exos / séries${arrow("series")}</th>
+            <th class="sortable col-lo" data-sort="duree">Durée${arrow("duree")}</th>
+            <th class="sortable col-lo" data-sort="series">Séries${arrow("series")}</th>
             <th class="sortable" data-sort="volume">Volume${arrow("volume")}</th>
-            <th>RPE</th><th>Statut</th>
+            <th class="col-lo">RPE</th>
           </tr></thead>
           <tbody>
             ${sorted.map(r => `
-              <tr class="session-open" data-id="${esc(r.id)}">
+              <tr class="session-open" data-id="${esc(r.id)}" tabindex="0" role="button">
                 <td>${new Date(r.date).toLocaleDateString("fr-FR")}</td>
-                <td>${esc(r.nom)}</td>
-                <td>${fmtClock(r.dureeMs)}</td>
-                <td>${r.exercises.length} / ${r.nbSeries}</td>
-                <td>${Math.round(r.volume)} kg</td>
-                <td>${r.rpe ? r.rpe + "/10" : "—"}</td>
-                <td><span class="goal-ok">✓ ${r.statut || "Terminée"}</span></td>
+                <td>${typeChip(sessionType(r))} <span class="sess-nom">${esc(r.nom)}</span></td>
+                <td class="num col-lo">${fmtClock(r.dureeMs)}</td>
+                <td class="num col-lo">${r.exercises.length} / ${r.nbSeries}</td>
+                <td class="num">${Math.round(r.volume)} kg</td>
+                <td class="num col-lo">${r.rpe ? r.rpe + "/10" : "—"}</td>
               </tr>`).join("")}
           </tbody>
         </table>
+        <p class="video-hint">Touche une ligne pour le détail complet (durée, repos, RPE, séries).</p>
       </div>`}
   `;
 
@@ -666,20 +694,38 @@ function renderCalendar() {
         <div class="cal-grid">
           ${w.days.map(d => {
             const inMonth = d.getMonth() === calState.m;
-            const n = inMonth ? (byDay.get(d.getDate()) || []).length : 0;
+            const list = inMonth ? (byDay.get(d.getDate()) || []) : [];
+            const n = list.length;
             const isToday = d.getTime() === today.getTime();
+            // type de la séance du jour : couleur + initiale, lisible sans ouvrir
+            const t = n ? sessionType(list[0]) : null;
+            const tn = t ? SESSION_TYPES[t] : null;
             return `<button class="cal-day ${inMonth ? "" : "cal-out"} ${isToday ? "cal-today" : ""} ${n ? "cal-has" : ""}"
-              ${inMonth && n ? `data-day="${d.getDate()}"` : "disabled"} aria-label="${d.toLocaleDateString("fr-FR")}${n ? ", " + n + " séance(s)" : ""}">
-              <span>${inMonth ? d.getDate() : ""}</span>
-              ${n ? `<span class="cal-dot">${n > 1 ? n : ""}</span>` : ""}
+              ${inMonth && n ? `data-day="${d.getDate()}"` : "disabled"}
+              aria-label="${d.toLocaleDateString("fr-FR")}${n ? `, ${n} séance(s), type ${tn.nom}` : ""}">
+              <span class="cal-num">${inMonth ? d.getDate() : ""}</span>
+              ${n ? `<span class="cal-type t-${t}">${tn.court}${n > 1 ? `<span class="cal-plus">+${n - 1}</span>` : ""}</span>` : ""}
             </button>`;
           }).join("")}
           <span class="cal-week-status ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "goal-ok" : ""}">
             ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "✓" : `${gs.perWeek.get(w.key) || 0}/${gs.goal}`}
           </span>
         </div>`).join("")}
-      <p class="video-hint cal-legend">● = séance enregistrée · les jours vides sont tes jours de récupération ·
-        objectif atteint <strong>${monthOK}/${weeks.length}</strong> semaines ce mois · streak actuel : <strong>${gs.streak} semaine${gs.streak > 1 ? "s" : ""}</strong></p>
+
+      ${typeLegend()}
+      ${disclosure("cal.legend", {
+        summary: `<span class="disc-title">Ce mois</span>
+          <span class="disc-meta">objectif atteint ${monthOK}/${weeks.length} semaines · streak ${gs.streak}</span>`,
+        what: `Chaque jour travaillé porte la <strong>couleur et l'initiale de son type de séance</strong> :
+          la couleur donne la vue d'ensemble, l'initiale reste lisible même si tu distingues mal
+          les couleurs. La colonne « Obj. » à droite indique si l'objectif de la semaine est atteint.`,
+        detail: `<ul class="conseils">
+          ${Object.entries(SESSION_TYPES).map(([k, v]) =>
+            `<li>${typeChip(k)} <strong>${v.nom}</strong> — ${esc(v.desc)}</li>`).join("")}
+        </ul>
+        <p class="video-hint">Le type est déduit de l'intitulé de la séance, ou à défaut des muscles réellement
+          travaillés. Les jours vides sont tes jours de récupération : ils comptent aussi.</p>`
+      })}
     </div>
     <div id="cal-day-detail"></div>
   `;
@@ -708,7 +754,7 @@ function renderCalDayDetail(sessions) {
       ${sessions.map(r => `
         <div class="history-head cal-session">
           <div>
-            <strong>${esc(r.nom)}</strong>
+            <strong>${typeChip(sessionType(r))} ${esc(r.nom)}</strong>
             <p class="day-focus">${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg${r.rpe ? " · RPE " + r.rpe : ""}</p>
           </div>
           <button class="btn btn-ghost btn-sm session-open" data-id="${esc(r.id)}">Voir</button>

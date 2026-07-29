@@ -59,6 +59,68 @@ function plateLoader(done, goal) {
   </div>`;
 }
 
+/* Accès direct Programme & Nutrition depuis l'accueil (C1) : pas un simple
+   lien, une tuile qui montre déjà l'état — programme actif, calories du jour. */
+function homeAccessTiles() {
+  const program = loadJSON(STORAGE_KEYS.program, null);
+  const nutri = loadJSON(STORAGE_KEYS.nutrition, null);
+  let kcal = null;
+  if (nutri && nutri.age) {
+    const bmr = nutri.sexe === "h"
+      ? 10 * nutri.poids + 6.25 * nutri.taille - 5 * nutri.age + 5
+      : 10 * nutri.poids + 6.25 * nutri.taille - 5 * nutri.age - 161;
+    const delta = nutri.objectif === "masse" ? 300 : nutri.objectif === "seche" ? -400 : 0;
+    kcal = Math.round(bmr * parseFloat(nutri.activite) + delta);
+  }
+  return `<div class="home-access">
+    <button class="card access-tile" data-go="programme">
+      <span class="access-ico">${icon("target")}</span>
+      <span class="access-txt">
+        <span class="access-nom">Programme</span>
+        <span class="access-val">${program
+          ? esc(program.nom || program.objectifLabel || "Actif") + " · " + program.days.length + " séances/sem."
+          : "À créer — 2 min de questions"}</span>
+      </span>
+    </button>
+    <button class="card access-tile" data-go="nutrition">
+      <span class="access-ico">${icon("apple")}</span>
+      <span class="access-txt">
+        <span class="access-nom">Nutrition</span>
+        <span class="access-val">${kcal
+          ? kcal.toLocaleString("fr-FR") + " kcal/jour · macros calculées"
+          : "Calcule tes besoins"}</span>
+      </span>
+    </button>
+  </div>`;
+}
+
+/* Panneau de personnalisation : quelles cartes, dans quel ordre (C2) */
+function homeCustomizePanel() {
+  const cards = getHomeCards();
+  return disclosure("home.custom", {
+    summary: `<span class="disc-title">Personnaliser l'accueil</span>
+      <span class="disc-meta">${cards.filter(c => c.on).length} bloc(s) affiché(s)</span>`,
+    label: "Modifier",
+    what: `Choisis ce que tu veux voir en ouvrant l'app, et dans quel ordre. Décoche ce qui ne
+      te sert pas : un accueil court se lit d'un coup d'œil entre deux séries. Ton choix est
+      mémorisé sur cet appareil.`,
+    detail: `<ul class="hc-list">
+      ${cards.map((c, i) => `
+        <li class="hc-item">
+          <label class="hc-check">
+            <input type="checkbox" class="hc-on" data-key="${esc(c.key)}" ${c.on ? "checked" : ""}>
+            <span>${esc(HOME_CARD_LABELS[c.key] || c.key)}</span>
+          </label>
+          <span class="hc-order">
+            <button class="btn-ic hc-up" data-key="${esc(c.key)}" title="Monter" aria-label="Monter" ${i === 0 ? "disabled" : ""}>▲</button>
+            <button class="btn-ic hc-down" data-key="${esc(c.key)}" title="Descendre" aria-label="Descendre" ${i === cards.length - 1 ? "disabled" : ""}>▼</button>
+          </span>
+        </li>`).join("")}
+    </ul>
+    <button class="btn btn-ghost btn-sm" id="hc-reset">Rétablir l'accueil par défaut</button>`
+  });
+}
+
 function renderHome() {
   const profil = loadJSON(STORAGE_KEYS.profil, null);
   const gs = goalStatus();
@@ -75,23 +137,12 @@ function renderHome() {
   const lastPR = prs.slice().sort((a, b) => b.best.date - a.best.date)[0] || null;
   const quote = QUOTES[new Date().getDate() % QUOTES.length];
   const prenom = profil?.prenom ? ", " + esc(profil.prenom) : "";
+  const weights = loadJSON(STORAGE_KEYS.weights, []);
 
-  document.getElementById("home-content").innerHTML = `
-    <section class="hero home-hero">
-      <div class="home-hero-text">
-        <p class="kicker">${now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
-        <h1 class="display">Salut${prenom}<span class="accent">.</span></h1>
-        <p class="hero-sub">${esc(quote)}</p>
-      </div>
-      <!-- pièce héros : le streak en numéral géant, décalé -->
-      <div class="streak-hero" aria-label="Streak : ${gs.streak} semaine(s)">
-        <span class="streak-num">${gs.streak}</span>
-        <span class="streak-cap">${icon("flame")} semaine${gs.streak > 1 ? "s" : ""}<br>d'affilée</span>
-      </div>
-    </section>
-
-    <!-- CTA principal : la prochaine séance à un tap -->
-    ${next ? `
+  /* Chaque bloc de l'accueil est indépendant : affiché ou non, dans
+     l'ordre choisi par l'utilisateur (C2). */
+  const BLOCKS = {
+    next: () => next ? `
       <button class="card home-cta" id="home-start">
         <div>
           <p class="chrono-label">Prochaine séance</p>
@@ -104,44 +155,92 @@ function renderHome() {
         <div>
           <p class="chrono-label">Première étape</p>
           <h2 class="display-sm">Crée ton programme</h2>
-          <p class="day-focus">2 minutes de questions, un plan complet adapté à ton objectif.</p>
+          <p class="day-focus">2 min de questions, un plan adapté à ton objectif.</p>
         </div>
         <span class="home-cta-go">${icon("play")}</span>
-      </button>`}
+      </button>`,
 
-    <!-- Objectif hebdo + streak + dernier PR -->
-    <div class="home-grid">
+    acces: () => homeAccessTiles(),
+
+    objectif: () => `
       <div class="card home-tile home-goal">
         <div>
           <p class="chrono-label">La barre de la semaine</p>
           ${plateLoader(gs.doneThisWeek, gs.goal)}
           <p class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}
           ${gs.achievedThisWeek
-            ? '<span class="goal-ok">Barre chargée — objectif atteint</span>'
-            : `<span class="goal-left">encore ${gs.goal - gs.doneThisWeek} disque${gs.goal - gs.doneThisWeek > 1 ? "s" : ""} à charger</span>`}</p>
+            ? '<span class="goal-ok">Objectif atteint</span>'
+            : `<span class="goal-left">encore ${gs.goal - gs.doneThisWeek} disque${gs.goal - gs.doneThisWeek > 1 ? "s" : ""}</span>`}</p>
         </div>
-      </div>
+      </div>`,
+
+    pr: () => `
       <div class="card home-tile">
         <p class="chrono-label">${icon("trophy")} Dernier record</p>
         ${lastPR
           ? `<p class="home-pr">${esc(lastPR.nom)}</p>
              <p class="goal-left"><strong>${lastPR.best.poids} kg × ${lastPR.best.reps}</strong> · ${new Date(lastPR.best.date).toLocaleDateString("fr-FR")}</p>`
           : `<p class="goal-left">Valide des séries chargées pour débloquer tes records.</p>`}
+      </div>`,
+
+    mois: () => `
+      <div class="stat-tiles">
+        <div class="card stat-tile"><span class="chrono-value">${thisMonth.length}</span><span class="chrono-label">Séances ce mois</span></div>
+        <div class="card stat-tile"><span class="chrono-value">${fmtClock(moisTemps)}</span><span class="chrono-label">Temps ce mois</span></div>
+        <div class="card stat-tile"><span class="chrono-value">${Math.round(moisVolume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume ce mois</span></div>
+      </div>`,
+
+    poids: () => `
+      <div class="card home-tile">
+        <p class="chrono-label">Poids de corps</p>
+        ${weights.length
+          ? `<p class="goal-big">${weights[weights.length - 1].kg} <span class="goal-left">kg</span></p>
+             <p class="goal-left">Relevé du ${new Date(weights[weights.length - 1].date).toLocaleDateString("fr-FR")}${
+               weights.length >= 2 ? ` · ${(weights[weights.length - 1].kg - weights[0].kg >= 0 ? "+" : "")}${(weights[weights.length - 1].kg - weights[0].kg).toFixed(1)} kg depuis le début` : ""}</p>`
+          : `<p class="goal-left">Aucun relevé — ajoute-le depuis l'onglet Suivi.</p>`}
+      </div>`,
+
+    liens: () => `
+      <div class="program-actions home-links">
+        <button class="btn btn-ghost" data-go="bibliotheque">Exercices</button>
+        <button class="btn btn-ghost" data-go="suivi">Mon suivi</button>
+        <button class="btn btn-ghost" data-go="seance">Démarrer une séance</button>
+      </div>`
+  };
+
+  const cards = getHomeCards();
+  const on = k => cards.some(c => c.key === k && c.on);
+  // les tuiles objectif + PR partagent une grille quand les deux sont visibles
+  const gridKeys = ["objectif", "pr", "poids"].filter(on);
+  const rendered = [];
+  let gridDone = false;
+  for (const c of cards) {
+    if (!c.on || c.key === "streak") continue;
+    if (gridKeys.includes(c.key)) {
+      if (gridDone) continue;
+      gridDone = true;
+      rendered.push(`<div class="home-grid">${gridKeys.map(k => BLOCKS[k]()).join("")}</div>`);
+      continue;
+    }
+    if (BLOCKS[c.key]) rendered.push(BLOCKS[c.key]());
+  }
+
+  document.getElementById("home-content").innerHTML = `
+    <section class="hero home-hero">
+      <div class="home-hero-text">
+        <p class="kicker">${now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
+        <h1 class="display">Salut${prenom}<span class="accent">.</span></h1>
+        <p class="hero-sub">${esc(quote)}</p>
       </div>
-    </div>
-
-    <!-- Résumé du mois -->
-    <div class="stat-tiles">
-      <div class="card stat-tile"><span class="chrono-value">${thisMonth.length}</span><span class="chrono-label">Séances ce mois</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${fmtClock(moisTemps)}</span><span class="chrono-label">Temps ce mois</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${Math.round(moisVolume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume ce mois</span></div>
-    </div>
-
-    <div class="program-actions home-links">
-      <button class="btn btn-ghost" data-go="bibliotheque">Explorer les exercices</button>
-      <button class="btn btn-ghost" data-go="suivi">Voir mon suivi</button>
-      <button class="btn btn-ghost" data-go="nutrition">Mes besoins nutrition</button>
-    </div>
+      ${on("streak") ? `
+      <!-- pièce héros : le streak en numéral géant, décalé -->
+      <div class="streak-hero" aria-label="Streak : ${gs.streak} semaine(s)">
+        <span class="streak-num">${gs.streak}</span>
+        <span class="streak-cap">${icon("flame")} semaine${gs.streak > 1 ? "s" : ""}<br>d'affilée</span>
+      </div>` : ""}
+    </section>
+    ${rendered.join("")}
+    ${homeCustomizePanel()}
   `;
 
   const start = document.getElementById("home-start");
@@ -154,8 +253,36 @@ function renderHome() {
   });
   const create = document.getElementById("home-create-program");
   if (create) create.addEventListener("click", () => activateView("programme"));
-  document.querySelectorAll(".home-links [data-go]").forEach(b =>
+  document.querySelectorAll("#home-content [data-go]").forEach(b =>
     b.addEventListener("click", () => activateView(b.dataset.go)));
+
+  /* Personnalisation : visibilité + ordre, puis re-rendu */
+  document.querySelectorAll(".hc-on").forEach(box =>
+    box.addEventListener("change", () => {
+      const list = getHomeCards();
+      const c = list.find(x => x.key === box.dataset.key);
+      if (c) c.on = box.checked;
+      saveHomeCards(list);
+      renderHome();
+    }));
+  const move = (key, dir) => {
+    const list = getHomeCards();
+    const i = list.findIndex(x => x.key === key);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return;
+    [list[i], list[j]] = [list[j], list[i]];
+    saveHomeCards(list);
+    renderHome();
+  };
+  document.querySelectorAll(".hc-up").forEach(b =>
+    b.addEventListener("click", () => move(b.dataset.key, -1)));
+  document.querySelectorAll(".hc-down").forEach(b =>
+    b.addEventListener("click", () => move(b.dataset.key, 1)));
+  const reset = document.getElementById("hc-reset");
+  if (reset) reset.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEYS.homeCards);
+    renderHome();
+  });
 }
 
 document.querySelectorAll('.tab[data-view="accueil"]').forEach(t =>
@@ -248,8 +375,11 @@ function renderNutrition() {
   const lastWeight = weights.length ? weights[weights.length - 1].kg : "";
 
   const d = saved || { sexe: "h", age: "", taille: "", poids: lastWeight, activite: "1.55", objectif: profil.objectif || "masse" };
+  const calcule = !!(saved && saved.age);
 
-  document.getElementById("nutrition-content").innerHTML = `
+  /* Une fois les besoins calculés, le questionnaire disparaît derrière
+     « Modifier mes infos » : on ne montre plus que le résultat (H1). */
+  const formHTML = `
     <form class="card program-form" id="nutri-form">
       <div class="form-grid">
         <label>Sexe
@@ -277,9 +407,19 @@ function renderNutrition() {
             <option value="forme" ${d.objectif === "forme" || d.objectif === "force" ? "selected" : ""}>Maintien / recomposition</option>
           </select></label>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">Calculer mes besoins</button>
-    </form>
+      <button type="submit" class="btn btn-primary btn-lg">${calcule ? "Recalculer" : "Calculer mes besoins"}</button>
+    </form>`;
+
+  document.getElementById("nutrition-content").innerHTML = `
     <div id="nutri-result"></div>
+    ${calcule ? `<div class="card">${disclosure("nutri.form", {
+      summary: `<span class="disc-title">Mes infos</span>
+        <span class="disc-meta">${d.sexe === "h" ? "Homme" : "Femme"} · ${d.age} ans · ${d.taille} cm · ${d.poids} kg</span>`,
+      label: "Modifier mes infos",
+      what: `Tes besoins sont recalculés à partir de ces cinq données. Mets-les à jour quand ton
+        poids bouge de 2-3 kg ou quand ton objectif change — les calories suivent.`,
+      detail: formHTML
+    })}</div>` : formHTML}
   `;
 
   document.getElementById("nutri-form").addEventListener("submit", e => {
@@ -293,10 +433,10 @@ function renderNutrition() {
       objectif: document.getElementById("n-objectif").value
     };
     saveJSON(STORAGE_KEYS.nutrition, data);
-    renderNutriResult(data);
+    renderNutrition();   // repasse en « résultat seul + infos repliées »
   });
 
-  if (saved && saved.age) renderNutriResult(saved);
+  if (calcule) renderNutriResult(saved);
 }
 
 function renderNutriResult(d) {
@@ -322,7 +462,10 @@ function renderNutriResult(d) {
     </div>
 
     <div class="card">
-      <h3 class="panel-title">Tes macros quotidiennes</h3>
+      <h3 class="panel-title">Macros du jour</h3>
+      <p class="disc-what">Les calories disent <em>combien</em>, les macros disent <em>quoi</em> :
+        les protéines réparent le muscle, les lipides tiennent les hormones, les glucides
+        alimentent la séance.</p>
       <div class="macro-bars">
         <div class="macro-row"><span class="macro-label">Protéines</span>
           <div class="muscle-bar-track"><div class="muscle-bar" style="width:${Math.round(protG * 4 / cible * 100)}%"></div></div>
@@ -337,16 +480,21 @@ function renderNutriResult(d) {
     </div>
 
     <div class="card">
-      <h3 class="panel-title">Les bases qui comptent vraiment</h3>
-      <ul class="conseils">
-        <li><strong>Autour de l'entraînement :</strong> un repas avec protéines + glucides 2-3 h avant, et dans les heures qui suivent la séance. Pas de panique sur la « fenêtre anabolique » : le total de la journée prime.</li>
-        <li><strong>Protéines :</strong> répartis-les sur 3-4 prises (viande, poisson, œufs, laitages, légumineuses, tofu). ~20-40 g par repas.</li>
-        <li><strong>Collations utiles :</strong> fromage blanc + fruits, œufs durs, poignée d'amandes, yaourt grec, banane + beurre de cacahuète.</li>
-        <li><strong>Hydratation :</strong> vise ton repère quotidien, plus 500 ml autour de la séance.</li>
-        <li><strong>Compléments — sans survente :</strong> la <em>créatine monohydrate</em> (3-5 g/jour) et la <em>whey</em> (une protéine pratique, pas magique) sont les deux seuls à l'efficacité solidement démontrée. La caféine peut aider avant une grosse séance. Le reste est très optionnel.</li>
-        <li><strong>Exemple de journée simple :</strong> flocons d'avoine + œufs le matin · riz-poulet-légumes le midi · collation protéinée · poisson-patates douces-légumes le soir.</li>
-      </ul>
-      <p class="disclaimer">⚠️ Ces repères sont des estimations générales, pas une prescription. Pas de restriction sévère ni de régime extrême : en cas de doute, d'antécédents médicaux ou de troubles alimentaires, parles-en à un médecin ou un(e) diététicien(ne).</p>
+      ${disclosure("nutri.bases", {
+        summary: `<span class="disc-title">Les bases qui comptent</span>
+          <span class="disc-meta">timing, protéines, compléments</span>`,
+        what: `Le reste n'est que du détail : ces six points couvrent 95 % du résultat.
+          Tout ce qui n'est pas là est optionnel.`,
+        detail: `<ul class="conseils">
+          <li><strong>Autour de l'entraînement :</strong> protéines + glucides 2-3 h avant, et dans les heures qui suivent. Le total de la journée prime sur la « fenêtre anabolique ».</li>
+          <li><strong>Protéines :</strong> 3-4 prises de ~20-40 g (viande, poisson, œufs, laitages, légumineuses, tofu).</li>
+          <li><strong>Collations utiles :</strong> fromage blanc + fruits, œufs durs, amandes, yaourt grec, banane + beurre de cacahuète.</li>
+          <li><strong>Hydratation :</strong> ton repère quotidien, plus 500 ml autour de la séance.</li>
+          <li><strong>Compléments :</strong> seules la <em>créatine monohydrate</em> (3-5 g/jour) et la <em>whey</em> ont une efficacité solidement démontrée. La caféine aide avant une grosse séance. Le reste est optionnel.</li>
+          <li><strong>Journée type :</strong> flocons + œufs · riz-poulet-légumes · collation protéinée · poisson-patates douces-légumes.</li>
+        </ul>
+        <p class="disclaimer">⚠️ Estimations générales, pas une prescription. Pas de restriction sévère : en cas de doute, d'antécédents médicaux ou de troubles alimentaires, parles-en à un médecin ou un(e) diététicien(ne).</p>`
+      })}
     </div>
   `;
 }

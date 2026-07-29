@@ -142,9 +142,33 @@ const DAY_TEMPLATES = {
   }
 };
 
+/* Répartition sur mesure : on entrelace les blocs pour ne jamais enchaîner
+   deux fois le même (récupération) — ex. {upper:3, lower:1} donne
+   upper, lower, upper, upper. */
+function splitFromRepartition(rep) {
+  const items = Object.entries(rep)
+    .filter(([k, n]) => n > 0 && DAY_TEMPLATES[k])
+    .map(([k, n]) => ({ k, n }));
+  const out = [];
+  let last = null;
+  let remaining = items.reduce((s, x) => s + x.n, 0);
+  while (remaining > 0) {
+    items.sort((a, b) => b.n - a.n);                 // le bloc le plus fourni d'abord
+    const pick = items.find(x => x.n > 0 && x.k !== last) || items.find(x => x.n > 0);
+    out.push(pick.k);
+    pick.n--; remaining--; last = pick.k;
+  }
+  return out;
+}
+
 /* Choix du split selon le nombre de séances, le niveau et la préférence
-   utilisateur : "auto" (recommandé), "fullbody" ou "split". */
-function chooseSplit(jours, niveau, splitPref) {
+   utilisateur : "auto" (recommandé), "fullbody", "split" ou "custom"
+   (répartition exacte fournie par l'utilisateur). */
+function chooseSplit(jours, niveau, splitPref, repartition) {
+  if (splitPref === "custom" && repartition) {
+    const s = splitFromRepartition(repartition);
+    if (s.length) return s;
+  }
   if (splitPref === "fullbody") {
     return Array(jours).fill("fullbody");
   }
@@ -212,9 +236,9 @@ function pickExercise(slot, pool, usedToday, usedThisWeek) {
 
 /* Génère le programme complet */
 function generateProgram(params) {
-  const { prenom, objectif, niveau, jours, materiel, priorite, split: splitPref } = params;
+  const { prenom, objectif, niveau, jours, materiel, priorite, split: splitPref, repartition } = params;
   const scheme = GOAL_SCHEMES[objectif];
-  const split = chooseSplit(jours, niveau, splitPref || "auto");
+  const split = chooseSplit(jours, niveau, splitPref || "auto", repartition);
   const maxExos = LEVEL_VOLUME[niveau];
 
   const allowedMateriel = EQUIPMENT_POOLS[materiel];
@@ -253,9 +277,14 @@ function generateProgram(params) {
       });
     }
 
+    // un même bloc peut revenir plusieurs fois (haut/bas, répartition sur
+    // mesure) : on numérote pour distinguer « Haut du corps » et « Haut du corps 2 »
+    const occurrences = split.filter(k => k === templateKey).length;
+    const rank = split.slice(0, i + 1).filter(k => k === templateKey).length;
+
     return {
       numero: i + 1,
-      titre: template.titre,
+      titre: occurrences > 1 ? `${template.titre} ${rank}` : template.titre,
       focus: template.focus,
       exercices
     };
@@ -267,12 +296,14 @@ function generateProgram(params) {
     objectifLabel: scheme.label,
     objectifIcone: scheme.icone,
     niveau,
-    jours,
+    jours: split.length,
     materiel,
     priorite,
     split: splitPref || "auto",
+    repartition: repartition || null,
     splitLabel: (splitPref === "fullbody") ? "Full body"
               : (splitPref === "split") ? "Split"
+              : (splitPref === "custom") ? "Répartition sur mesure"
               : "Auto",
     genereLe: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
     days,
