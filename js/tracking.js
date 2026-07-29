@@ -219,7 +219,6 @@ function renderDashboard() {
     <!-- Objectif de la semaine + streak : le seul bloc ouvert d'office -->
     <div class="card goal-card">
       ${disclosure("dash.goal", {
-        dflt: true,
         summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>
           <span class="disc-meta">cette semaine · streak ${gs.streak} sem.
           ${gs.achievedThisWeek ? '<span class="goal-ok">✓ atteint</span>' : ""}</span>`,
