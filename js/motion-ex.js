@@ -1229,3 +1229,320 @@ EXERCISE_MOTIONS["developpe-militaire"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M148 30 L148 66 M143 58 L148 66 L153 58"/>` }
   ]
 };
+
+/* =========================================================
+   14. ÉLÉVATIONS LATÉRALES  (elevations-laterales)
+   -----------------------------------------------------------
+   Position  : DEBOUT, pieds largeur de bassin, buste droit et
+               très légèrement penché en avant, gainage serré,
+               bras le long du corps.
+   Matériel  : deux haltères, prise neutre, paumes vers les
+               cuisses au départ.
+   Mobiles   : ÉPAULE uniquement, en ABDUCTION dans le plan
+               frontal.
+   Fixes     : le COUDE, verrouillé à ~161° pendant toute la
+               série — s'il se plie, ce n'est plus une élévation ;
+               rachis, bassin, jambes. Aucun balancement du tronc
+               (l'erreur classique : donner de l'élan aux hanches).
+   Sens/plan : montée des bras sur les CÔTÉS jusqu'à l'horizontale
+               = concentrique ; descente contrôlée = excentrique,
+               c'est là que le deltoïde travaille le plus.
+   ROM       : abduction de 0° (bras le long du corps) à ~90°
+               (mains à hauteur d'épaules). On ne monte PAS plus
+               haut : au-delà, c'est le trapèze qui prend le relais.
+   Agonistes : deltoïde MOYEN (faisceau latéral) ; supra-épineux
+               au démarrage.
+   Distinction : plan FRONTAL et coude verrouillé — ≠ élévations
+               frontales (plan sagittal, bras devant), ≠ oiseau
+               (buste penché, abduction horizontale, deltoïde
+               postérieur), ≠ développé épaules (le coude s'étend).
+   Vue de FACE : un profil ne montrerait aucun déplacement.
+   ========================================================= */
+EXERCISE_MOTIONS["elevations-laterales"] = {
+  vb: "44 22 152 132",
+  dur: 3.6,
+  phases: { con: [0, 30], ecc: [38, 86] },
+  alt: "Debout, bras le long du corps : les haltères montent sur les côtés jusqu'à l'horizontale, coudes bloqués, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="86" y1="150" x2="156" y2="150"/>
+    <circle class="mo-head" cx="120" cy="42" r="10"/>
+    <line class="mo-body" x1="104" y1="62" x2="136" y2="62"/>
+    <line class="mo-body" x1="120" y1="52" x2="120" y2="108"/>
+    <line class="mo-body" x1="120" y1="108" x2="110" y2="150"/>
+    <line class="mo-body" x1="120" y1="108" x2="130" y2="150"/>
+    <!-- repère : la hauteur à ne pas dépasser (ligne des épaules) -->
+    <line class="mo-rom" x1="56" y1="62" x2="184" y2="62"/>`,
+  muscles: [
+    { nom: "Deltoïde moyen",
+      svg: `<circle cx="104" cy="62" r="5.5"/><circle cx="136" cy="62" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE : segment RIGIDE coudé à 161°, en abduction pure autour
+         de l'ÉPAULE (104, 62). +73,7° amène la main à l'horizontale. */
+      o: "104px 62px",
+      k: [[0, "rotate(0deg)"], [30, "rotate(73.7deg)"], [38, "rotate(73.7deg)"],
+          [86, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <polyline class="mo-limb" points="104,62 97,86 98,110"/>
+        <circle class="mo-joint" cx="97" cy="86" r="2.4"/>
+        <line class="mo-bar2" x1="90" y1="110" x2="106" y2="110"/>
+        <rect class="mo-mass" x="86" y="103" width="6" height="14" rx="2"/>
+        <rect class="mo-mass" x="104" y="103" width="6" height="14" rx="2"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact. */
+      o: "136px 62px",
+      k: [[0, "rotate(0deg)"], [30, "rotate(-73.7deg)"], [38, "rotate(-73.7deg)"],
+          [86, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <polyline class="mo-limb" points="136,62 143,86 142,110"/>
+        <circle class="mo-joint" cx="143" cy="86" r="2.4"/>
+        <line class="mo-bar2" x1="134" y1="110" x2="150" y2="110"/>
+        <rect class="mo-mass" x="130" y="103" width="6" height="14" rx="2"/>
+        <rect class="mo-mass" x="148" y="103" width="6" height="14" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M76 104 L62 74 M69 81 L62 74 L60 84 M164 104 L178 74 M171 81 L178 74 L180 84"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M62 74 L76 104 M69 97 L76 104 L78 94 M178 74 L164 104 M171 97 L164 104 L162 94"/>` }
+  ]
+};
+
+/* =========================================================
+   15. DÉVELOPPÉ ÉPAULES HALTÈRES ASSIS  (developpe-halteres-assis)
+   -----------------------------------------------------------
+   Position  : ASSIS sur un banc à DOSSIER quasi vertical, dos
+               plaqué contre le dossier, pieds à plat au sol.
+   Matériel  : DEUX haltères indépendants, prise pronation,
+               partant au niveau des oreilles, coudes sous les
+               poignets.
+   Mobiles   : épaule (flexion/abduction) et coude (extension).
+   Fixes     : le dos plaqué au dossier — pas de cambrure
+               lombaire compensatoire, c'est justement l'intérêt
+               du dossier ; bassin et jambes.
+   Sens/plan : poussée verticale = concentrique ; descente
+               jusqu'aux oreilles = excentrique. Plan scapulaire.
+   ROM       : coude de ~84° en bas (bras à l'horizontale) à
+               ~161° en haut, avec CONVERGENCE des haltères l'un
+               vers l'autre : l'écart entre les mains passe de 88
+               à 24 unités.
+   Agonistes : deltoïde antérieur et moyen, triceps, trapèze
+               supérieur.
+   Distinction : ASSIS avec dossier — le tronc est soutenu, alors
+               qu'au développé militaire debout c'est le gainage
+               qui tient tout. Et HALTÈRES indépendants qui
+               convergent, contre une barre rigide qui doit
+               contourner la tête.
+   Vue de FACE : c'est la seule qui montre la convergence, la
+   signature du mouvement aux haltères.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-halteres-assis"] = {
+  vb: "44 8 152 146",
+  dur: 3.9,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Assis dossier vertical, haltères au niveau des oreilles : poussée verticale jusqu'aux bras tendus, les haltères se rapprochant l'un de l'autre.",
+  fixe: `
+    <line class="mo-ground" x1="86" y1="150" x2="158" y2="150"/>
+    <!-- dossier vertical derrière le dos + assise -->
+    <line class="mo-pad" x1="120" y1="30" x2="120" y2="106"/>
+    <line class="mo-pad" x1="100" y1="112" x2="142" y2="112"/>
+    <!-- corps assis, dos plaqué, immobile -->
+    <circle class="mo-head" cx="120" cy="46" r="10"/>
+    <line class="mo-body" x1="104" y1="66" x2="136" y2="66"/>
+    <line class="mo-body" x1="120" y1="56" x2="120" y2="104"/>
+    <line class="mo-body" x1="120" y1="104" x2="104" y2="118"/>
+    <line class="mo-body" x1="120" y1="104" x2="136" y2="118"/>
+    <line class="mo-body" x1="104" y1="118" x2="102" y2="150"/>
+    <line class="mo-body" x1="136" y1="118" x2="138" y2="150"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="104" cy="66" r="5.5"/><circle cx="136" cy="66" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE : rotation autour de l'ÉPAULE (104, 66), +125°. */
+      o: "104px 66px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(125deg)"], [42, "rotate(125deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="97" cy="73" rx="3.2" ry="7" transform="rotate(-43 97 73)"/>`,
+      svg: `
+        <line class="mo-limb" x1="104" y1="66" x2="90.4" y2="80.6"/>
+        <circle class="mo-joint" cx="90.4" cy="80.6" r="2.5"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + HALTÈRE : −62,2° relatif. La main passe de (76,64)
+             à (108,26) : c'est cette CONVERGENCE qui signe les haltères. */
+          o: "90.4px 80.6px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(-62.2deg)"], [42, "rotate(-62.2deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="90.4" y1="80.6" x2="76" y2="64"/>
+            <line class="mo-bar2" x1="68" y1="56" x2="84" y2="72"/>
+            <rect class="mo-mass" x="63" y="50" width="6" height="14" rx="2" transform="rotate(45 66 57)"/>
+            <rect class="mo-mass" x="81" y="68" width="6" height="14" rx="2" transform="rotate(45 84 75)"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir exact. */
+      o: "136px 66px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-125deg)"], [42, "rotate(-125deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscle: `<ellipse cx="143" cy="73" rx="3.2" ry="7" transform="rotate(43 143 73)"/>`,
+      svg: `
+        <line class="mo-limb" x1="136" y1="66" x2="149.6" y2="80.6"/>
+        <circle class="mo-joint" cx="149.6" cy="80.6" r="2.5"/>`,
+      children: [
+        { o: "149.6px 80.6px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(62.2deg)"], [42, "rotate(62.2deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="149.6" y1="80.6" x2="164" y2="64"/>
+            <line class="mo-bar2" x1="156" y1="72" x2="172" y2="56"/>
+            <rect class="mo-mass" x="153" y="68" width="6" height="14" rx="2" transform="rotate(-45 156 75)"/>
+            <rect class="mo-mass" x="171" y="50" width="6" height="14" rx="2" transform="rotate(-45 174 57)"/>` }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 74 L58 36 M53 44 L58 36 L63 44"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 36 L58 74 M53 66 L58 74 L63 66"/>` }
+  ]
+};
+
+/* =========================================================
+   16. OISEAU (ÉLÉVATIONS BUSTE PENCHÉ)  (oiseau-halteres)
+   >>> SCHÉMA NON LIVRÉ — SIGNALÉ PLUTÔT QUE BÂCLÉ <<<
+   -----------------------------------------------------------
+   L'analyse du mouvement est faite : DEBOUT buste penché
+   jusqu'à l'horizontale, coude verrouillé à ~160°, ABDUCTION
+   HORIZONTALE d'épaule sur ~87°, agonistes deltoïde postérieur,
+   trapèze moyen et rhomboïdes.
+   Le problème est de PROJECTION, pas d'analyse :
+   • de PROFIL, la posture penchée se lit parfaitement mais les
+     bras s'écartent vers l'observateur et vers le fond — leur
+     déplacement est presque invisible ;
+   • de FACE (personne penchée vers l'observateur), l'écartement
+     des bras est parfait mais le tronc raccourci ne se lit plus :
+     trois essais successifs (bassin haut, jambes écartées, tête
+     occultante) donnent tous une silhouette qu'un lecteur prend
+     pour une élévation latérale DEBOUT — c'est-à-dire un schéma
+     TROMPEUR, précisément ce qu'il faut éviter.
+   Décision : pas de schéma dédié pour l'instant. L'exercice
+   retombe donc sur le pictogramme générique, explicitement
+   étiqueté comme tel.
+   Piste pour plus tard : un schéma en DEUX VIGNETTES — la
+   posture de profil d'un côté, le mouvement des bras de face de
+   l'autre — ce que le moteur ne sait pas encore composer.
+   ========================================================= */
+
+/* =========================================================
+   17. FACE PULL À LA POULIE  (face-pull)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à une poulie réglée à hauteur de
+               VISAGE, un pied devant, léger recul pour mettre le
+               câble en tension, gainage serré.
+   Matériel  : corde double, prise neutre pouces vers soi.
+   Mobiles   : épaule (abduction horizontale + ROTATION EXTERNE)
+               et coude (flexion), avec rétraction des omoplates.
+   Fixes     : rachis, bassin, jambes — aucun recul du buste pour
+               aider.
+   Sens/plan : traction de la corde VERS LE VISAGE, coudes hauts,
+               mains qui finissent de part et d'autre de la tête =
+               concentrique ; retour contrôlé = excentrique.
+               Plan transverse.
+   ROM       : coude de ~141° (bras tendus) à ~77° ; les coudes
+               s'écartent largement et montent à hauteur d'épaules.
+   Agonistes : deltoïde postérieur, trapèze moyen et inférieur,
+               rhomboïdes, et surtout les ROTATEURS EXTERNES
+               (infra-épineux, petit rond) — c'est ce qui en fait
+               un exercice de santé d'épaule.
+   Distinction : la corde arrive au VISAGE et les coudes restent
+               HAUTS — ≠ tirage horizontal, où les coudes longent
+               le corps et les mains vont au ventre ; ≠ oiseau, où
+               les bras restent tendus sans flexion de coude.
+   VUE CHOISIE : de DOS. C'est elle qui montre à la fois
+   l'écartement des coudes, les mains qui arrivent au niveau des
+   oreilles, et les omoplates qui se serrent.
+   ========================================================= */
+EXERCISE_MOTIONS["face-pull"] = {
+  vb: "44 6 152 150",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout face à une poulie haute, vue de dos : la corde est tirée vers le visage, coudes hauts et écartés, mains de part et d'autre de la tête.",
+  fixe: `
+    <line class="mo-ground" x1="86" y1="152" x2="158" y2="152"/>
+    <!-- poulie à hauteur de visage, devant la personne -->
+    <circle class="mo-pulley" cx="120" cy="22" r="5"/>
+    <line class="mo-gear" x1="108" y1="14" x2="132" y2="14"/>
+    <!-- dos de la personne : tête, épaules, rachis, fente légère -->
+    <circle class="mo-head" cx="120" cy="52" r="10"/>
+    <line class="mo-body" x1="102" y1="72" x2="138" y2="72"/>
+    <line class="mo-body" x1="120" y1="62" x2="120" y2="116"/>
+    <line class="mo-body" x1="120" y1="116" x2="108" y2="152"/>
+    <line class="mo-body" x1="120" y1="116" x2="134" y2="148"/>`,
+  muscles: [
+    { nom: "Deltoïde postérieur",
+      svg: `<circle cx="102" cy="72" r="5"/><circle cx="138" cy="72" r="5"/>` },
+    { nom: "Trapèze moyen · Rhomboïdes",
+      svg: `<ellipse cx="120" cy="82" rx="11" ry="6"/>` }
+  ],
+  parts: [
+    {
+      /* CORDE GAUCHE : tourne autour de la POULIE (120, 22) et s'allonge
+         (×3,08) pour rester accrochée à la main. */
+      o: "120px 22px",
+      k: [[0, "rotate(0deg) scale(1)"], [32, "rotate(6.3deg) scale(3.08)"],
+          [40, "rotate(6.3deg) scale(3.08)"], [88, "rotate(0deg) scale(1)"], [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="120" y1="22" x2="113" y2="30"/>`
+    },
+    {
+      /* CORDE DROITE : miroir. */
+      o: "120px 22px",
+      k: [[0, "rotate(0deg) scale(1)"], [32, "rotate(-6.3deg) scale(3.08)"],
+          [40, "rotate(-6.3deg) scale(3.08)"], [88, "rotate(0deg) scale(1)"], [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="120" y1="22" x2="127" y2="30"/>`
+    },
+    {
+      /* BRAS GAUCHE : −61,4° écarte le COUDE largement vers l'extérieur —
+         c'est la signature du face pull, coude haut et non collé au corps. */
+      o: "102px 72px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-61.4deg)"], [40, "rotate(-61.4deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="102" y1="72" x2="99.9" y2="50.1"/>
+        <circle class="mo-joint" cx="99.9" cy="50.1" r="2.5"/>`,
+      children: [
+        { o: "99.9px 50.1px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(64.5deg)"], [40, "rotate(64.5deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="99.9" y1="50.1" x2="113" y2="30"/>
+            <circle class="mo-hand" cx="113" cy="30" r="3.2"/>` }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir. */
+      o: "138px 72px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(61.4deg)"], [40, "rotate(61.4deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="138" y1="72" x2="140.1" y2="50.1"/>
+        <circle class="mo-joint" cx="140.1" cy="50.1" r="2.5"/>`,
+      children: [
+        { o: "140.1px 50.1px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(-64.5deg)"], [40, "rotate(-64.5deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="140.1" y1="50.1" x2="127" y2="30"/>
+            <circle class="mo-hand" cx="127" cy="30" r="3.2"/>` }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M70 30 L62 58 M62 49 L62 58 L70 54"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M62 58 L70 30 M70 39 L70 30 L62 34"/>` }
+  ]
+};
