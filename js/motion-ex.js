@@ -558,3 +558,500 @@ EXERCISE_MOTIONS["developpe-couche-halteres"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M136 92 L136 52 M131 59 L136 52 L141 59"/>` }
   ]
 };
+
+/* =========================================================
+   7. TRACTIONS (PRONATION)  (tractions)
+   -----------------------------------------------------------
+   Position  : SUSPENDU à une barre fixe, bras tendus, prise
+               PRONATION (paumes vers l'avant) nettement plus
+               large que les épaules, gainage actif, pas de
+               balancement.
+   Matériel  : barre fixe horizontale. Les MAINS sont le point
+               fixe (chaîne fermée) : c'est le CORPS qui monte.
+   Mobiles   : coude (flexion) et épaule (adduction + extension),
+               omoplates qui s'abaissent et se rétractent.
+   Fixes     : rachis gainé, bassin, angle des genoux ; et bien
+               sûr les mains sur la barre.
+   Sens/plan : montée du corps jusqu'au menton au-dessus de la
+               barre = CONCENTRIQUE ; descente contrôlée =
+               excentrique (plus lente). Prise large ⇒ dominante
+               dans le plan frontal (adduction).
+   ROM       : coude de ~172° (suspension complète) à ~49° en
+               haut. Le corps monte de 38 unités, menton au-dessus
+               de la barre.
+   Agonistes : grand dorsal (principal), grand rond, trapèze
+               moyen et rhomboïdes ; biceps en assistance.
+   Distinction : PRONATION large ⇒ accent grand dorsal, peu de
+               biceps (≠ traction supination, où le biceps prend
+               le relais). Et surtout : ici le corps monte vers
+               une barre fixe — au tirage vertical à la poulie,
+               c'est l'inverse, le corps est assis et c'est la
+               barre qui descend.
+   Vue de FACE : la prise large et la symétrie du geste ne se
+               lisent pas de profil.
+   ========================================================= */
+EXERCISE_MOTIONS["tractions"] = {
+  vb: "34 4 172 148",
+  dur: 4.2,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Suspendu à une barre fixe en prise pronation large, le corps monte jusqu'au menton au-dessus de la barre puis redescend lentement.",
+  fixe: `
+    <!-- barre fixe + montants -->
+    <line class="mo-bar3" x1="44" y1="24" x2="196" y2="24"/>
+    <line class="mo-gear" x1="50" y1="24" x2="50" y2="150"/>
+    <line class="mo-gear" x1="190" y1="24" x2="190" y2="150"/>
+    <line class="mo-ground" x1="40" y1="150" x2="200" y2="150"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS GAUCHE : enraciné à la MAIN (86, 24), qui ne quitte
+         jamais la barre. +2° seulement : l'avant-bras reste presque dans
+         l'axe, c'est le bras et le corps qui font le travail. */
+      o: "86px 24px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(2deg)"], [40, "rotate(2deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="86" cy="24" r="3.6"/>
+        <line class="mo-limb" x1="86" y1="24" x2="93.5" y2="44.7"/>
+        <circle class="mo-joint" cx="93.5" cy="44.7" r="2.5"/>`,
+      children: [
+        {
+          /* BRAS GAUCHE : flexion du coude autour de (93.5, 44.7).
+             −122,7° fait passer le coude de tendu (~172°) à ~49°. */
+          o: "93.5px 44.7px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(-122.7deg)"], [40, "rotate(-122.7deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Biceps brachial",
+          muscle: `<ellipse cx="99" cy="54" rx="3.2" ry="6.5" transform="rotate(29 99 54)"/>`,
+          svg: `<line class="mo-limb" x1="93.5" y1="44.7" x2="104" y2="64"/>`,
+          children: [
+            {
+              /* CORPS : contre-rotation de +120,7° autour de l'ÉPAULE gauche
+                 (104, 64) pour rester vertical pendant que le bras tourne. */
+              o: "104px 64px",
+              k: [[0, "rotate(0deg)"], [32, "rotate(120.7deg)"], [40, "rotate(120.7deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Grand dorsal",
+              muscle: `<ellipse cx="111" cy="80" rx="3.8" ry="11" transform="rotate(-9 111 80)"/>
+                       <ellipse cx="129" cy="80" rx="3.8" ry="11" transform="rotate(9 129 80)"/>`,
+              svg: `
+                <circle class="mo-head" cx="120" cy="50" r="10"/>
+                <line class="mo-body" x1="104" y1="64" x2="136" y2="64"/>
+                <line class="mo-body" x1="120" y1="62" x2="120" y2="104"/>
+                <line class="mo-body" x1="120" y1="104" x2="111" y2="140"/>
+                <line class="mo-body" x1="120" y1="104" x2="129" y2="140"/>`
+            }
+          ]
+        }
+      ]
+    },
+    {
+      /* AVANT-BRAS DROIT : miroir exact, enraciné à la main (154, 24). */
+      o: "154px 24px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-2deg)"], [40, "rotate(-2deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <circle class="mo-hand" cx="154" cy="24" r="3.6"/>
+        <line class="mo-limb" x1="154" y1="24" x2="146.5" y2="44.7"/>
+        <circle class="mo-joint" cx="146.5" cy="44.7" r="2.5"/>`,
+      children: [
+        {
+          o: "146.5px 44.7px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(122.7deg)"], [40, "rotate(122.7deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscle: `<ellipse cx="141" cy="54" rx="3.2" ry="6.5" transform="rotate(-29 141 54)"/>`,
+          svg: `<line class="mo-limb" x1="146.5" y1="44.7" x2="136" y2="64"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M168 96 L168 58 M163 66 L168 58 L173 66"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M168 58 L168 96 M163 88 L168 96 L173 88"/>` }
+  ]
+};
+
+/* =========================================================
+   8. ROWING BARRE BUSTE PENCHÉ  (rowing-barre)
+   -----------------------------------------------------------
+   Position  : DEBOUT, pieds largeur de bassin, genoux légèrement
+               fléchis, buste penché en avant à ~45°, dos PLAT
+               (jamais arrondi), regard vers le sol devant soi.
+   Matériel  : barre olympique tenue bras tendus sous les épaules,
+               prise pronation. Vue de profil, on voit le disque.
+   Mobiles   : coude (flexion) et épaule (extension), avec
+               rétraction des omoplates.
+   Fixes     : LE BUSTE — son angle de 45° ne bouge pas d'un
+               degré pendant la série, c'est le point technique
+               central. Hanches, genoux et rachis immobiles.
+   Sens/plan : barre tirée vers le bas des côtes = concentrique ;
+               descente contrôlée = excentrique. Plan sagittal.
+   ROM       : coude de ~170° (barre pendante) à ~74° (barre au
+               contact du bas des côtes) ; le coude passe haut et
+               EN ARRIÈRE, pas sur le côté.
+   Agonistes : grand dorsal, trapèze moyen et rhomboïdes,
+               deltoïde postérieur ; biceps en assistance ;
+               lombaires en gainage isométrique — donc non animés,
+               ils tiennent la position, ils ne raccourcissent pas.
+   Distinction : buste penché et charge LIBRE (le tronc doit
+               résister au poids) — ≠ tirage horizontal à la
+               poulie (assis, buste vertical, tronc soutenu),
+               ≠ rowing haltère (unilatéral, une main en appui),
+               ≠ T-bar (barre ancrée au sol).
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-barre"] = {
+  vb: "40 32 158 122",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Debout buste penché à 45°, la barre est tirée depuis les bras tendus jusqu'au bas des côtes, coudes en arrière ; le buste ne bouge pas.",
+  fixe: `
+    <line class="mo-ground" x1="52" y1="150" x2="190" y2="150"/>
+    <!-- corps immobile : jambes semi-fléchies, buste penché à 45°, dos plat -->
+    <line class="mo-body" x1="120" y1="150" x2="116" y2="116"/>
+    <line class="mo-body" x1="116" y1="116" x2="124" y2="92"/>
+    <line class="mo-body" x1="124" y1="92" x2="86" y2="60"/>
+    <circle class="mo-head" cx="76" cy="52" r="9"/>
+    <!-- repère : l'angle du buste, qui doit rester constant -->
+    <line class="mo-rom" x1="124" y1="92" x2="88" y2="92"/>`,
+  muscles: [
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="104" cy="74" rx="12" ry="4.6" transform="rotate(40 104 74)"/>` },
+    { nom: "Deltoïde postérieur",
+      svg: `<circle cx="88" cy="62" r="4.4"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (86, 60). −79,8° amène le coude
+         HAUT et EN ARRIÈRE — la signature du rowing, à l'opposé d'un
+         coude qui partirait sur le côté. */
+      o: "86px 60px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-79.8deg)"], [42, "rotate(-79.8deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Biceps brachial",
+      muscle: `<ellipse cx="86" cy="72" rx="3.2" ry="7"/>`,
+      svg: `
+        <line class="mo-limb" x1="86" y1="60" x2="86" y2="84"/>
+        <circle class="mo-joint" cx="86" cy="84" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : +105,8° relatif amène la barre au contact
+             du bas des côtes (100, 84). */
+          o: "86px 84px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(105.8deg)"], [42, "rotate(105.8deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="86" y1="84" x2="86" y2="106"/>
+            <circle class="mo-plate-o" cx="86" cy="106" r="9"/>
+            <circle class="mo-hub" cx="86" cy="106" r="2.6"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 106 L58 76 M53 84 L58 76 L63 84"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 76 L58 106 M53 98 L58 106 L63 98"/>` }
+  ]
+};
+
+/* =========================================================
+   9. TIRAGE VERTICAL POITRINE  (tirage-vertical)
+   -----------------------------------------------------------
+   Position  : ASSIS à la machine, cuisses bloquées sous les
+               boudins, pieds à plat, buste quasi vertical avec
+               une très légère inclinaison arrière, poitrine
+               sortie.
+   Matériel  : barre longue suspendue à un CÂBLE venant d'une
+               poulie haute, prise pronation large.
+   Mobiles   : coude (flexion) et épaule (adduction) ; c'est la
+               BARRE qui descend.
+   Fixes     : bassin bloqué sous les boudins, jambes, et
+               l'inclinaison du buste, qui ne doit pas se
+               transformer en balancement.
+   Sens/plan : barre tirée vers le haut de la poitrine =
+               concentrique ; remontée contrôlée = excentrique.
+               Plan frontal, d'où la vue de FACE.
+   ROM       : coude de ~170° (bras tendus) à ~63° (barre au
+               niveau des clavicules) ; la barre descend de 32
+               unités, verticalement.
+   Agonistes : grand dorsal, grand rond, trapèze inférieur ;
+               biceps en assistance.
+   Distinction : chaîne OUVERTE et corps FIXE — c'est la charge
+               qui se déplace, exactement l'inverse de la
+               traction où le corps monte vers une barre fixe.
+               C'est ce qui en fait la régression naturelle de la
+               traction : la charge est réglable.
+   ========================================================= */
+EXERCISE_MOTIONS["tirage-vertical"] = {
+  vb: "44 2 168 152",
+  dur: 3.9,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Assis à la poulie haute, cuisses bloquées : la barre descend jusqu'aux clavicules, coudes vers le bas, puis remonte lentement.",
+  fixe: `
+    <line class="mo-ground" x1="56" y1="150" x2="184" y2="150"/>
+    <!-- bâti + poulie haute -->
+    <line class="mo-gear" x1="66" y1="10" x2="66" y2="150"/>
+    <line class="mo-gear" x1="66" y1="10" x2="120" y2="10"/>
+    <circle class="mo-pulley" cx="120" cy="16" r="5"/>
+    <!-- siège et boudins de cuisses : le bassin est bloqué -->
+    <line class="mo-pad" x1="100" y1="120" x2="146" y2="120"/>
+    <line class="mo-pad" x1="104" y1="102" x2="140" y2="102"/>
+    <line class="mo-gear" x1="122" y1="124" x2="122" y2="150"/>
+    <!-- corps assis, immobile -->
+    <circle class="mo-head" cx="120" cy="62" r="10"/>
+    <line class="mo-body" x1="104" y1="78" x2="136" y2="78"/>
+    <line class="mo-body" x1="120" y1="72" x2="120" y2="114"/>
+    <line class="mo-body" x1="120" y1="114" x2="106" y2="118"/>
+    <line class="mo-body" x1="120" y1="114" x2="134" y2="118"/>`,
+  muscles: [
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="110" cy="94" rx="3.8" ry="11" transform="rotate(-8 110 94)"/>
+            <ellipse cx="130" cy="94" rx="3.8" ry="11" transform="rotate(8 130 94)"/>` },
+    { nom: "Trapèze inférieur",
+      svg: `<ellipse cx="120" cy="84" rx="9" ry="3.6"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : s'allonge (×2,23) depuis la poulie quand la barre descend. */
+      o: "120px 16px",
+      k: [[0, "scaleY(1)"], [34, "scaleY(2.231)"], [42, "scaleY(2.231)"],
+          [88, "scaleY(1)"], [100, "scaleY(1)"]],
+      svg: `<line class="mo-cable" x1="120" y1="16" x2="120" y2="44"/>`
+    },
+    {
+      /* BARRE : descend de 32 unités, à l'horizontale — elle ne tourne pas. */
+      k: [[0, "translateY(0)"], [34, "translateY(32px)"], [42, "translateY(32px)"],
+          [88, "translateY(0)"], [100, "translateY(0)"]],
+      svg: `
+        <line class="mo-bar3" x1="76" y1="44" x2="164" y2="44"/>
+        <circle class="mo-hand" cx="82" cy="44" r="3.4"/>
+        <circle class="mo-hand" cx="158" cy="44" r="3.4"/>`
+    },
+    {
+      /* BRAS GAUCHE : enraciné à l'ÉPAULE (104, 78), qui est FIXE.
+         −106° fait descendre le coude vers le bas et l'extérieur. */
+      o: "104px 78px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-106deg)"], [42, "rotate(-106deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="104" y1="78" x2="92.1" y2="59.5"/>
+        <circle class="mo-joint" cx="92.1" cy="59.5" r="2.5"/>`,
+      children: [
+        { o: "92.1px 59.5px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(117deg)"], [42, "rotate(117deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="92.1" y1="59.5" x2="82" y2="44"/>` }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir. */
+      o: "136px 78px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(106deg)"], [42, "rotate(106deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="136" y1="78" x2="147.9" y2="59.5"/>
+        <circle class="mo-joint" cx="147.9" cy="59.5" r="2.5"/>`,
+      children: [
+        { o: "147.9px 59.5px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(-117deg)"], [42, "rotate(-117deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="147.9" y1="59.5" x2="158" y2="44"/>` }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M176 40 L176 74 M171 66 L176 74 L181 66"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M176 74 L176 40 M171 48 L176 40 L181 48"/>` }
+  ]
+};
+
+/* =========================================================
+   10. ROWING HALTÈRE UN BRAS  (rowing-haltere)
+   -----------------------------------------------------------
+   Position  : UNILATÉRAL. Un genou et la main opposée en appui
+               sur un banc plat, l'autre pied au sol en arrière,
+               dos PLAT et pratiquement HORIZONTAL, tête dans
+               l'alignement du rachis.
+   Matériel  : UN haltère dans la main libre, bras pendant à la
+               verticale sous l'épaule.
+   Mobiles   : coude (flexion) et épaule (extension) du côté
+               chargé, avec rétraction de l'omoplate.
+   Fixes     : le buste horizontal, qui ne doit PAS tourner
+               (l'erreur classique est d'ouvrir l'épaule vers le
+               plafond) ; la main et le genou d'appui ; le bassin.
+   Sens/plan : haltère tiré vers la hanche = concentrique ;
+               descente contrôlée = excentrique. Plan sagittal.
+   ROM       : coude de ~175° (bras pendant) à ~71° (haltère à la
+               hanche) — amplitude PLUS GRANDE qu'à la barre,
+               puisque rien ne vient buter contre le tronc.
+   Agonistes : grand dorsal, grand rond, trapèze moyen, deltoïde
+               postérieur ; biceps en assistance.
+   Distinction : buste HORIZONTAL et SOUTENU par l'appui (≠ les
+               45° du rowing barre, où le tronc travaille en
+               isométrie), travail un bras à la fois, et le coude
+               longe le corps jusqu'à la hanche.
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-haltere"] = {
+  vb: "50 56 148 98",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Un genou et une main sur le banc, dos horizontal : l'haltère est tiré depuis le bras tendu jusqu'à la hanche, coude le long du corps.",
+  fixe: `
+    <line class="mo-ground" x1="56" y1="150" x2="192" y2="150"/>
+    <!-- banc plat et ses pieds -->
+    <rect class="mo-gear" x="60" y="100" width="84" height="8" rx="3"/>
+    <line class="mo-gear" x1="70" y1="108" x2="70" y2="150"/>
+    <line class="mo-gear" x1="134" y1="108" x2="134" y2="150"/>
+    <!-- corps : dos horizontal, appuis main + genou sur le banc -->
+    <circle class="mo-head" cx="74" cy="80" r="9"/>
+    <line class="mo-body" x1="82" y1="83" x2="134" y2="88"/>
+    <line class="mo-body" x1="92" y1="85" x2="96" y2="100"/>
+    <circle class="mo-hand" cx="96" cy="100" r="3.2"/>
+    <line class="mo-body" x1="134" y1="88" x2="130" y2="100"/>
+    <line class="mo-body" x1="134" y1="88" x2="156" y2="122"/>
+    <line class="mo-body" x1="156" y1="122" x2="152" y2="150"/>
+    <!-- repère : le dos reste horizontal, il ne tourne pas -->
+    <line class="mo-rom" x1="84" y1="83" x2="136" y2="88"/>`,
+  muscles: [
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="104" cy="86" rx="13" ry="4.4" transform="rotate(6 104 86)"/>` },
+    { nom: "Deltoïde postérieur",
+      svg: `<circle cx="86" cy="84" r="4.4"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS CHARGÉ : rotation autour de l'ÉPAULE (86, 84). −105,7° fait
+         monter le coude EN ARRIÈRE, le long du corps, jusqu'à la hanche. */
+      o: "86px 84px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-105.7deg)"], [42, "rotate(-105.7deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Biceps brachial",
+      muscle: `<ellipse cx="86" cy="95" rx="3.2" ry="7"/>`,
+      svg: `
+        <line class="mo-limb" x1="86" y1="84" x2="86" y2="106"/>
+        <circle class="mo-joint" cx="86" cy="106" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + HALTÈRE : +108,8° relatif amène l'haltère à la
+             hanche (106, 100). */
+          o: "86px 106px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(108.8deg)"], [42, "rotate(108.8deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="86" y1="106" x2="86" y2="128"/>
+            <line class="mo-bar2" x1="76" y1="128" x2="96" y2="128"/>
+            <rect class="mo-mass" x="72" y="120" width="7" height="16" rx="2"/>
+            <rect class="mo-mass" x="93" y="120" width="7" height="16" rx="2"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M62 130 L62 100 M57 108 L62 100 L67 108"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M62 100 L62 130 M57 122 L62 130 L67 122"/>` }
+  ]
+};
+
+/* =========================================================
+   11. SOULEVÉ DE TERRE  (souleve-de-terre)
+   -----------------------------------------------------------
+   Position  : debout devant une barre AU SOL, pieds largeur de
+               bassin, barre au-dessus du milieu du pied et
+               contre les tibias. Hanches hautes mais sous les
+               épaules, genoux fléchis, dos PLAT, épaules
+               légèrement en avant de la barre.
+   Matériel  : barre olympique chargée AU SOL — c'est le rayon du
+               disque qui fixe la hauteur de départ.
+   Mobiles   : HANCHE (extension, dominante), GENOU (extension),
+               cheville un peu. Le mouvement est une extension
+               simultanée des deux.
+   Fixes     : le RACHIS, qui garde sa courbure du début à la fin ;
+               et les COUDES, verrouillés tendus — plier les bras
+               sous une barre lourde est une faute dangereuse, le
+               bras ne fait que suspendre.
+   Sens/plan : montée de la barre le long des jambes jusqu'à la
+               station debout = concentrique ; retour au sol =
+               excentrique. Plan sagittal.
+   ROM       : genou de ~112° à ~178°, hanche de ~55° de flexion
+               à l'extension complète ; la barre monte de 28
+               unités, verticalement, au contact des jambes.
+   Agonistes : ischio-jambiers et grand fessier (moteurs de
+               l'extension de hanche), érecteurs du rachis (qui
+               tiennent le dos), quadriceps au décollage.
+   Distinction : la barre REPART DU SOL à chaque répétition et les
+               genoux sont franchement fléchis au départ — ≠ le
+               soulevé de terre roumain, qui part debout, ne touche
+               pas le sol et garde les genoux presque tendus.
+               Pieds étroits, mains à l'extérieur des jambes ≠ sumo.
+   Cinématique : chaîne enracinée à la CHEVILLE, qui reste au sol
+               (cheville → genou → hanche → tronc → bras → barre),
+               donc le pied ne décolle jamais et la barre monte
+               bien à la verticale.
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-de-terre"] = {
+  vb: "56 34 132 122",
+  dur: 4.2,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "Barre au sol contre les tibias : extension simultanée des genoux et des hanches pour se redresser, dos plat et bras tendus, puis retour au sol.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="150" x2="184" y2="150"/>
+    <line class="mo-body" x1="96" y1="150" x2="118" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : enraciné à la CHEVILLE (104, 146), qui reste au sol.
+         +12° : le tibia se redresse à mesure que le genou s'étend. */
+      o: "104px 146px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(12deg)"], [46, "rotate(12deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="104" y1="146" x2="97.7" y2="120.8"/>
+        <circle class="mo-joint" cx="97.7" cy="120.8" r="2.6"/>`,
+      children: [
+        {
+          /* CUISSE : extension du GENOU autour de (97.7, 120.8).
+             −70,5° fait passer le genou de ~112° à ~178°. */
+          o: "97.7px 120.8px",
+          k: [[0, "rotate(0deg)"], [36, "rotate(-70.5deg)"], [46, "rotate(-70.5deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Ischio-jambiers",
+          muscle: `<ellipse cx="109" cy="114" rx="3.2" ry="8" transform="rotate(60 109 114)"/>`,
+          svg: `
+            <line class="mo-body" x1="97.7" y1="120.8" x2="120.3" y2="108"/>
+            <circle class="mo-joint" cx="120.3" cy="108" r="2.6"/>`,
+          children: [
+            {
+              /* TRONC : extension de la HANCHE autour de (120.3, 108), +97,5°.
+                 Le rachis lui-même ne se déroule pas : segment rigide. */
+              o: "120.3px 108px",
+              k: [[0, "rotate(0deg)"], [36, "rotate(97.5deg)"], [46, "rotate(97.5deg)"],
+                  [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: ["Grand fessier", "Érecteurs du rachis"],
+              muscle: `<circle cx="118" cy="104" r="4.2"/>
+                       <ellipse cx="106" cy="94" rx="2.8" ry="11" transform="rotate(-45 106 94)"/>`,
+              childrenFirst: true,
+              svg: `
+                <line class="mo-body" x1="120.3" y1="108" x2="92" y2="79.7"/>
+                <circle class="mo-head" cx="84" cy="72" r="9"/>`,
+              children: [
+                {
+                  /* BRAS : suspendu à l'ÉPAULE (92, 79.7). Le coude reste
+                     VERROUILLÉ : un seul segment rigide, jamais deux. */
+                  o: "92px 79.7px",
+                  k: [[0, "rotate(0deg)"], [36, "rotate(-34.8deg)"], [46, "rotate(-34.8deg)"],
+                      [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="92" y1="79.7" x2="96" y2="134"/>
+                    <circle class="mo-plate-o" cx="96" cy="134" r="12"/>
+                    <circle class="mo-hub" cx="96" cy="134" r="2.8"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M152 132 L152 104 M147 112 L152 104 L157 112"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M152 104 L152 132 M147 124 L152 132 L157 124"/>` }
+  ]
+};
