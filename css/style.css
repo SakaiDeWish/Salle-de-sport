@@ -2060,3 +2060,67 @@ body { max-width: 100%; }
 .rpw-val strong { color: var(--text); font-variant-numeric: tabular-nums; }
 .rpw-sets { opacity: 0.8; }
 @media (max-width: 420px) { .rpw-sets { display: none; } }
+
+/* =========================================================
+   V10 — Schémas animés dédiés (relecture exercice par exercice)
+   ========================================================= */
+.motion-dedie svg { max-height: 190px; }
+.motion-dedie .mo-anim {
+  animation-duration: calc(var(--mo-dur) / var(--mo-k));
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.motion-wrap.mo-paused .mo-anim { animation-play-state: paused; }
+
+/* Traits du corps : les segments fixes sont plus discrets que les mobiles */
+.mo-fixe .mo-body, .mo-fixe .mo-head { stroke: var(--text-soft); }
+.mo-gear { stroke: var(--border); stroke-width: 3; fill: none; stroke-linecap: round; }
+rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
+.mo-limb { stroke: var(--text); stroke-width: 4; stroke-linecap: round; fill: none; }
+.mo-joint { fill: var(--card); stroke: var(--text); stroke-width: 2; }
+.mo-plate-o { fill: none; stroke: var(--accent); stroke-width: 4.5; }
+.mo-hub { fill: var(--accent); }
+.mo-muscle { fill: var(--accent); stroke: none; }
+.theme-epure .mo-muscle { fill: var(--accent); }
+.mo-arr { stroke: var(--accent-2); stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.theme-epure .mo-arr { stroke: var(--accent); }
+
+/* Légende + contrôles sous le schéma */
+.motion-cap {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap; margin-top: 6px;
+}
+.mo-legend { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.mo-leg-item {
+  font-size: 0.66rem; font-weight: 700; color: var(--text-soft);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.mo-leg-item::before {
+  content: ""; width: 8px; height: 8px; border-radius: 2px;
+  background: var(--accent); opacity: 0.85;
+}
+.mo-ctl { display: flex; gap: 4px; }
+.mo-btn {
+  background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-soft);
+  border-radius: 999px; min-width: 30px; height: 26px; padding: 0 8px;
+  font-size: 0.72rem; font-weight: 800; font-family: inherit; cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.mo-btn:hover { color: var(--accent-2); border-color: var(--accent); }
+.theme-epure .mo-btn:hover { color: var(--accent); }
+
+/* Repli générique : signalé, jamais présenté comme fidèle */
+.motion-tag-warn { color: var(--yellow); }
+.motion-cap-warn {
+  display: block; margin-top: 6px; font-size: 0.72rem; line-height: 1.45;
+  color: var(--text-soft); border-left: 2px solid var(--yellow); padding-left: 8px;
+}
+.motion-generique svg { opacity: 0.75; }
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-dedie .mo-anim { animation-iteration-count: 1; }
+}
+.mo-bar2 { stroke: var(--accent); stroke-width: 3.4; stroke-linecap: round; fill: none; }
+.mo-mass { fill: var(--accent); }
+.mo-pad { stroke: var(--border); stroke-width: 9; stroke-linecap: round; fill: none; }
+.mo-hand { fill: var(--text); }

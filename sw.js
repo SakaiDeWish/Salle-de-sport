@@ -1,7 +1,7 @@
 /* GymCoach — service worker : RÉSEAU D'ABORD, cache en secours.
    En ligne : le site est toujours à jour (chaque réponse rafraîchit le cache).
    Hors ligne : tout est servi depuis le cache (usage en salle). */
-const CACHE = "gymcoach-v8";
+const CACHE = "gymcoach-v9";
 const ASSETS = [
   "./",
   "index.html",
@@ -10,6 +10,7 @@ const ASSETS = [
   "js/data-extra.js",
   "js/icons.js",
   "js/motion.js",
+  "js/motion-ex.js",
   "js/program.js",
   "js/app.js",
   "js/ui.js",
