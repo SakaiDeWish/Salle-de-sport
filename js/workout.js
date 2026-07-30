@@ -16,6 +16,7 @@ let liveTimer = null;     // interval d'affichage
 let rest = null;          // { setRef, exName, startAt, targetSec, beeped }
 let restMinimized = false; // repos réduit dans la mini-barre
 let editingSet = null;     // { i, j } : série validée en cours de modification
+let expandedIndex = null;  // accordéon : seul cet exercice est déplié
 
 /* Mémoire des charges : ce que tu as mis la dernière fois pour la
    même combinaison (exercice, numéro de série) — pré-rempli ensuite. */
@@ -170,7 +171,9 @@ function showLive() {
   elSummary.classList.add("hidden");
   elLive.classList.remove("hidden");
   elLive.classList.toggle("live-compact", localStorage.getItem("gymcoach.liveCompact") === "1");
-  applyHeaderMin(headerMinimized());
+  // au retour sur la séance on repart en grand : le scroll pilotera ensuite
+  applyHeaderMin(false);
+  resetHdrScroll();
   renderPauseState();
   document.getElementById("live-title").textContent = live.nom;
   renderLiveExercises();
@@ -233,41 +236,48 @@ function targetSetsOf(ex) {
   return m ? parseInt(m[1], 10) : null;
 }
 
-/* Reste à faire (B3) : séries restantes sur l'exercice en cours ET sur
-   toute la séance. Calculé sur les prescriptions du programme ; en séance
-   libre, on affiche ce qui a été fait. */
-function remainingInfo() {
-  if (!live || !live.exercises.length) return { texte: "", pourcent: 0 };
-  let totalTarget = 0, totalDone = 0, prescrit = false;
-  for (const ex of live.exercises) {
-    const t = targetSetsOf(ex);
-    totalDone += ex.sets.length;
-    if (t != null) { prescrit = true; totalTarget += t; }
-    else totalTarget += ex.sets.length;
+/* Séries restantes POUR UN EXERCICE (point 2).
+   Sur un programme préfabriqué on connaît la prescription ; en séance
+   libre il n'y a pas de cible, on compte simplement ce qui est fait. */
+function exerciseProgress(ex) {
+  const target = targetSetsOf(ex);
+  const done = ex.sets.length;
+  if (target == null) {
+    return { target: null, done, restant: null, fini: false,
+             texte: done ? `${done} série${done > 1 ? "s" : ""}` : "à démarrer" };
   }
-  const cur = live.exercises[Math.max(0, live.currentIndex)];
-  const curTarget = cur ? targetSetsOf(cur) : null;
-  const restant = Math.max(0, totalTarget - totalDone);
-
-  if (!prescrit) {
-    return {
-      texte: `${totalDone} série${totalDone > 1 ? "s" : ""} faite${totalDone > 1 ? "s" : ""} · séance libre`,
-      pourcent: 0
-    };
-  }
-  const serieCourante = cur
-    ? (curTarget != null
-        ? `Série ${Math.min(cur.sets.length + 1, curTarget)}/${curTarget}`
-        : `Série ${cur.sets.length + 1}`)
-    : "";
+  const restant = Math.max(0, target - done);
   return {
-    texte: `${serieCourante} · ${restant} série${restant > 1 ? "s" : ""} restante${restant > 1 ? "s" : ""}`,
-    pourcent: totalTarget ? Math.round(totalDone / totalTarget * 100) : 0,
-    restant
+    target, done, restant, fini: restant === 0,
+    texte: restant === 0 ? "Terminé" : `${done}/${target} séries · ${restant} restante${restant > 1 ? "s" : ""}`
   };
 }
 
-/* Progression : exercice courant, reste à faire (toujours lisible) + barre */
+/* Prochain exercice dont les séries prescrites ne sont pas toutes faites */
+function nextUnfinished(from) {
+  if (!live) return null;
+  for (let k = 1; k <= live.exercises.length; k++) {
+    const i = (from + k) % live.exercises.length;
+    if (i === from) break;
+    if (!exerciseProgress(live.exercises[i]).fini) return i;
+  }
+  return null;
+}
+
+/* Ce qu'affiche l'en-tête : l'exercice EN COURS et sa progression à lui
+   (le total de séance a été remplacé par le détail par exercice). */
+function currentProgressText() {
+  if (!live || !live.exercises.length) return "";
+  const cur = live.exercises[Math.max(0, live.currentIndex)];
+  if (!cur) return "";
+  const p = exerciseProgress(cur);
+  if (p.target == null) return `${cur.nom} · ${p.texte}`;
+  return p.fini
+    ? `${cur.nom} · terminé`
+    : `${cur.nom} · série ${p.done + 1}/${p.target}`;
+}
+
+/* Progression : exercice courant + barre d'avancement de la séance */
 function updateProgress() {
   const label = document.getElementById("live-progress-label");
   const bar = document.getElementById("live-progress-bar");
@@ -275,17 +285,34 @@ function updateProgress() {
   const total = live.exercises.length;
   if (total === 0) { label.textContent = ""; bar.style.width = "0%"; return; }
   const current = Math.min(Math.max(live.currentIndex, 0) + 1, total);
-  const info = remainingInfo();
-  label.innerHTML = `<strong class="prog-strong">${esc(info.texte)}</strong>
+  // avancement = part des séries prescrites déjà validées
+  let t = 0, d = 0;
+  for (const ex of live.exercises) {
+    const p = exerciseProgress(ex);
+    d += Math.min(p.done, p.target ?? p.done);
+    t += p.target ?? p.done;
+  }
+  label.innerHTML = `<strong class="prog-strong">${esc(currentProgressText())}</strong>
     <span class="prog-dim">Exercice ${current}/${total}</span>`;
-  bar.style.width = Math.min(100, info.pourcent) + "%";
+  bar.style.width = (t ? Math.min(100, Math.round(d / t * 100)) : 0) + "%";
 
   const pillLeft = document.getElementById("hdr-pill-left");
-  if (pillLeft) pillLeft.textContent = info.texte;
+  if (pillLeft) pillLeft.textContent = currentProgressText();
 }
 
-/* ---------- Chrono réduit en pastille (B1) ---------- */
-function headerMinimized() { return localStorage.getItem(STORAGE_KEYS.liveHeaderMin) === "1"; }
+/* ---------- Point 1 · chrono collant qui se réduit au scroll ----------
+   Descente = état compact (pilule, chrono seul), remontée = état complet.
+   Seuil + anti-rebond pour ne pas clignoter sur un micro-scroll ; un tap
+   bascule manuellement puis l'automatisme reprend la main. */
+const HDR_SCROLL_THRESHOLD = 26;   // px parcourus dans un sens avant de réagir
+const HDR_MIN_SCROLL_Y = 90;       // en haut de page, jamais compact
+/* hdrRef = position de référence, remise à jour à chaque changement d'état
+   et « tirée » par les extrêmes atteints. Comparer à un point de référence
+   plutôt qu'à la frame précédente rend la bascule insensible aux
+   micro-oscillations du scroll (élastique, inertie, reflow). */
+let hdrRef = 0, hdrLastY = 0, hdrTicking = false, hdrManualUntil = 0, hdrLockUntil = 0;
+
+function headerMinimized() { return elLive.classList.contains("hdr-min"); }
 
 function applyHeaderMin(on) {
   localStorage.setItem(STORAGE_KEYS.liveHeaderMin, on ? "1" : "0");
@@ -293,9 +320,59 @@ function applyHeaderMin(on) {
   const btn = document.getElementById("live-hdr-toggle");
   if (btn) {
     btn.textContent = on ? "⌄" : "⌃";
-    btn.title = on ? "Agrandir le chrono" : "Réduire le chrono en pastille";
+    btn.title = on ? "Agrandir le chrono" : "Réduire le chrono";
   }
   tick();
+}
+
+function resetHdrScroll() {
+  hdrRef = hdrLastY = window.scrollY || document.documentElement.scrollTop || 0;
+}
+
+function onLiveScroll() {
+  if (!live || elLive.classList.contains("hidden")) return;
+  const y = window.scrollY || document.documentElement.scrollTop;
+  const now = Date.now();
+
+  // après une bascule manuelle, ou pendant que le layout s'anime,
+  // on ne redéclenche pas (sinon la hauteur qui change se relance elle-même)
+  if (now < hdrManualUntil || now < hdrLockUntil) { hdrLastY = y; hdrRef = y; return; }
+
+  if (y <= HDR_MIN_SCROLL_Y) {                 // haut de page : toujours grand
+    if (headerMinimized()) { applyHeaderMin(false); hdrLockUntil = now + 260; }
+    hdrLastY = y; hdrRef = y;
+    return;
+  }
+  /* Page à peine plus haute que l'écran : réduire ne libérerait rien et
+     rendrait la page non scrollable, ce qui ferait osciller l'état. */
+  const marge = document.documentElement.scrollHeight - window.innerHeight;
+  if (!headerMinimized() && marge < 240) { hdrLastY = y; hdrRef = y; return; }
+
+  const min = headerMinimized();
+  // la référence suit l'extrême atteint dans l'état courant : en grand on
+  // retient le point le plus haut, en compact le point le plus bas
+  hdrRef = min ? Math.max(hdrRef, y) : Math.min(hdrRef, y);
+  const delta = y - hdrRef;
+  hdrLastY = y;
+
+  if (!min && delta > HDR_SCROLL_THRESHOLD) {          // descente franche
+    applyHeaderMin(true); hdrRef = y; hdrLockUntil = now + 260;
+  } else if (min && delta < -HDR_SCROLL_THRESHOLD) {   // remontée franche
+    applyHeaderMin(false); hdrRef = y; hdrLockUntil = now + 260;
+  }
+}
+
+window.addEventListener("scroll", () => {
+  if (hdrTicking) return;                       // une seule évaluation par frame
+  hdrTicking = true;
+  requestAnimationFrame(() => { hdrTicking = false; onLiveScroll(); });
+}, { passive: true });
+
+/* Bascule manuelle : on applique, puis l'automatique reprend après 1,2 s */
+function toggleHeaderManual(on) {
+  applyHeaderMin(on);
+  hdrManualUntil = Date.now() + 1200;
+  resetHdrScroll();
 }
 
 function tick() {
@@ -379,24 +456,46 @@ function renderLiveExercises() {
     return;
   }
 
+  // accordéon : un seul exercice déplié — celui en cours par défaut
+  if (expandedIndex == null || expandedIndex >= live.exercises.length)
+    expandedIndex = live.currentIndex;
+
   elLiveExercises.innerHTML = live.exercises.map((ex, i) => {
     const isCurrent = i === live.currentIndex;
+    const open = i === expandedIndex;
+    const p = exerciseProgress(ex);
+    // ligne récapitulative de l'exercice replié : séries faites + charges
+    const poidsUtilises = [...new Set(ex.sets.map(s => s.poids).filter(v => v != null))];
+    const recap = ex.sets.length
+      ? `${ex.sets.length} série${ex.sets.length > 1 ? "s" : ""}${poidsUtilises.length
+          ? " · " + poidsUtilises.slice(0, 4).join(" / ") + " kg" : ""}`
+      : "aucune série";
     return `
-    <div class="card live-ex ${isCurrent ? "live-ex-current" : ""}" data-i="${i}">
-      <div class="live-ex-head">
-        <div>
-          <h3><button class="linklike ex-fiche" data-exid="${esc(ex.exId)}">${esc(ex.nom)}</button></h3>
-          <p class="day-focus">
+    <div class="card live-ex ${isCurrent ? "live-ex-current" : ""} ${open ? "live-ex-open" : "live-ex-collapsed"} ${p.fini ? "live-ex-done" : ""}" data-i="${i}">
+      <button type="button" class="live-ex-head" data-toggle="${i}" aria-expanded="${open}">
+        <div class="live-ex-id">
+          <h3>${esc(ex.nom)}</h3>
+          <p class="day-focus live-ex-sub">
             ${LABELS.groupes[ex.groupe] || ""}
-            ${ex.target ? " · Objectif : " + esc(ex.target) : ""}
-            · Repos : ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
+            ${ex.target ? " · " + esc(ex.target) : ""}
+            · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
           </p>
+          <p class="day-focus live-ex-recap">${esc(recap)}</p>
         </div>
         <div class="live-ex-right">
+          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? "✓ Terminé" : esc(p.texte)}</span>
           <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
-          ${isCurrent ? '<span class="tag tag-custom">En cours</span>'
-                      : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
+          ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
+          <span class="live-ex-chev" aria-hidden="true">⌄</span>
         </div>
+      </button>
+
+      <div class="live-ex-body"><div class="live-ex-body-inner">
+      <div class="live-ex-tools">
+        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
+        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
+        ${isCurrent && p.fini && nextUnfinished(i) != null
+          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
       </div>
 
       ${ex.sets.length ? `
@@ -443,13 +542,25 @@ function renderLiveExercises() {
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
       </div>
+      </div></div><!-- /live-ex-body -->
     </div>`;
   }).join("");
 
+  /* Accordéon : ouvrir un exercice replie les autres (point 3) */
+  elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
+    head.addEventListener("click", () => {
+      const i = parseInt(head.dataset.toggle, 10);
+      expandedIndex = (expandedIndex === i) ? -1 : i;   // re-tap = tout replier
+      renderLiveExercises();
+    }));
+
   elLiveExercises.querySelectorAll(".validate-set").forEach(btn =>
     btn.addEventListener("click", () => validateSet(parseInt(btn.dataset.i, 10))));
-  elLiveExercises.querySelectorAll(".set-current").forEach(btn =>
-    btn.addEventListener("click", () => setCurrentExercise(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".set-current, .go-next").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();                       // ne pas replier via l'en-tête
+      setCurrentExercise(parseInt(btn.dataset.i, 10));
+    }));
   elLiveExercises.querySelectorAll(".remove-ex").forEach(btn =>
     btn.addEventListener("click", () => removeExercise(parseInt(btn.dataset.i, 10))));
   elLiveExercises.querySelectorAll(".swap-ex").forEach(btn =>
@@ -526,6 +637,7 @@ function setCurrentExercise(i) {
   const ex = live.exercises[i];
   if (!ex.startedAt) ex.startedAt = now;
   else ex.endedAt = null; // on y revient : le chrono repart
+  expandedIndex = i;      // l'exercice précédent se replie tout seul (point 3)
   saveLive();
   renderLiveExercises();
 }
@@ -535,6 +647,7 @@ function removeExercise(i) {
   if (ex.sets.length && !confirm(`Retirer « ${ex.nom} » et ses ${ex.sets.length} série(s) enregistrée(s) ?`)) return;
   live.exercises.splice(i, 1);
   if (live.currentIndex >= live.exercises.length) live.currentIndex = live.exercises.length - 1;
+  expandedIndex = live.currentIndex;
   saveLive();
   renderLiveExercises();
 }
@@ -576,6 +689,7 @@ function validateSet(i) {
     if (prev && prev.startedAt && !prev.endedAt) prev.endedAt = now;
     live.currentIndex = i;
   }
+  expandedIndex = i;
   if (!ex.startedAt) ex.startedAt = now;
   ex.endedAt = null;
 
@@ -747,9 +861,9 @@ document.getElementById("live-compact-toggle").addEventListener("click", () => {
   elLive.classList.toggle("live-compact", on);
   localStorage.setItem("gymcoach.liveCompact", on ? "1" : "0");
 });
-/* Chrono réduit en pastille et inverse (B1) */
-document.getElementById("live-hdr-toggle").addEventListener("click", () => applyHeaderMin(true));
-document.getElementById("hdr-pill-open").addEventListener("click", () => applyHeaderMin(false));
+/* Bascule manuelle grand/compact — l'automatique au scroll reprend ensuite */
+document.getElementById("live-hdr-toggle").addEventListener("click", () => toggleHeaderManual(true));
+document.getElementById("hdr-pill-open").addEventListener("click", () => toggleHeaderManual(false));
 document.getElementById("hdr-pill-finish").addEventListener("click", () => finishSession());
 document.getElementById("live-finish").addEventListener("click", finishSession);
 document.getElementById("live-abort").addEventListener("click", () => {
