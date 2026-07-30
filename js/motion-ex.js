@@ -1055,3 +1055,177 @@ EXERCISE_MOTIONS["souleve-de-terre"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M152 104 L152 132 M147 124 L152 132 L157 124"/>` }
   ]
 };
+
+/* =========================================================
+   12. ROWING T-BAR  (rowing-t-bar)
+   -----------------------------------------------------------
+   Position  : debout au-dessus de la barre, pieds de part et
+               d'autre sur la plateforme, genoux fléchis, buste
+               penché, dos plat.
+   Matériel  : barre dont une extrémité est ANCRÉE AU SOL par un
+               pivot, disques à l'autre bout, poignées parallèles
+               près de la charge.
+   Mobiles   : coude (flexion) et épaule (extension), rétraction
+               des omoplates ; et la BARRE, qui tourne autour de
+               son point d'ancrage.
+   Fixes     : buste (son angle ne bouge pas), hanches, genoux,
+               pieds sur la plateforme, et le point d'ancrage.
+   Sens/plan : traction de la charge vers la poitrine =
+               concentrique ; retour contrôlé = excentrique.
+   ROM       : coude de ~170° à ~45°, la barre balayant un arc
+               d'environ 18° autour de son ancrage.
+   Agonistes : grand dorsal, trapèze moyen et rhomboïdes (le
+               « milieu du dos » que l'exercice épaissit),
+               deltoïde postérieur ; biceps en assistance.
+   Distinction : la charge décrit un ARC DE CERCLE autour de
+               l'ancrage — c'est LA différence avec le rowing
+               barre libre, dont la trajectoire est verticale.
+               Le guidage est ce qui permet de charger plus lourd.
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-t-bar"] = {
+  vb: "36 50 156 106",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Buste penché au-dessus d'une barre ancrée au sol : la charge est tirée vers la poitrine en décrivant un arc de cercle autour de l'ancrage.",
+  fixe: `
+    <line class="mo-ground" x1="42" y1="150" x2="186" y2="150"/>
+    <!-- plateforme + ancrage pivot de la barre -->
+    <rect class="mo-gear" x="60" y="142" width="96" height="8" rx="2"/>
+    <circle class="mo-pulley" cx="52" cy="144" r="4.5"/>
+    <!-- corps immobile : jambes fléchies, buste penché, dos plat -->
+    <line class="mo-body" x1="134" y1="142" x2="128" y2="120"/>
+    <line class="mo-body" x1="128" y1="120" x2="140" y2="98"/>
+    <line class="mo-body" x1="140" y1="98" x2="104" y2="78"/>
+    <circle class="mo-head" cx="94" cy="70" r="9"/>
+    <line class="mo-rom" x1="140" y1="98" x2="106" y2="98"/>`,
+  muscles: [
+    { nom: "Trapèze moyen · Rhomboïdes",
+      svg: `<ellipse cx="122" cy="88" rx="11" ry="4.2" transform="rotate(29 122 88)"/>` },
+    { nom: "Deltoïde postérieur",
+      svg: `<circle cx="106" cy="80" r="4.4"/>` }
+  ],
+  parts: [
+    {
+      /* BARRE : pivote autour de son ANCRAGE (52, 144) — l'arc de cercle
+         qui signe le T-bar. −18° amène la charge vers la poitrine. */
+      o: "52px 144px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-18deg)"], [42, "rotate(-18deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-bar3" x1="52" y1="144" x2="116" y2="110"/>
+        <circle class="mo-plate-o" cx="106" cy="115" r="11"/>
+        <circle class="mo-hub" cx="106" cy="115" r="2.6"/>`
+    },
+    {
+      /* BRAS : enraciné à l'ÉPAULE (104, 78), qui est fixe. −40,2° monte
+         le coude en arrière ; la main suit exactement la poignée. */
+      o: "104px 78px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-40.2deg)"], [42, "rotate(-40.2deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Biceps brachial",
+      muscle: `<ellipse cx="107" cy="86" rx="3" ry="6.5" transform="rotate(20 107 86)"/>`,
+      svg: `
+        <line class="mo-limb" x1="104" y1="78" x2="110.3" y2="94.8"/>
+        <circle class="mo-joint" cx="110.3" cy="94.8" r="2.5"/>`,
+      children: [
+        { o: "110.3px 94.8px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(134.6deg)"], [42, "rotate(134.6deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="110.3" y1="94.8" x2="116" y2="110"/>
+            <circle class="mo-hand" cx="116" cy="110" r="3.2"/>` }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M74 118 L64 92 M70 99 L64 92 L62 101"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M64 92 L74 118 M68 111 L74 118 L76 109"/>` }
+  ]
+};
+
+/* =========================================================
+   13. DÉVELOPPÉ MILITAIRE BARRE  (developpe-militaire)
+   -----------------------------------------------------------
+   Position  : DEBOUT, pieds largeur de bassin, abdominaux gainés
+               et fessiers serrés, barre posée sur les clavicules
+               et les deltoïdes antérieurs (position de rack),
+               coudes bas et légèrement en avant.
+   Matériel  : barre olympique, prise pronation largeur d'épaules.
+               Vue de profil : on voit le disque.
+   Mobiles   : épaule (flexion/abduction), coude (extension) ; et
+               la tête, qui recule légèrement pour laisser passer
+               la barre — d'où le trajet vertical du bar path.
+   Fixes     : rachis et bassin, sans cambrure lombaire
+               compensatoire (la faute classique) ; jambes tendues
+               sans impulsion — c'est un développé STRICT.
+   Sens/plan : poussée verticale au-dessus de la tête =
+               concentrique ; descente aux clavicules =
+               excentrique. Plan scapulaire.
+   ROM       : coude d'environ 37° en position de rack (la barre
+               repose près de l'épaule, le coude est donc très
+               fléchi) à ~156° bras tendus, barre à l'aplomb du
+               milieu du pied. Trajet de barre : 35 unités.
+   Agonistes : deltoïde antérieur et moyen, triceps, trapèze
+               supérieur ; gainage abdominal en isométrie, donc
+               non animé.
+   Distinction : DEBOUT et STRICT (≠ push press, avec impulsion
+               des jambes ; ≠ développé épaules assis, qui a un
+               dossier), et BARRE — un axe rigide qui doit
+               contourner la tête, contrairement aux haltères qui
+               montent de part et d'autre du visage.
+   Vue de PROFIL : c'est elle qui montre le passage de la barre
+   devant le visage puis son verrouillage au-dessus des oreilles.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-militaire"] = {
+  vb: "62 8 122 148",
+  dur: 3.9,
+  phases: { con: [0, 36], ecc: [44, 90] },
+  alt: "Debout, barre aux clavicules : poussée verticale au-dessus de la tête jusqu'aux bras tendus, sans impulsion des jambes, puis descente contrôlée.",
+  fixe: `
+    <line class="mo-ground" x1="86" y1="150" x2="164" y2="150"/>
+    <!-- corps debout, gainé, immobile -->
+    <circle class="mo-head" cx="111" cy="54" r="9"/>
+    <line class="mo-body" x1="118" y1="66" x2="120" y2="110"/>
+    <line class="mo-body" x1="120" y1="110" x2="116" y2="150"/>
+    <line class="mo-body" x1="120" y1="110" x2="126" y2="150"/>
+    <!-- aplomb : la barre finit au-dessus du milieu du pied -->
+    <line class="mo-rom" x1="120" y1="28" x2="120" y2="66"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="118" cy="66" r="5.5"/>` },
+    { nom: "Trapèze supérieur",
+      svg: `<ellipse cx="115" cy="60" rx="6" ry="3.2" transform="rotate(-30 115 60)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (118, 66). +133,1° fait passer le
+         coude de bas-et-en-avant (rack) à quasi vertical (verrouillage). */
+      o: "118px 66px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(144deg)"], [44, "rotate(144deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="113.6" cy="75" rx="3.2" ry="7.5" transform="rotate(-26 113.6 75)"/>`,
+      svg: `
+        <line class="mo-limb" x1="118" y1="66" x2="109.2" y2="84"/>
+        <circle class="mo-joint" cx="109.2" cy="84" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : −118,6° relatif. En bas l'avant-bras est
+             VERTICAL sous la barre (l'alignement poignet-coude du rack) ;
+             en haut la barre se verrouille à l'aplomb du pied. */
+          o: "109.2px 84px",
+          k: [[0, "rotate(0deg)"], [36, "rotate(-104.8deg)"], [44, "rotate(-104.8deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="109.2" y1="84" x2="100" y2="64"/>
+            <circle class="mo-plate-o" cx="100" cy="64" r="9"/>
+            <circle class="mo-hub" cx="100" cy="64" r="2.6"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M148 66 L148 30 M143 38 L148 30 L153 38"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M148 30 L148 66 M143 58 L148 66 L153 58"/>` }
+  ]
+};
