@@ -352,17 +352,24 @@ function openExercise(id) {
     });
   }
 
-  modal.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
+  /* Sous-fenêtre : on n'immobilise PAS la page — la séance derrière
+     reste visible et pilotable, le chrono continue de tourner. */
+  if (typeof openSheet === "function") openSheet();
+  else modal.classList.remove("hidden");
 }
 
 function closeModal() {
-  modal.classList.add("hidden");
-  document.body.style.overflow = "";
+  if (typeof closeSheet === "function") closeSheet();
+  else modal.classList.add("hidden");
 }
 modal.querySelector(".modal-close").addEventListener("click", closeModal);
-modal.querySelector(".modal-backdrop").addEventListener("click", closeModal);
-document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  // ne ferme la sous-fenêtre que si aucune vraie modale n'est ouverte au-dessus
+  const blocking = ["picker", "builder", "session-modal", "onboarding"]
+    .some(id => { const el = document.getElementById(id); return el && !el.classList.contains("hidden"); });
+  if (!blocking) closeModal();
+});
 
 /* ---------- Ajout d'exercice personnalisé ---------- */
 const addForm = document.getElementById("add-form");

@@ -1556,7 +1556,7 @@ textarea { min-height: 90px; resize: vertical; }
 .live-compact .chrono-main .chrono-value { font-size: 2.1rem; }
 .live-compact .live-progress .progress-label { display: none; }
 .live-compact .live-header { padding: 14px 18px; }
-.live-compact .live-ex .day-focus { display: none; }
+.live-compact .live-ex .live-ex-sub { display: none; }   /* le récap replié reste lisible */
 .live-compact .live-ex .sets-table tbody tr:not(:last-child) { display: none; }
 .live-compact .live-ex .sets-table thead { display: none; }
 .live-compact .live-ex { padding: 14px; }
@@ -1707,7 +1707,11 @@ body { font-size: 0.94rem; line-height: 1.55; }
 /* ---------- F1 · Aucun défilement latéral ----------
    Les rangées de chips passent à la ligne, les tableaux gardent
    leurs colonnes prioritaires, rien n'est caché sur le côté. */
-html, body { max-width: 100%; overflow-x: hidden; }
+/* overflow-x uniquement sur <html> : le poser aussi sur <body> en ferait
+   un conteneur de défilement, ce qui casserait position:sticky (en-tête
+   de séance, barre du haut). */
+html { overflow-x: hidden; }
+body { max-width: 100%; }
 .chip-row { flex-wrap: wrap; overflow-x: visible; padding-bottom: 0; }
 .segmented { flex-wrap: wrap; overflow-x: visible; }
 @media (max-width: 460px) {
@@ -1738,18 +1742,7 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .modal-header { position: relative; }
 .pick-fav { color: var(--accent); }
 
-/* ---------- B1 · Chrono réduit en pastille ---------- */
-.hdr-pill { display: none; }
-.hdr-min .live-header {
-  padding: 6px 8px;
-  display: flex; align-items: center; gap: 6px;
-}
-.hdr-min .live-title-row,
-.hdr-min .live-chronos,
-.hdr-min .live-progress,
-.hdr-min .program-actions { display: none; }
-.hdr-min .pause-banner { display: none; }
-.hdr-min .hdr-pill { display: flex; align-items: center; gap: 4px; width: 100%; }
+/* ---------- B1 · Pilule du chrono (états pilotés en V9) ---------- */
 .hdr-pill-main {
   display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
   background: none; border: none; cursor: pointer; padding: 6px 8px;
@@ -1927,3 +1920,143 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .ex-muscles-line { font-size: 0.84rem; color: var(--text-soft); margin-bottom: 10px; }
 .ex-muscles-line strong { color: var(--text); }
 .set-form { gap: 6px; }
+
+/* =========================================================
+   V9 — Chrono qui suit le scroll, accordéon d'exercices,
+   sous-fenêtre de détail, reps par charge.
+   ========================================================= */
+
+/* ---------- 1 · En-tête collant qui se réduit au scroll ----------
+   Les deux états coexistent : la grille 1fr↔0fr fait un collapse
+   qui suit la hauteur réelle du contenu, donc aucun saut de layout. */
+.live-header { transition: padding 0.26s cubic-bezier(0.4, 0, 0.2, 1); will-change: padding; }
+.live-hdr-full {
+  display: grid; grid-template-rows: 1fr;
+  transition: grid-template-rows 0.26s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease 0.06s;
+  opacity: 1;
+}
+.live-hdr-inner { overflow: hidden; min-height: 0; }
+.hdr-min .live-hdr-full { grid-template-rows: 0fr; opacity: 0; transition-delay: 0s, 0s; }
+.hdr-min .live-header { padding: 5px 8px; }
+
+/* la pilule : hauteur fixe, donc transition parfaitement fluide */
+.hdr-pill {
+  display: flex; align-items: center; gap: 4px; width: 100%;
+  height: 0; opacity: 0; overflow: hidden; pointer-events: none;
+  transform: translateY(-6px);
+  transition: height 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.18s ease, transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hdr-min .hdr-pill { height: 44px; opacity: 1; pointer-events: auto; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .live-header, .live-hdr-full, .hdr-pill { transition-duration: 0.01ms; }
+}
+
+/* ---------- 2 · Séries restantes par exercice ---------- */
+.ex-sets {
+  font-size: 0.74rem; font-weight: 800; color: var(--accent-2);
+  background: var(--accent-soft); border-radius: 999px; padding: 3px 9px;
+  white-space: nowrap;
+}
+.theme-epure .ex-sets { color: var(--accent); }
+.ex-sets-done { color: var(--green); background: transparent; border: 1px solid var(--green); }
+.theme-epure .ex-sets-done { color: var(--green); border-color: var(--green); }
+.live-ex-done { opacity: 0.82; }
+.live-ex-done.live-ex-open { opacity: 1; }
+
+/* ---------- 3 · Accordéon des exercices ---------- */
+.live-ex-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  width: 100%; background: none; border: none; padding: 2px 0; cursor: pointer;
+  color: var(--text); font-family: inherit; text-align: left; min-height: 44px;
+}
+.live-ex-id { min-width: 0; }
+.live-ex-id h3 { font-size: 0.98rem; font-weight: 800; }
+.live-ex-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.live-ex-chev { color: var(--text-soft); transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1); }
+.live-ex-open .live-ex-chev { transform: rotate(180deg); }
+
+.live-ex-body {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease;
+}
+.live-ex-body-inner { overflow: hidden; min-height: 0; }
+.live-ex-open .live-ex-body { grid-template-rows: 1fr; opacity: 1; transition-delay: 0s, 0.06s; }
+.live-ex-tools { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }
+/* replié : on masque la ligne technique, on montre le récap */
+.live-ex-recap { display: none; font-weight: 600; }
+.live-ex-collapsed .live-ex-sub { display: none; }
+.live-ex-collapsed .live-ex-recap { display: block; }
+@media (prefers-reduced-motion: reduce) {
+  .live-ex-body, .live-ex-chev { transition-duration: 0.01ms; }
+}
+
+/* ---------- 4 · Sous-fenêtre : bottom sheet / panneau latéral ----------
+   Jamais bloquante : pas de voile opaque, la séance derrière reste
+   visible et cliquable, et le chrono continue de tourner. */
+.sheet { position: fixed; inset: auto 0 0 0; z-index: 90; pointer-events: none; }
+.sheet-box {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  height: 70vh; max-height: 94vh;
+  background: var(--card);
+  border: 1px solid var(--border); border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.45);
+  display: flex; flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), height 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto;
+}
+.theme-epure .sheet-box { box-shadow: 0 -16px 40px rgba(60, 50, 30, 0.18); }
+.sheet-in .sheet-box { transform: translateY(0); }
+.sheet-grip {
+  display: flex; align-items: center; justify-content: center;
+  height: 26px; flex-shrink: 0; cursor: grab; touch-action: none;
+}
+.sheet-grip:active { cursor: grabbing; }
+.sheet-grip-bar { width: 40px; height: 4px; border-radius: 999px; background: var(--border); }
+.sheet-grip:hover .sheet-grip-bar { background: var(--text-soft); }
+.sheet-scroll {
+  flex: 1; overflow-y: auto; overscroll-behavior: contain;
+  padding: 0 16px calc(20px + env(safe-area-inset-bottom));
+}
+.sheet .modal-close { top: 20px; right: 14px; z-index: 2; }
+
+/* Desktop : panneau latéral, la séance reste pleinement visible */
+@media (min-width: 761px) {
+  .sheet-box {
+    /* démarre sous la barre du haut : la navigation reste atteignable */
+    left: auto; right: 0; top: 66px; bottom: 0;
+    width: min(430px, 42vw); height: auto !important; max-height: none;
+    border-radius: var(--radius) 0 0 var(--radius);
+    border: 1px solid var(--border); border-right: none;
+    transform: translateX(100%);
+    box-shadow: -20px 0 50px rgba(0, 0, 0, 0.4);
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .theme-epure .sheet-box { box-shadow: -16px 0 40px rgba(60, 50, 30, 0.16); }
+  .sheet-in .sheet-box { transform: translateX(0); }
+  .sheet-grip { display: none; }
+  .sheet-scroll { padding-top: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .sheet-box { transition-duration: 0.01ms; } }
+
+/* ---------- 5 · Répétitions par charge ---------- */
+.exs-cap {
+  font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--text-soft); margin: 12px 0 4px;
+}
+.rpw { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
+.rpw-row { display: grid; grid-template-columns: 64px 1fr auto; gap: 9px; align-items: center; }
+.rpw-lab { font-size: 0.76rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+.rpw-track { height: 14px; background: var(--bg-soft); border-radius: 4px; overflow: hidden; }
+.rpw-bar {
+  display: block; height: 100%; background: var(--accent);
+  border-radius: 0 4px 4px 0;                 /* extrémité arrondie, base ancrée */
+  transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.rpw-val { font-size: 0.74rem; color: var(--text-soft); white-space: nowrap; }
+.rpw-val strong { color: var(--text); font-variant-numeric: tabular-nums; }
+.rpw-sets { opacity: 0.8; }
+@media (max-width: 420px) { .rpw-sets { display: none; } }

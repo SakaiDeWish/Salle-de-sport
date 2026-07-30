@@ -305,19 +305,13 @@
 
     <!-- Écran 2 : séance en cours (mode focus) -->
     <section id="seance-live" class="hidden">
-      <div class="live-header card">
-        <div class="live-title-row">
-          <h2 id="live-title" class="display-sm">Séance en cours</h2>
-          <div class="live-title-actions">
-            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono en pastille" aria-label="Réduire le widget de temps de séance">⌃</button>
-            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit">⌄</button>
-            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause">⏸ Pause</button>
-            <span class="live-dot">● EN DIRECT</span>
-          </div>
-        </div>
+      <!-- En-tête collant : suit le scroll et se réduit tout seul en
+           descendant, se ré-agrandit en remontant. Les deux états
+           coexistent dans le DOM pour que la transition soit fluide
+           (grille 1fr↔0fr + opacité) et sans saut de layout. -->
+      <div class="live-header card" id="live-header">
 
-        <!-- Chrono réduit : pastille compacte (chrono + reste à faire),
-             en flux donc elle ne masque ni les exercices ni les contrôles -->
+        <!-- État compact : pilule minimale, chrono seul -->
         <div class="hdr-pill" id="hdr-pill">
           <button type="button" class="hdr-pill-main" id="hdr-pill-open" aria-label="Agrandir le chrono de séance">
             <span class="hdr-pill-dot">●</span>
@@ -327,6 +321,19 @@
           </button>
           <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance">✓</button>
         </div>
+
+        <!-- État complet -->
+        <div class="live-hdr-full"><div class="live-hdr-inner">
+        <div class="live-title-row">
+          <h2 id="live-title" class="display-sm">Séance en cours</h2>
+          <div class="live-title-actions">
+            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance">⌃</button>
+            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit">⌄</button>
+            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause">⏸ Pause</button>
+            <span class="live-dot">● EN DIRECT</span>
+          </div>
+        </div>
+
         <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
         <div id="pause-banner" class="pause-banner hidden">
           <span>Séance en pause — navigue librement, rien n'est perdu.</span>
@@ -359,6 +366,7 @@
           <button class="btn btn-primary" id="live-finish">Terminer</button>
           <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
         </div>
+        </div></div><!-- /live-hdr-full -->
       </div>
       <div id="live-exercises"></div>
     </section>
@@ -522,12 +530,18 @@
     </div>
   </div>
 
-  <!-- ==================== MODALE DÉTAIL EXERCICE ==================== -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-backdrop"></div>
-    <div class="modal-box">
+  <!-- ============ SOUS-FENÊTRE DÉTAIL EXERCICE ============
+       Bottom sheet sur mobile (≈70 % de l'écran, glissable), panneau
+       latéral sur desktop. Jamais bloquante : la séance reste visible,
+       cliquable, et le chrono continue de tourner. -->
+  <div id="modal" class="sheet hidden" role="dialog" aria-modal="false" aria-label="Détail de l'exercice">
+    <div class="sheet-box" id="sheet-box">
+      <div class="sheet-grip" id="sheet-grip" role="button" tabindex="0"
+           aria-label="Glisser pour agrandir ou réduire le panneau">
+        <span class="sheet-grip-bar"></span>
+      </div>
       <button class="modal-close" aria-label="Fermer">✕</button>
-      <div id="modal-content"></div>
+      <div class="sheet-scroll"><div id="modal-content"></div></div>
     </div>
   </div>
 

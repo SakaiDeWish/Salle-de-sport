@@ -55,6 +55,107 @@ document.addEventListener("click", e => {
   if (box.dataset.disc) discSet(box.dataset.disc, open);
 });
 
+/* ==================== SOUS-FENÊTRE (bottom sheet / panneau) ==========
+   Mobile : feuille qui monte sur ~70 % de l'écran, glissable (haut =
+   agrandir, bas = réduire puis fermer). Desktop : panneau latéral.
+   Dans les deux cas elle ne bloque rien : pas de fond opaque, pas de
+   verrou de scroll, la séance et le chrono continuent derrière.
+   ==================================================================== */
+const SHEET_SNAPS = { peek: 0.44, default: 0.7, full: 0.94 }; // fraction de la hauteur d'écran
+let sheetSnap = "default";
+
+function sheetEl() { return document.getElementById("modal"); }
+function sheetIsMobile() { return window.matchMedia("(max-width: 760px)").matches; }
+
+function applySheetSnap(snap) {
+  sheetSnap = snap;
+  const box = document.getElementById("sheet-box");
+  if (!box) return;
+  box.style.transition = "";                    // reprend la transition CSS
+  if (sheetIsMobile()) box.style.height = Math.round(SHEET_SNAPS[snap] * 100) + "vh";
+  else box.style.height = "";                   // desktop : hauteur pilotée par le CSS
+  box.style.transform = "";
+}
+
+function openSheet() {
+  const el = sheetEl();
+  if (!el) return;
+  el.classList.remove("hidden");
+  applySheetSnap("default");
+  requestAnimationFrame(() => el.classList.add("sheet-in"));
+  const scroll = el.querySelector(".sheet-scroll");
+  if (scroll) scroll.scrollTop = 0;
+}
+
+function closeSheet() {
+  const el = sheetEl();
+  if (!el) return;
+  el.classList.remove("sheet-in");
+  const box = document.getElementById("sheet-box");
+  if (box) { box.style.transition = ""; box.style.transform = ""; }
+  // laisse l'animation de sortie se jouer avant de masquer
+  setTimeout(() => { if (!el.classList.contains("sheet-in")) el.classList.add("hidden"); }, 240);
+}
+
+/* Glissement : la poignée (et l'en-tête) déplacent la feuille en direct,
+   puis on aimante vers le palier le plus proche — ou on ferme. */
+(function initSheetDrag() {
+  const grip = document.getElementById("sheet-grip");
+  const box = document.getElementById("sheet-box");
+  if (!grip || !box) return;
+
+  let startY = 0, startH = 0, dragging = false, moved = 0;
+
+  const onDown = e => {
+    if (!sheetIsMobile()) return;
+    dragging = true; moved = 0;
+    startY = (e.touches ? e.touches[0].clientY : e.clientY);
+    startH = box.getBoundingClientRect().height;
+    box.style.transition = "none";
+    grip.setPointerCapture && e.pointerId != null && grip.setPointerCapture(e.pointerId);
+  };
+  const onMove = e => {
+    if (!dragging) return;
+    const y = (e.touches ? e.touches[0].clientY : e.clientY);
+    moved = y - startY;
+    const h = Math.max(80, Math.min(window.innerHeight * SHEET_SNAPS.full, startH - moved));
+    box.style.height = h + "px";
+    if (e.cancelable) e.preventDefault();
+  };
+  const onUp = () => {
+    if (!dragging) return;
+    dragging = false;
+    box.style.transition = "";
+    const frac = box.getBoundingClientRect().height / window.innerHeight;
+    // glissé vers le bas sous le palier bas : on ferme
+    if (frac < SHEET_SNAPS.peek * 0.8) { closeSheet(); return; }
+    // sinon on aimante au palier le plus proche
+    const nearest = Object.keys(SHEET_SNAPS)
+      .reduce((a, b) => Math.abs(SHEET_SNAPS[a] - frac) < Math.abs(SHEET_SNAPS[b] - frac) ? a : b);
+    applySheetSnap(nearest);
+  };
+
+  grip.addEventListener("pointerdown", onDown);
+  window.addEventListener("pointermove", onMove, { passive: false });
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
+  // clavier : ↑ agrandit, ↓ réduit puis ferme
+  grip.addEventListener("keydown", e => {
+    const order = ["peek", "default", "full"];
+    const i = order.indexOf(sheetSnap);
+    if (e.key === "ArrowUp" && i < 2) { applySheetSnap(order[i + 1]); e.preventDefault(); }
+    if (e.key === "ArrowDown") { i > 0 ? applySheetSnap(order[i - 1]) : closeSheet(); e.preventDefault(); }
+  });
+  // un tap sur la poignée fait le tour des paliers
+  grip.addEventListener("click", () => {
+    if (Math.abs(moved) > 6) return;             // c'était un glissement, pas un tap
+    applySheetSnap(sheetSnap === "full" ? "default" : "full");
+  });
+  window.addEventListener("resize", () => {
+    if (!sheetEl().classList.contains("hidden")) applySheetSnap(sheetSnap);
+  });
+})();
+
 /* ==================== FAVORIS ==================== */
 function getFavorites() { return loadJSON(STORAGE_KEYS.favorites, []); }
 function isFavorite(exId) { return getFavorites().includes(exId); }
@@ -95,7 +196,8 @@ document.addEventListener("click", e => {
 function exerciseStats(exId) {
   const h = (typeof getHistory === "function" ? getHistory() : [])
     .slice().sort((a, b) => a.date - b.date);
-  const out = { seances: 0, series: 0, reps: 0, volume: 0, best: null, points: [] };
+  const out = { seances: 0, series: 0, reps: 0, volume: 0, best: null, points: [], parPoids: [] };
+  const byWeight = new Map();   // poids -> { reps, sets, repsMax }
   for (const r of h) {
     let dayMax = null, seen = false;
     for (const ex of r.exercises || []) {
@@ -110,13 +212,40 @@ function exerciseStats(exId) {
           if (!out.best || s.poids > out.best.poids ||
               (s.poids === out.best.poids && s.reps > out.best.reps))
             out.best = { poids: s.poids, reps: s.reps, date: r.date };
+          // répartition des répétitions par palier de charge
+          const w = byWeight.get(s.poids) || { poids: s.poids, reps: 0, sets: 0, repsMax: 0 };
+          w.reps += s.reps; w.sets++; w.repsMax = Math.max(w.repsMax, s.reps);
+          byWeight.set(s.poids, w);
         }
       }
     }
     if (seen) out.seances++;
     if (dayMax !== null) out.points.push({ date: r.date, poids: dayMax });
   }
+  out.parPoids = [...byWeight.values()].sort((a, b) => b.poids - a.poids);
+  // 1RM estimé (Epley) à partir du meilleur set : charge × (1 + reps/30)
+  out.rm = out.best ? Math.round(out.best.poids * (1 + out.best.reps / 30)) : null;
   return out;
+}
+
+/* Répartition des répétitions par palier de charge.
+   Barres HORIZONTALES : l'étiquette est du texte ("72,5 kg") qui se lit
+   de gauche à droite, et la longueur est le canal le plus précis pour
+   comparer des quantités. Chaque barre porte sa valeur en clair. */
+function repsPerWeightChart(parPoids, { max = 8 } = {}) {
+  if (!parPoids.length) return "";
+  const rows = parPoids.slice(0, max);
+  const maxReps = Math.max(...rows.map(r => r.reps));
+  return `<figure class="rpw" role="img"
+      aria-label="Répétitions par charge : ${rows.map(r => `${r.poids} kg, ${r.reps} répétitions en ${r.sets} série(s)`).join(" ; ")}">
+    ${rows.map(r => `
+      <div class="rpw-row">
+        <span class="rpw-lab">${r.poids} kg</span>
+        <span class="rpw-track"><span class="rpw-bar" style="width:${Math.max(4, Math.round(r.reps / maxReps * 100))}%"></span></span>
+        <span class="rpw-val"><strong>${r.reps}</strong> reps<span class="rpw-sets"> · ${r.sets} série${r.sets > 1 ? "s" : ""}</span></span>
+      </div>`).join("")}
+    ${parPoids.length > max ? `<p class="video-hint">+ ${parPoids.length - max} autre(s) palier(s) plus léger(s).</p>` : ""}
+  </figure>`;
 }
 
 /* Graphique d'évolution : une seule série (le poids max par séance).
@@ -167,26 +296,28 @@ function exerciseStatsBlock(ex) {
     <span class="disc-meta">${s.best ? `record ${s.best.poids} kg × ${s.best.reps}` : s.series + " séries"}
     · ${s.seances} séance${s.seances > 1 ? "s" : ""}</span>`;
   const detail = `
-    ${evolutionChart(s.points)}
+    ${s.points.length >= 2 ? `<p class="exs-cap">Poids maximum par séance</p>${evolutionChart(s.points)}` : ""}
+    ${s.parPoids.length ? `<p class="exs-cap">Répétitions par charge</p>${repsPerWeightChart(s.parPoids)}` : ""}
     <div class="exs-grid">
       <div class="exs-item"><span class="exs-val">${s.best ? s.best.poids + " kg × " + s.best.reps : "—"}</span>
         <span class="exs-lab">Meilleur set</span>
         <span class="exs-help">Ta série la plus lourde${s.best ? ", le " + new Date(s.best.date).toLocaleDateString("fr-FR") : ""} — le repère à battre.</span></div>
-      <div class="exs-item"><span class="exs-val">${s.seances}</span>
-        <span class="exs-lab">Séances</span>
-        <span class="exs-help">Nombre de séances où tu as fait ce mouvement. Une fréquence de 1 à 2 fois par semaine par muscle marche bien.</span></div>
+      <div class="exs-item"><span class="exs-val">${s.rm ? s.rm + " kg" : "—"}</span>
+        <span class="exs-lab">1RM estimé</span>
+        <span class="exs-help">La charge que tu lèverais une seule fois (formule d'Epley, à partir de ton meilleur set). C'est une <em>estimation</em> : ne la teste pas à froid.</span></div>
       <div class="exs-item"><span class="exs-val">${s.reps}</span>
         <span class="exs-lab">Répétitions</span>
-        <span class="exs-help">Total de reps accumulées sur cet exercice, toutes séances confondues.</span></div>
+        <span class="exs-help">Total de reps accumulées sur cet exercice, en ${s.series} série${s.series > 1 ? "s" : ""} et ${s.seances} séance${s.seances > 1 ? "s" : ""}.</span></div>
       <div class="exs-item"><span class="exs-val">${Math.round(s.volume).toLocaleString("fr-FR")} kg</span>
         <span class="exs-lab">Volume cumulé</span>
         <span class="exs-help">Poids × reps additionnés. C'est le meilleur indicateur du travail total fourni : le faire grimper mois après mois, c'est progresser.</span></div>
     </div>`;
   return disclosure("exstats." + ex.id, {
     summary, detail, label: "Détails",
-    what: `Le graphique montre ton <strong>poids maximum par séance</strong> sur cet exercice, dans le temps :
-      une courbe qui monte = surcharge progressive réussie. Un plateau de 3 séances signale qu'il faut changer
-      quelque chose (reps, repos, variante).`
+    what: `Deux lectures complémentaires. La <strong>courbe</strong> suit ton poids maximum par séance :
+      elle monte = surcharge progressive réussie, un plateau de 3 séances dit qu'il faut changer quelque chose.
+      Les <strong>barres</strong> montrent combien de répétitions tu as faites à chaque charge : c'est là qu'on
+      voit si tu passes ton temps trop léger, ou si une charge lourde ne tient que 3 reps.`
   });
 }
 
