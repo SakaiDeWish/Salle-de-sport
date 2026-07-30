@@ -265,16 +265,18 @@ function nextUnfinished(from) {
 }
 
 /* Ce qu'affiche l'en-tête : l'exercice EN COURS et sa progression à lui
-   (le total de séance a été remplacé par le détail par exercice). */
-function currentProgressText() {
+   (le total de séance a été remplacé par le détail par exercice).
+   `court` met la progression en premier : sur la pilule étroite, c'est
+   le nom de l'exercice qui doit être tronqué, pas le compteur. */
+function currentProgressText(court = false) {
   if (!live || !live.exercises.length) return "";
   const cur = live.exercises[Math.max(0, live.currentIndex)];
   if (!cur) return "";
   const p = exerciseProgress(cur);
-  if (p.target == null) return `${cur.nom} · ${p.texte}`;
-  return p.fini
-    ? `${cur.nom} · terminé`
-    : `${cur.nom} · série ${p.done + 1}/${p.target}`;
+  const etat = p.target == null ? p.texte
+             : p.fini ? "terminé"
+             : `série ${p.done + 1}/${p.target}`;
+  return court ? `${etat} · ${cur.nom}` : `${cur.nom} · ${etat}`;
 }
 
 /* Progression : exercice courant + barre d'avancement de la séance */
@@ -297,7 +299,7 @@ function updateProgress() {
   bar.style.width = (t ? Math.min(100, Math.round(d / t * 100)) : 0) + "%";
 
   const pillLeft = document.getElementById("hdr-pill-left");
-  if (pillLeft) pillLeft.textContent = currentProgressText();
+  if (pillLeft) pillLeft.textContent = currentProgressText(true);
 }
 
 /* ---------- Point 1 · chrono collant qui se réduit au scroll ----------
