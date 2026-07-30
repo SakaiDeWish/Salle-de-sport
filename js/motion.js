@@ -84,7 +84,11 @@ function renderDedicatedMotion(ex, spec) {
     const name = `${uid}p${pi++}`;
     css.push(moKeyframes(name, p.k));
     const kids = (p.children || []).map(renderPart).join("");
-    return `<g class="mo-anim mo-part" style="${p.o ? `transform-origin:${p.o};` : ""}animation-name:${name}">${muscleIn(p.muscle)}${p.svg}${kids}</g>`;
+    // childrenFirst : le segment porteur se dessine PAR-DESSUS ses enfants
+    // (membre proche devant le corps, sinon le coude disparaît derrière)
+    const corps = p.childrenFirst ? kids + muscleIn(p.muscle) + p.svg
+                                  : muscleIn(p.muscle) + p.svg + kids;
+    return `<g class="mo-anim mo-part" style="${p.o ? `transform-origin:${p.o};` : ""}animation-name:${name}">${corps}</g>`;
   };
   const parts = (spec.parts || []).map(renderPart).join("");
 
