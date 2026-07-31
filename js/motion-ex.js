@@ -2813,3 +2813,119 @@ EXERCISE_MOTIONS["squat-gobelet"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M152 62 L152 100 M147 92 L152 100 L157 92"/>` }
   ]
 };
+
+/* =========================================================
+   31. SQUAT AU POIDS DU CORPS  (squat-poids-du-corps)
+   -----------------------------------------------------------
+   Position  : DEBOUT, pieds largeur d'épaules, BRAS TENDUS DEVANT.
+   Matériel  : aucun.
+   Mobiles   : hanche, genou, cheville. Pied ancré au sol.
+   Fixes     : le pied. Rachis gainé.
+   LES BRAS : ils sont tendus devant et RESTENT HORIZONTAUX pendant
+               toute la descente — ils reçoivent donc dans le schéma
+               une contre-rotation de +26° qui annule celle du
+               tronc. Ce n'est pas un détail d'esthétique : sans
+               charge, les bras déplacent un peu de masse vers
+               l'AVANT pour compenser le bassin qui recule. C'est
+               leur fonction MÉCANIQUE, et s'ils suivaient
+               passivement le buste ils ne la rempliraient pas.
+   Sens/plan : descente = excentrique, remontée = concentrique.
+   ROM       : LA PLUS GRANDE des trois variantes de squat. Sans
+               charge, rien n'empêche de descendre jusqu'où la
+               mobilité le permet : genou à 51°, hanche 6,3 unités
+               sous le genou, dorsiflexion 25°.
+               Le tableau complet des trois squats, désormais
+               comparables chiffre à chiffre :
+                 barre    : genou 75°, buste 22,4°, hanche AU niveau
+                            du genou (parallèle), dorsiflexion 15°
+                 gobelet  : genou 62°, buste  8,0°, hanche 2,7 sous,
+                            dorsiflexion 22°
+                 sans charge : genou 51°, buste 26,0°, hanche 6,3
+                            sous, dorsiflexion 25°
+               Le buste se REDRESSE au gobelet (contrepoids frontal)
+               mais se repenche ici : sans contrepoids, plus on
+               descend, plus le bassin recule et plus le buste doit
+               s'incliner pour rester en équilibre.
+   Agonistes : quadriceps et grand fessier. La charge étant le seul
+               poids du corps, l'intensité est faible : c'est un
+               mouvement d'apprentissage, d'échauffement et de
+               volume, pas de force.
+   Distinction : aucune charge, bras tendus devant en contrepoids,
+               descente la plus profonde. ≠ squat barre et gobelet,
+               qui portent une charge et s'arrêtent plus haut.
+   GÉOMÉTRIE — cheville A(120,138) ancrée, tibia 26, cuisse 26,
+   tronc 32. Haut : genou(119.5,112), hanche(122,86.13).
+   Bas : genou(109.01,114.44), hanche(134.24,120.73), épaule
+   (119.22,92.47).
+   -> tibia −23,90°, cuisse +122,38° rel, tronc −124,48° rel,
+      bras +26,00° rel (contre-rotation exacte).
+   NOTE D'HONNÊTETÉ : comme au gobelet et contrairement au squat
+   barre, l'angle du buste n'est pas déduit d'une contrainte
+   géométrique — sans charge extérieure il n'y a pas d'aplomb à
+   tenir, seul le centre de masse du corps s'équilibre. Les 26° sont
+   une valeur caractéristique, pas un calcul.
+   ========================================================= */
+EXERCISE_MOTIONS["squat-poids-du-corps"] = {
+  vb: "88 28 84 130",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Squat sans charge, bras tendus devant en contrepoids : descente profonde jusqu'à la flexion complète des genoux, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="98" y1="150" x2="160" y2="150"/>
+    <line class="mo-limb" x1="112" y1="150" x2="134" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="113" y2="150"/>
+    <circle class="mo-joint" cx="120" cy="138" r="2.8"/>`,
+  parts: [
+    {
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-23.9deg)"], [52, "rotate(-23.9deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="120" y1="138" x2="119.5" y2="112"/>`,
+      children: [
+        {
+          o: "119.5px 112px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(122.38deg)"], [52, "rotate(122.38deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="117.3" cy="99" rx="3.4" ry="9" transform="rotate(5.5 117.3 99)"/>
+            <circle cx="125.5" cy="90" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="119.5" cy="112" r="2.8"/>
+            <line class="mo-limb" x1="119.5" y1="112" x2="122" y2="86.13"/>`,
+          children: [
+            {
+              o: "122px 86.13px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-124.48deg)"], [52, "rotate(-124.48deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="122" cy="86.13" r="2.8"/>
+                <line class="mo-body" x1="122" y1="86.13" x2="120.88" y2="54.15"/>
+                <circle class="mo-head" cx="119" cy="40" r="9"/>`,
+              children: [
+                {
+                  /* BRAS : contre-rotation de +26° -> ils restent
+                     HORIZONTAUX en absolu pendant toute la descente.
+                     C'est ce qui leur permet de jouer leur rôle de
+                     contrepoids vers l'avant. */
+                  o: "120.88px 54.15px",
+                  k: [[0, "rotate(0deg)"], [45, "rotate(26deg)"], [52, "rotate(26deg)"],
+                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="120.88" y1="54.15" x2="108" y2="55"/>
+                    <circle class="mo-joint" cx="108" cy="55" r="2.4"/>
+                    <line class="mo-limb" x1="108" y1="55" x2="95" y2="56"/>
+                    <circle class="mo-hand" cx="95" cy="56" r="3"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M156 104 L156 64 M151 72 L156 64 L161 72"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M156 64 L156 104 M151 96 L156 104 L161 96"/>` }
+  ]
+};
