@@ -2476,3 +2476,231 @@ EXERCISE_MOTIONS["presse-a-cuisses"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
   ]
 };
+
+/* =========================================================
+   28. FENTES MARCHÉES  (fentes-marchees)
+   -----------------------------------------------------------
+   Position  : appui DISSOCIÉ — un pied loin devant à plat, un pied
+               derrière EN APPUI SUR LES ORTEILS, talon décollé.
+               Buste droit et vertical, haltères le long du corps.
+   Matériel  : deux haltères, prise neutre.
+   Mobiles   : hanche, genou et cheville des DEUX jambes, en même
+               temps. La jambe avant encaisse et pousse, la jambe
+               arrière accompagne en descendant le genou vers le sol.
+   Fixes     : les DEUX PIEDS. C'est encore une double chaîne fermée,
+               mais d'un genre nouveau : ici les deux ancrages sont
+               au SOL et à des hauteurs différentes (le talon arrière
+               est décollé), et c'est le BASSIN qui est le point de
+               rencontre des deux chaînes.
+               Le BUSTE reste VERTICAL — contre-rotation exacte, sa
+               rotation absolue est nulle. S'il penche en avant, la
+               charge quitte les jambes pour les lombaires.
+   Sens/plan : descente = excentrique, remontée = concentrique.
+               Plan sagittal.
+   ROM       : les DEUX genoux passent de 168° à 90°, simultanément
+               (vérifié aux deux positions). Le genou arrière descend
+               à 8,85 unités du sol — proche, sans jamais le toucher.
+               Le genou avant finit 2,8 unités DEVANT la cheville :
+               légèrement, ce qui est normal et recherché, pas la
+               caricature du genou qui part loin devant.
+   Agonistes : QUADRICEPS et GRAND FESSIER de la jambe avant. Le
+               fessier travaille PLUS qu'au squat, à cause de la
+               grande amplitude de hanche en position unilatérale.
+               S'y ajoutent les stabilisateurs de hanche, qui n'ont
+               pas de traduction graphique mais expliquent pourquoi
+               l'exercice est bien plus exigeant qu'il n'en a l'air.
+   Distinction : appui DISSOCIÉ, donc travail unilatéral et forte
+               demande d'équilibre. ≠ squat (pieds côte à côte,
+               bilatéral), ≠ presse (assis, guidé, aucun équilibre).
+   GÉOMÉTRIE (calculée) — chevilles ancrées Af(96,144) et
+   Ar(148,138) ; cuisse 26, tibia 26.
+   Le bassin est l'INTERSECTION des deux cercles de rayon |cheville-
+   hanche| : haut 51,72 -> H0(116.89,96.69) ; bas 36,77 ->
+   H1(119.04,115.34). Il descend de 18,65 presque à la verticale.
+   Genoux : avant (103.97,119.25)->(93.19,118.15) ;
+            arrière (130.27,118.98)->(122.19,141.15).
+   -> AVANT tibia −24,04°, cuisse +78,03° rel, tronc −53,98° rel.
+      ARRIÈRE tibia −53,96°, cuisse +77,97° rel.
+   ========================================================= */
+EXERCISE_MOTIONS["fentes-marchees"] = {
+  vb: "58 36 110 124",
+  dur: 4.2,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Fente : un pied devant, un pied derrière sur les orteils, le bassin descend en pliant les deux genoux jusqu'à 90°, buste vertical, puis remonte.",
+  fixe: `
+    <line class="mo-ground" x1="62" y1="150" x2="162" y2="150"/>
+    <!-- pied AVANT à plat, cheville ancrée -->
+    <line class="mo-limb" x1="88" y1="150" x2="106" y2="150"/>
+    <line class="mo-limb" x1="96" y1="144" x2="91" y2="150"/>
+    <circle class="mo-joint" cx="96" cy="144" r="2.8"/>
+    <!-- pied ARRIÈRE sur les orteils, talon décollé -->
+    <line class="mo-limb" x1="148" y1="138" x2="154" y2="150"/>
+    <circle class="mo-joint" cx="148" cy="138" r="2.8"/>`,
+  parts: [
+    {
+      /* JAMBE ARRIÈRE, enracinée à sa cheville. Dessinée en premier :
+         elle passe DERRIÈRE le corps. */
+      o: "148px 138px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-53.96deg)"], [52, "rotate(-53.96deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-body" x1="148" y1="138" x2="130.27" y2="118.98"/>`,
+      children: [
+        { o: "130.27px 118.98px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(77.97deg)"], [52, "rotate(77.97deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="130.27" cy="118.98" r="2.6"/>
+            <line class="mo-body" x1="130.27" y1="118.98" x2="116.89" y2="96.69"/>` }
+      ]
+    },
+    {
+      /* JAMBE AVANT, enracinée à sa cheville. Elle porte le tronc. */
+      o: "96px 144px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-24.04deg)"], [52, "rotate(-24.04deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="96" y1="144" x2="103.97" y2="119.25"/>`,
+      children: [
+        {
+          o: "103.97px 119.25px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(78.03deg)"], [52, "rotate(78.03deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="107.4" cy="106.23" rx="3.4" ry="9" transform="rotate(29.8 107.4 106.23)"/>
+            <circle cx="120.5" cy="99" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="103.97" cy="119.25" r="2.8"/>
+            <line class="mo-limb" x1="103.97" y1="119.25" x2="116.89" y2="96.69"/>`,
+          children: [
+            {
+              /* TRONC : contre-rotation exacte -> rotation absolue NULLE.
+                 Le buste ne penche jamais, il ne fait que descendre. */
+              o: "116.89px 96.69px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-53.98deg)"], [52, "rotate(-53.98deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="116.89" cy="96.69" r="2.8"/>
+                <line class="mo-body" x1="116.89" y1="96.69" x2="116.89" y2="62.69"/>
+                <line class="mo-limb" x1="116.89" y1="62.69" x2="111" y2="78"/>
+                <line class="mo-limb" x1="111" y1="78" x2="107" y2="93"/>
+                <line class="mo-bar2" x1="101" y1="93" x2="113" y2="93"/>
+                <rect class="mo-mass" x="98" y="88" width="6" height="10" rx="2"/>
+                <rect class="mo-mass" x="110" y="88" width="6" height="10" rx="2"/>
+                <circle class="mo-head" cx="115" cy="50" r="9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M68 122 L68 86 M63 94 L68 86 L73 94"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M68 86 L68 122 M63 114 L68 122 L73 114"/>` }
+  ]
+};
+
+/* =========================================================
+   29. LEG EXTENSION  (leg-extension)
+   -----------------------------------------------------------
+   Position  : ASSIS, dos plaqué au dossier, CUISSES posées sur
+               l'assise, chevilles derrière le boudin rembourré,
+               mains sur les poignées latérales.
+   Matériel  : machine à bras de levier — un axe pivotant portant un
+               boudin, relié à la colonne de charges.
+   Mobiles   : le GENOU, et lui seul. C'est l'isolation la plus pure
+               du quadriceps de toute la bibliothèque.
+   Fixes     : la HANCHE, la CUISSE plaquée sur l'assise, le dos, le
+               bassin. La cuisse ne bouge pas d'un degré, et c'est
+               pour cela qu'elle est dessinée dans les éléments
+               fixes, avec le quadriceps posé dessus.
+   RÉGLAGE CRITIQUE : l'AXE de la machine doit être ALIGNÉ avec
+               l'axe du GENOU. Mal réglé, le levier cisaille
+               l'articulation au lieu de la faire tourner. Le schéma
+               fait donc coïncider explicitement le pivot de la
+               machine et le centre du genou, et le signale par un
+               repère : c'est le seul exercice où un réglage, et non
+               un geste, est le point technique principal.
+   Sens/plan : extension du genou = concentrique ; retour = 
+               excentrique. Le cycle commence jambes fléchies. Plan
+               sagittal.
+   ROM       : genou de 90° à 175° (vérifié aux deux positions). On
+               ne verrouille pas brutalement en haut, d'où 175°.
+   Agonistes : QUADRICEPS seul. Nuance qui explique la limite de
+               l'exercice : le DROIT FÉMORAL, seul des quatre chefs
+               à croiser la hanche, travaille ici en position
+               RACCOURCIE puisque la hanche est fléchie à 90°. Il
+               est donc moins efficace qu'au squat — l'isolation se
+               paie.
+   Distinction : UN SEUL segment mobile, une seule articulation, et
+               en chaîne OUVERTE — le pied ne pousse contre rien de
+               fixe, il déplace un levier. ≠ presse à cuisses
+               (chaîne fermée, deux articulations), ≠ squat.
+   GÉOMÉTRIE (calculée) — hanche H(112,106), cuisse HORIZONTALE de
+   26 -> genou/pivot K(86,106). Tibia 26.
+   Bas : pied F0(86,132), tibia vertical, genou 90,0°.
+   Haut : pied F1(60.10,103.73), genou 175,0°.
+   -> tibia +95,00°. La colonne de charges monte de 14 en
+   translation pendant le concentrique.
+   (Le câble reliant le levier à la colonne n'est pas dessiné : son
+   trajet passe derrière le bâti et l'ajouter masquerait le genou,
+   qui est le sujet du schéma.)
+   ========================================================= */
+EXERCISE_MOTIONS["leg-extension"] = {
+  vb: "42 48 118 102",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis dans la machine, chevilles derrière le boudin : les genoux se tendent jusqu'à l'extension complète, puis reviennent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="142" x2="154" y2="142"/>
+    <!-- bâti : assise, dossier, montants -->
+    <line class="mo-pad" x1="86" y1="110" x2="116" y2="110"/>
+    <line class="mo-pad" x1="117" y1="108" x2="129" y2="76"/>
+    <line class="mo-gear" x1="90" y1="112" x2="90" y2="142"/>
+    <line class="mo-gear" x1="120" y1="112" x2="120" y2="142"/>
+    <!-- colonne de charges : rail de guidage -->
+    <line class="mo-gear" x1="141" y1="80" x2="141" y2="142"/>
+    <!-- CORPS : tout le haut est immobile, cuisse comprise -->
+    <circle class="mo-head" cx="128" cy="62" r="8"/>
+    <line class="mo-body" x1="112" y1="106" x2="123" y2="76"/>
+    <line class="mo-limb" x1="123" y1="76" x2="116" y2="96"/>
+    <line class="mo-limb" x1="112" y1="106" x2="86" y2="106"/>
+    <circle class="mo-joint" cx="112" cy="106" r="2.8"/>
+    <!-- AXE DE LA MACHINE CONFONDU AVEC L'AXE DU GENOU : le réglage
+         qui conditionne tout l'exercice. -->
+    <circle class="mo-pulley" cx="86" cy="106" r="4.5"/>
+    <line class="mo-rom" x1="86" y1="92" x2="86" y2="120"/>`,
+  muscles: [
+    { nom: "Quadriceps (isolation)",
+      svg: `<ellipse cx="99" cy="102" rx="10" ry="3.4"/>` }
+  ],
+  parts: [
+    {
+      /* COLONNE DE CHARGES : translation verticale pure, elle monte
+         quand le levier se lève. */
+      k: [[0, "translate(0px,0px)"], [32, "translate(0px,-14px)"],
+          [40, "translate(0px,-14px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <rect class="mo-mass" x="134" y="104" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="112" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="120" width="14" height="6" rx="1.5"/>`
+    },
+    {
+      /* TIBIA + BOUDIN : rotation autour du PIVOT, qui est aussi le
+         genou. +95° tend le genou de 90° à 175°. Le levier de la
+         machine est dessiné sous le tibia, ils tournent ensemble —
+         c'est précisément ce que garantit un axe bien réglé. */
+      o: "86px 106px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(95deg)"], [40, "rotate(95deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-gear" x1="86" y1="106" x2="86" y2="132"/>
+        <line class="mo-limb" x1="86" y1="106" x2="86" y2="132"/>
+        <circle class="mo-mass" cx="86" cy="132" r="6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M52 130 L52 96 M47 104 L52 96 L57 104"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M52 96 L52 130 M47 122 L52 130 L57 122"/>` }
+  ]
+};
