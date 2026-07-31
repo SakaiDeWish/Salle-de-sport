@@ -2037,3 +2037,128 @@ EXERCISE_MOTIONS["barre-au-front"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M104 60 L104 96 M99 88 L104 96 L109 88"/>` }
   ]
 };
+
+/* =========================================================
+   24. DIPS ENTRE BANCS  (dips-banc)
+   -----------------------------------------------------------
+   Position  : DOS à un banc, mains posées sur son bord de part et
+               d'autre des hanches, doigts vers l'avant, bassin
+               DEVANT le banc, jambes tendues posées sur un second
+               banc en face — d'où « entre bancs ».
+   Matériel  : deux bancs (ou un banc et le sol pour la version
+               plus facile, pieds au sol genoux fléchis).
+   Mobiles   : le COUDE (flexion à la descente, extension à la
+               remontée) et, en second, l'ÉPAULE qui part en
+               extension. Le corps descend en bloc.
+   Fixes     : les MAINS sur le banc et les PIEDS sur l'autre banc.
+               C'est une DOUBLE CHAÎNE FERMÉE : les deux extrémités
+               sont ancrées et c'est le corps qui se déplace entre
+               elles. Le schéma est donc construit à l'envers d'un
+               mouvement classique — enraciné à la main d'un côté,
+               au pied de l'autre, le bassin étant le point de
+               rencontre des deux chaînes.
+   Sens/plan : descente = excentrique, remontée = concentrique.
+               Le cycle commence bras tendus. Plan sagittal.
+   ROM       : coude de ~174° à 90° EXACTEMENT, pas plus bas. Au-delà
+               l'épaule part en hyper-extension et toute la contrainte
+               se reporte sur l'articulation gléno-humérale et la
+               coiffe des rotateurs : c'est le point de sécurité de
+               cet exercice, et la raison pour laquelle le schéma
+               s'arrête net à l'horizontale du bras.
+   Agonistes : TRICEPS en premier, deltoïde antérieur et bas du
+               pectoral en assistance.
+   Distinction : mains DERRIÈRE le corps, buste vertical, corps qui
+               descend devant l'appui. ≠ dips aux barres parallèles
+               (mains sur les côtés, buste penché en avant, corps
+               entre les barres), ≠ barre au front (allongé).
+   GÉOMÉTRIE (calculée) — main ancrée H(66,96), bras et avant-bras
+   L=20. Haut : coude(68,76), épaule(72.2,56.4), coude à 173,6°.
+   Bas  : épaule descendue de 13 unités à (75.67,69.42) ;
+   loi des cosinus -> coude(57.55,77.87), pointant vers l'ARRIÈRE,
+   angle vérifié à 90,0°.
+   -> avant-bras −30,7°, bras +83,6° relatif, buste −52,9° relatif
+   (soit une rotation absolue nulle : le tronc reste vertical et ne
+   fait que descendre, ce qui est exactement le mouvement réel).
+   JAMBES : pied ancré F(125,98), tibia 24, cuisse 26. Le genou et la
+   cuisse sont recalculés pour que la hanche rejoigne exactement
+   celle du tronc aux deux positions -> tibia −1,42°, cuisse −27,37° (jambes quasi tendues).
+   ========================================================= */
+EXERCISE_MOTIONS["dips-banc"] = {
+  vb: "32 30 136 128",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Mains sur le bord d'un banc derrière soi, jambes tendues sur un second banc : le corps descend en fléchissant les coudes vers l'arrière jusqu'à 90°, puis remonte.",
+  fixe: `
+    <line class="mo-ground" x1="36" y1="152" x2="164" y2="152"/>
+    <!-- banc des MAINS (derrière) -->
+    <line class="mo-pad" x1="36" y1="100" x2="72" y2="100"/>
+    <line class="mo-gear" x1="44" y1="102" x2="44" y2="152"/>
+    <line class="mo-gear" x1="68" y1="102" x2="68" y2="152"/>
+    <!-- banc des PIEDS (devant) -->
+    <line class="mo-pad" x1="112" y1="100" x2="156" y2="100"/>
+    <line class="mo-gear" x1="120" y1="102" x2="120" y2="152"/>
+    <line class="mo-gear" x1="150" y1="102" x2="150" y2="152"/>`,
+  parts: [
+    {
+      /* CHAÎNE DES JAMBES, enracinée au PIED (124, 98). */
+      o: "125px 98px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-1.42deg)"], [52, "rotate(-1.42deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <circle class="mo-hand" cx="125" cy="98" r="3"/>
+        <line class="mo-body" x1="125" y1="98" x2="102" y2="91.14"/>`,
+      children: [
+        { /* CUISSE : rejoint la hanche du tronc, calculée pour coïncider. */
+          o: "102px 91.14px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(-27.37deg)"], [52, "rotate(-27.37deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="102" cy="91.14" r="2.4"/>
+            <line class="mo-body" x1="102" y1="91.14" x2="76" y2="92"/>` }
+      ]
+    },
+    {
+      /* AVANT-BRAS, enraciné à la MAIN (66, 96) qui ne quitte pas le banc.
+         childrenFirst : le bras au premier plan se dessine PAR-DESSUS le
+         tronc, sinon le buste le recouvrirait. */
+      o: "66px 96px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-30.7deg)"], [52, "rotate(-30.7deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="66" cy="96" r="3.4"/>
+        <line class="mo-limb" x1="66" y1="96" x2="68" y2="76"/>
+        <circle class="mo-joint" cx="68" cy="76" r="2.6"/>`,
+      children: [
+        {
+          /* BRAS : flexion du coude. C'est lui qui porte le triceps. */
+          o: "68px 76px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(83.6deg)"], [52, "rotate(83.6deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          childrenFirst: true,
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="67.2" cy="65.6" rx="3" ry="7.5" transform="rotate(12 67.2 65.6)"/>`,
+          svg: `<line class="mo-limb" x1="68" y1="76" x2="72.2" y2="56.4"/>`,
+          children: [
+            {
+              /* TRONC : contre-rotation exacte -> rotation absolue nulle.
+                 Le buste reste vertical et ne fait que descendre. */
+              o: "72.2px 56.4px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-52.9deg)"], [52, "rotate(-52.9deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Deltoïde antérieur",
+              muscle: `<circle cx="72.2" cy="56.4" r="4"/>`,
+              svg: `
+                <circle class="mo-head" cx="70" cy="42" r="8"/>
+                <line class="mo-body" x1="72.2" y1="56.4" x2="76" y2="92"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M94 74 L94 44 M89 52 L94 44 L99 52"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M94 44 L94 74 M89 66 L94 74 L99 66"/>` }
+  ]
+};
