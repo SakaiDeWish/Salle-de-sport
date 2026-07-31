@@ -2929,3 +2929,139 @@ EXERCISE_MOTIONS["squat-poids-du-corps"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M156 64 L156 104 M151 96 L156 104 L161 96"/>` }
   ]
 };
+
+/* =========================================================
+   32. SOULEVÉ DE TERRE ROUMAIN  (souleve-terre-roumain)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre en pronation devant les cuisses, bras
+               tendus, pieds largeur de bassin, genoux LÉGÈREMENT
+               fléchis — et qui le restent.
+   Matériel  : barre.
+   Mobiles   : la HANCHE, essentiellement seule. C'est une CHARNIÈRE
+               DE HANCHE (hip hinge), pas un mouvement de genou.
+   Fixes     : le GENOU — son angle est CONSTANT, vérifié à 165,67°
+               aux deux positions, soit une rotation relative de la
+               cuisse de 0,00°. C'est la signature du mouvement, et
+               le schéma la rend littérale : la cuisse ne tourne pas
+               d'un degré par rapport au tibia. Le RACHIS reste
+               gainé et neutre, dos plat.
+   Sens/plan : la barre descend le long des cuisses par flexion de
+               hanche = excentrique ; l'extension de hanche =
+               concentrique. Le cycle commence DEBOUT. Plan sagittal.
+   ROM       : hanche de 171° à 100°. Le bassin RECULE de 22,6
+               unités : c'est ce recul, et non une flexion de genou,
+               qui fait descendre la barre. La barre arrive à hauteur
+               de genou. Le critère d'arrêt réel n'est d'ailleurs pas
+               une profondeur mais la perte de la neutralité
+               lombaire — dès que le dos ne peut plus rester plat,
+               on remonte.
+   CONTRAINTE MAÎTRESSE : la barre pend à la verticale sous les
+               épaules et reste à l'APLOMB DU MILIEU DU PIED. C'est
+               cette contrainte qui a déterminé l'inclinaison du
+               tronc (43,79°), exactement comme au squat barre — et
+               non une valeur choisie.
+               Elle a au passage corrigé une idée reçue que j'avais :
+               on dit « la barre reste collée aux jambes », et j'ai
+               d'abord voulu la faire toucher le tibia en bas. C'est
+               géométriquement IMPOSSIBLE : un bras qui pend à la
+               verticale ne peut pas ramener la barre contre un
+               tibia quasi vertical quand le buste est penché. La
+               barre longe les CUISSES puis descend à l'aplomb. Le
+               schéma montre la géométrie réelle, pas la formule.
+   Agonistes : ISCHIO-JAMBIERS avant tout — mis en étirement puis
+               contractés —, GRAND FESSIER, et érecteurs du rachis
+               en isométrie pour tenir le dos plat.
+   Distinction : hanche dominante, genou quasi fixe, départ DEBOUT.
+               ≠ soulevé de terre classique (départ au SOL, genou ET
+               hanche travaillent ensemble), ≠ squat (genou dominant).
+   GÉOMÉTRIE (calculée) — cheville A(120,138), milieu du pied à
+   x=116, tibia 26, cuisse 26, tronc 32, bras 39.
+   Haut : genou(118,112), hanche(122.5,86.3), épaule(123,54.3),
+          barre(116,93.3).
+   Bas  : tibia incliné de 22° vers l'arrière -> genou(129.74,113.89) ;
+          angle de genou conservé -> hanche(145.14,92.95) ;
+          inclinaison du tronc RÉSOLUE par l'aplomb -> 43,79°,
+          épaule(123,69.85), barre(116,108.85).
+   -> tibia +26,40°, cuisse 0,00° relatif, tronc −71,08° relatif,
+      bras +44,68° relatif (contre-rotation : il pend toujours à la
+      verticale, comme l'impose la gravité).
+   Le bras est dessiné 7 unités devant la ligne du tronc : une
+   silhouette filaire n'a pas d'épaisseur de corps, et sans ce décalage
+   bras et buste se confondraient.
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-terre-roumain"] = {
+  vb: "98 28 76 130",
+  dur: 4.2,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Debout, barre devant les cuisses : le bassin recule et le buste s'incline, genoux fixes, jusqu'à ce que la barre arrive au genou, puis extension de hanche pour se redresser.",
+  fixe: `
+    <line class="mo-ground" x1="102" y1="150" x2="170" y2="150"/>
+    <line class="mo-limb" x1="105" y1="150" x2="127" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="111" y2="150"/>
+    <circle class="mo-joint" cx="120" cy="138" r="2.8"/>
+    <!-- APLOMB DU MILIEU DU PIED : la barre ne le quitte jamais.
+         C'est cette contrainte qui fixe l'inclinaison du buste. -->
+    <line class="mo-rom" x1="116" y1="80" x2="116" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : +26,40°. Le genou RECULE — c'est ce recul qui fait
+         descendre la barre, pas une flexion. */
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(26.4deg)"], [52, "rotate(26.4deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="120" y1="138" x2="118" y2="112"/>`,
+      children: [
+        {
+          /* CUISSE : rotation relative NULLE. L'angle du genou est
+             rigoureusement conservé, signature du roumain. */
+          o: "118px 112px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(0deg)"], [52, "rotate(0deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Ischio-jambiers", "Grand fessier"],
+          muscle: `
+            <ellipse cx="123.7" cy="99.75" rx="3.4" ry="10" transform="rotate(9.9 123.7 99.75)"/>
+            <circle cx="126" cy="89" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="118" cy="112" r="2.8"/>
+            <line class="mo-limb" x1="118" y1="112" x2="122.5" y2="86.3"/>`,
+          children: [
+            {
+              /* TRONC : −71,08° relatif, soit 43,79° d'inclinaison
+                 absolue. Segment RIGIDE : le dos bascule à la hanche,
+                 il ne s'arrondit pas. */
+              o: "122.5px 86.3px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-71.08deg)"], [52, "rotate(-71.08deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis (gainage)",
+              muscle: `<ellipse cx="125.25" cy="70" rx="2.8" ry="11" transform="rotate(1 125.25 70)"/>`,
+              svg: `
+                <circle class="mo-joint" cx="122.5" cy="86.3" r="2.8"/>
+                <line class="mo-body" x1="122.5" y1="86.3" x2="123" y2="54.3"/>
+                <circle class="mo-head" cx="119" cy="40" r="9"/>`,
+              children: [
+                {
+                  /* BRAS + BARRE : contre-rotation de +44,68°, donc le
+                     bras reste VERTICAL en absolu — c'est la gravité qui
+                     l'impose, il ne peut pas en être autrement. La barre
+                     descend ainsi tout droit sur l'aplomb. */
+                  o: "123px 54.3px",
+                  k: [[0, "rotate(0deg)"], [45, "rotate(44.68deg)"], [52, "rotate(44.68deg)"],
+                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="123" y1="55" x2="116" y2="56"/>
+                    <line class="mo-limb" x1="116" y1="56" x2="116" y2="93.3"/>
+                    <circle class="mo-plate-o" cx="116" cy="93.3" r="9"/>
+                    <circle class="mo-hub" cx="116" cy="93.3" r="2.6"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M160 112 L160 74 M155 82 L160 74 L165 82"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M160 74 L160 112 M155 104 L160 112 L165 104"/>` }
+  ]
+};
