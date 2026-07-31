@@ -2162,3 +2162,86 @@ EXERCISE_MOTIONS["dips-banc"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M94 44 L94 74 M89 66 L94 74 L99 66"/>` }
   ]
 };
+
+/* =========================================================
+   25. EXTENSION NUQUE HALTÈRE  (extension-nuque-haltere)
+   -----------------------------------------------------------
+   Position  : DEBOUT (ou assis), buste droit et gainé, un haltère
+               tenu à DEUX MAINS au-dessus de la tête, bras
+               VERTICAUX, coudes serrés pointant vers le plafond.
+   Matériel  : un haltère, saisi par le disque supérieur.
+   Mobiles   : le COUDE.
+   Fixes     : l'ÉPAULE, maintenue en FLEXION MAXIMALE (~180°, bras
+               contre les oreilles). Les coudes ne s'écartent pas
+               vers l'extérieur et ne partent pas vers l'avant :
+               c'est ce qui garde la charge sur le triceps.
+   Sens/plan : l'haltère descend DERRIÈRE LA NUQUE par flexion du
+               coude = excentrique ; l'extension qui le renvoie
+               au-dessus de la tête = concentrique. Le cycle commence
+               bras tendus. Plan sagittal.
+   ROM       : coude de ~175° à ~45°. Ici l'amplitude est RÉELLEMENT
+               grande, contrairement à la barre au front où la charge
+               s'arrête au front : l'haltère descend derrière la
+               nuque, donc bien plus bas, et referme beaucoup le
+               coude.
+   Agonistes : TRICEPS, LONGUE PORTION avant tout. L'épaule étant
+               fléchie à 180°, cette portion — la seule des trois à
+               croiser l'épaule — est en ÉTIREMENT MAXIMAL, le plus
+               grand qu'elle puisse atteindre. D'où la hiérarchie des
+               trois exercices de triceps déjà traités, du moins au
+               plus étiré : poulie (épaule neutre) < barre au front
+               (épaule à 90°) < nuque (épaule à 180°).
+   Distinction : bras VERTICAUX au-dessus de la tête, charge DERRIÈRE
+               la nuque. ≠ barre au front (allongé, épaule à 90°,
+               charge vers le front), ≠ extension poulie (debout,
+               épaule neutre, charge devant en bas).
+   GÉOMÉTRIE (calculée) — épaule S(126,64), bras L1=22 vertical ->
+   coude E(126,42) ; avant-bras L2=22.
+   Haut : main H0(124.08,20.08), coude 175°.
+   Bas  : main H1(141.56,57.56) derrière la nuque, coude 45°.
+   -> avant-bras +140°, la main passant PAR-DESSUS la tête avant de
+   descendre en arrière.
+   ========================================================= */
+EXERCISE_MOTIONS["extension-nuque-haltere"] = {
+  vb: "86 2 92 154",
+  dur: 3.7,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Debout, haltère tenu à deux mains au-dessus de la tête : il descend derrière la nuque par flexion des coudes, puis remonte par extension des triceps.",
+  fixe: `
+    <line class="mo-ground" x1="90" y1="152" x2="170" y2="152"/>
+    <!-- corps debout et gainé -->
+    <circle class="mo-head" cx="114" cy="46" r="9"/>
+    <line class="mo-body" x1="126" y1="64" x2="129" y2="110"/>
+    <line class="mo-body" x1="129" y1="110" x2="125" y2="152"/>
+    <line class="mo-body" x1="129" y1="110" x2="134" y2="152"/>
+    <!-- BRAS : dans les éléments FIXES, vertical contre l'oreille —
+         l'épaule reste en flexion maximale pendant toute la série. -->
+    <line class="mo-limb" x1="126" y1="64" x2="126" y2="42"/>
+    <circle class="mo-joint" cx="126" cy="42" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M124.08 20.08 A22 22 0 0 1 141.56 57.56"/>`,
+  muscles: [
+    { nom: "Triceps (longue portion)",
+      svg: `<ellipse cx="128.4" cy="53" rx="3.2" ry="8"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (126, 42).
+         +140° ferme le coude de 175° à 45°. L'haltère est dessiné DANS
+         L'AXE de l'avant-bras : les deux mains tiennent le disque, les
+         masses dépassent de part et d'autre de la prise. */
+      o: "126px 42px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(140deg)"], [52, "rotate(140deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="126" y1="42" x2="124.08" y2="20.08"/>
+        <line class="mo-bar2" x1="124.78" y1="28.05" x2="123.38" y2="12.11"/>
+        <rect class="mo-mass" x="117.78" y="25.05" width="14" height="6" rx="2" transform="rotate(-5 124.78 28.05)"/>
+        <rect class="mo-mass" x="116.38" y="9.11" width="14" height="6" rx="2" transform="rotate(-5 123.38 12.11)"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M160 62 L160 26 M155 34 L160 26 L165 34"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M160 26 L160 62 M155 54 L160 62 L165 54"/>` }
+  ]
+};
