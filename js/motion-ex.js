@@ -3065,3 +3065,124 @@ EXERCISE_MOTIONS["souleve-terre-roumain"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M160 74 L160 112 M155 104 L160 112 L165 104"/>` }
   ]
 };
+
+/* =========================================================
+   33. HIP THRUST  (hip-thrust)
+   -----------------------------------------------------------
+   Position  : POINTE DES OMOPLATES appuyée sur le bord d'un banc,
+               pieds à plat au sol, barre posée sur le pli de la
+               hanche (avec une protection).
+   Matériel  : barre + banc.
+   Mobiles   : la HANCHE (extension), le genou suivant.
+   Fixes     : les PIEDS au sol et le POINT D'APPUI DES OMOPLATES
+               sur le banc. Double appui : le corps pivote entre les
+               deux, et le schéma est construit exactement ainsi —
+               chaîne enracinée au contact d'omoplate, cheville
+               vérifiée immobile aux deux positions.
+   LA TÊTE  : elle reçoit une CONTRE-ROTATION exacte de −58°, donc
+               elle ne bouge pas alors que le buste tourne. Ce n'est
+               pas une commodité de dessin : le menton rentré et le
+               regard vers l'avant sont LA consigne de sécurité de
+               l'exercice, c'est ce qui empêche l'hyperextension
+               cervicale et lombaire. Une tête qui suivrait
+               passivement le buste montrerait la faute.
+   Sens/plan : montée du bassin = concentrique ; descente =
+               excentrique. Le cycle commence EN BAS. Plan sagittal.
+   ROM       : hanche de 93,2° à 180,0° — exactement 180°, vérifié.
+               En haut, épaules, hanches et genoux forment une LIGNE
+               DROITE, et pas un degré de plus : monter plus haut ce
+               n'est pas contracter le fessier, c'est cambrer les
+               lombaires. Le bassin s'élève de 23,4 unités ; le genou
+               passe de 126,6° à 102,0°, les tibias finissant
+               verticaux.
+   Agonistes : GRAND FESSIER avant tout, ischio-jambiers en
+               assistance.
+   CE QUI REND CET EXERCICE UNIQUE : c'est le seul de la
+               bibliothèque où la résistance est maximale en position
+               CONTRACTÉE. Barre à l'aplomb au sommet, le bras de
+               levier sur la hanche est à son maximum précisément
+               quand le fessier est le plus raccourci. C'est
+               l'exact contraire du soulevé de terre roumain, qui le
+               charge en position ÉTIRÉE. Les deux schémas se lisent
+               donc en miroir.
+   Distinction : appui haut du dos sur un banc, charge sur le pli de
+               hanche. ≠ pont fessier (au sol, sans banc, amplitude
+               réduite), ≠ roumain (fessier en étirement).
+   GÉOMÉTRIE (calculée) — omoplates SC(152.7,101.94) et cheville
+   A(96,140) toutes deux FIXES ; tronc 32, cuisse 26, tibia 26.
+   Bas  : hanche(141.76,132.01), genou(116.87,124.49) — le genou est
+          bien PLUS HAUT que la hanche.
+   Haut : hanche(121.43,108.59), genou(96,114), tibia vertical.
+   -> tronc +57,99°, cuisse −86,80° rel, tibia −24,56° rel,
+      tête −57,99° rel (contre-rotation).
+   ========================================================= */
+EXERCISE_MOTIONS["hip-thrust"] = {
+  vb: "72 82 124 74",
+  dur: 4.0,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Omoplates sur un banc, barre sur la hanche : le bassin monte jusqu'à l'alignement épaules-hanches-genoux, puis redescend.",
+  fixe: `
+    <line class="mo-ground" x1="80" y1="150" x2="192" y2="150"/>
+    <!-- banc : seul le haut du dos y touche -->
+    <line class="mo-pad" x1="150" y1="104" x2="188" y2="104"/>
+    <line class="mo-gear" x1="158" y1="106" x2="158" y2="150"/>
+    <line class="mo-gear" x1="182" y1="106" x2="182" y2="150"/>
+    <!-- pied ancré au sol -->
+    <line class="mo-limb" x1="86" y1="150" x2="104" y2="150"/>
+    <line class="mo-limb" x1="96" y1="140" x2="89" y2="150"/>
+    <circle class="mo-joint" cx="96" cy="140" r="2.8"/>
+    <!-- point d'appui des omoplates : l'autre ancrage -->
+    <circle class="mo-joint" cx="152.7" cy="101.94" r="3"/>`,
+  parts: [
+    {
+      /* TRONC : rotation autour du CONTACT D'OMOPLATE. +57,99°. */
+      o: "152.7px 101.94px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(57.99deg)"], [40, "rotate(57.99deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-body" x1="152.7" y1="101.94" x2="141.76" y2="132.01"/>`,
+      children: [
+        {
+          /* TÊTE : contre-rotation exacte -> elle ne bouge pas.
+             Menton rentré, regard vers l'avant. */
+          o: "152.7px 101.94px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(-57.99deg)"], [40, "rotate(-57.99deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-body" x1="152.7" y1="101.94" x2="160" y2="97"/>
+            <circle class="mo-head" cx="166" cy="93" r="8"/>`
+        },
+        {
+          /* CUISSE : −86,80° relatif. Elle porte la barre, posée sur
+             le pli de la hanche. */
+          o: "141.76px 132.01px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(-86.8deg)"], [40, "rotate(-86.8deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="139" cy="127" r="5"/>
+            <ellipse cx="128.3" cy="131.6" rx="3" ry="9" transform="rotate(-73.3 128.3 131.6)"/>`,
+          svg: `
+            <line class="mo-limb" x1="141.76" y1="132.01" x2="116.87" y2="124.49"/>
+            <circle class="mo-plate-o" cx="141.76" cy="132.01" r="11"/>
+            <circle class="mo-hub" cx="141.76" cy="132.01" r="2.6"/>`,
+          children: [
+            {
+              /* TIBIA : −24,56° relatif. Son extrémité retombe
+                 exactement sur la cheville ancrée, aux deux positions. */
+              o: "116.87px 124.49px",
+              k: [[0, "rotate(0deg)"], [32, "rotate(-24.56deg)"], [40, "rotate(-24.56deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="116.87" cy="124.49" r="2.8"/>
+                <line class="mo-limb" x1="116.87" y1="124.49" x2="96" y2="140"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M80 138 L80 106 M75 114 L80 106 L85 114"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M80 106 L80 138 M75 130 L80 138 L85 130"/>` }
+  ]
+};
