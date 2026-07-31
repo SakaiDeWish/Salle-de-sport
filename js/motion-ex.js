@@ -591,7 +591,7 @@ EXERCISE_MOTIONS["developpe-couche-halteres"] = {
                lisent pas de profil.
    ========================================================= */
 EXERCISE_MOTIONS["tractions"] = {
-  vb: "34 4 172 148",
+  vb: "34 -2 172 154",
   dur: 4.2,
   phases: { con: [0, 32], ecc: [40, 88] },
   alt: "Suspendu à une barre fixe en prise pronation large, le corps monte jusqu'au menton au-dessus de la barre puis redescend lentement.",
@@ -988,7 +988,7 @@ EXERCISE_MOTIONS["rowing-haltere"] = {
                bien à la verticale.
    ========================================================= */
 EXERCISE_MOTIONS["souleve-de-terre"] = {
-  vb: "56 34 132 122",
+  vb: "56 26 132 130",
   dur: 4.2,
   phases: { con: [0, 36], ecc: [46, 90] },
   alt: "Barre au sol contre les tibias : extension simultanée des genoux et des hanches pour se redresser, dos plat et bras tendus, puis retour au sol.",
@@ -1177,49 +1177,62 @@ EXERCISE_MOTIONS["rowing-t-bar"] = {
    devant le visage puis son verrouillage au-dessus des oreilles.
    ========================================================= */
 EXERCISE_MOTIONS["developpe-militaire"] = {
-  vb: "62 8 122 148",
+  vb: "80 10 122 148",
   dur: 3.9,
   phases: { con: [0, 36], ecc: [44, 90] },
   alt: "Debout, barre aux clavicules : poussée verticale au-dessus de la tête jusqu'aux bras tendus, sans impulsion des jambes, puis descente contrôlée.",
+  /* GÉOMÉTRIE (calculée, pas estimée) — épaule S(118,66), bras L1=20,
+     avant-bras L2=22.
+     RACK : la barre repose DEVANT les clavicules, main H0(102,70) ; d=16,5.
+       Loi des cosinus -> le coude tombe SOUS l'épaule, E0(117.1,86.0),
+       coude fermé à ~46° : c'est la valeur réelle du front rack, la main
+       étant très proche de l'épaule.
+     VERROUILLAGE : bras tendu à l'aplomb du pied, H1(120,24.1),
+       E1(118.95,46.0).
+     -> bras +180,2° (le coude passe par l'avant), avant-bras −134,1°
+        relatif. La tête est remontée et reculée pour que le disque passe
+        DEVANT le menton sans jamais le recouvrir. */
   fixe: `
     <line class="mo-ground" x1="86" y1="150" x2="164" y2="150"/>
     <!-- corps debout, gainé, immobile -->
-    <circle class="mo-head" cx="111" cy="54" r="9"/>
+    <circle class="mo-head" cx="110" cy="47" r="9"/>
     <line class="mo-body" x1="118" y1="66" x2="120" y2="110"/>
     <line class="mo-body" x1="120" y1="110" x2="116" y2="150"/>
     <line class="mo-body" x1="120" y1="110" x2="126" y2="150"/>
     <!-- aplomb : la barre finit au-dessus du milieu du pied -->
-    <line class="mo-rom" x1="120" y1="28" x2="120" y2="66"/>`,
+    <line class="mo-rom" x1="120" y1="20" x2="120" y2="66"/>`,
   muscles: [
     { nom: "Deltoïde antérieur et moyen",
       svg: `<circle cx="118" cy="66" r="5.5"/>` },
     { nom: "Trapèze supérieur",
-      svg: `<ellipse cx="115" cy="60" rx="6" ry="3.2" transform="rotate(-30 115 60)"/>` }
+      svg: `<ellipse cx="114" cy="59" rx="6" ry="3.2" transform="rotate(-30 114 59)"/>` }
   ],
   parts: [
     {
-      /* BRAS : rotation autour de l'ÉPAULE (118, 66). +133,1° fait passer le
-         coude de bas-et-en-avant (rack) à quasi vertical (verrouillage). */
+      /* BRAS : rotation autour de l'ÉPAULE (118, 66). +180,2° : le coude
+         part de sous l'épaule (rack), passe par l'avant, et finit à la
+         verticale au-dessus — c'est la flexion d'épaule complète du press. */
       o: "118px 66px",
-      k: [[0, "rotate(0deg)"], [36, "rotate(144deg)"], [44, "rotate(144deg)"],
+      k: [[0, "rotate(0deg)"], [36, "rotate(180.2deg)"], [44, "rotate(180.2deg)"],
           [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
       muscleNom: "Triceps brachial",
-      muscle: `<ellipse cx="113.6" cy="75" rx="3.2" ry="7.5" transform="rotate(-26 113.6 75)"/>`,
+      muscle: `<ellipse cx="117.5" cy="76" rx="3.2" ry="7.5"/>`,
       svg: `
-        <line class="mo-limb" x1="118" y1="66" x2="109.2" y2="84"/>
-        <circle class="mo-joint" cx="109.2" cy="84" r="2.6"/>`,
+        <line class="mo-limb" x1="118" y1="66" x2="117.1" y2="86"/>
+        <circle class="mo-joint" cx="117.1" cy="86" r="2.6"/>`,
       children: [
         {
-          /* AVANT-BRAS + BARRE : −118,6° relatif. En bas l'avant-bras est
-             VERTICAL sous la barre (l'alignement poignet-coude du rack) ;
-             en haut la barre se verrouille à l'aplomb du pied. */
-          o: "109.2px 84px",
-          k: [[0, "rotate(0deg)"], [36, "rotate(-104.8deg)"], [44, "rotate(-104.8deg)"],
+          /* AVANT-BRAS + BARRE : −134,1° relatif. En bas l'avant-bras monte
+             en oblique du coude vers la barre posée sur les clavicules ;
+             en haut il s'aligne sur le bras, coude verrouillé, barre à
+             l'aplomb du milieu du pied. */
+          o: "117.1px 86px",
+          k: [[0, "rotate(0deg)"], [36, "rotate(-134.1deg)"], [44, "rotate(-134.1deg)"],
               [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
           svg: `
-            <line class="mo-limb" x1="109.2" y1="84" x2="100" y2="64"/>
-            <circle class="mo-plate-o" cx="100" cy="64" r="9"/>
-            <circle class="mo-hub" cx="100" cy="64" r="2.6"/>`
+            <line class="mo-limb" x1="117.1" y1="86" x2="102" y2="70"/>
+            <circle class="mo-plate-o" cx="102" cy="70" r="7.5"/>
+            <circle class="mo-hub" cx="102" cy="70" r="2.6"/>`
         }
       ]
     }
@@ -1544,5 +1557,217 @@ EXERCISE_MOTIONS["face-pull"] = {
   arrows: [
     { phase: "con", svg: `<path class="mo-arr" d="M70 30 L62 58 M62 49 L62 58 L70 54"/>` },
     { phase: "ecc", svg: `<path class="mo-arr" d="M62 58 L70 30 M70 39 L70 30 L62 34"/>` }
+  ]
+};
+
+/* =========================================================
+   18. CURL BICEPS À LA BARRE  (curl-barre)
+   -----------------------------------------------------------
+   Position  : DEBOUT, pieds largeur de bassin, buste droit et
+               gainé, COUDES COLLÉS au buste, bras le long du
+               corps, barre tenue en supination.
+   Matériel  : barre droite ou EZ, prise supination largeur
+               d'épaules. Vue de profil : on voit le disque.
+   Mobiles   : le COUDE, et lui seul (flexion).
+   Fixes     : l'ÉPAULE — le bras ne bouge pas d'un degré, c'est
+               LE point technique : si le coude avance, l'épaule
+               prend le travail ; le rachis (aucun balancement du
+               buste, l'erreur classique), le bassin, les jambes.
+   Sens/plan : flexion du coude pour amener la barre vers les
+               épaules = concentrique ; descente contrôlée =
+               excentrique. Plan sagittal.
+   ROM       : coude de ~172° (bras tendus) à ~45°. On ne monte
+               PAS plus haut : au-delà, l'épaule prend le relais
+               et la tension quitte le biceps.
+   Agonistes : biceps brachial, brachial antérieur, brachio-radial.
+   Distinction : DEBOUT coudes libres le long du corps — ≠ curl
+               au pupitre (bras posé sur un plan incliné, épaule
+               en flexion), ≠ curl incliné (épaule en extension,
+               bras derrière le corps). Et BARRE : les deux mains
+               sont liées, il n'y a pas d'alternance.
+   Le bras est dessiné dans les éléments FIXES : c'est la
+   manière la plus honnête de montrer qu'il ne bouge pas.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-barre"] = {
+  vb: "56 36 132 120",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout, coudes collés au buste : la barre monte par flexion des coudes jusqu'aux épaules, puis redescend lentement. Le bras ne bouge pas.",
+  fixe: `
+    <line class="mo-ground" x1="92" y1="152" x2="152" y2="152"/>
+    <!-- corps debout et gainé, immobile -->
+    <circle class="mo-head" cx="116" cy="52" r="9"/>
+    <line class="mo-body" x1="124" y1="62" x2="128" y2="112"/>
+    <line class="mo-body" x1="128" y1="112" x2="124" y2="152"/>
+    <line class="mo-body" x1="128" y1="112" x2="134" y2="152"/>
+    <!-- BRAS : dessiné parmi les éléments fixes, car il ne bouge pas.
+         Épaule reliée au buste, puis segment STRICTEMENT VERTICAL :
+         c'est la lecture du point technique (le coude n'avance pas). -->
+    <line class="mo-limb" x1="125" y1="65" x2="114" y2="68"/>
+    <line class="mo-limb" x1="114" y1="68" x2="114" y2="92"/>
+    <circle class="mo-joint" cx="114" cy="92" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M114 118 A26 26 0 0 1 95 74.3"/>`,
+  muscles: [
+    { nom: "Biceps brachial",
+      svg: `<ellipse cx="114" cy="79" rx="3.6" ry="9"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (116, 92) uniquement.
+         +135° amène la barre au niveau des épaules, coude fermé à ~45°. */
+      o: "114px 92px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(133deg)"], [40, "rotate(133deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="114" y1="92" x2="114" y2="118"/>
+        <circle class="mo-plate-o" cx="114" cy="118" r="10"/>
+        <circle class="mo-hub" cx="114" cy="118" r="2.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M150 122 L150 84 M145 92 L150 84 L155 92"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 84 L150 122 M145 114 L150 122 L155 114"/>` }
+  ]
+};
+
+/* =========================================================
+   19. CURL INCLINÉ AUX HALTÈRES  (curl-incline)
+   -----------------------------------------------------------
+   Position  : ASSIS-ALLONGÉ sur un banc INCLINÉ à ~55-60°, dos
+               plaqué, bras pendants LIBREMENT DERRIÈRE la ligne
+               du corps — c'est cette position qui met le biceps
+               en étirement dès le départ.
+   Matériel  : deux haltères, prise supination.
+   Mobiles   : le COUDE (flexion).
+   Fixes     : l'ÉPAULE, maintenue en EXTENSION (le bras reste
+               derrière le buste pendant toute la série — s'il
+               remonte, l'étirement disparaît) ; le dos plaqué
+               au dossier.
+   Sens/plan : flexion du coude = concentrique ; retour en
+               étirement complet = excentrique, phase clé de cet
+               exercice. Plan sagittal.
+   ROM       : coude de ~175° (extension complète, bras derrière)
+               à ~50°. L'amplitude basse est PLUS GRANDE qu'au
+               curl debout puisque l'épaule est en extension.
+   Agonistes : biceps brachial, particulièrement sa longue portion
+               (celle qui traverse l'épaule et se retrouve étirée).
+   Distinction : le bras part DERRIÈRE le corps sur un dossier
+               incliné — ≠ curl debout (bras vertical le long du
+               corps), ≠ curl pupitre (bras devant, sur un appui).
+   ========================================================= */
+EXERCISE_MOTIONS["curl-incline"] = {
+  vb: "48 26 152 130",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis sur un banc incliné, bras pendant derrière le corps : l'haltère monte par flexion du coude, puis redescend en étirement complet.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="152" x2="192" y2="152"/>
+    <!-- banc incliné ~57° : dossier + assise + pieds -->
+    <line class="mo-pad" x1="86" y1="52" x2="126" y2="112"/>
+    <line class="mo-pad" x1="126" y1="112" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="66" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- corps plaqué au dossier -->
+    <circle class="mo-head" cx="80" cy="46" r="9"/>
+    <line class="mo-body" x1="86" y1="53" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, en EXTENSION d'épaule, il pend DERRIÈRE le buste -->
+    <line class="mo-limb" x1="92" y1="62" x2="86" y2="88"/>
+    <circle class="mo-joint" cx="86" cy="88" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M84 114 A26.1 26.1 0 0 1 66.7 70.4"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="91" cy="75" rx="3.6" ry="9" transform="rotate(13 91 75)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (86, 88).
+         +128° referme le coude de ~175° à ~50°. */
+      o: "86px 88px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(128deg)"], [40, "rotate(128deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="86" y1="88" x2="84" y2="114"/>
+        <line class="mo-bar2" x1="74" y1="114" x2="94" y2="115"/>
+        <rect class="mo-mass" x="70" y="107" width="7" height="15" rx="2"/>
+        <rect class="mo-mass" x="91" y="108" width="7" height="15" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 116 L58 78 M53 86 L58 78 L63 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 78 L58 116 M53 108 L58 116 L63 108"/>` }
+  ]
+};
+
+/* =========================================================
+   20. CURL MARTEAU  (curl-marteau)
+   -----------------------------------------------------------
+   Position  : DEBOUT, buste droit et gainé, coudes collés au
+               buste, bras le long du corps.
+   Matériel  : deux haltères tenus en PRISE NEUTRE — pouces vers
+               le haut, comme on tient un marteau. C'est toute la
+               différence : l'haltère reste PARALLÈLE au corps
+               pendant tout le mouvement au lieu d'être
+               perpendiculaire.
+   Mobiles   : le COUDE (flexion), sans aucune supination.
+   Fixes     : l'ÉPAULE, le poignet (qui ne tourne pas — c'est ce
+               qui définit le marteau), le rachis, le bassin.
+   Sens/plan : flexion du coude en gardant les pouces vers le
+               haut = concentrique ; descente contrôlée =
+               excentrique. Plan sagittal.
+   ROM       : coude de ~172° à ~45°.
+   Agonistes : BRACHIO-RADIAL et BRACHIAL ANTÉRIEUR en premier —
+               c'est là que le marteau se distingue : la prise
+               neutre place le biceps en position moins favorable
+               et transfère le travail sur ces deux muscles, ceux
+               qui épaississent l'avant-bras.
+   Distinction : prise NEUTRE (≠ supination du curl barre ou
+               haltères classique), donc l'haltère est dessiné
+               DANS L'AXE de l'avant-bras et non en travers.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-marteau"] = {
+  vb: "56 36 132 120",
+  dur: 3.5,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout, haltères tenus pouces vers le haut : flexion du coude en gardant la prise neutre, l'haltère restant dans l'axe de l'avant-bras.",
+  fixe: `
+    <line class="mo-ground" x1="92" y1="152" x2="152" y2="152"/>
+    <circle class="mo-head" cx="116" cy="52" r="9"/>
+    <line class="mo-body" x1="124" y1="62" x2="128" y2="112"/>
+    <line class="mo-body" x1="128" y1="112" x2="124" y2="152"/>
+    <line class="mo-body" x1="128" y1="112" x2="134" y2="152"/>
+    <!-- BRAS fixe, coude collé au buste, segment vertical -->
+    <line class="mo-limb" x1="125" y1="65" x2="114" y2="68"/>
+    <line class="mo-limb" x1="114" y1="68" x2="114" y2="92"/>
+    <circle class="mo-joint" cx="114" cy="92" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M114 118 A26 26 0 0 1 95 74.3"/>`,
+  muscles: [
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="114" cy="79" rx="3.4" ry="9"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE EN PRISE NEUTRE : rotation autour du COUDE.
+         L'haltère est dessiné DANS L'AXE de l'avant-bras — c'est la
+         signature du marteau, à l'opposé du curl en supination où il
+         est perpendiculaire. */
+      o: "114px 92px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(133deg)"], [40, "rotate(133deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Brachio-radial",
+      muscle: `<ellipse cx="114" cy="104" rx="3.4" ry="9"/>`,
+      svg: `
+        <line class="mo-limb" x1="114" y1="92" x2="114" y2="114"/>
+        <line class="mo-bar2" x1="114" y1="106" x2="114" y2="128"/>
+        <rect class="mo-mass" x="107" y="103" width="14" height="7" rx="2"/>
+        <rect class="mo-mass" x="107" y="124" width="14" height="7" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M150 126 L150 88 M145 96 L150 88 L155 96"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 88 L150 126 M145 118 L150 126 L155 118"/>` }
   ]
 };
