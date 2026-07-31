@@ -1771,3 +1771,90 @@ EXERCISE_MOTIONS["curl-marteau"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M150 88 L150 126 M145 118 L150 126 L155 118"/>` }
   ]
 };
+
+/* =========================================================
+   21. CURL AU PUPITRE (LARRY SCOTT)  (curl-pupitre)
+   -----------------------------------------------------------
+   Position  : au pupitre, ARRIÈRE DES BRAS PLAQUÉ sur le plan
+               incliné à ~45°, aisselles calées contre le haut du
+               pupitre, buste redressé. (Représenté DEBOUT : c'est
+               un usage courant du pupitre, et cela évite qu'un
+               siège et des jambes encombrent la lecture du seul
+               mécanisme qui compte ici, le coude.)
+   Matériel  : barre EZ ou haltère en supination, posée sur un
+               pupitre rembourré incliné.
+   Mobiles   : le COUDE, et lui seul (flexion).
+   Fixes     : l'ÉPAULE, maintenue en FLEXION d'environ 45° par le
+               pupitre. C'est LA différence de cet exercice : ailleurs
+               « ne bouge pas le coude » est une consigne, ici le
+               support l'INTERDIT physiquement. Aucun balancement
+               possible : c'est l'isolation la plus stricte du biceps.
+   Sens/plan : flexion du coude pour remonter la barre le long du
+               plan = concentrique ; retour en étirement = excentrique.
+               Plan sagittal.
+   ROM       : coude de ~160° à ~55°. On ne va PAS jusqu'à
+               l'extension complète en bas : sur un pupitre, bras
+               calés, la position basse met le tendon distal du
+               biceps sous une tension extrême — d'où la légère
+               flexion conservée.
+   Agonistes : BRACHIAL ANTÉRIEUR et la COURTE PORTION du biceps.
+               L'épaule étant fléchie, la longue portion (qui croise
+               l'épaule) part déjà raccourcie et travaille mal : le
+               relais est pris par le brachial et la courte portion.
+               C'est l'exact inverse du curl incliné.
+   Distinction : les trois curls se distinguent par la position de
+               l'ÉPAULE, pas par celle du coude — pupitre : épaule
+               FLÉCHIE, bras devant sur un appui ; debout : épaule
+               NEUTRE, bras vertical ; incliné : épaule en EXTENSION,
+               bras derrière le corps.
+   GÉOMÉTRIE (calculée) — épaule S(136,68) au sommet du pupitre,
+   bras L1=20 couché SUR le plan -> coude E(121.4,81.7).
+   Avant-bras L2=22. Bas : coude à 160°, main H0(111.5,101.4).
+   Haut : coude à 55°, main H1(118.2,59.9). -> rotation +145°.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-pupitre"] = {
+  vb: "90 30 86 128",
+  dur: 3.7,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Arrière des bras plaqué sur le pupitre incliné : la barre remonte par la seule flexion des coudes, puis redescend sans tendre complètement les bras.",
+  fixe: `
+    <line class="mo-ground" x1="96" y1="150" x2="168" y2="150"/>
+    <!-- pupitre : plan incliné rembourré + montant -->
+    <line class="mo-pad" x1="134" y1="70" x2="100" y2="102"/>
+    <line class="mo-gear" x1="108" y1="96" x2="108" y2="150"/>
+    <!-- corps debout contre le pupitre -->
+    <circle class="mo-head" cx="129" cy="42" r="9"/>
+    <line class="mo-body" x1="136" y1="68" x2="138" y2="110"/>
+    <line class="mo-body" x1="138" y1="110" x2="134" y2="150"/>
+    <line class="mo-body" x1="138" y1="110" x2="142" y2="150"/>
+    <!-- BRAS : dans les éléments FIXES, couché sur le plan incliné —
+         le pupitre lui interdit tout mouvement. -->
+    <line class="mo-limb" x1="136" y1="68" x2="121.4" y2="81.7"/>
+    <circle class="mo-joint" cx="121.4" cy="81.7" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M111.5 101.4 A22 22 0 0 1 118.2 59.9"/>`,
+  muscles: [
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="131" cy="78" rx="3.2" ry="7" transform="rotate(47 131 78)"/>` },
+    { nom: "Biceps (courte portion)",
+      svg: `<ellipse cx="126.5" cy="73.5" rx="3.2" ry="7" transform="rotate(47 126.5 73.5)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (121.4, 81.7).
+         +145° referme le coude de ~160° à ~55°. La main part en dessous
+         du bord bas du pupitre et remonte le long du plan. */
+      o: "121.4px 81.7px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(145deg)"], [40, "rotate(145deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="121.4" y1="81.7" x2="111.5" y2="101.4"/>
+        <circle class="mo-plate-o" cx="111.5" cy="101.4" r="7"/>
+        <circle class="mo-hub" cx="111.5" cy="101.4" r="2.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M162 104 L162 66 M157 74 L162 66 L167 74"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M162 66 L162 104 M157 96 L162 104 L167 96"/>` }
+  ]
+};
