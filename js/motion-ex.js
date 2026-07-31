@@ -1951,3 +1951,89 @@ EXERCISE_MOTIONS["extension-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M158 114 L158 76 M153 84 L158 76 L163 84"/>` }
   ]
 };
+
+/* =========================================================
+   23. BARRE AU FRONT  (barre-au-front)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ sur un banc plat, pieds au sol, barre EZ en
+               pronation, BRAS pointant vers le plafond (épaule
+               fléchie à ~90°, très légèrement inclinée vers la tête
+               pour conserver de la tension en haut).
+   Matériel  : barre EZ (ou droite) + banc plat.
+   Mobiles   : le COUDE.
+   Fixes     : l'ÉPAULE. L'humérus reste dirigé vers le plafond et
+               ne bouge pas. Si le coude part vers l'arrière, le
+               mouvement devient un pull-over et le grand dorsal
+               prend le relais : c'est l'erreur qui vide l'exercice
+               de son intérêt.
+   Sens/plan : la barre DESCEND vers le front par flexion du coude
+               = EXCENTRIQUE ; l'extension qui la renvoie au plafond
+               = CONCENTRIQUE. Le cycle commence donc bras tendus,
+               comme au développé couché. Plan sagittal.
+   ROM       : coude d'environ 174° (bras tendus) à ~95° en bas.
+               NOTE : on pourrait croire, par analogie avec les
+               curls, à une flexion beaucoup plus fermée. La
+               géométrie dit le contraire — avec un bras vertical et
+               une barre amenée AU FRONT, l'avant-bras finit à peine
+               au-delà de l'horizontale. Ce sont les variantes
+               « derrière la tête » qui referment davantage le coude.
+   Agonistes : TRICEPS, LONGUE PORTION surtout : elle s'insère sur
+               l'omoplate et croise donc l'épaule ; celle-ci étant
+               fléchie à 90°, la longue portion est PRÉ-ÉTIRÉE avant
+               même le début du mouvement. C'est exactement ce que
+               l'extension à la poulie, épaule neutre, ne fait pas.
+   Distinction : allongé, épaule à 90°, barre vers le FRONT.
+               ≠ extension poulie haute (debout, épaule neutre,
+               câble), ≠ extension nuque (épaule fléchie à 180°).
+   GÉOMÉTRIE (calculée) — épaule S(78,98) ; bras L1=22 incliné de
+   10° vers la tête -> coude E(74.2,76.3) ; avant-bras L2=22.
+   Haut : main H0(72.68,54.35), coude 174°.
+   Bas  : main H1(52.27,78) juste au-dessus du front (tête centrée
+   en (52.27,92), r=8, sommet du crâne à y=84), coude 95,5°.
+   -> avant-bras −90,47°.
+   ========================================================= */
+EXERCISE_MOTIONS["barre-au-front"] = {
+  vb: "38 42 116 116",
+  dur: 3.8,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur un banc, bras vers le plafond : la barre descend vers le front par flexion des coudes, puis remonte par extension des triceps.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="152" x2="150" y2="152"/>
+    <!-- banc plat -->
+    <line class="mo-pad" x1="44" y1="100" x2="140" y2="100"/>
+    <line class="mo-gear" x1="56" y1="102" x2="56" y2="152"/>
+    <line class="mo-gear" x1="130" y1="102" x2="130" y2="152"/>
+    <!-- corps allongé, tête posée sur le banc -->
+    <circle class="mo-head" cx="52.27" cy="92" r="8"/>
+    <line class="mo-body" x1="78" y1="98" x2="118" y2="100"/>
+    <line class="mo-body" x1="118" y1="100" x2="132" y2="124"/>
+    <line class="mo-body" x1="132" y1="124" x2="130" y2="152"/>
+    <!-- BRAS : dans les éléments FIXES, dirigé vers le plafond -->
+    <line class="mo-limb" x1="78" y1="98" x2="74.2" y2="76.3"/>
+    <circle class="mo-joint" cx="74.2" cy="76.3" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M72.68 54.35 A22 22 0 0 0 52.27 78"/>`,
+  muscles: [
+    { nom: "Triceps (longue portion)",
+      svg: `<ellipse cx="78" cy="87" rx="3.2" ry="8" transform="rotate(-10 78 87)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (74.2, 76.3).
+         −90,47° amène la barre du plafond jusqu'au front. Le disque
+         s'arrête au contact du sommet du crâne : c'est la fin de course
+         réelle, pas une approximation. */
+      o: "74.2px 76.3px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-90.47deg)"], [52, "rotate(-90.47deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="74.2" y1="76.3" x2="72.68" y2="54.35"/>
+        <circle class="mo-plate-o" cx="72.68" cy="54.35" r="6"/>
+        <circle class="mo-hub" cx="72.68" cy="54.35" r="2.4"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M104 96 L104 60 M99 68 L104 60 L109 68"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M104 60 L104 96 M99 88 L104 96 L109 88"/>` }
+  ]
+};
