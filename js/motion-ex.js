@@ -2245,3 +2245,126 @@ EXERCISE_MOTIONS["extension-nuque-haltere"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M160 26 L160 62 M155 54 L160 62 L165 54"/>` }
   ]
 };
+
+/* =========================================================
+   26. SQUAT À LA BARRE  (squat-barre)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre posée sur les TRAPÈZES (prise haute),
+               pieds largeur d'épaules, pointes légèrement ouvertes,
+               gainage serré, regard horizontal.
+   Matériel  : barre olympique. Vue de profil : on voit le disque.
+   Mobiles   : TROIS articulations en même temps — la HANCHE, le
+               GENOU et la CHEVILLE. Premier mouvement vraiment
+               polyarticulaire des jambes traité ici.
+   Fixes     : le PIED, ancré au sol : chaîne fermée. Et le RACHIS,
+               qui reste gainé et neutre. Attention à ne pas
+               confondre : le buste S'INCLINE (rotation à la hanche)
+               sans que le dos ne s'arrondisse. Le schéma dessine
+               donc un tronc rigide qui bascule, jamais un dos qui
+               se courbe.
+   CONTRAINTE MAÎTRESSE : la BARRE reste à l'APLOMB DU MILIEU DU
+               PIED pendant toute la descente. C'est la contrainte
+               d'équilibre fondamentale du squat, et c'est ELLE qui
+               impose l'inclinaison du buste : quand les genoux
+               avancent, le bassin doit reculer d'autant pour que la
+               charge ne quitte pas cette verticale. L'inclinaison du
+               tronc n'a donc pas été choisie à l'oeil — elle a été
+               RÉSOLUE à partir de cette contrainte, et vaut 22,4°.
+               Un schéma où la barre avance ou recule est faux.
+   Sens/plan : descente = excentrique, remontée = concentrique. Le
+               cycle commence debout. Plan sagittal.
+   ROM       : genou de 173° à 75°, hanche de 178° à 68°, cheville
+               en dorsiflexion de 15°. La descente s'arrête cuisses
+               PARALLÈLES AU SOL (vérifié : la cuisse est à 0,00° de
+               l'horizontale en position basse).
+   Agonistes : QUADRICEPS en premier, GRAND FESSIER, ischio-jambiers
+               en co-contraction, érecteurs du rachis en gainage
+               isométrique — ils ne raccourcissent pas, ils
+               empêchent le buste de s'effondrer.
+   Distinction : barre sur les TRAPÈZES, donc derrière, d'où un
+               buste nettement incliné. ≠ squat gobelet (charge
+               devant, buste bien plus vertical), ≠ presse à cuisses
+               (assis, dos appuyé, aucun gainage), ≠ soulevé de terre
+               (dominante de hanche, barre au sol dans les mains).
+   GÉOMÉTRIE (calculée) — cheville A(120,138) ancrée, tibia 26,
+   cuisse 26, tronc 32. Milieu du pied à x=123.
+   Haut : genou(119.5,112), hanche(122,86.13), épaule(124,54.2),
+          barre(123,47).
+   Bas  : dorsiflexion 15° -> genou(113.27,112.88) ; cuisse
+          horizontale -> hanche(139.26,112.88) ; inclinaison du tronc
+          résolue pour que la barre reste à x=123 -> 22,42°,
+          épaule(127.06,83.31), barre(123.00,77.28).
+   La barre descend donc de 30,3 unités À LA VERTICALE, sans dériver
+   d'un millimètre.
+   -> tibia −13,90°, cuisse +98,38° relatif, tronc −110,49° relatif.
+   Les BRAS sont dessinés courts et repliés : de profil ils partent
+   vers le spectateur pour saisir la barre, ils sont donc fortement
+   raccourcis et ne portent aucun mouvement propre.
+   ========================================================= */
+EXERCISE_MOTIONS["squat-barre"] = {
+  vb: "92 26 78 132",
+  dur: 4.4,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Barre sur les trapèzes : descente jusqu'aux cuisses parallèles au sol en pliant genoux et hanches, la barre restant à l'aplomb du milieu du pied, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="100" y1="150" x2="158" y2="150"/>
+    <!-- pied ancré au sol : c'est la racine de toute la chaîne -->
+    <line class="mo-limb" x1="112" y1="150" x2="134" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="113" y2="150"/>
+    <!-- APLOMB DU MILIEU DU PIED : la barre ne doit jamais quitter
+         cette verticale. C'est le repère technique central du squat. -->
+    <line class="mo-rom" x1="123" y1="32" x2="123" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : rotation autour de la CHEVILLE (120, 138), fixe au sol.
+         −13,90° = 15° de dorsiflexion, le genou avance. */
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-13.9deg)"], [52, "rotate(-13.9deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <circle class="mo-joint" cx="120" cy="138" r="2.8"/>
+        <line class="mo-limb" x1="120" y1="138" x2="119.5" y2="112"/>`,
+      children: [
+        {
+          /* CUISSE : +98,38° relatif. En bas elle est exactement
+             PARALLÈLE AU SOL — la profondeur de référence. */
+          o: "119.5px 112px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(98.38deg)"], [52, "rotate(98.38deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="117.3" cy="99" rx="3.4" ry="9" transform="rotate(5.5 117.3 99)"/>
+            <circle cx="125.5" cy="90" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="119.5" cy="112" r="2.8"/>
+            <line class="mo-limb" x1="119.5" y1="112" x2="122" y2="86.13"/>`,
+          children: [
+            {
+              /* TRONC : −110,49° relatif, soit 22,42° d'inclinaison
+                 absolue vers l'avant. Segment RIGIDE : le dos bascule,
+                 il ne s'arrondit pas. La barre est solidaire du tronc,
+                 ce qui garantit qu'elle suit exactement l'aplomb. */
+              o: "122px 86.13px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-110.49deg)"], [52, "rotate(-110.49deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis (gainage)",
+              muscle: `<ellipse cx="125.5" cy="70" rx="2.8" ry="11" transform="rotate(3.6 125.5 70)"/>`,
+              svg: `
+                <circle class="mo-joint" cx="122" cy="86.13" r="2.8"/>
+                <line class="mo-body" x1="122" y1="86.13" x2="124" y2="54.2"/>
+                <circle class="mo-plate-o" cx="123" cy="47" r="11"/>
+                <circle class="mo-hub" cx="123" cy="47" r="2.6"/>
+                <line class="mo-limb" x1="124" y1="54.2" x2="129" y2="64"/>
+                <line class="mo-limb" x1="129" y1="64" x2="126" y2="50"/>
+                <circle class="mo-head mo-head-solid" cx="111" cy="38.5" r="9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M152 96 L152 56 M147 64 L152 56 L157 64"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M152 56 L152 96 M147 88 L152 96 L157 88"/>` }
+  ]
+};
