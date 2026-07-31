@@ -2704,3 +2704,112 @@ EXERCISE_MOTIONS["leg-extension"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M52 96 L52 130 M47 122 L52 130 L57 122"/>` }
   ]
 };
+
+/* =========================================================
+   30. SQUAT GOBELET  (squat-gobelet)
+   -----------------------------------------------------------
+   Position  : DEBOUT, un haltère tenu VERTICALEMENT contre la
+               poitrine, deux mains sous le disque supérieur, coudes
+               BAS et serrés. Pieds largeur d'épaules.
+   Matériel  : un haltère (ou une kettlebell).
+   Mobiles   : hanche, genou, cheville — même chaîne qu'au squat
+               barre, pied ancré au sol.
+   Fixes     : le pied. Le rachis reste gainé et neutre.
+   LA DIFFÉRENCE : la charge est DEVANT, contre la poitrine, et non
+               derrière sur les trapèzes. Elle agit comme un
+               CONTREPOIDS : elle permet — et impose — un buste
+               beaucoup plus VERTICAL. C'est ce qui en fait
+               l'exercice d'apprentissage du squat : la position
+               correcte devient la plus facile à tenir.
+               Chiffré, d'un schéma à l'autre : le buste s'incline
+               de 8° ici contre 22,4° au squat barre.
+   Sens/plan : descente = excentrique, remontée = concentrique.
+   ROM       : genou de 173° à 62°, soit PLUS BAS qu'au squat barre
+               (75°) : la hanche descend 2,7 unités SOUS le genou,
+               donc sous la parallèle. Le buste vertical et la charge
+               frontale rendent cette profondeur accessible, et les
+               coudes viennent alors entre les genoux.
+               Dorsiflexion 22°, contre 15° au squat barre — une
+               descente plus profonde en demande davantage.
+   Agonistes : quadriceps et grand fessier, plus le HAUT DU DOS et
+               les bras qui travaillent en ISOMÉTRIE pour tenir la
+               charge devant. Cette sollicitation-là n'existe pas au
+               squat barre, où la barre repose sur le squelette.
+   Distinction : charge DEVANT -> buste vertical et descente plus
+               profonde. ≠ squat barre (charge derrière, buste à
+               22,4°, descente à la parallèle).
+   GÉOMÉTRIE — cheville A(120,138) ancrée, tibia 26, cuisse 26,
+   tronc 32.
+   Haut : genou(119.5,112), hanche(122,86.13), buste à 2°.
+   Bas  : dorsiflexion 22° -> genou(110.26,113.89) ; cuisse à −6°
+          -> hanche(136.12,116.61), sous le genou ; buste à 8°.
+   -> tibia −20,90°, cuisse +111,38° rel, tronc −96,48° rel.
+   NOTE D'HONNÊTETÉ : contrairement au squat barre, l'inclinaison du
+   buste n'est PAS déduite ici d'une contrainte géométrique. Au squat
+   barre, la charge est lourde et domine l'équilibre, donc « la barre
+   reste à l'aplomb du milieu du pied » suffit à tout déterminer. Au
+   gobelet la charge est légère devant un corps bien plus lourd :
+   c'est le centre de masse COMBINÉ qui s'équilibre, et le résoudre
+   exigerait d'inventer des masses. L'angle de 8° est donc une valeur
+   caractéristique documentée du mouvement, pas un résultat de calcul.
+   Pour la même raison, aucun repère d'aplomb n'est dessiné ici : il
+   suggérerait une contrainte qui ne s'applique pas à cette charge.
+   ========================================================= */
+EXERCISE_MOTIONS["squat-gobelet"] = {
+  vb: "96 28 72 130",
+  dur: 4.2,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Haltère tenu verticalement contre la poitrine : descente profonde en gardant le buste vertical, coudes entre les genoux, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="102" y1="150" x2="158" y2="150"/>
+    <line class="mo-limb" x1="112" y1="150" x2="134" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="113" y2="150"/>
+    <circle class="mo-joint" cx="120" cy="138" r="2.8"/>`,
+  parts: [
+    {
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-20.9deg)"], [52, "rotate(-20.9deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="120" y1="138" x2="119.5" y2="112"/>`,
+      children: [
+        {
+          o: "119.5px 112px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(111.38deg)"], [52, "rotate(111.38deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="117.3" cy="99" rx="3.4" ry="9" transform="rotate(5.5 117.3 99)"/>
+            <circle cx="125.5" cy="90" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="119.5" cy="112" r="2.8"/>
+            <line class="mo-limb" x1="119.5" y1="112" x2="122" y2="86.13"/>`,
+          children: [
+            {
+              /* TRONC + HALTÈRE : le buste ne bascule que de 2° à 8°.
+                 L'haltère est solidaire du tronc, tenu à la verticale
+                 contre la poitrine, coudes bas. */
+              o: "122px 86.13px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-96.48deg)"], [52, "rotate(-96.48deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Haut du dos (isométrique)",
+              muscle: `<ellipse cx="123.6" cy="64" rx="2.8" ry="8" transform="rotate(2 123.6 64)"/>`,
+              svg: `
+                <circle class="mo-joint" cx="122" cy="86.13" r="2.8"/>
+                <line class="mo-body" x1="122" y1="86.13" x2="120.88" y2="54.15"/>
+                <line class="mo-limb" x1="120.88" y1="54.15" x2="126.5" y2="75"/>
+                <line class="mo-limb" x1="126.5" y1="75" x2="116.5" y2="58"/>
+                <line class="mo-bar2" x1="114.45" y1="70.39" x2="113.89" y2="54.39"/>
+                <rect class="mo-mass" x="107.45" y="67.39" width="14" height="6" rx="2" transform="rotate(-2 114.45 70.39)"/>
+                <rect class="mo-mass" x="106.89" y="51.39" width="14" height="6" rx="2" transform="rotate(-2 113.89 54.39)"/>
+                <circle class="mo-head mo-head-solid" cx="119" cy="40" r="9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M152 100 L152 62 M147 70 L152 62 L157 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M152 62 L152 100 M147 92 L152 100 L157 92"/>` }
+  ]
+};
