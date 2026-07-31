@@ -1858,3 +1858,96 @@ EXERCISE_MOTIONS["curl-pupitre"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M162 66 L162 104 M157 96 L162 104 L167 96"/>` }
   ]
 };
+
+/* =========================================================
+   22. EXTENSION TRICEPS À LA POULIE HAUTE  (extension-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à la poulie HAUTE, pieds largeur de
+               bassin, buste très légèrement penché vers la machine,
+               gainé, COUDES COLLÉS au buste.
+   Matériel  : poulie haute + barre droite (ou corde). Le câble
+               descend d'en haut : tension continue, y compris en
+               position haute — ce que ne donne aucune barre libre.
+   Mobiles   : le COUDE, et lui seul (EXTENSION).
+   Fixes     : l'ÉPAULE — le bras reste vertical le long du corps.
+               Si le coude s'écarte ou que l'épaule part en
+               extension, ce n'est plus le triceps qui pousse mais
+               le dos. Le rachis aussi : pas de coup de buste pour
+               lancer la charge, l'erreur la plus fréquente.
+   Sens/plan : ATTENTION, c'est l'inverse des curls — le
+               CONCENTRIQUE va VERS LE BAS (extension du coude), la
+               remontée est l'excentrique. Plan sagittal.
+   ROM       : coude d'environ 80° (position haute, avant-bras
+               au-dessus de l'horizontale) à ~175° en bas. On ne
+               remonte pas plus haut que ~80° : au-delà les coudes
+               décollent du buste.
+   Agonistes : TRICEPS BRACHIAL, ses trois chefs. L'épaule étant
+               neutre, la longue portion travaille en position
+               moyenne — c'est justement ce qui distingue ce
+               mouvement de l'extension au-dessus de la tête, où
+               cette même longue portion est mise en étirement.
+   Distinction : câble venant d'EN HAUT et bras le long du corps.
+               ≠ barre au front (allongé, épaule à 90°), ≠ extension
+               nuque (bras au-dessus de la tête).
+   GÉOMÉTRIE (calculée) — épaule S(128,66), bras L1=22 vertical ->
+   coude E(127,88) ; avant-bras L2=22.
+   Haut : coude 80°, main H0(105.5,83.2). Bas : coude 175°,
+   main H1(124.1,109.8). -> avant-bras −95°.
+   CÂBLE : poulie P(96,30). |P->H0| = 54.0 à 79.9° ; |P->H1| = 84.6
+   à 70.6°. -> rotate(−9.3°) scale(1.566) autour de la poulie, ce
+   qui fait suivre exactement la main.
+   ========================================================= */
+EXERCISE_MOTIONS["extension-poulie"] = {
+  vb: "86 20 96 138",
+  dur: 3.5,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Face à la poulie haute, coudes collés au buste : les avant-bras poussent la barre vers le bas jusqu'aux bras tendus, puis remontent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="92" y1="152" x2="174" y2="152"/>
+    <!-- colonne + poulie haute -->
+    <line class="mo-gear" x1="96" y1="34" x2="96" y2="152"/>
+    <circle class="mo-pulley" cx="96" cy="30" r="5"/>
+    <!-- corps debout, très légèrement penché vers la machine -->
+    <circle class="mo-head" cx="125" cy="48" r="9"/>
+    <line class="mo-body" x1="133" y1="64" x2="136" y2="110"/>
+    <line class="mo-body" x1="136" y1="110" x2="132" y2="152"/>
+    <line class="mo-body" x1="136" y1="110" x2="141" y2="152"/>
+    <!-- BRAS : dans les éléments FIXES, épaule reliée au buste puis segment
+         STRICTEMENT VERTICAL — le coude ne quitte pas le flanc. -->
+    <line class="mo-limb" x1="133" y1="65" x2="127" y2="68"/>
+    <line class="mo-limb" x1="127" y1="68" x2="127" y2="90"/>
+    <circle class="mo-joint" cx="127" cy="90" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M105.34 86.18 A22 22 0 0 0 125.08 111.91"/>`,
+  muscles: [
+    { nom: "Triceps brachial (3 chefs)",
+      svg: `<ellipse cx="129.4" cy="79" rx="3.2" ry="8"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation + mise à l'échelle autour de la POULIE, de sorte
+         que son extrémité colle à la main pendant tout le mouvement. */
+      o: "96px 30px",
+      k: [[0, "rotate(0deg) scale(1)"], [32, "rotate(-10.1deg) scale(1.5263)"],
+          [40, "rotate(-10.1deg) scale(1.5263)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="96" y1="30" x2="105.34" y2="86.18"/>`
+    },
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (127, 90).
+         −95° tend le coude de 80° à 175°. La barre reste perpendiculaire
+         à l'avant-bras : c'est la prise pronation de la barre droite. */
+      o: "127px 90px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-95deg)"], [40, "rotate(-95deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="127" y1="90" x2="105.34" y2="86.18"/>
+        <line class="mo-bar2" x1="106.56" y1="79.29" x2="104.12" y2="93.08"/>
+        <circle class="mo-hand" cx="105.34" cy="86.18" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M158 76 L158 114 M153 106 L158 114 L163 106"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M158 114 L158 76 M153 84 L158 76 L163 84"/>` }
+  ]
+};
