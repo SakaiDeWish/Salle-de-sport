@@ -2368,3 +2368,111 @@ EXERCISE_MOTIONS["squat-barre"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M152 56 L152 96 M147 88 L152 96 L157 88"/>` }
   ]
 };
+
+/* =========================================================
+   27. PRESSE À CUISSES  (presse-a-cuisses)
+   -----------------------------------------------------------
+   Position  : ASSIS-ALLONGÉ dans la machine, DOS ET BASSIN PLAQUÉS
+               contre le dossier incliné, pieds à plat sur le
+               plateau, largeur d'épaules, à mi-hauteur.
+   Matériel  : presse inclinée à 45° — un chariot chargé qui
+               COULISSE le long de deux rails. Le chariot ne tourne
+               pas : il TRANSLATE. C'est la première pièce de
+               matériel de toute la bibliothèque qui se déplace en
+               ligne droite au lieu de pivoter, et elle est animée
+               comme telle.
+   Mobiles   : le GENOU et la HANCHE.
+   Fixes     : le DOS, le BASSIN et tout le tronc — dessinés dans
+               les éléments fixes. C'est LA différence avec le
+               squat : le tronc est SOUTENU, il n'y a ni gainage à
+               fournir ni équilibre à gérer. D'où la possibilité de
+               charger plus lourd qu'au squat sans que les deux
+               soient comparables. Le décollement du bassin en bas
+               est l'erreur classique : le schéma s'arrête avant.
+   Sens/plan : le chariot s'éloigne (extension) = concentrique ; il
+               revient vers soi = excentrique. Le cycle commence
+               jambes tendues. Plan sagittal.
+   ROM       : genou de 172° à 90°. On ne VERROUILLE PAS les genoux
+               en haut : sous une charge lourde et guidée, c'est le
+               danger propre à cet exercice, l'articulation encaissant
+               tout à la place du muscle. D'où les 172° et non 180°.
+   Agonistes : QUADRICEPS surtout, grand fessier et ischio-jambiers
+               en assistance. AUCUN érecteur du rachis, puisque le
+               dos est soutenu : c'est la distinction fonctionnelle
+               majeure avec le squat, où ils travaillent en gainage.
+   Distinction : dos SOUTENU, charge poussée par les pieds le long
+               d'un rail. ≠ squat (debout, charge sur le dos,
+               gainage et équilibre), ≠ leg extension (isolation,
+               un seul segment mobile).
+   GÉOMÉTRIE (calculée) — hanche H(86,116) FIXE, cuisse 26, tibia 26.
+   Haut : pied F0(120.62,77.38), |H-F0|=51,87 -> genou 171,8°,
+          genou en (101.92,95.44).
+   Bas  : pied F1(110,88), |H-F1|=36,88 -> genou 90,3°,
+          genou en (84.08,90.07), remonté vers la poitrine.
+   -> cuisse −41,98°, tibia +81,42° relatif.
+   CHARIOT : translation pure de (−10,62 ; +10,62), soit 15,02 le
+   long du rail à 45°. Cette course vaut 0,58 longueur de tibia —
+   exactement le rapport réel (≈23 cm pour un tibia de 40 cm).
+   ========================================================= */
+EXERCISE_MOTIONS["presse-a-cuisses"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis dos plaqué dans la presse inclinée : le chariot revient vers soi jusqu'à 90° de flexion des genoux, puis est repoussé le long du rail sans verrouiller les genoux.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués,
+         c'est le point qui distingue la presse du squat. -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas. */
+      k: [[0, "translate(0px,0px)"], [45, "translate(-10.62px,10.62px)"],
+          [52, "translate(-10.62px,10.62px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="110.02" y1="66.78" x2="131.22" y2="87.98"/>
+        <circle class="mo-plate-o" cx="130.52" cy="67.48" r="9"/>
+        <circle class="mo-hub" cx="130.52" cy="67.48" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas.
+         −41,98° : le genou remonte vers la poitrine. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-41.98deg)"], [52, "rotate(-41.98deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="91.2" cy="103.6" rx="3.4" ry="9" transform="rotate(37.8 91.2 103.6)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="101.92" y2="95.44"/>`,
+      children: [
+        {
+          /* TIBIA : +81,42° relatif. Son extrémité suit exactement le
+             plateau du chariot, ce qui est la contrainte de la chaîne
+             fermée : le pied ne quitte jamais le plateau. */
+          o: "101.92px 95.44px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(81.42deg)"], [52, "rotate(81.42deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="101.92" cy="95.44" r="2.8"/>
+            <line class="mo-limb" x1="101.92" y1="95.44" x2="120.62" y2="77.38"/>
+            <circle class="mo-hand" cx="120.62" cy="77.38" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
