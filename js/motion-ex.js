@@ -2598,3 +2598,109 @@ EXERCISE_MOTIONS["fentes-marchees"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M68 86 L68 122 M63 114 L68 122 L73 114"/>` }
   ]
 };
+
+/* =========================================================
+   29. LEG EXTENSION  (leg-extension)
+   -----------------------------------------------------------
+   Position  : ASSIS, dos plaqué au dossier, CUISSES posées sur
+               l'assise, chevilles derrière le boudin rembourré,
+               mains sur les poignées latérales.
+   Matériel  : machine à bras de levier — un axe pivotant portant un
+               boudin, relié à la colonne de charges.
+   Mobiles   : le GENOU, et lui seul. C'est l'isolation la plus pure
+               du quadriceps de toute la bibliothèque.
+   Fixes     : la HANCHE, la CUISSE plaquée sur l'assise, le dos, le
+               bassin. La cuisse ne bouge pas d'un degré, et c'est
+               pour cela qu'elle est dessinée dans les éléments
+               fixes, avec le quadriceps posé dessus.
+   RÉGLAGE CRITIQUE : l'AXE de la machine doit être ALIGNÉ avec
+               l'axe du GENOU. Mal réglé, le levier cisaille
+               l'articulation au lieu de la faire tourner. Le schéma
+               fait donc coïncider explicitement le pivot de la
+               machine et le centre du genou, et le signale par un
+               repère : c'est le seul exercice où un réglage, et non
+               un geste, est le point technique principal.
+   Sens/plan : extension du genou = concentrique ; retour = 
+               excentrique. Le cycle commence jambes fléchies. Plan
+               sagittal.
+   ROM       : genou de 90° à 175° (vérifié aux deux positions). On
+               ne verrouille pas brutalement en haut, d'où 175°.
+   Agonistes : QUADRICEPS seul. Nuance qui explique la limite de
+               l'exercice : le DROIT FÉMORAL, seul des quatre chefs
+               à croiser la hanche, travaille ici en position
+               RACCOURCIE puisque la hanche est fléchie à 90°. Il
+               est donc moins efficace qu'au squat — l'isolation se
+               paie.
+   Distinction : UN SEUL segment mobile, une seule articulation, et
+               en chaîne OUVERTE — le pied ne pousse contre rien de
+               fixe, il déplace un levier. ≠ presse à cuisses
+               (chaîne fermée, deux articulations), ≠ squat.
+   GÉOMÉTRIE (calculée) — hanche H(112,106), cuisse HORIZONTALE de
+   26 -> genou/pivot K(86,106). Tibia 26.
+   Bas : pied F0(86,132), tibia vertical, genou 90,0°.
+   Haut : pied F1(60.10,103.73), genou 175,0°.
+   -> tibia +95,00°. La colonne de charges monte de 14 en
+   translation pendant le concentrique.
+   (Le câble reliant le levier à la colonne n'est pas dessiné : son
+   trajet passe derrière le bâti et l'ajouter masquerait le genou,
+   qui est le sujet du schéma.)
+   ========================================================= */
+EXERCISE_MOTIONS["leg-extension"] = {
+  vb: "42 48 118 102",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis dans la machine, chevilles derrière le boudin : les genoux se tendent jusqu'à l'extension complète, puis reviennent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="142" x2="154" y2="142"/>
+    <!-- bâti : assise, dossier, montants -->
+    <line class="mo-pad" x1="86" y1="110" x2="116" y2="110"/>
+    <line class="mo-pad" x1="117" y1="108" x2="129" y2="76"/>
+    <line class="mo-gear" x1="90" y1="112" x2="90" y2="142"/>
+    <line class="mo-gear" x1="120" y1="112" x2="120" y2="142"/>
+    <!-- colonne de charges : rail de guidage -->
+    <line class="mo-gear" x1="141" y1="80" x2="141" y2="142"/>
+    <!-- CORPS : tout le haut est immobile, cuisse comprise -->
+    <circle class="mo-head" cx="128" cy="62" r="8"/>
+    <line class="mo-body" x1="112" y1="106" x2="123" y2="76"/>
+    <line class="mo-limb" x1="123" y1="76" x2="116" y2="96"/>
+    <line class="mo-limb" x1="112" y1="106" x2="86" y2="106"/>
+    <circle class="mo-joint" cx="112" cy="106" r="2.8"/>
+    <!-- AXE DE LA MACHINE CONFONDU AVEC L'AXE DU GENOU : le réglage
+         qui conditionne tout l'exercice. -->
+    <circle class="mo-pulley" cx="86" cy="106" r="4.5"/>
+    <line class="mo-rom" x1="86" y1="92" x2="86" y2="120"/>`,
+  muscles: [
+    { nom: "Quadriceps (isolation)",
+      svg: `<ellipse cx="99" cy="102" rx="10" ry="3.4"/>` }
+  ],
+  parts: [
+    {
+      /* COLONNE DE CHARGES : translation verticale pure, elle monte
+         quand le levier se lève. */
+      k: [[0, "translate(0px,0px)"], [32, "translate(0px,-14px)"],
+          [40, "translate(0px,-14px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <rect class="mo-mass" x="134" y="104" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="112" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="120" width="14" height="6" rx="1.5"/>`
+    },
+    {
+      /* TIBIA + BOUDIN : rotation autour du PIVOT, qui est aussi le
+         genou. +95° tend le genou de 90° à 175°. Le levier de la
+         machine est dessiné sous le tibia, ils tournent ensemble —
+         c'est précisément ce que garantit un axe bien réglé. */
+      o: "86px 106px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(95deg)"], [40, "rotate(95deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-gear" x1="86" y1="106" x2="86" y2="132"/>
+        <line class="mo-limb" x1="86" y1="106" x2="86" y2="132"/>
+        <circle class="mo-mass" cx="86" cy="132" r="6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M52 130 L52 96 M47 104 L52 96 L57 104"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M52 96 L52 130 M47 122 L52 130 L57 122"/>` }
+  ]
+};
