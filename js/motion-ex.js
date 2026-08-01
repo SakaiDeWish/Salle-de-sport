@@ -4967,3 +4967,109 @@ EXERCISE_MOTIONS["developpe-decline-barre"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M92 62 L104 78 M97 74 L104 78 L105 70"/>` }
   ]
 };
+
+/* =========================================================
+   52. ÉCARTÉ COUCHÉ AUX HALTÈRES  (ecarte-halteres)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ sur un banc PLAT, un haltère dans chaque main,
+               bras au-dessus de la poitrine, COUDES LÉGÈREMENT
+               FLÉCHIS et qui le RESTENT.
+   Matériel  : banc plat + deux haltères.
+   Mobiles   : l'ÉPAULE seule, en adduction horizontale.
+   Fixes     : le COUDE. Son angle est CONSTANT — vérifié à 150,0°
+               aux deux positions, donc |épaule-main| reste
+               rigoureusement à 42,51. Le bras est modélisé comme un
+               SEGMENT RIGIDE en deux morceaux : c'est la signature
+               de l'écarté, exactement comme la cuisse au soulevé de
+               terre roumain.
+   CE QUI SÉPARE L'ÉCARTÉ DU DÉVELOPPÉ : au développé le coude fléchit
+               et s'étend, le mouvement est POLYARTICULAIRE et le
+               triceps pousse. Ici le coude est bloqué, le mouvement
+               est MONOARTICULAIRE et le pectoral travaille seul en
+               adduction. Aucun triceps dans les muscles sollicités,
+               et ce n'est pas un oubli.
+
+   >>> VUE DE FACE, DEPUIS LES PIEDS — ET C'EST NÉCESSAIRE <<<
+   L'écarté ouvre les bras SUR LES CÔTÉS, dans le plan frontal. De
+   profil, ce mouvement irait vers le spectateur et serait invisible,
+   exactement comme la rotation du russian twist. Vu de dessus il ne
+   vaudrait pas mieux : les bras verticaux s'y projetteraient sur les
+   épaules, et les segments sembleraient s'allonger depuis rien — un
+   artefact de projection, pas un geste. Seule la vue de FACE, prise
+   depuis les pieds, montre l'arc réel sans raccourci.
+
+   ROM       : l'épaule balaie 118°, des mains jointes au-dessus de
+               la poitrine jusqu'aux mains au niveau du banc. On ne
+               descend PAS plus bas : au-delà, la tête humérale subit
+               une contrainte antérieure importante pour un gain nul.
+   Agonistes : GRAND PECTORAL en adduction horizontale, deltoïde
+               antérieur en assistance.
+   NUANCE QUE LE SCHÉMA NE PEUT PAS DESSINER, donc écrite ici : avec
+               des HALTÈRES la résistance vient de la gravité, donc
+               elle est MAXIMALE bras écartés et QUASI NULLE en haut,
+               où la force passe dans l'axe de l'os. À la poulie, la
+               tension est continue. Même geste, courbe de résistance
+               opposée — c'est pourquoi les deux versions coexistent.
+   Distinction : monoarticulaire, coude bloqué, vue de face.
+               ≠ développé couché (polyarticulaire, coude mobile,
+               triceps), ≠ écarté à la poulie (debout, tension
+               continue).
+   GÉOMÉTRIE (calculée) — épaules(94,106) et (126,106), bras 24,
+   avant-bras 20, coude figé à 150° -> |épaule-main| = 42,51.
+   Haut : main gauche(108.54,66.05), coude(107.28,86.01).
+   Bas  : main gauche(51.90,111.92), coude(70.11,103.66).
+   -> bras gauche −118°, bras droit +118° (miroir exact).
+   ========================================================= */
+EXERCISE_MOTIONS["ecarte-halteres"] = {
+  vb: "34 52 152 88",
+  dur: 4.0,
+  vue: "Vu de face",
+  phases: { ecc: [0, 45], con: [52, 82] },
+  alt: "Vu de face depuis les pieds. Allongé sur un banc plat, coudes légèrement fléchis et bloqués : les bras s'ouvrent en arc jusqu'au niveau du banc, puis se referment au-dessus de la poitrine.",
+  fixe: `
+    <!-- banc vu en bout, et buste en coupe -->
+    <line class="mo-pad" x1="86" y1="122" x2="134" y2="122"/>
+    <line class="mo-gear" x1="94" y1="124" x2="94" y2="138"/>
+    <line class="mo-gear" x1="126" y1="124" x2="126" y2="138"/>
+    <line class="mo-ground" x1="76" y1="138" x2="144" y2="138"/>
+    <ellipse class="mo-head-solid mo-head" cx="110" cy="96" rx="9" ry="9"/>
+    <ellipse class="mo-torse" cx="110" cy="112" rx="18" ry="9"/>
+    <circle class="mo-joint" cx="94" cy="106" r="2.8"/>
+    <circle class="mo-joint" cx="126" cy="106" r="2.8"/>`,
+  muscles: [
+    { nom: "Grand pectoral",
+      svg: `<ellipse cx="101" cy="108" rx="8" ry="4"/><ellipse cx="119" cy="108" rx="8" ry="4"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE : segment RIGIDE, coude figé à 150°. −118°. */
+      o: "94px 106px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-118deg)"], [52, "rotate(-118deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="94" y1="106" x2="107.28" y2="86.01"/>
+        <circle class="mo-joint" cx="107.28" cy="86.01" r="2.4"/>
+        <line class="mo-limb" x1="107.28" y1="86.01" x2="108.54" y2="66.05"/>
+        <line class="mo-bar2" x1="102" y1="66" x2="115" y2="66"/>
+        <rect class="mo-mass" x="99" y="61" width="6" height="10" rx="2"/>
+        <rect class="mo-mass" x="112" y="61" width="6" height="10" rx="2"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact, +118°. */
+      o: "126px 106px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(118deg)"], [52, "rotate(118deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="126" y1="106" x2="112.72" y2="86.01"/>
+        <circle class="mo-joint" cx="112.72" cy="86.01" r="2.4"/>
+        <line class="mo-limb" x1="112.72" y1="86.01" x2="111.46" y2="66.05"/>
+        <line class="mo-bar2" x1="105" y1="66" x2="118" y2="66"/>
+        <rect class="mo-mass" x="102" y="61" width="6" height="10" rx="2"/>
+        <rect class="mo-mass" x="115" y="61" width="6" height="10" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M46 82 L64 96 M57 94 L64 96 L62 89"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M64 96 L46 82 M53 84 L46 82 L48 89"/>` }
+  ]
+};

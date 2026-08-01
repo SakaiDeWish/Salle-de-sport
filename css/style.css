@@ -2149,3 +2149,7 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
   letter-spacing: 0.09em; color: var(--bg); background: var(--accent);
   padding: 2px 7px; border-radius: 999px;
 }
+
+/* Buste vu EN COUPE (vue de face depuis les pieds) : contour épais,
+   il représente une section du corps et non un segment osseux. */
+.mo-torse { fill: none; stroke: var(--text-soft); stroke-width: 3.4; }
