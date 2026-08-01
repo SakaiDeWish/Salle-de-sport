@@ -8701,3 +8701,115 @@ EXERCISE_MOTIONS["curl-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M156 70 L156 100 M151 92 L156 100 L161 92"/>` }
   ]
 };
+
+/* =========================================================
+   81. DÉVELOPPÉ COUCHÉ PRISE SERRÉE
+       (developpe-couche-prise-serree)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ sur banc plat, barre saisie LARGEUR
+               D'ÉPAULES, coudes près du corps.
+   Mobiles   : coude et épaule.
+   Fixes     : rachis, bassin, jambes.
+   Sens      : descente vers le BAS des pectoraux = excentrique ;
+               poussée jusqu'aux bras tendus = concentrique.
+               « Rebond sur la poitrine » est l'erreur n°3 : le
+               schéma marque un temps d'arrêt en bas plutôt que
+               d'enchaîner.
+   ROM       : coude de 180° à 57,8°. La barre parcourt 49,9 en
+               ligne quasi droite, de l'aplomb de l'épaule
+               jusqu'au bas du sternum.
+   >>> CE QUE LA PRISE SERRÉE CHANGE, ET POURQUOI UN PROFIL LE
+       MONTRE MIEUX ICI QU'AILLEURS <<< En prise LARGE, les
+       coudes partent sur les côtés : le bras est fortement
+       ABDUQUÉ, donc en grande partie hors du plan sagittal. Un
+       schéma de profil le raccourcit alors beaucoup — c'est une
+       approximation qu'il faut accepter. En prise SERRÉE les
+       coudes restent près des côtes : l'abduction tombe à ~30°,
+       le bras reste presque entièrement dans le plan du dessin,
+       et sa longueur apparente passe à 27,7 pour 32 réels, soit
+       87 %. C'est donc l'exercice de développé que la vue de
+       profil représente le plus FIDÈLEMENT de tout ce catalogue.
+   LE COUDE PASSE SOUS LE BANC, ET C'EST JUSTE : en bas, le coude
+               tombe en (94.64,109.96) alors que la surface du
+               banc est à 100. Il n'est pas dedans, il est À CÔTÉ
+               — les bras pendent de part et d'autre. C'est
+               précisément ce qui donne au développé couché son
+               amplitude, et ce qu'une machine guidée interdit.
+   Agonistes : TRICEPS d'abord, puis portion INTERNE du grand
+               pectoral et deltoïde antérieur. C'est le trajet
+               coudes serrés qui bascule la charge du pectoral
+               vers le triceps : plus le coude est près du corps,
+               plus l'extension du coude fait le travail.
+   Distinction : ≠ développé couché barre (prise large, coudes
+               écartés, pectoral dominant) ; ≠ barre au front (le
+               bras y est fixe, seul le coude bouge) ; ≠ dips
+               triceps (chaîne fermée, c'est le corps qui bouge).
+   GÉOMÉTRIE (calculée) — épaule (72,94), bras apparent 27,7,
+   avant-bras 26. Trajet de la barre imposé RECTILIGNE de
+   (72,40.3) à (96,84), six intervalles, IK à chacun :
+     coude 180 -> 120,3 -> 96,1 -> 78,6 -> 66,1 -> 58,9 -> 57,8
+     coude (point) de (72,66.3) à (94.64,109.96)
+   -> bras +125,19° ; avant-bras relatif −122,19°.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-couche-prise-serree"] = {
+  vb: "38 24 134 144",
+  dur: 3.8,
+  phases: { ecc: [0, 44], con: [52, 84] },
+  alt: "Allongé sur un banc plat, barre en prise largeur d'épaules : la barre descend en ligne droite jusqu'au bas du sternum, coudes serrés le long des côtes, puis est repoussée jusqu'aux bras tendus.",
+  fixe: `
+    <line class="mo-ground" x1="42" y1="160" x2="168" y2="160"/>
+    <!-- banc plat -->
+    <line class="mo-pad" x1="56" y1="100" x2="146" y2="100"/>
+    <line class="mo-gear" x1="66" y1="104" x2="66" y2="160"/>
+    <line class="mo-gear" x1="136" y1="104" x2="136" y2="160"/>
+    <!-- corps allongé sur le dos, immobile -->
+    <circle class="mo-head" cx="52" cy="90" r="9"/>
+    <line class="mo-body" x1="61" y1="92" x2="72" y2="94"/>
+    <line class="mo-body" x1="72" y1="94" x2="124" y2="98"/>
+    <line class="mo-body" x1="124" y1="98" x2="152" y2="124"/>
+    <line class="mo-body" x1="152" y1="124" x2="146" y2="160"/>
+    <!-- amplitude : le trajet RECTILIGNE réellement parcouru par la barre -->
+    <line class="mo-rom" x1="72" y1="40.3" x2="96" y2="84"/>`,
+  muscles: [
+    { nom: "Pectoral (portion interne)",
+      svg: `<ellipse cx="88" cy="88" rx="12" ry="4" transform="rotate(4 88 88)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (72,94), +125,19°. Le coude
+         descend À CÔTÉ du banc, plus bas que sa surface. */
+      o: "72px 94px",
+      k: [[0, "rotate(0deg)"], [7.33, "rotate(33.72deg)"], [14.67, "rotate(51.89deg)"],
+          [22, "rotate(69.13deg)"], [29.33, "rotate(87.24deg)"], [36.67, "rotate(106.52deg)"],
+          [44, "rotate(125.19deg)"], [52, "rotate(125.19deg)"],
+          [57.33, "rotate(106.52deg)"], [62.67, "rotate(87.24deg)"], [68, "rotate(69.13deg)"],
+          [73.33, "rotate(51.89deg)"], [78.67, "rotate(33.72deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="75.5" cy="80" rx="3.2" ry="8"/>`,
+      svg: `
+        <line class="mo-limb" x1="72" y1="94" x2="72" y2="66.3"/>
+        <circle class="mo-joint" cx="72" cy="66.3" r="2.8"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : rotation RELATIVE autour du COUDE. */
+          o: "72px 66.3px",
+          k: [[0, "rotate(0deg)"], [7.33, "rotate(-59.68deg)"], [14.67, "rotate(-83.94deg)"],
+              [22, "rotate(-101.41deg)"], [29.33, "rotate(-113.91deg)"], [36.67, "rotate(-121.13deg)"],
+              [44, "rotate(-122.19deg)"], [52, "rotate(-122.19deg)"],
+              [57.33, "rotate(-121.13deg)"], [62.67, "rotate(-113.91deg)"], [68, "rotate(-101.41deg)"],
+              [73.33, "rotate(-83.94deg)"], [78.67, "rotate(-59.68deg)"], [84, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="72" y1="66.3" x2="72" y2="40.3"/>
+            <circle class="mo-plate-o" cx="72" cy="40.3" r="11"/>
+            <circle class="mo-hub" cx="72" cy="40.3" r="2.8"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M158 50 L158 84 M153 76 L158 84 L163 76"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M158 84 L158 50 M153 58 L158 50 L163 58"/>` }
+  ]
+};
