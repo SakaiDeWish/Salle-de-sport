@@ -7199,3 +7199,64 @@ EXERCISE_MOTIONS["tractions-lestees"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M170 40 L170 78 M165 70 L170 78 L175 70"/>` }
   ]
 };
+
+/* =========================================================
+   68. DÉVELOPPÉ ARNOLD  (developpe-arnold)
+   >>> SCHÉMA NON LIVRÉ — SIGNALÉ, PAS BÂCLÉ <<<
+   -----------------------------------------------------------
+   ANALYSE (faite, et valide) :
+   Position  : ASSIS dossier vertical, haltères DEVANT les
+               épaules et presque jointes, paumes tournées VERS
+               SOI, coudes bas et rentrés.
+   Mobiles   : épaule (flexion + abduction + ROTATION EXTERNE de
+               l'humérus), coude.
+   Sens      : poussée verticale avec rotation progressive des
+               paumes vers l'avant ; retour en inversant.
+   ROM       : coude d'environ 50° à 146° ; l'humérus passe de
+               rotation INTERNE à rotation EXTERNE.
+   Agonistes : les trois faisceaux du deltoïde — et c'est
+               justement la rotation qui les enchaîne : antérieur
+               au départ, moyen en fin de course.
+
+   POURQUOI AUCUN SCHÉMA N'EST LIVRÉ :
+   le blocage n'est pas l'analyse, il est de PROJECTION, et il est
+   MESURÉ.
+   Ce qui définit cet exercice est une rotation de l'humérus
+   AUTOUR DE SON PROPRE AXE. Or un axe de rotation confondu avec
+   le segment lui-même ne produit AUCUN déplacement visible de ce
+   segment, dans aucune projection orthographique. Ce n'est pas un
+   défaut du moteur : c'est une propriété de la projection.
+   Ce que cette rotation déplace, en revanche, c'est l'AVANT-BRAS,
+   qui balaie l'espace autour de l'humérus. Et là le calcul montre
+   le piège. En vue de FACE, avec bras 20 et avant-bras 22 :
+     départ  : avant-bras à −130,03° de l'humérus  (coude 49,97°)
+     verrouillage : avant-bras à +33,87°           (coude 146,13°)
+   Le signe CHANGE. Passer de −130° à +34° dans le plan du dessin
+   impose de passer par 0°, c'est-à-dire par un bras DESSINÉ
+   PARFAITEMENT TENDU, alors que le coude réel reste autour de
+   90° à cet instant. Le schéma montrerait donc une extension
+   complète du coude qui n'a pas lieu : 90° d'erreur au milieu du
+   mouvement. Dans la réalité ce croisement se fait EN
+   PROFONDEUR, l'avant-bras contournant le corps ; en projection
+   plane il ne peut que traverser.
+   Les autres vues ne sauvent rien :
+   • de PROFIL, au départ l'avant-bras est en travers de la
+     poitrine, donc dirigé vers l'observateur : longueur projetée
+     réduite à environ 30 % ;
+   • de DESSUS, au verrouillage le bras pointe vers l'observateur :
+     longueur projetée réduite à environ 9 %.
+   Et surtout : une vue de face qui ÉVITERAIT l'artefact — en
+   gardant les bras dans le plan frontal du début à la fin —
+   donnerait exactement le développé haltères assis déjà livré
+   (schéma 15). Elle effacerait la seule chose qui fait
+   d'un Arnold un Arnold. Ce serait le cas le plus trompeur de
+   tous : un schéma juste en apparence, qui montre un autre
+   exercice.
+   Décision : pas de schéma dédié. L'exercice retombe sur le
+   pictogramme générique, explicitement étiqueté comme tel.
+   Piste pour plus tard : il faudrait deux choses que le moteur
+   n'a pas — un segment dont la longueur PROJETÉE varie (le
+   raccourci), et une manière de figurer une rotation axiale, par
+   exemple l'orientation de la paume. Les deux sortent d'un
+   moteur de rotations planes à segments rigides.
+   ========================================================= */
