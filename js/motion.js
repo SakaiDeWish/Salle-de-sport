@@ -159,6 +159,7 @@ function renderDedicatedMotion(ex, spec) {
       ${hold}
     </svg>
     <span class="motion-tag">${iso ? "Schéma vérifié · maintien" : "Schéma vérifié"}</span>
+    ${spec.vue ? `<span class="motion-vue">${esc(spec.vue)}</span>` : ""}
     <figcaption class="motion-cap">
       <span class="mo-legend">${musclesNoms.map(n => `<span class="mo-leg-item">${esc(n)}</span>`).join("")}</span>
       <span class="mo-ctl">
