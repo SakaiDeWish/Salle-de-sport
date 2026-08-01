@@ -8178,3 +8178,107 @@ EXERCISE_MOTIONS["curl-halteres-alterne"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M138 74 L138 104 M133 96 L138 104 L143 96"/>` }
   ]
 };
+
+/* =========================================================
+   76. CURL CONCENTRATION  (curl-concentration)
+   -----------------------------------------------------------
+   Position  : ASSIS au bord d'un banc, jambes écartées, buste
+               penché de 50°, l'ARRIÈRE DU COUDE calé contre
+               l'intérieur de la cuisse. Un seul haltère.
+   Mobile    : le COUDE, et lui seul.
+   Fixes     : le BRAS — non pas par consigne mais parce que la
+               cuisse le bloque physiquement. « Décoller le coude
+               de la cuisse » est l'erreur n°1 ; ici le coude est
+               dessiné SUR la ligne de la cuisse, et le bras est
+               dans les éléments fixes.
+   >>> L'INCLINAISON DU BUSTE N'EST PAS UN CHOIX, ELLE EST
+       IMPOSÉE <<< C'est le point que le calcul révèle. Le bras
+       mesure 32,3. Buste VERTICAL, l'épaule serait en (134,68)
+       et le point de cuisse le plus proche à 42 : le coude ne
+       pourrait tout simplement PAS atteindre la cuisse, il
+       manquerait 10 unités. Il faut donc se pencher, et se
+       pencher beaucoup. À 50° d'inclinaison l'épaule descend en
+       (101.8,83) et le coude tombe exactement sur la cuisse en
+       (110,114.2), à 32,3 de l'épaule. La posture caractéristique
+       de cet exercice — buste très penché — est donc une
+       CONSÉQUENCE de la longueur du bras, pas une figure de
+       style.
+   Sens      : montée = concentrique ; descente TRÈS lente =
+               excentrique, d'où un excentrique une fois et demie
+               plus long que le concentrique dans le cycle.
+   ROM       : coude de 156,4° à 40°, soit 116,4° de flexion, la
+               main décrivant un arc de rayon 26 autour du coude.
+               « Amplitude réduite » est l'erreur n°3 : le schéma
+               part donc de l'extension quasi complète.
+   BRAS DE LEVIER, ET CE QU'IL DIT DU « PIC DE CONTRACTION » : le
+               couple résistant vaut poids × distance HORIZONTALE
+               coude-main. Elle vaut 4 au départ, atteint son
+               MAXIMUM de 26 quand l'avant-bras passe à
+               l'horizontale — à 70 % de l'amplitude — puis
+               redescend à 21,2 en haut. Le pic n'est donc PAS au
+               sommet du mouvement, contrairement à ce que la
+               sensation suggère ; il est aux trois quarts de la
+               montée. C'est là qu'il faut ralentir, pas en haut.
+   Agonistes : BICEPS BRACHIAL et BRACHIAL ANTÉRIEUR. Le bras
+               étant immobile, ils sont dans les éléments fixes :
+               ils se contractent sans se déplacer.
+   Distinction : ≠ curl pupitre (bras posé sur un pupitre, les
+               DEUX bras) ; ≠ curl haltères alterné (debout, bras
+               libre, alternance) ; ≠ curl spider (à plat ventre,
+               bras pendant à la verticale).
+   GÉOMÉTRIE (calculée) — épaule (101.8,83), bras 32,3 FIXE,
+   coude (110,114.2) posé sur la cuisse, avant-bras 26.
+     bas  main (106,139.9)   haut main (88.76,99.20)
+   -> avant-bras +116,4° autour du coude.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-concentration"] = {
+  vb: "72 54 90 110",
+  dur: 4,
+  phases: { con: [0, 32], ecc: [40, 90] },
+  alt: "Assis buste très penché, l'arrière du coude calé contre l'intérieur de la cuisse : l'haltère monte vers l'épaule par la seule flexion du coude, puis redescend très lentement jusqu'à l'extension complète.",
+  fixe: `
+    <line class="mo-ground" x1="76" y1="158" x2="158" y2="158"/>
+    <!-- banc -->
+    <line class="mo-pad" x1="112" y1="116" x2="152" y2="116"/>
+    <line class="mo-gear" x1="118" y1="120" x2="118" y2="158"/>
+    <line class="mo-gear" x1="146" y1="120" x2="146" y2="158"/>
+    <!-- corps assis, buste penché de 50° -->
+    <circle class="mo-head" cx="89" cy="70" r="9"/>
+    <line class="mo-body" x1="95" y1="76" x2="101.8" y2="83"/>
+    <line class="mo-body" x1="101.8" y1="83" x2="134" y2="110"/>
+    <line class="mo-body" x1="134" y1="110" x2="100" y2="116"/>
+    <line class="mo-body" x1="100" y1="116" x2="94" y2="150"/>
+    <line class="mo-body" x1="94" y1="150" x2="86" y2="158"/>
+    <!-- bras libre, en appui sur l'autre cuisse -->
+    <line class="mo-body" x1="104" y1="86" x2="122" y2="110"/>
+    <!-- BRAS DE TRAVAIL : fixe, car la cuisse bloque le coude -->
+    <line class="mo-limb" x1="101.8" y1="83" x2="110" y2="114.2"/>
+    <circle class="mo-joint" cx="110" cy="114.2" r="3"/>
+    <!-- amplitude : l'arc réellement parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M106 139.9 A26 26 0 0 1 88.76 99.2"/>`,
+  muscles: [
+    { nom: "Biceps brachial",
+      svg: `<ellipse cx="103" cy="96" rx="3.4" ry="9" transform="rotate(-15 103 96)"/>` },
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="106" cy="108" rx="2.8" ry="6" transform="rotate(-15 106 108)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (110,114.2),
+         +116,4°. Aucun autre segment ne bouge : c'est tout l'intérêt de
+         caler le coude. */
+      o: "110px 114.2px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(116.4deg)"], [40, "rotate(116.4deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="110" y1="114.2" x2="106" y2="139.9"/>
+        <line class="mo-bar2" x1="98.10" y1="138.67" x2="113.90" y2="141.13"/>
+        <rect class="mo-mass" x="94.4" y="133.6" width="6" height="13" rx="2" transform="rotate(8.9 97.4 140.1)"/>
+        <rect class="mo-mass" x="111.6" y="136.3" width="6" height="13" rx="2" transform="rotate(8.9 114.6 142.8)"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M140 100 L140 70 M135 78 L140 70 L145 78"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 70 L140 100 M135 92 L140 100 L145 92"/>` }
+  ]
+};
