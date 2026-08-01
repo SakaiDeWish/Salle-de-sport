@@ -5946,3 +5946,178 @@ EXERCISE_MOTIONS["tractions-supination"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M164 44 L164 76 M159 68 L164 76 L169 68"/>` }
   ]
 };
+
+/* =========================================================
+   60. TIRAGE HORIZONTAL À LA POULIE BASSE
+       (tirage-horizontal-poulie)
+   -----------------------------------------------------------
+   Position  : ASSIS face à la poulie basse, pieds calés sur le
+               repose-pied, genoux à peine fléchis (156°), buste
+               DROIT, poignée en V tenue à deux mains.
+   Matériel  : poulie basse, poignée neutre. Le câble tire vers
+               l'AVANT et le BAS.
+   Mobiles   : l'OMOPLATE (rétraction), l'ÉPAULE (extension) et
+               le COUDE (flexion). Trois étages, et l'omoplate
+               est le premier — c'est l'ordre correct du geste.
+   Fixes     : le BASSIN sur le siège, les PIEDS sur la cale, les
+               genoux, et surtout le BUSTE : « balancier du
+               buste » est l'erreur n°1, donc le tronc est
+               strictement immobile dans ce schéma. Un tronc qui
+               oscillerait dessinerait la faute.
+CE QUE CE SCHÉMA MONTRE ET QU'AUCUN AUTRE ROWING NE MONTRE :
+               le RECUL DE L'ÉPAULE. « Tirer avec les bras
+               seulement » est la deuxième erreur listée, et elle
+               reste invisible tant que la ceinture scapulaire
+               n'est pas une pièce distincte du bras. Ici elle en
+               est une : elle recule de 4 unités (≈5 cm) et
+               entraîne TOUT le bras avec elle — le geste part
+               donc de là, et pas du coude.
+   PRÉCISION QUI ÉVITE UNE SUR-AFFIRMATION : ce n'est pas la
+               rétraction de l'omoplate qui est dessinée. La
+               rétraction est un glissement MÉDIAL, vers le
+               rachis, donc perpendiculaire au plan du schéma :
+               de profil elle est strictement invisible. Ce qui
+               est dessiné, c'est sa conséquence visible de
+               profil — l'omoplate épouse une cage thoracique
+               courbe, donc en glissant vers le dedans elle
+               emmène l'articulation de l'épaule vers l'ARRIÈRE.
+               Deux repères pointillés fixes bornent ce recul,
+               sans quoi 4 unités ne se verraient pas.
+   Sens      : traction de la poignée vers le nombril =
+               CONCENTRIQUE ; retour contrôlé, omoplate qui
+               revient sans que les lombaires s'arrondissent =
+               excentrique.
+   ROM       : coude de 174° à 72°, coude qui passe 17,75 unités
+               DERRIÈRE l'épaule — c'est la marque d'un vrai
+               rowing, le coude dépasse le tronc.
+   Agonistes : RHOMBOÏDES et TRAPÈZE MOYEN (les rétracteurs de
+               l'omoplate, donc les vrais responsables de
+               l'« épaisseur » du dos), GRAND DORSAL, biceps.
+   Distinction : c'est le seul tirage horizontal fait BUSTE
+               VERTICAL. ≠ rowing barre / T-bar (buste penché,
+               résistance verticale, lombaires chargés en
+               permanence) ; ≠ rowing haltère (unilatéral, en
+               appui) ; ≠ rowing inversé (chaîne fermée, c'est le
+               corps qui se déplace) ; ≠ tirage vertical (le bras
+               vient d'au-dessus).
+   GÉOMÉTRIE (calculée) — bras 22, avant-bras 22.
+     début épaule (112,66) coude (93.55,77.99) main (73.97,88)
+     fin   épaule (116,66) coude (133.75,79)   main (116,92)
+   TRAJET IMPOSÉ, PUIS RÉSOLU : la poignée d'un rowing assis suit
+   une ligne quasi RECTILIGNE. Elle est donc imposée droite entre
+   les deux extrêmes, échantillonnée en six intervalles, et la
+   chaîne omoplate/bras/avant-bras est résolue par IK à chacun.
+   Sans cela, l'interpolation linéaire des rotations faisait
+   plonger la poignée de 11 unités à mi-course et le CÂBLE s'en
+   détachait de 13 unités — défaut mesuré, pas supposé.
+     coude 173,8° -> 124,6 -> 103,1 -> 88,2 -> 78,1 -> 72,8 -> 72,4
+   Il se ferme donc surtout dans la PREMIÈRE moitié, puis reste
+   quasi constant pendant que l'épaule recule : c'est exactement
+   la technique correcte, et c'est ici une conséquence du calcul,
+   pas une intention.
+   Câble : poulie (44,130), rotation +26,67° et allongement
+   ×1,5779 au total, échantillonnés aux mêmes six intervalles.
+   ========================================================= */
+EXERCISE_MOTIONS["tirage-horizontal-poulie"] = {
+  vb: "34 38 124 116",
+  dur: 3.8,
+  phases: { con: [0, 36], ecc: [44, 88] },
+  alt: "Assis buste droit face à une poulie basse : l'omoplate recule, puis le coude passe derrière le tronc et la poignée vient au nombril ; retour contrôlé.",
+  fixe: `
+    <line class="mo-ground" x1="36" y1="150" x2="154" y2="150"/>
+    <!-- rail, colonne de poulie basse et repose-pied -->
+    <line class="mo-gear" x1="40" y1="144" x2="150" y2="144"/>
+    <line class="mo-gear" x1="44" y1="144" x2="44" y2="126"/>
+    <circle class="mo-pulley" cx="44" cy="130" r="5"/>
+    <line class="mo-pad" x1="56" y1="144" x2="72" y2="116"/>
+    <!-- siège -->
+    <line class="mo-pad" x1="100" y1="112" x2="142" y2="112"/>
+    <line class="mo-gear" x1="120" y1="112" x2="120" y2="144"/>
+    <!-- corps assis de profil, BUSTE IMMOBILE (donc dans les fixes) -->
+    <circle class="mo-head" cx="114" cy="50" r="9"/>
+    <line class="mo-body" x1="116" y1="59" x2="118" y2="64"/>
+    <line class="mo-body" x1="118" y1="64" x2="120" y2="108"/>
+    <line class="mo-body" x1="120" y1="108" x2="89" y2="116"/>
+    <line class="mo-body" x1="89" y1="116" x2="64" y2="136"/>
+    <line class="mo-body" x1="64" y1="136" x2="66" y2="126"/>
+    <!-- REPÈRES FIXES du recul de l'épaule : sans eux, un glissement
+         de 4 unités est illisible. Le premier marque la position
+         protractée, le second la position rétractée. -->
+    <line class="mo-rom" x1="112" y1="59.5" x2="112" y2="64"/>
+    <line class="mo-rom" x1="116" y1="59.5" x2="116" y2="64"/>`,
+  muscles: [
+    { nom: "Rhomboïdes",
+      svg: `<ellipse cx="121" cy="70" rx="3" ry="8"/>` },
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="124" cy="92" rx="3.6" ry="12" transform="rotate(3 124 92)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : tourne autour de la POULIE (44,130) et s'allonge pour
+         rester sur la poignée. */
+      o: "44px 130px",
+      k: [[0, "rotate(0deg) scale(1)"], [6, "rotate(6.30deg) scale(1.0748)"],
+          [12, "rotate(11.73deg) scale(1.1609)"], [18, "rotate(16.37deg) scale(1.2560)"],
+          [24, "rotate(20.34deg) scale(1.3581)"], [30, "rotate(23.74deg) scale(1.4657)"],
+          [36, "rotate(26.67deg) scale(1.5779)"], [44, "rotate(26.67deg) scale(1.5779)"],
+          [51.33, "rotate(23.74deg) scale(1.4657)"], [58.67, "rotate(20.34deg) scale(1.3581)"],
+          [66, "rotate(16.37deg) scale(1.2560)"], [73.33, "rotate(11.73deg) scale(1.1609)"],
+          [80.67, "rotate(6.30deg) scale(1.0748)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="44" y1="130" x2="73.97" y2="88"/>`
+    },
+    {
+      /* OMOPLATE : TRANSLATION pure de 4 unités vers le rachis. Elle est
+         la RACINE de la chaîne du bras : tout le bras la suit. C'est ce
+         qui rend visible que le geste part de l'omoplate. */
+      o: "112px 66px",
+      k: [[0, "translate(0px,0px)"], [6, "translate(0.67px,0px)"], [12, "translate(1.33px,0px)"],
+          [18, "translate(2px,0px)"], [24, "translate(2.67px,0px)"], [30, "translate(3.33px,0px)"],
+          [36, "translate(4px,0px)"], [44, "translate(4px,0px)"],
+          [51.33, "translate(3.33px,0px)"], [58.67, "translate(2.67px,0px)"],
+          [66, "translate(2px,0px)"], [73.33, "translate(1.33px,0px)"],
+          [80.67, "translate(0.67px,0px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `<circle class="mo-joint" cx="112" cy="66" r="3.6"/>`,
+      children: [
+        {
+          /* BRAS : rotation autour de l'ÉPAULE. −110,77° emmène le coude
+             de devant à 17,75 unités DERRIÈRE l'épaule. */
+          o: "112px 66px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-30.09deg)"], [12, "rotate(-47.91deg)"],
+              [18, "rotate(-64.35deg)"], [24, "rotate(-80.56deg)"], [30, "rotate(-96.38deg)"],
+              [36, "rotate(-110.61deg)"], [44, "rotate(-110.61deg)"],
+              [51.33, "rotate(-96.38deg)"], [58.67, "rotate(-80.56deg)"], [66, "rotate(-64.35deg)"],
+              [73.33, "rotate(-47.91deg)"], [80.67, "rotate(-30.09deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="112" y1="66" x2="93.55" y2="77.99"/>
+            <circle class="mo-joint" cx="93.55" cy="77.99" r="2.6"/>`,
+          children: [
+            {
+              /* AVANT-BRAS + POIGNÉE : rotation RELATIVE autour du COUDE.
+                 +101,63° ferme le coude de 174° à 72°. */
+              o: "93.55px 77.99px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(49.14deg)"], [12, "rotate(70.68deg)"],
+                  [18, "rotate(85.57deg)"], [24, "rotate(95.62deg)"], [30, "rotate(100.96deg)"],
+                  [36, "rotate(101.33deg)"], [44, "rotate(101.33deg)"],
+                  [51.33, "rotate(100.96deg)"], [58.67, "rotate(95.62deg)"], [66, "rotate(85.57deg)"],
+                  [73.33, "rotate(70.68deg)"], [80.67, "rotate(49.14deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Biceps brachial",
+              muscle: `<ellipse cx="84" cy="83" rx="6.5" ry="3" transform="rotate(-27 84 83)"/>`,
+              svg: `
+                <line class="mo-limb" x1="93.55" y1="77.99" x2="73.97" y2="88"/>
+                <line class="mo-bar2" x1="70.9" y1="82" x2="77" y2="94"/>
+                <circle class="mo-hand" cx="73.97" cy="88" r="3.4"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M68 54 L94 54 M87 49 L94 54 L87 59"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M94 54 L68 54 M75 49 L68 54 L75 59"/>` }
+  ]
+};
