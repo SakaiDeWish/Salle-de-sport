@@ -7491,3 +7491,156 @@ EXERCISE_MOTIONS["elevations-laterales-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M52 92 L52 120 M47 112 L52 120 L57 112"/>` }
   ]
 };
+
+/* =========================================================
+   71. ROWING MENTON PRISE LARGE  (rowing-menton)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre devant les cuisses, prise PRONATION
+               LARGE — mains 48 unités d'écart pour des épaules
+               de 32, soit une fois et demie la largeur d'épaules.
+   Matériel  : barre chargée.
+   Mobiles   : ÉPAULE (abduction) et COUDE (flexion).
+   Fixes     : le buste et les jambes.
+   Plan      : FRONTAL — les coudes partent sur les CÔTÉS. Vue de
+               face, donc ; de profil le mouvement serait
+               invisible.
+   Sens      : montée de la barre le long du corps = concentrique ;
+               descente contrôlée = excentrique.
+   ROM       : coude de 163° à 36° ; la barre monte de 34,83 à la
+               VERTICALE, du haut des cuisses au BAS DE LA
+               POITRINE — et pas jusqu'au menton.
+   >>> POURQUOI LA PRISE LARGE ARRÊTE LA BARRE PLUS BAS, ET
+       POURQUOI C'EST UN AVANTAGE <<< Les mains sont écartées de
+       48, donc chaque main est 8 unités PLUS À L'EXTÉRIEUR que
+       son épaule, et cet écart ne peut pas changer : la barre est
+       rigide. Or au fil de la montée, la distance épaule-main
+       tombe de 48,46 à 15,24. Quand cette distance approche
+       l'écart latéral de 8, le bras ne peut plus monter sans que
+       l'épaule parte en rotation interne — c'est la position qui
+       pince l'épaule. En s'arrêtant à 15,24, le schéma s'arrête
+       AVANT cette zone. Une prise serrée, elle, annulerait
+       l'écart latéral et laisserait la barre monter jusqu'au
+       menton — au prix exact de cette rotation interne.
+       Le nom de l'exercice dit « menton » ; la prise large dit
+       « poitrine ». Le schéma suit la prise, pas le nom.
+   Agonistes : DELTOÏDE MOYEN et TRAPÈZE SUPÉRIEUR. C'est le
+               coude HAUT qui les met en jeu : à l'arrivée le
+               coude est à 59,66, soit 4,3 unités AU-DESSUS de la
+               ligne d'épaules.
+   Distinction : ≠ élévations latérales (coude verrouillé, aucune
+               flexion) ; ≠ shrugs (aucune abduction, l'omoplate
+               translate seule) ; ≠ tirage vertical (le corps est
+               debout et c'est la barre qui monte, pas l'inverse).
+   GÉOMÉTRIE (calculée) — épaule gauche (104,64), bras 25,
+   avant-bras 24. Trajet de la barre imposé STRICTEMENT VERTICAL
+   (x = 96 constant), six intervalles, IK à chacun :
+     coude 163,0 -> 121,5 -> 98,3 -> 79,7 -> 63,6 -> 49,2 -> 36,2
+     coude (point) de (96.36,87.80) à (79.38,59.66)
+   -> bras +82,20° ; avant-bras relatif −126,88° ; barre en
+      TRANSLATION verticale pure de −34,83.
+   Sans cet échantillonnage, l'interpolation linéaire des deux
+   rotations faisait dériver la main de 4,6 unités vers
+   l'extérieur à mi-course — la barre étant rigide, c'est
+   impossible.
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-menton"] = {
+  vb: "46 30 134 132",
+  dur: 3.4,
+  phases: { con: [0, 30], ecc: [38, 88] },
+  alt: "Debout de face, barre en prise large devant les cuisses : la barre monte à la verticale le long du corps jusqu'au bas de la poitrine, coudes hauts et écartés, puis redescend.",
+  fixe: `
+    <line class="mo-ground" x1="96" y1="156" x2="150" y2="156"/>
+    <!-- corps de face, immobile -->
+    <circle class="mo-head" cx="120" cy="44" r="10"/>
+    <line class="mo-body" x1="104" y1="64" x2="136" y2="64"/>
+    <line class="mo-body" x1="120" y1="54" x2="120" y2="110"/>
+    <line class="mo-body" x1="120" y1="110" x2="110" y2="156"/>
+    <line class="mo-body" x1="120" y1="110" x2="130" y2="156"/>
+    <!-- LIMITE de la prise large : bas de la poitrine, pas le menton -->
+    <line class="mo-rom" x1="100" y1="77" x2="140" y2="77"/>`,
+  muscles: [
+    { nom: "Deltoïde moyen",
+      svg: `<circle cx="104" cy="64" r="5.5"/><circle cx="136" cy="64" r="5.5"/>` },
+    { nom: "Trapèze supérieur",
+      svg: `<ellipse cx="112" cy="56" rx="7" ry="3.4" transform="rotate(-40 112 56)"/>
+            <ellipse cx="128" cy="56" rx="7" ry="3.4" transform="rotate(40 128 56)"/>` }
+  ],
+  parts: [
+    {
+      /* BARRE : TRANSLATION verticale pure. Elle est rigide, donc elle ne
+         tourne pas et l'écartement des mains ne change jamais. */
+      k: [[0, "translate(0px,0px)"], [5, "translate(0px,-5.80px)"], [10, "translate(0px,-11.61px)"],
+          [15, "translate(0px,-17.42px)"], [20, "translate(0px,-23.22px)"], [25, "translate(0px,-29.02px)"],
+          [30, "translate(0px,-34.83px)"], [38, "translate(0px,-34.83px)"],
+          [46.33, "translate(0px,-29.02px)"], [54.67, "translate(0px,-23.22px)"],
+          [63, "translate(0px,-17.42px)"], [71.33, "translate(0px,-11.61px)"],
+          [79.67, "translate(0px,-5.80px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-bar2" x1="66" y1="111.8" x2="174" y2="111.8"/>
+        <circle class="mo-plate-o" cx="80" cy="111.8" r="13"/>
+        <circle class="mo-hub" cx="80" cy="111.8" r="2.6"/>
+        <circle class="mo-plate-o" cx="160" cy="111.8" r="13"/>
+        <circle class="mo-hub" cx="160" cy="111.8" r="2.6"/>`
+    },
+    {
+      /* BRAS GAUCHE : abduction autour de l'ÉPAULE (104,64), +82,20°.
+         Le coude finit AU-DESSUS de la ligne d'épaules. */
+      o: "104px 64px",
+      k: [[0, "rotate(0deg)"], [5, "rotate(21.59deg)"], [10, "rotate(34.51deg)"],
+          [15, "rotate(45.68deg)"], [20, "rotate(56.52deg)"], [25, "rotate(68.13deg)"],
+          [30, "rotate(82.20deg)"], [38, "rotate(82.20deg)"],
+          [46.33, "rotate(68.13deg)"], [54.67, "rotate(56.52deg)"], [63, "rotate(45.68deg)"],
+          [71.33, "rotate(34.51deg)"], [79.67, "rotate(21.59deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="104" y1="64" x2="96.36" y2="87.80"/>
+        <circle class="mo-joint" cx="96.36" cy="87.80" r="2.6"/>`,
+      children: [
+        {
+          o: "96.36px 87.80px",
+          k: [[0, "rotate(0deg)"], [5, "rotate(-41.57deg)"], [10, "rotate(-64.77deg)"],
+              [15, "rotate(-83.31deg)"], [20, "rotate(-99.41deg)"], [25, "rotate(-113.87deg)"],
+              [30, "rotate(-126.88deg)"], [38, "rotate(-126.88deg)"],
+              [46.33, "rotate(-113.87deg)"], [54.67, "rotate(-99.41deg)"], [63, "rotate(-83.31deg)"],
+              [71.33, "rotate(-64.77deg)"], [79.67, "rotate(-41.57deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="96.36" y1="87.80" x2="96" y2="111.8"/>
+            <circle class="mo-hand" cx="96" cy="111.8" r="3.2"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir exact autour de x=120. */
+      o: "136px 64px",
+      k: [[0, "rotate(0deg)"], [5, "rotate(-21.59deg)"], [10, "rotate(-34.51deg)"],
+          [15, "rotate(-45.68deg)"], [20, "rotate(-56.52deg)"], [25, "rotate(-68.13deg)"],
+          [30, "rotate(-82.20deg)"], [38, "rotate(-82.20deg)"],
+          [46.33, "rotate(-68.13deg)"], [54.67, "rotate(-56.52deg)"], [63, "rotate(-45.68deg)"],
+          [71.33, "rotate(-34.51deg)"], [79.67, "rotate(-21.59deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="136" y1="64" x2="143.64" y2="87.80"/>
+        <circle class="mo-joint" cx="143.64" cy="87.80" r="2.6"/>`,
+      children: [
+        {
+          o: "143.64px 87.80px",
+          k: [[0, "rotate(0deg)"], [5, "rotate(41.57deg)"], [10, "rotate(64.77deg)"],
+              [15, "rotate(83.31deg)"], [20, "rotate(99.41deg)"], [25, "rotate(113.87deg)"],
+              [30, "rotate(126.88deg)"], [38, "rotate(126.88deg)"],
+              [46.33, "rotate(113.87deg)"], [54.67, "rotate(99.41deg)"], [63, "rotate(83.31deg)"],
+              [71.33, "rotate(64.77deg)"], [79.67, "rotate(41.57deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="143.64" y1="87.80" x2="144" y2="111.8"/>
+            <circle class="mo-hand" cx="144" cy="111.8" r="3.2"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M56 110 L56 80 M51 88 L56 80 L61 88"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M56 80 L56 110 M51 102 L56 110 L61 102"/>` }
+  ]
+};
