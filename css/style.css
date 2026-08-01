@@ -2139,3 +2139,13 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
 .mo-hold-piste { fill: none; stroke: var(--text-soft); stroke-width: 3; opacity: .28; }
 .mo-hold-ring  { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
 .mo-hold-core  { fill: var(--accent); }
+
+/* Badge de VUE : la quasi-totalité des schémas sont de profil. Quand un
+   mouvement n'existe que dans un autre plan (rotation transverse), la vue
+   change — et le lecteur doit le voir, pas seulement le lire dans l'alt. */
+.motion-vue {
+  position: absolute; top: 10px; left: 12px;
+  font-size: 0.64rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--bg); background: var(--accent);
+  padding: 2px 7px; border-radius: 999px;
+}

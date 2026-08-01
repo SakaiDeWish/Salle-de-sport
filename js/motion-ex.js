@@ -3890,3 +3890,90 @@ EXERCISE_MOTIONS["releve-jambes-suspendu"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M162 104 L162 140 M157 132 L162 140 L167 132"/>` }
   ]
 };
+
+/* =========================================================
+   41. RUSSIAN TWIST  (russian-twist)
+   -----------------------------------------------------------
+   Position  : ASSIS au sol, BUSTE INCLINÉ VERS L'ARRIÈRE à environ
+               45°, genoux fléchis, mains jointes (ou lest) devant la
+               poitrine.
+   Matériel  : poids du corps, ou un lest tenu à deux mains.
+   Mobiles   : la ROTATION du tronc autour de son axe longitudinal.
+   Fixes     : le bassin et les jambes, qui ne doivent pas partir en
+               balancier — sinon ce sont les hanches qui tournent et
+               plus les obliques qui travaillent.
+   Sens      : rotation d'un côté puis de l'autre, en alternance.
+   ROM       : 45° de chaque côté, soit 90° d'amplitude totale.
+   Agonistes : OBLIQUES, qui travaillent en COUPLE CROISÉ — l'oblique
+               externe d'un côté avec l'oblique interne de l'autre.
+               Grand droit en gainage, et fléchisseurs de hanche pour
+               tenir le buste incliné.
+
+   >>> PREMIER SCHÉMA EN VUE DE DESSUS — ET C'EST DÉLIBÉRÉ <<<
+   Les quarante schémas précédents sont en vue SAGITTALE, de profil.
+   Ce mouvement est une rotation autour de l'axe long du corps, dans
+   le plan TRANSVERSE. De profil, cette rotation est strictement
+   INVISIBLE : la silhouette ne changerait pas d'un pixel, et le
+   schéma montrerait un corps parfaitement immobile pour un exercice
+   qui bouge. Ce serait pire qu'inutile.
+   Le schéma est donc dessiné VU DE DESSUS, seule projection où ce
+   mouvement existe réellement : la ligne d'épaules balaie 90° autour
+   du bassin et le lest décrit un arc, matérialisé en pointillés.
+   CE QUE CETTE VUE NE PEUT PAS MONTRER, et qu'il faut donc savoir :
+   l'inclinaison du buste vers l'arrière, qui est pourtant ce qui met
+   les abdominaux sous tension. Un buste qui se redresse pendant la
+   série vide l'exercice de son intérêt. C'est écrit ici faute de
+   pouvoir être dessiné.
+
+   LES DEUX « PHASES » NE SONT PAS CONCENTRIQUE/EXCENTRIQUE : ce sont
+   les deux SENS de rotation. Dans un mouvement alterné, chaque sens
+   est concentrique pour les obliques du côté opposé. Les deux flèches
+   du schéma indiquent donc deux directions, pas une montée et une
+   descente.
+   GÉOMÉTRIE — bassin(110,132) axe de rotation, axe du tronc 40,
+   ligne d'épaules 38, lest à 22 du bassin.
+   Extrêmes vérifiés à ±45° : tête(71.82,93.82) / (148.18,93.82),
+   lest(94.44,116.44) / (125.56,116.44).
+   ========================================================= */
+EXERCISE_MOTIONS["russian-twist"] = {
+  vb: "56 66 116 110",
+  dur: 4.0,
+  vue: "Vu de dessus",
+  phases: { con: [0, 45], ecc: [55, 100] },
+  alt: "Vu de dessus. Assis buste incliné en arrière, mains jointes devant la poitrine : le tronc pivote de 45° d'un côté puis de l'autre, bassin et jambes immobiles.",
+  fixe: `
+    <!-- jambes, vues de dessus : elles ne tournent pas -->
+    <line class="mo-limb" x1="110" y1="132" x2="94" y2="166"/>
+    <line class="mo-limb" x1="110" y1="132" x2="126" y2="166"/>
+    <line class="mo-limb" x1="88" y1="166" x2="100" y2="166"/>
+    <line class="mo-limb" x1="120" y1="166" x2="132" y2="166"/>
+    <circle class="mo-joint" cx="110" cy="132" r="3.4"/>
+    <!-- arc réellement parcouru par le lest : 90° au total -->
+    <path class="mo-rom" fill="none" d="M94.44 116.44 A22 22 0 0 1 125.56 116.44"/>`,
+  parts: [
+    {
+      /* TRONC ENTIER : rotation autour du BASSIN, de −45° à +45°.
+         Tête, épaules, bras et lest tournent ensemble : c'est un bloc
+         rigide qui pivote, ce qu'est réellement le mouvement. */
+      o: "110px 132px",
+      k: [[0, "rotate(-45deg)"], [45, "rotate(45deg)"], [55, "rotate(45deg)"],
+          [100, "rotate(-45deg)"]],
+      muscleNom: ["Obliques", "Grand droit (gainage)"],
+      muscle: `
+        <ellipse cx="101.5" cy="112" rx="3.5" ry="9"/>
+        <ellipse cx="118.5" cy="112" rx="3.5" ry="9"/>`,
+      svg: `
+        <line class="mo-body" x1="110" y1="132" x2="110" y2="92"/>
+        <line class="mo-body" x1="91" y1="92" x2="129" y2="92"/>
+        <circle class="mo-head" cx="110" cy="78" r="9"/>
+        <line class="mo-limb" x1="91" y1="92" x2="110" y2="110"/>
+        <line class="mo-limb" x1="129" y1="92" x2="110" y2="110"/>
+        <circle class="mo-plate-o" cx="110" cy="110" r="7"/>
+        <circle class="mo-hub" cx="110" cy="110" r="2.4"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M132 150 L154 150 M147 145 L154 150 L147 155"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M88 150 L66 150 M73 145 L66 150 L73 155"/>` }
+  ]
+};
