@@ -3289,3 +3289,107 @@ EXERCISE_MOTIONS["leg-curl"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M168 78 L168 110 M163 102 L168 110 L173 102"/>` }
   ]
 };
+
+/* =========================================================
+   35. PONT FESSIER (GLUTE BRIDGE)  (pont-fessier)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ SUR LE DOS au sol, genoux fléchis, pieds à
+               plat près des fessiers, bras le long du corps.
+   Matériel  : aucun.
+   Mobiles   : la HANCHE (extension), le genou suivant.
+   Fixes     : les PIEDS et les ÉPAULES, toutes deux AU SOL. Double
+               appui, comme au hip thrust — mais les deux ancrages
+               sont ici à la MÊME hauteur, et c'est toute la
+               différence.
+   CE QUE CELA CHANGE, CHIFFRÉ : les épaules étant au sol et non
+               surélevées sur un banc, le bassin ne peut pas
+               descendre plus bas que le sol. Sa course n'est donc
+               que de 14,3 unités, contre 23,4 au hip thrust — soit
+               61 % de l'amplitude. C'est exactement pourquoi le pont
+               est la version d'apprentissage sans matériel, et le
+               hip thrust la version chargée : ce n'est pas une
+               question de charge, c'est une question de COURSE
+               disponible.
+   LA TÊTE  : comme au hip thrust, contre-rotation exacte de −26,5° —
+               elle reste posée au sol pendant que le buste pivote.
+               Les bras aussi restent au sol, donc dessinés parmi les
+               éléments fixes.
+   Sens/plan : montée du bassin = concentrique ; descente =
+               excentrique. Le cycle commence bassin au sol.
+   ROM       : hanche de 115,0° à 180,0° (vérifié). Même critère
+               d'arrêt qu'au hip thrust : épaules, hanches et genoux
+               ALIGNÉS, pas un degré de plus, sous peine de cambrer
+               les lombaires au lieu de contracter le fessier.
+   Agonistes : GRAND FESSIER, ischio-jambiers en assistance.
+   Distinction : AU SOL, épaules au sol, sans charge.
+               ≠ hip thrust (épaules sur un banc, 64 % d'amplitude en
+               plus, charge lourde possible).
+   GÉOMÉTRIE (calculée) — épaules SC(150,134) et cheville A(96,134)
+   toutes deux FIXES au sol ; tronc 32, cuisse 26, tibia 26.
+   Bas  : hanche(118,134) posée au sol, genou(107,110.44).
+   Haut : alignement -> hanche(121.37,119.70), genou(98.11,108.09).
+   -> tronc +26,54°, cuisse −64,97° rel, tibia +18,06° rel,
+      tête −26,54° rel.
+   ========================================================= */
+EXERCISE_MOTIONS["pont-fessier"] = {
+  vb: "76 94 108 56",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé sur le dos, genoux fléchis, pieds à plat : le bassin monte jusqu'à l'alignement épaules-hanches-genoux, puis redescend au sol.",
+  fixe: `
+    <line class="mo-ground" x1="80" y1="140" x2="180" y2="140"/>
+    <!-- pied ancré au sol -->
+    <line class="mo-limb" x1="86" y1="140" x2="104" y2="140"/>
+    <line class="mo-limb" x1="96" y1="134" x2="89" y2="140"/>
+    <circle class="mo-joint" cx="96" cy="134" r="2.8"/>
+    <!-- épaule au sol : l'autre ancrage -->
+    <circle class="mo-joint" cx="150" cy="134" r="3"/>
+    <!-- bras posés au sol, ils ne bougent pas -->
+    <line class="mo-limb" x1="146" y1="136" x2="128" y2="138"/>`,
+  parts: [
+    {
+      /* TRONC : rotation autour de l'appui d'épaule. +26,54°. */
+      o: "150px 134px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(26.54deg)"], [40, "rotate(26.54deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-body" x1="150" y1="134" x2="118" y2="134"/>`,
+      children: [
+        {
+          /* TÊTE : contre-rotation -> elle reste posée au sol. */
+          o: "150px 134px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(-26.54deg)"], [40, "rotate(-26.54deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-body" x1="150" y1="134" x2="156" y2="132"/>
+            <circle class="mo-head" cx="164" cy="130" r="8"/>`
+        },
+        {
+          o: "118px 134px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(-64.97deg)"], [40, "rotate(-64.97deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="117" cy="131" r="4.5"/>
+            <ellipse cx="109.3" cy="123.7" rx="3" ry="9" transform="rotate(-25 109.3 123.7)"/>`,
+          svg: `<line class="mo-limb" x1="118" y1="134" x2="107" y2="110.44"/>`,
+          children: [
+            {
+              /* TIBIA : +18,06° relatif. Son extrémité retombe
+                 exactement sur la cheville ancrée, aux deux positions. */
+              o: "107px 110.44px",
+              k: [[0, "rotate(0deg)"], [32, "rotate(18.06deg)"], [40, "rotate(18.06deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="107" cy="110.44" r="2.8"/>
+                <line class="mo-limb" x1="107" y1="110.44" x2="96" y2="134"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M84 132 L84 106 M79 114 L84 106 L89 114"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M84 106 L84 132 M79 124 L84 132 L89 124"/>` }
+  ]
+};
