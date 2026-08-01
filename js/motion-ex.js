@@ -7371,3 +7371,123 @@ EXERCISE_MOTIONS["elevations-frontales"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M78 102 L78 126 M73 118 L78 126 L83 118"/>` }
   ]
 };
+
+/* =========================================================
+   70. ÉLÉVATIONS LATÉRALES À LA POULIE
+       (elevations-laterales-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT à CÔTÉ d'une poulie basse, la poignée
+               saisie de la main OPPOSÉE — le câble traverse donc
+               le corps en diagonale. Buste droit, épaule basse.
+   Matériel  : poulie basse, poignée simple. UNILATÉRAL.
+   Mobile    : l'ÉPAULE seule, en abduction.
+   Fixes     : le COUDE, bloqué à 161° ; le buste, car « buste
+               penché » est l'erreur n°3 ; le bras libre.
+   Vue de FACE : l'abduction vit dans le plan FRONTAL, un profil
+               ne montrerait aucun déplacement.
+   ROM       : 102°, de 12° d'ADDUCTION (main devant la cuisse
+               opposée) à 90° d'abduction. C'est 28° de plus que
+               la version haltères, et ce n'est pas un choix : la
+               main vient chercher la poignée de l'autre côté du
+               corps, donc le mouvement part de plus bas.
+   >>> CE QUE LA POULIE CHANGE, CHIFFRÉ <<< La fiche dit que la
+       poulie « garde la tension même en bas ». Le calcul le
+       confirme et le mesure. Bras de levier de la résistance
+       autour de l'épaule, au fil du mouvement :
+         t      0    1/6    2/6    3/6    4/6    5/6      1
+         câble 38,9  46,7   48,3   45,9   40,8   33,7   25,3
+         halt. 10,1   4,2   18,1   30,4   40,1   46,3   48,4
+       Deux lectures.
+       1. EN BAS, là où l'haltère ne pèse presque rien — 4,2 quand
+          la main passe à l'aplomb de l'épaule — le câble tire
+          encore à 46,7. ONZE FOIS plus. C'est exactement la
+          phrase de la fiche, en chiffres.
+       2. Le câble est aussi bien plus CONSTANT : de 25,3 à 48,3,
+          rapport 1,9. L'haltère va de 4,2 à 48,4, rapport 11,5.
+          L'un charge tout le trajet, l'autre presque uniquement
+          la fin.
+       Contrepartie honnête : en HAUT c'est l'haltère qui charge
+       le plus (48,4 contre 25,3). Les deux versions ne sont donc
+       pas redondantes, elles chargent des portions différentes du
+       même mouvement.
+   Agonistes : DELTOÏDE MOYEN. Le sus-épineux initie les 15
+               premiers degrés d'abduction, mais il est profond et
+               court : le dessiner voudrait dire le placer au
+               jugé, il est donc mentionné et non tracé.
+   Sens      : montée = concentrique ; descente en résistant au
+               câble = excentrique, plus lente.
+   Distinction : ≠ élévations latérales haltères (bilatéral,
+               amplitude 74°, tension nulle en bas) ; ≠ élévations
+               frontales (plan sagittal) ; ≠ rowing menton (le
+               coude s'y ferme).
+   GÉOMÉTRIE (calculée) — épaule gauche (104,62), bras 25,
+   avant-bras 24, coude bloqué -> épaule-main constante 48,37.
+     bas  main (114.06,109.31)  coude (105.31,86.97)
+     haut main ( 55.63, 62.00)
+   -> bloc bras, rotation +102° autour de l'épaule.
+   Câble : poulie (186,142), rotation NON monotone (0 -> −5,1 ->
+   +7,1) et allongement ×1,9357, échantillonnés en six intervalles.
+   ========================================================= */
+EXERCISE_MOTIONS["elevations-laterales-poulie"] = {
+  vb: "44 26 152 130",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout de face à côté d'une poulie basse, la poignée tenue de la main opposée : le bras monte sur le côté depuis devant la cuisse opposée jusqu'à l'horizontale, puis redescend en résistant au câble.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="150" x2="194" y2="150"/>
+    <!-- colonne et poulie BASSE, à droite du pratiquant -->
+    <line class="mo-gear" x1="190" y1="26" x2="190" y2="150"/>
+    <circle class="mo-pulley" cx="186" cy="142" r="5"/>
+    <!-- corps de face, immobile -->
+    <circle class="mo-head" cx="120" cy="42" r="10"/>
+    <line class="mo-body" x1="104" y1="62" x2="136" y2="62"/>
+    <line class="mo-body" x1="120" y1="52" x2="120" y2="108"/>
+    <line class="mo-body" x1="120" y1="108" x2="110" y2="150"/>
+    <line class="mo-body" x1="120" y1="108" x2="130" y2="150"/>
+    <!-- bras libre, immobile -->
+    <line class="mo-body" x1="136" y1="62" x2="140" y2="86"/>
+    <line class="mo-body" x1="140" y1="86" x2="139" y2="110"/>
+    <!-- LIMITE : la ligne des épaules, à ne pas dépasser -->
+    <line class="mo-rom" x1="48" y1="62" x2="96" y2="62"/>`,
+  muscles: [
+    { nom: "Deltoïde moyen",
+      svg: `<circle cx="104" cy="62" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation non monotone + allongement autour de la POULIE,
+         échantillonnés sur l'arc réel de la poignée. */
+      o: "186px 142px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.33, "rotate(-4.18deg) scale(1.1630)"],
+          [10.67, "rotate(-5.09deg) scale(1.3428)"], [16, "rotate(-3.77deg) scale(1.5208)"],
+          [21.33, "rotate(-0.99deg) scale(1.6842)"], [26.67, "rotate(2.75deg) scale(1.8245)"],
+          [32, "rotate(7.10deg) scale(1.9357)"], [40, "rotate(7.10deg) scale(1.9357)"],
+          [48, "rotate(2.75deg) scale(1.8245)"], [56, "rotate(-0.99deg) scale(1.6842)"],
+          [64, "rotate(-3.77deg) scale(1.5208)"], [72, "rotate(-5.09deg) scale(1.3428)"],
+          [80, "rotate(-4.18deg) scale(1.1630)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="186" y1="142" x2="114.06" y2="109.31"/>`
+    },
+    {
+      /* BLOC BRAS : coude figé, rotation +102° autour de l'ÉPAULE (104,62).
+         Même grille de keyframes que le câble. */
+      o: "104px 62px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(17deg)"], [10.67, "rotate(34deg)"],
+          [16, "rotate(51deg)"], [21.33, "rotate(68deg)"], [26.67, "rotate(85deg)"],
+          [32, "rotate(102deg)"], [40, "rotate(102deg)"],
+          [48, "rotate(85deg)"], [56, "rotate(68deg)"], [64, "rotate(51deg)"],
+          [72, "rotate(34deg)"], [80, "rotate(17deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="104" y1="62" x2="105.31" y2="86.97"/>
+        <circle class="mo-joint" cx="105.31" cy="86.97" r="2.4"/>
+        <line class="mo-limb" x1="105.31" y1="86.97" x2="114.06" y2="109.31"/>
+        <line class="mo-bar2" x1="109.41" y1="111.13" x2="118.71" y2="107.49"/>
+        <circle class="mo-hand" cx="114.06" cy="109.31" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M52 120 L52 92 M47 100 L52 92 L57 100"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M52 92 L52 120 M47 112 L52 120 L57 112"/>` }
+  ]
+};
