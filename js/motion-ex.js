@@ -3687,3 +3687,95 @@ EXERCISE_MOTIONS["planche"] = {
   ],
   parts: []
 };
+
+/* =========================================================
+   39. CRUNCH AU SOL  (crunch)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ SUR LE DOS, genoux fléchis, pieds à plat au
+               sol, mains aux tempes — jamais derrière la nuque en
+               tirant dessus.
+   Matériel  : aucun.
+   Mobiles   : le RACHIS, qui s'ENROULE. Seul exercice de la
+               bibliothèque dont le segment mobile n'est pas un os
+               rigide mais une colonne qui se courbe.
+   Fixes     : le BASSIN, qui NE DÉCOLLE PAS du sol, et le bas du dos
+               qui reste plaqué. C'est LA différence avec le relevé de
+               buste : là-bas le bassin bascule et les fléchisseurs de
+               hanche prennent le relais du travail abdominal. Ici,
+               seules les omoplates quittent le sol.
+   Sens/plan : enroulement = concentrique ; déroulement contrôlé =
+               excentrique. Le cycle commence à plat. Plan sagittal.
+   ROM       : TRÈS COURTE, et c'est volontaire : l'épaule s'élève de
+               11 unités, pas davantage. On ne monte pas s'asseoir —
+               au-delà, ce n'est plus le grand droit qui travaille.
+   Agonistes : GRAND DROIT de l'abdomen, obliques en assistance.
+   LA TÊTE   : elle est solidaire du segment haut, sans
+               contre-rotation. C'est délibéré et c'est la consigne :
+               la nuque reste neutre, la tête accompagne la poitrine
+               au lieu de la précéder. Une tête qui bougerait seule
+               dessinerait précisément la faute des mains qui tirent
+               sur la nuque.
+   COMMENT LE RACHIS EST MODÉLISÉ — et pourquoi c'est une
+   APPROXIMATION ASSUMÉE :
+               une colonne qui s'enroule est une courbe continue ; mes
+               segments sont des droites rigides. Le tronc est donc
+               coupé en DEUX segments articulés au milieu du dos : le
+               segment BAS reste strictement plaqué au sol, le segment
+               HAUT pivote. Ce n'est pas la courbe exacte d'un rachis,
+               mais c'est fidèle sur le point qui compte — le bas du
+               dos ne décolle pas, le haut s'enroule — alors qu'un
+               tronc d'un seul tenant tournant autour de la hanche
+               aurait dessiné un RELEVÉ DE BUSTE, c'est-à-dire un
+               autre exercice.
+   Distinction : bassin FIXE, seules les omoplates décollent, faible
+               amplitude. ≠ relevé de buste (bassin qui bascule,
+               psoas), ≠ relevé de jambes suspendu (c'est le bassin
+               qui bouge, pas le buste).
+   GÉOMÉTRIE — bassin(120,124) et bas du dos jusqu'à (98,124) au sol.
+   Segment haut (98,124)->(76,124), longueur 22, pivotant de +30° ->
+   épaule(78.95,113), tête(70.06,104.40).
+   ========================================================= */
+EXERCISE_MOTIONS["crunch"] = {
+  vb: "50 82 132 58",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé sur le dos, genoux fléchis : les omoplates s'enroulent et décollent du sol de quelques centimètres, le bas du dos restant plaqué, puis retour contrôlé.",
+  fixe: `
+    <line class="mo-ground" x1="56" y1="130" x2="178" y2="130"/>
+    <!-- bassin + bas du dos : PLAQUÉS, ils ne bougent pas -->
+    <line class="mo-body" x1="120" y1="124" x2="98" y2="124"/>
+    <circle class="mo-joint" cx="120" cy="124" r="2.8"/>
+    <!-- repère : cette portion reste en contact avec le sol -->
+    <line class="mo-rom" x1="97" y1="128" x2="122" y2="128"/>
+    <!-- jambes : genoux fléchis, pieds à plat, immobiles -->
+    <line class="mo-limb" x1="120" y1="124" x2="144" y2="113"/>
+    <circle class="mo-joint" cx="144" cy="113" r="2.6"/>
+    <line class="mo-limb" x1="144" y1="113" x2="163.7" y2="130"/>
+    <line class="mo-limb" x1="158" y1="130" x2="174" y2="130"/>`,
+  muscles: [
+    { nom: "Obliques",
+      svg: `<ellipse cx="108" cy="120" rx="9" ry="3"/>` }
+  ],
+  parts: [
+    {
+      /* SEGMENT HAUT DU TRONC : pivote autour du MILIEU DU DOS.
+         +30° seulement — l'amplitude courte est le mouvement juste,
+         pas une simplification. */
+      o: "98px 124px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(30deg)"], [40, "rotate(30deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Grand droit de l'abdomen",
+      muscle: `<ellipse cx="88" cy="119" rx="10" ry="3.2"/>`,
+      svg: `
+        <circle class="mo-joint" cx="98" cy="124" r="2.6"/>
+        <line class="mo-body" x1="98" y1="124" x2="76" y2="124"/>
+        <circle class="mo-head" cx="64" cy="121" r="8"/>
+        <line class="mo-limb" x1="76" y1="124" x2="82" y2="112"/>
+        <line class="mo-limb" x1="82" y1="112" x2="70" y2="116"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M112 110 L112 88 M107 96 L112 88 L117 96"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M112 88 L112 110 M107 102 L112 110 L117 102"/>` }
+  ]
+};
