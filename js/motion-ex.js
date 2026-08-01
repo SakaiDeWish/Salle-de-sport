@@ -6405,3 +6405,132 @@ EXERCISE_MOTIONS["rowing-machine-assis"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M56 86 L56 58 M51 66 L56 58 L61 66"/>` }
   ]
 };
+
+/* =========================================================
+   62. TIRAGE BRAS TENDUS À LA POULIE HAUTE
+       (tirage-bras-tendus)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à une poulie haute, pieds à largeur de
+               bassin, genoux à peine fléchis, buste penché de
+               22° vers l'avant, barre saisie bras tendus.
+   Matériel  : poulie HAUTE, barre droite. Tension continue,
+               orientée vers la poulie à chaque instant.
+   Mobile    : l'ÉPAULE seule, en extension.
+   Fixes     : le COUDE, bloqué à 170° — bras et avant-bras
+               forment un BLOC RIGIDE ; le rachis et le bassin,
+               car « buste qui se balance » est l'erreur n°2.
+               « Plier les coudes » est l'erreur n°1 et
+               transformerait l'exercice en tirage vertical.
+   Sens      : descente de la barre vers les cuisses =
+               CONCENTRIQUE ; remontée contrôlée = excentrique.
+   ROM       : 125° d'extension d'épaule, de 137° de flexion
+               (bras tendus vers la poulie) à 12° (barre aux
+               cuisses). La main parcourt un arc de rayon 43,83
+               centré sur l'épaule.
+   >>> CE QUI SÉPARE VRAIMENT CET EXERCICE DU PULL-OVER (schéma
+       57) <<< Les deux sont la même action : extension d'épaule
+       à coude bloqué. Ce qui diffère, ce n'est pas le geste,
+       c'est la PORTION D'AMPLITUDE couverte, et c'est le
+       matériel qui la décide.
+       Le pull-over travaille de 178° à 90° et s'ARRÊTE à la
+       verticale : au-delà, le bras de levier de la gravité
+       s'annule, la charge ne pèse plus rien, continuer ne
+       servirait à rien.
+       Le tirage bras tendus travaille de 137° à 12°, parce que
+       le câble tire toujours VERS LA POULIE : la résistance ne
+       s'annule jamais, et le mouvement peut donc aller jusqu'aux
+       cuisses.
+       Les deux amplitudes se chevauchent entre 90° et 137°, mais
+       chacune a sa zone exclusive. Celle du tirage bras tendus,
+       de 12° à 90°, est la COURSE INTERNE du grand dorsal —
+       celle qu'un pull-over ne peut pas atteindre. Ce n'est donc
+       pas un doublon.
+   Agonistes : GRAND DORSAL, et LONGUE PORTION DU TRICEPS. Cette
+               seconde n'est pas une coquille : elle s'insère sur
+               la SCAPULA, franchit donc l'épaule, et elle est
+               extenseur de l'épaule au même titre que le
+               dorsal. La fiche parle d'« isolation pure » du
+               grand dorsal : c'est vrai pour le BICEPS, qui est
+               effectivement hors-jeu ici — c'est l'intérêt de
+               l'exercice — mais le triceps et le grand rond
+               travaillent aussi. Le schéma les montre plutôt que
+               de laisser croire à un muscle unique.
+   Distinction : ≠ pull-over (allongé, gravité, amplitude haute) ;
+               ≠ tirage vertical (le coude s'y ferme, biceps
+               fortement engagés) ; ≠ rowing (traction
+               horizontale, coude fermé, omoplates).
+   GÉOMÉTRIE (calculée) — épaule (106,50), bras 22, avant-bras 22,
+   coude bloqué à 170° -> épaule-main constante 43,83.
+     haut  main (66.28,31.48)  coude (85.33,42.48)
+     bas   main (113.61,93.16)
+   -> bloc bras, rotation −125° autour de l'épaule.
+   Câble : poulie (52,20), longueur 18,32 -> 95,65. Sa rotation
+   n'est PAS monotone (0 -> +30,2 -> +35,5 -> +32,5 -> +26,5 ->
+   +19,1 -> +11,1) : la barre s'éloigne d'abord de l'aplomb de la
+   poulie puis y revient. Six intervalles, sans quoi le câble se
+   détacherait de la barre en cours de route.
+   ========================================================= */
+EXERCISE_MOTIONS["tirage-bras-tendus"] = {
+  vb: "42 14 96 142",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Debout de profil face à une poulie haute, buste légèrement penché et coudes bloqués : la barre descend en arc de cercle jusqu'aux cuisses, puis remonte lentement.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="150" x2="134" y2="150"/>
+    <!-- colonne et poulie HAUTE -->
+    <line class="mo-gear" x1="48" y1="16" x2="48" y2="150"/>
+    <circle class="mo-pulley" cx="52" cy="20" r="5"/>
+    <!-- corps debout, buste penché de 22°, face à la poulie -->
+    <circle class="mo-head" cx="98" cy="34" r="9"/>
+    <line class="mo-body" x1="102" y1="42" x2="106" y2="50"/>
+    <line class="mo-body" x1="106" y1="50" x2="124" y2="94"/>
+    <line class="mo-body" x1="124" y1="94" x2="128" y2="122"/>
+    <line class="mo-body" x1="128" y1="122" x2="122" y2="150"/>
+    <!-- amplitude : l'arc RÉELLEMENT parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M66.28 31.48 A43.83 43.83 0 0 0 113.61 93.16"/>`,
+  muscles: [
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="120" cy="70" rx="4" ry="13" transform="rotate(22 120 70)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation NON MONOTONE + allongement autour de la POULIE,
+         échantillonnés en six intervalles sur l'arc réel de la barre. */
+      o: "52px 20px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.67, "rotate(30.22deg) scale(1.5679)"],
+          [11.33, "rotate(35.45deg) scale(2.4148)"], [17, "rotate(32.47deg) scale(3.2676)"],
+          [22.67, "rotate(26.48deg) scale(4.0451)"], [28.33, "rotate(19.14deg) scale(4.7058)"],
+          [34, "rotate(11.10deg) scale(5.2218)"], [42, "rotate(11.10deg) scale(5.2218)"],
+          [49.67, "rotate(19.14deg) scale(4.7058)"], [57.33, "rotate(26.48deg) scale(4.0451)"],
+          [65, "rotate(32.47deg) scale(3.2676)"], [72.67, "rotate(35.45deg) scale(2.4148)"],
+          [80.33, "rotate(30.22deg) scale(1.5679)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="52" y1="20" x2="66.28" y2="31.48"/>`
+    },
+    {
+      /* BLOC BRAS : coude figé à 170°, rotation −125° autour de l'ÉPAULE
+         (106,50). Aucun enfant : plier le coude serait dessiner la faute.
+         Même grille de keyframes que le câble (easing par segment). */
+      o: "106px 50px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-20.83deg)"], [11.33, "rotate(-41.67deg)"],
+          [17, "rotate(-62.50deg)"], [22.67, "rotate(-83.33deg)"], [28.33, "rotate(-104.17deg)"],
+          [34, "rotate(-125deg)"], [42, "rotate(-125deg)"],
+          [49.67, "rotate(-104.17deg)"], [57.33, "rotate(-83.33deg)"], [65, "rotate(-62.50deg)"],
+          [72.67, "rotate(-41.67deg)"], [80.33, "rotate(-20.83deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Longue portion du triceps",
+      muscle: `<ellipse cx="94.5" cy="49.5" rx="7" ry="3.2" transform="rotate(20 94.5 49.5)"/>`,
+      svg: `
+        <line class="mo-limb" x1="106" y1="50" x2="85.33" y2="42.48"/>
+        <circle class="mo-joint" cx="85.33" cy="42.48" r="2.6"/>
+        <line class="mo-limb" x1="85.33" y1="42.48" x2="66.28" y2="31.48"/>
+        <!-- barre droite vue par la tranche -->
+        <line class="mo-bar2" x1="63.78" y1="35.81" x2="68.78" y2="27.15"/>
+        <circle class="mo-hand" cx="66.28" cy="31.48" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M72 104 L72 136 M67 128 L72 136 L77 128"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M72 136 L72 104 M67 112 L72 104 L77 112"/>` }
+  ]
+};
