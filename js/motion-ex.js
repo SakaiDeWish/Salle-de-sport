@@ -3186,3 +3186,106 @@ EXERCISE_MOTIONS["hip-thrust"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M80 106 L80 138 M75 130 L80 138 L85 130"/>` }
   ]
 };
+
+/* =========================================================
+   34. LEG CURL ALLONGÉ  (leg-curl)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ SUR LE VENTRE sur le banc de la machine,
+               hanches plaquées, chevilles derrière le boudin, mains
+               sur les poignées.
+   Matériel  : machine à bras de levier, axe aligné sur le GENOU.
+   Mobiles   : le GENOU (flexion), et lui seul.
+   Fixes     : la HANCHE et le BASSIN, plaqués sur le banc — donc
+               toute la cuisse, dessinée dans les éléments fixes avec
+               les ischio-jambiers posés dessus.
+               Le DÉCOLLEMENT DU BASSIN est l'erreur classique :
+               quand les ischios fatiguent, on soulève les hanches
+               pour tricher, et le bas du dos passe en compression.
+               C'est d'ailleurs pour l'empêcher que les bons bancs de
+               leg curl sont « cassés », légèrement inclinés.
+   RÉGLAGE   : comme à la leg extension, l'axe de la machine doit
+               être ALIGNÉ sur l'axe du genou, sans quoi le levier
+               cisaille l'articulation. Les deux schémas signalent ce
+               même repère.
+   Sens/plan : flexion du genou, talon vers les fessiers =
+               concentrique ; retour = excentrique. Le cycle commence
+               jambes tendues. Plan sagittal.
+   ROM       : genou de 174,9° à 40,0° (vérifié). Le talon monte
+               20,7 unités AU-DESSUS du plan du banc.
+   Agonistes : ISCHIO-JAMBIERS, les trois chefs, plus le GASTROCNÉMIEN
+               qui participe à la flexion du genou — d'où sa présence
+               sur le tibia mobile.
+               NUANCE, exactement symétrique de celle de la leg
+               extension : allongé à plat, la HANCHE est en EXTENSION,
+               donc les ischios partent déjà RACCOURCIS à leur origine
+               haute et travaillent en position défavorable. C'est
+               l'inverse du leg curl assis, où la hanche fléchie les
+               pré-étire. À la leg extension c'était le droit fémoral
+               qui subissait ce défaut ; ici ce sont les ischios. Deux
+               machines miroir, deux limites miroir.
+   Distinction : allongé sur le VENTRE, hanche en extension.
+               ≠ leg curl assis (hanche fléchie, ischios pré-étirés),
+               ≠ soulevé de terre roumain (hanche dominante, genou
+               fixe — l'exact opposé de celui-ci, où la hanche est
+               fixe et le genou mobile).
+   GÉOMÉTRIE (calculée) — hanche H(100,100), cuisse HORIZONTALE de
+   26 -> genou/pivot K(126,100). Tibia 26.
+   Bas : pied F0(151.90,102.30), genou 174,9°.
+   Haut : pied F1(106.08,83.29), genou 40,0°.
+   -> tibia −145,07°. La colonne de charges monte de 14.
+   ========================================================= */
+EXERCISE_MOTIONS["leg-curl"] = {
+  vb: "36 66 152 92",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé sur le ventre, chevilles derrière le boudin : les talons remontent vers les fessiers par flexion des genoux, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="44" y1="150" x2="176" y2="150"/>
+    <!-- banc + bâti -->
+    <line class="mo-pad" x1="44" y1="104" x2="126" y2="104"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="150"/>
+    <line class="mo-gear" x1="118" y1="106" x2="118" y2="150"/>
+    <line class="mo-gear" x1="141" y1="112" x2="141" y2="150"/>
+    <!-- CORPS : tout est immobile, cuisse comprise -->
+    <circle class="mo-head" cx="48" cy="96" r="8"/>
+    <line class="mo-body" x1="56" y1="100" x2="100" y2="100"/>
+    <line class="mo-limb" x1="60" y1="100" x2="53" y2="110"/>
+    <line class="mo-limb" x1="100" y1="100" x2="126" y2="100"/>
+    <circle class="mo-joint" cx="100" cy="100" r="2.8"/>
+    <!-- AXE DE LA MACHINE CONFONDU AVEC L'AXE DU GENOU -->
+    <circle class="mo-pulley" cx="126" cy="100" r="4.5"/>
+    <line class="mo-rom" x1="126" y1="86" x2="126" y2="114"/>`,
+  muscles: [
+    { nom: "Ischio-jambiers",
+      svg: `<ellipse cx="113" cy="96" rx="11" ry="3.4"/>` }
+  ],
+  parts: [
+    {
+      /* COLONNE DE CHARGES : translation verticale pure. */
+      k: [[0, "translate(0px,0px)"], [32, "translate(0px,-14px)"],
+          [40, "translate(0px,-14px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <rect class="mo-mass" x="134" y="118" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="126" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="134" width="14" height="6" rx="1.5"/>`
+    },
+    {
+      /* TIBIA + BOUDIN : rotation autour du PIVOT, qui est aussi le
+         genou. −145,07° referme le genou de 175° à 40°. */
+      o: "126px 100px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-145.07deg)"], [40, "rotate(-145.07deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Gastrocnémien",
+      muscle: `<ellipse cx="138.95" cy="97.65" rx="9" ry="3" transform="rotate(5.07 138.95 97.65)"/>`,
+      svg: `
+        <line class="mo-gear" x1="126" y1="100" x2="151.9" y2="102.3"/>
+        <line class="mo-limb" x1="126" y1="100" x2="151.9" y2="102.3"/>
+        <circle class="mo-mass" cx="151.9" cy="102.3" r="6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M168 110 L168 78 M163 86 L168 78 L173 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M168 78 L168 110 M163 102 L168 110 L173 102"/>` }
+  ]
+};
