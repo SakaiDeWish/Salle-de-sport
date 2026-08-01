@@ -3977,3 +3977,119 @@ EXERCISE_MOTIONS["russian-twist"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M88 150 L66 150 M73 145 L66 150 L73 155"/>` }
   ]
 };
+
+/* =========================================================
+   42. ROULETTE À ABDOS  (roulette-abdos)
+   -----------------------------------------------------------
+   Position  : À GENOUX, roulette tenue à deux mains sous les
+               épaules, bras tendus, dos gainé et bassin en légère
+               rétroversion.
+   Matériel  : roulette à abdos.
+   Mobiles   : la HANCHE qui s'ouvre et l'ÉPAULE qui part vers
+               l'avant. Le corps se déploie et la roue AVANCE en
+               ROULANT — le schéma fait tourner un rayon de 367,6°,
+               calculé sur la distance parcourue (64,2 pour un rayon
+               de 10) : la roue roule, elle ne glisse pas.
+   Fixes     : les GENOUX au sol, racine de toute la chaîne.
+   LE POINT TECHNIQUE, ET LE DANGER : le RACHIS doit rester NEUTRE.
+               Si le gainage lâche, le bassin bascule en antéversion
+               et les lombaires s'écrasent en hyperextension. Dans le
+               schéma, tronc et cuisse sont des segments RIGIDES qui
+               finissent parfaitement ALIGNÉS — hanche vérifiée à
+               180,0° en fin de déroulé, jamais au-delà.
+   NATURE DU TRAVAIL — c'est ce qui rend l'exercice singulier :
+               les abdominaux ne raccourcissent PAS pour créer le
+               mouvement, ils RÉSISTENT à l'extension imposée par le
+               poids du corps. C'est un travail ANTI-EXTENSION.
+               Conséquence directe sur le sens des phases : le
+               DÉROULÉ vers l'avant est l'EXCENTRIQUE — les abdos
+               s'allongent sous tension — et le retour est le
+               concentrique. C'est l'inverse de l'intuition, qui
+               voit dans le déroulé « l'effort ».
+   ROM       : hanche de 128,6° à 180,0°. La roue avance de 64,2, les
+               épaules descendent de 26 et le corps finit presque
+               parallèle au sol.
+   Agonistes : GRAND DROIT en anti-extension, obliques, et GRAND
+               DORSAL qui freine l'épaule pendant le déroulé.
+   Distinction : la roulette est une PLANCHE DYNAMIQUE. Même travail
+               anti-extension que le gainage, mais avec une amplitude
+               et un bras de levier croissants. ≠ crunch (flexion
+               active du rachis), ≠ planche (isométrique, sans
+               déplacement).
+   GÉOMÉTRIE (calculée) — genou(140,134) ancré, cuisse 26, tronc 32,
+   bras 40, roue de rayon 10 roulant au sol.
+   Départ : hanche(138,108), épaule(111.5,90), roue(111.5,130),
+            bras VERTICAUX sous les épaules.
+   Fin    : hanche(115.27,125.97), épaule(84.84,116.08),
+            roue(47.34,130).
+   -> cuisse −67,60°, tronc +51,42° rel, bras +85,82° rel,
+      roue −367,6° (rotation propre).
+   ========================================================= */
+EXERCISE_MOTIONS["roulette-abdos"] = {
+  vb: "30 62 152 90",
+  dur: 4.4,
+  phases: { ecc: [0, 50], con: [58, 90] },
+  alt: "À genoux, roulette sous les épaules : le corps se déploie vers l'avant en gardant le dos neutre jusqu'à l'alignement complet, puis revient.",
+  fixe: `
+    <line class="mo-ground" x1="36" y1="140" x2="178" y2="140"/>
+    <!-- genou ancré au sol, jambe repliée derrière -->
+    <circle class="mo-joint" cx="140" cy="134" r="3.2"/>
+    <line class="mo-limb" x1="140" y1="134" x2="164" y2="138"/>
+    <line class="mo-limb" x1="160" y1="140" x2="172" y2="140"/>`,
+  parts: [
+    {
+      /* CUISSE : rotation autour du GENOU. −67,60°. */
+      o: "140px 134px",
+      k: [[0, "rotate(0deg)"], [50, "rotate(-67.6deg)"], [58, "rotate(-67.6deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="140" y1="134" x2="138" y2="108"/>`,
+      children: [
+        {
+          /* TRONC : segment RIGIDE. Il finit aligné avec la cuisse,
+             jamais au-delà — c'est la limite de sécurité. */
+          o: "138px 108px",
+          k: [[0, "rotate(0deg)"], [50, "rotate(51.42deg)"], [58, "rotate(51.42deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Grand droit (anti-extension)", "Grand dorsal"],
+          muscle: `
+            <ellipse cx="122.5" cy="102.3" rx="3.4" ry="11" transform="rotate(-55.8 122.5 102.3)"/>
+            <circle cx="114" cy="94" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="138" cy="108" r="2.8"/>
+            <line class="mo-body" x1="138" y1="108" x2="111.5" y2="90"/>
+            <circle class="mo-head" cx="100.73" cy="82.69" r="8"/>`,
+          children: [
+            {
+              /* BRAS TENDUS : +85,82° relatif. Ils restent droits,
+                 le coude ne fléchit pas. */
+              o: "111.5px 90px",
+              k: [[0, "rotate(0deg)"], [50, "rotate(85.82deg)"], [58, "rotate(85.82deg)"],
+                  [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="111.5" cy="90" r="2.8"/>
+                <line class="mo-limb" x1="111.5" y1="90" x2="111.5" y2="130"/>`,
+              children: [
+                {
+                  /* ROUE : rotation PROPRE de −367,6°, déduite de la
+                     distance parcourue. Le rayon dessiné rend le
+                     roulement visible — sans lui, la roue glisserait. */
+                  o: "111.5px 130px",
+                  k: [[0, "rotate(0deg)"], [50, "rotate(-367.6deg)"], [58, "rotate(-367.6deg)"],
+                      [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <circle class="mo-plate-o" cx="111.5" cy="130" r="10"/>
+                    <line class="mo-bar2" x1="111.5" y1="130" x2="111.5" y2="120"/>
+                    <circle class="mo-hub" cx="111.5" cy="130" r="2.6"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M104 70 L66 70 M73 65 L66 70 L73 75"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M66 70 L104 70 M97 65 L104 70 L97 75"/>` }
+  ]
+};
