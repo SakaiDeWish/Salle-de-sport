@@ -6192,3 +6192,216 @@ EXERCISE_MOTIONS["tirage-horizontal-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M94 54 L68 54 M75 49 L68 54 L75 59"/>` }
   ]
 };
+
+/* =========================================================
+   61. ROWING MACHINE ASSIS (POITRINE APPUYÉE)
+       (rowing-machine-assis)
+   -----------------------------------------------------------
+   Position  : ASSIS, POITRINE PLAQUÉE contre un support, pieds
+               calés, une poignée dans chaque main, bras tendus
+               vers l'avant.
+   Matériel  : machine à deux leviers, poitrinière réglable.
+   Mobiles   : l'OMOPLATE (rétraction) et le bras (épaule +
+               coude). Le buste, lui, est physiquement empêché.
+   Fixes     : le TRONC — non pas par consigne mais par le
+               matériel. C'est toute la raison d'être de cette
+               machine : « décoller la poitrine pour tricher »
+               est l'erreur n°1, et la poitrinière la rend
+               impossible. Le schéma dessine donc un tronc
+               rigoureusement immobile, et la poitrinière juste
+               devant lui.
+   >>> VU DE DESSUS <<< Et c'est ici que ce schéma se sépare du
+               tirage horizontal à la poulie (schéma 60). Là-bas,
+               de profil, la rétraction de l'omoplate était
+               invisible : c'est un glissement MÉDIAL, donc
+               perpendiculaire au plan sagittal ; on ne pouvait
+               en montrer que la conséquence, le recul de
+               l'épaule. De DESSUS, en revanche, le glissement
+               médial est dans le plan du dessin. La vue de
+               dessus est donc la seule qui montre À LA FOIS le
+               serrage des omoplates ET le recul des coudes —
+               c'est-à-dire exactement ce que cette machine sert
+               à faire.
+   Sens      : traction des coudes vers l'arrière = concentrique ;
+               retour bras tendus sans décoller la poitrine =
+               excentrique.
+   ROM       : coude de 172° à 63°, coude qui finit 5,5 unités
+               DERRIÈRE le bord postérieur du tronc. Omoplate :
+               4 unités vers le rachis et 2 vers l'arrière.
+               « Amplitude courte » est l'erreur n°2 : le schéma
+               va donc jusqu'au bout des deux.
+   Agonistes : RHOMBOÏDES et TRAPÈZE MOYEN. Le grand dorsal
+               participe peu ici : la traction est HAUTE et
+               horizontale, coudes écartés — c'est le milieu du
+               dos qui travaille, pas la course du dorsal.
+   POURQUOI LE LEVIER EST DESSINÉ AVEC UNE SIMPLE HOMOTHÉTIE :
+               l'axe de ces machines est HORIZONTAL. La poignée
+               décrit donc un cercle dans un plan VERTICAL, et la
+               projection de ce cercle vue de dessus est un
+               SEGMENT DE DROITE passant par le pied de l'axe.
+               Le trajet rectiligne de la poignée n'est donc pas
+               une approximation : c'est la projection exacte. Le
+               levier ne tourne pas dans ce plan, il s'y
+               RACCOURCIT — d'où une homothétie pure (×1 -> ×7,64)
+               et aucune rotation.
+   Distinction : ≠ tirage poulie (buste libre, câble, de profil) ;
+               ≠ rowing barre / T-bar (buste penché non soutenu,
+               lombaires chargés) ; ≠ rowing inversé (chaîne
+               fermée).
+   GÉOMÉTRIE (calculée) — bras 22, avant-bras 22, épaule gauche
+   (93,70) -> (97,72). Poignée de (89.00,26.29) à (74.39,68.08),
+   pied d'axe (91.2,20). Six intervalles, IK à chacun :
+     coude 172,0 -> 118,2 -> 93,7 -> 76,6 -> 65,4 -> 60,5 -> 62,9
+     épaule-main 43,89 -> 22,18 -> 22,95
+   La très légère réouverture finale (60,5 -> 62,9) est une
+   conséquence exacte du trajet, pas une erreur : la poignée
+   s'écarte un peu du corps sur la fin.
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-machine-assis"] = {
+  vb: "48 12 124 100",
+  dur: 3.6,
+  vue: "Vu de dessus",
+  phases: { con: [0, 36], ecc: [44, 88] },
+  alt: "Vu de dessus. Assis poitrine plaquée contre un support : les coudes partent vers l'arrière et les omoplates se serrent vers la colonne, puis retour bras tendus.",
+  fixe: `
+    <!-- bâti : arbre horizontal des leviers, à l'avant -->
+    <line class="mo-gear" x1="66" y1="20" x2="154" y2="20"/>
+    <line class="mo-gear" x1="66" y1="20" x2="66" y2="104"/>
+    <line class="mo-gear" x1="154" y1="20" x2="154" y2="104"/>
+    <!-- POITRINIÈRE : c'est elle qui interdit la triche -->
+    <line class="mo-pad" x1="92" y1="58" x2="128" y2="58"/>
+    <!-- siège -->
+    <line class="mo-pad" x1="96" y1="96" x2="124" y2="96"/>
+    <!-- corps vu de dessus, TRONC IMMOBILE -->
+    <ellipse class="mo-torse" cx="110" cy="72" rx="17" ry="11"/>
+    <circle class="mo-head mo-head-solid" cx="110" cy="46" r="9"/>
+    <!-- trajets imposés aux poignées : deux droites (voir commentaire) -->
+    <path class="mo-rom" fill="none" d="M89 26.29 L74.39 68.08"/>
+    <path class="mo-rom" fill="none" d="M131 26.29 L145.61 68.08"/>
+    <!-- corridor de rétraction des épaules, sans quoi 4 unités ne se voient pas -->
+    <line class="mo-rom" x1="93" y1="64" x2="97" y2="64"/>
+    <line class="mo-rom" x1="127" y1="64" x2="123" y2="64"/>`,
+  muscles: [
+    { nom: "Rhomboïdes",
+      svg: `<ellipse cx="103" cy="75" rx="4" ry="6"/><ellipse cx="117" cy="75" rx="4" ry="6"/>` },
+    { nom: "Trapèze moyen",
+      svg: `<ellipse cx="110" cy="68" rx="9" ry="3.4"/>` }
+  ],
+  parts: [
+    {
+      /* LEVIER GAUCHE : axe HORIZONTAL, donc de dessus il ne tourne pas,
+         il s'allonge le long d'une droite passant par le pied de l'axe.
+         Homothétie pure ×7,6436. */
+      o: "91.2px 20px",
+      k: [[0, "scale(1)"], [6, "scale(2.1073)"], [12, "scale(3.2145)"],
+          [18, "scale(4.3218)"], [24, "scale(5.4290)"], [30, "scale(6.5363)"],
+          [36, "scale(7.6436)"], [44, "scale(7.6436)"],
+          [51.33, "scale(6.5363)"], [58.67, "scale(5.4290)"], [66, "scale(4.3218)"],
+          [73.33, "scale(3.2145)"], [80.67, "scale(2.1073)"], [88, "scale(1)"],
+          [100, "scale(1)"]],
+      svg: `<line class="mo-bar3" vector-effect="non-scaling-stroke" x1="91.2" y1="20" x2="89" y2="26.29"/>`
+    },
+    {
+      /* LEVIER DROIT : miroir. */
+      o: "128.8px 20px",
+      k: [[0, "scale(1)"], [6, "scale(2.1073)"], [12, "scale(3.2145)"],
+          [18, "scale(4.3218)"], [24, "scale(5.4290)"], [30, "scale(6.5363)"],
+          [36, "scale(7.6436)"], [44, "scale(7.6436)"],
+          [51.33, "scale(6.5363)"], [58.67, "scale(5.4290)"], [66, "scale(4.3218)"],
+          [73.33, "scale(3.2145)"], [80.67, "scale(2.1073)"], [88, "scale(1)"],
+          [100, "scale(1)"]],
+      svg: `<line class="mo-bar3" vector-effect="non-scaling-stroke" x1="128.8" y1="20" x2="131" y2="26.29"/>`
+    },
+    {
+      /* OMOPLATE GAUCHE : translation (4,2) vers le rachis. Racine de la
+         chaîne : tout le bras la suit. */
+      o: "93px 70px",
+      k: [[0, "translate(0px,0px)"], [6, "translate(0.67px,0.33px)"], [12, "translate(1.33px,0.67px)"],
+          [18, "translate(2px,1px)"], [24, "translate(2.67px,1.33px)"], [30, "translate(3.33px,1.67px)"],
+          [36, "translate(4px,2px)"], [44, "translate(4px,2px)"],
+          [51.33, "translate(3.33px,1.67px)"], [58.67, "translate(2.67px,1.33px)"],
+          [66, "translate(2px,1px)"], [73.33, "translate(1.33px,0.67px)"],
+          [80.67, "translate(0.67px,0.33px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-bar3" x1="93" y1="70" x2="100" y2="79"/>
+        <circle class="mo-joint" cx="93" cy="70" r="3.4"/>`,
+      children: [
+        {
+          o: "93px 70px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-32.49deg)"], [12, "rotate(-52.40deg)"],
+              [18, "rotate(-71.61deg)"], [24, "rotate(-91.73deg)"], [30, "rotate(-112.06deg)"],
+              [36, "rotate(-129.47deg)"], [44, "rotate(-129.47deg)"],
+              [51.33, "rotate(-112.06deg)"], [58.67, "rotate(-91.73deg)"], [66, "rotate(-71.61deg)"],
+              [73.33, "rotate(-52.40deg)"], [80.67, "rotate(-32.49deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="93" y1="70" x2="89.46" y2="48.29"/>
+            <circle class="mo-joint" cx="89.46" cy="48.29" r="2.6"/>`,
+          children: [
+            {
+              o: "89.46px 48.29px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(53.75deg)"], [12, "rotate(78.20deg)"],
+                  [18, "rotate(95.31deg)"], [24, "rotate(106.58deg)"], [30, "rotate(111.40deg)"],
+                  [36, "rotate(109.07deg)"], [44, "rotate(109.07deg)"],
+                  [51.33, "rotate(111.40deg)"], [58.67, "rotate(106.58deg)"], [66, "rotate(95.31deg)"],
+                  [73.33, "rotate(78.20deg)"], [80.67, "rotate(53.75deg)"], [88, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="89.46" y1="48.29" x2="89" y2="26.29"/>
+                <line class="mo-bar2" x1="85.22" y1="24.97" x2="92.78" y2="27.61"/>
+                <circle class="mo-hand" cx="89" cy="26.29" r="3"/>`
+            }
+          ]
+        }
+      ]
+    },
+    {
+      /* OMOPLATE DROITE : miroir exact autour de x=110. */
+      o: "127px 70px",
+      k: [[0, "translate(0px,0px)"], [6, "translate(-0.67px,0.33px)"], [12, "translate(-1.33px,0.67px)"],
+          [18, "translate(-2px,1px)"], [24, "translate(-2.67px,1.33px)"], [30, "translate(-3.33px,1.67px)"],
+          [36, "translate(-4px,2px)"], [44, "translate(-4px,2px)"],
+          [51.33, "translate(-3.33px,1.67px)"], [58.67, "translate(-2.67px,1.33px)"],
+          [66, "translate(-2px,1px)"], [73.33, "translate(-1.33px,0.67px)"],
+          [80.67, "translate(-0.67px,0.33px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-bar3" x1="127" y1="70" x2="120" y2="79"/>
+        <circle class="mo-joint" cx="127" cy="70" r="3.4"/>`,
+      children: [
+        {
+          o: "127px 70px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(32.49deg)"], [12, "rotate(52.40deg)"],
+              [18, "rotate(71.61deg)"], [24, "rotate(91.73deg)"], [30, "rotate(112.06deg)"],
+              [36, "rotate(129.47deg)"], [44, "rotate(129.47deg)"],
+              [51.33, "rotate(112.06deg)"], [58.67, "rotate(91.73deg)"], [66, "rotate(71.61deg)"],
+              [73.33, "rotate(52.40deg)"], [80.67, "rotate(32.49deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="127" y1="70" x2="130.54" y2="48.29"/>
+            <circle class="mo-joint" cx="130.54" cy="48.29" r="2.6"/>`,
+          children: [
+            {
+              o: "130.54px 48.29px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(-53.75deg)"], [12, "rotate(-78.20deg)"],
+                  [18, "rotate(-95.31deg)"], [24, "rotate(-106.58deg)"], [30, "rotate(-111.40deg)"],
+                  [36, "rotate(-109.07deg)"], [44, "rotate(-109.07deg)"],
+                  [51.33, "rotate(-111.40deg)"], [58.67, "rotate(-106.58deg)"], [66, "rotate(-95.31deg)"],
+                  [73.33, "rotate(-78.20deg)"], [80.67, "rotate(-53.75deg)"], [88, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="130.54" y1="48.29" x2="131" y2="26.29"/>
+                <line class="mo-bar2" x1="134.78" y1="24.97" x2="127.22" y2="27.61"/>
+                <circle class="mo-hand" cx="131" cy="26.29" r="3"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M56 58 L56 86 M51 78 L56 86 L61 78"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M56 86 L56 58 M51 66 L56 58 L61 66"/>` }
+  ]
+};
