@@ -3489,3 +3489,127 @@ EXERCISE_MOTIONS["mollets-debout"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M152 116 L152 148 M147 140 L152 148 L157 140"/>` }
   ]
 };
+
+/* =========================================================
+   37. EXTENSIONS MOLLETS ASSIS  (mollets-assis)
+   -----------------------------------------------------------
+   Position  : ASSIS, avant-pieds sur la cale, talons dans le vide,
+               COUSSINETS POSÉS SUR LES CUISSES juste au-dessus des
+               genoux, genoux fléchis autour de 90°.
+   Matériel  : machine à mollets assis — la charge appuie sur les
+               cuisses, pas sur les épaules.
+   Mobiles   : la CHEVILLE, et elle seule. Le genou et la hanche
+               suivent passivement : les cuisses s'élèvent de 3,3
+               unités en soulevant les coussinets, ce qui est
+               justement la façon dont la charge est déplacée.
+   Fixes     : le BASSIN sur le siège et l'AVANT-PIED sur la cale.
+               Encore une double chaîne fermée, la troisième forme
+               rencontrée : ici les deux ancrages sont à des hauteurs
+               différentes et c'est le GENOU qui est le point mobile
+               entre les deux.
+   Sens/plan : montée sur la pointe = concentrique ; descente en
+               étirement = excentrique. Le cycle commence talon bas.
+   ROM       : 45° de rotation du pied, exactement comme debout. Le
+               talon parcourt les mêmes 16,5 unités et descend sous
+               le niveau de la cale. L'amplitude n'est donc PAS ce
+               qui distingue les deux versions.
+   Agonistes : SOLÉAIRE. C'EST TOUTE LA RAISON D'ÊTRE DE CETTE
+               VERSION, et elle est l'exact pendant de la version
+               debout. Le genou est fléchi à ~95°, vérifié aux deux
+               positions : le gastrocnémien, qui croise le genou,
+               part donc RACCOURCI et devient inefficace. Le
+               SOLÉAIRE, qui ne croise QUE la cheville, n'est pas
+               affecté par la position du genou et prend tout le
+               travail.
+               Debout et assis ne sont donc pas deux variantes de
+               confort : ils travaillent deux muscles différents, et
+               les deux sont nécessaires. C'est la même règle que
+               pour la longue portion du triceps, le droit fémoral et
+               les ischios — un muscle bi-articulaire voit son
+               efficacité décidée par l'AUTRE articulation.
+   Distinction : genou FLÉCHI -> soléaire, charge sur les CUISSES.
+               ≠ mollets debout (genou tendu -> gastrocnémien, charge
+               sur les épaules).
+   GÉOMÉTRIE (calculée) — bassin H(145,108) et avant-pied P(110,140)
+   tous deux FIXES ; cuisse 26, tibia 26.
+   Bas  : cheville(118,135), genou(119.02,109.02), talon y=148,
+          genou à 94,5°.
+   Haut : pied tourné de −45° -> cheville(112.12,130.81),
+          genou(119.10,105.76), talon y=131.51, genou à 100,6°.
+   -> pied −45°, tibia +58,31° rel, cuisse −6,12° rel,
+      tronc −7,19° rel (il reste vertical).
+   ========================================================= */
+EXERCISE_MOTIONS["mollets-assis"] = {
+  vb: "82 46 108 120",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis, coussinets sur les cuisses, avant-pieds sur la cale : montée complète sur la pointe des pieds, puis descente lente en étirement sous le niveau de la cale.",
+  fixe: `
+    <line class="mo-ground" x1="86" y1="158" x2="184" y2="158"/>
+    <!-- cale : son bord est le pivot, le talon passe dans le vide -->
+    <rect class="mo-gear" x="88" y="140" width="32" height="18" rx="2"/>
+    <line class="mo-pad" x1="88" y1="140" x2="120" y2="140"/>
+    <circle class="mo-pulley" cx="110" cy="140" r="4"/>
+    <!-- siège : le bassin y est ancré -->
+    <line class="mo-pad" x1="138" y1="112" x2="176" y2="112"/>
+    <line class="mo-gear" x1="146" y1="114" x2="146" y2="158"/>
+    <line class="mo-gear" x1="170" y1="114" x2="170" y2="158"/>
+    <circle class="mo-joint" cx="145" cy="108" r="3"/>`,
+  parts: [
+    {
+      /* PIED : rotation autour de l'appui d'AVANT-PIED. −45°,
+         identique à la version debout. */
+      o: "110px 140px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-45deg)"], [40, "rotate(-45deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="110" y1="140" x2="130" y2="148"/>
+        <line class="mo-limb" x1="110" y1="140" x2="118" y2="135"/>`,
+      children: [
+        {
+          /* TIBIA : +58,31° relatif. Il porte le SOLÉAIRE. */
+          o: "118px 135px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(58.31deg)"], [40, "rotate(58.31deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Soléaire",
+          muscle: `<ellipse cx="122" cy="122" rx="4" ry="11" transform="rotate(-2 122 122)"/>`,
+          svg: `
+            <circle class="mo-joint" cx="118" cy="135" r="2.8"/>
+            <line class="mo-limb" x1="118" y1="135" x2="119.02" y2="109.02"/>`,
+          children: [
+            {
+              /* CUISSE + COUSSINETS : elle s'élève de 3,3 en
+                 soulevant la charge. C'est ainsi que le poids est
+                 déplacé, et c'est pour cela que les coussinets sont
+                 dessinés solidaires de la cuisse. */
+              o: "119.02px 109.02px",
+              k: [[0, "rotate(0deg)"], [32, "rotate(-6.12deg)"], [40, "rotate(-6.12deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="119.02" cy="109.02" r="2.8"/>
+                <line class="mo-limb" x1="119.02" y1="109.02" x2="145" y2="108"/>
+                <rect class="mo-mass" x="124" y="98" width="22" height="7" rx="2"/>
+                <line class="mo-gear" x1="135" y1="98" x2="135" y2="86"/>`,
+              children: [
+                {
+                  /* TRONC : contre-rotation -> il reste vertical. */
+                  o: "145px 108px",
+                  k: [[0, "rotate(0deg)"], [32, "rotate(-7.19deg)"], [40, "rotate(-7.19deg)"],
+                      [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-body" x1="145" y1="108" x2="147" y2="76"/>
+                    <line class="mo-limb" x1="147" y1="78" x2="140" y2="96"/>
+                    <circle class="mo-head" cx="143" cy="62" r="9"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M182 142 L182 110 M177 118 L182 110 L187 118"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M182 110 L182 142 M177 134 L182 142 L187 134"/>` }
+  ]
+};
