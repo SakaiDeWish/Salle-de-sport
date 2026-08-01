@@ -6924,3 +6924,129 @@ EXERCISE_MOTIONS["rowing-pendlay"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M50 100 L50 126 M45 118 L50 126 L55 118"/>` }
   ]
 };
+
+/* =========================================================
+   66. RACK PULL (SOULEVÉ PARTIEL)  (rack-pull)
+   -----------------------------------------------------------
+   Position  : barre POSÉE SUR LES SÉCURITÉS d'un rack, à hauteur
+               de genoux ; pieds sous la barre, dos plat, bras
+               tendus.
+   Matériel  : power rack + barre chargée. Les sécurités sont
+               dessinées : sans elles, la barre flotterait.
+   Mobiles   : HANCHE (extension), GENOU (extension résiduelle),
+               cheville.
+   Fixes     : le COUDE, verrouillé — « tirer avec les bras » est
+               l'erreur n°3 ; le rachis, segment rigide.
+   >>> CE SCHÉMA EST LITTÉRALEMENT LE HAUT DE CELUI DU SOULEVÉ DE
+       TERRE, ET C'EST VÉRIFIÉ PAR LE CALCUL <<< Le même sujet, la
+       même chaîne, les mêmes longueurs de segments : cheville,
+       tibia 25,98, cuisse 25,97, tronc 40,02, bras 54,45. La
+       position de départ du rack pull a été obtenue en parcourant
+       la trajectoire du soulevé de terre jusqu'au point où la
+       BARRE ARRIVE À HAUTEUR DE GENOU. Ce point tombe à t = 0,40.
+       Le rack pull est donc les 60 % supérieurs du soulevé de
+       terre — pas « à peu près », exactement.
+       Contrôle : à t = 0,40 la barre est à y = 119,18 et le genou
+       à y = 120,36. Écart 1,2 unité, soit moins de deux
+       centimètres. C'est bien la hauteur de genou.
+   CE QUE CETTE AMPLITUDE PARTIELLE CHANGE, ET QUI JUSTIFIE
+       L'EXERCICE : les 40 % supprimés sont ceux où le genou fait
+       le gros du travail. Ce qui reste — hanche de 113,5° à
+       178°, genou de 133,7° à 178° seulement — est la portion où
+       la charge pend au bout de bras tendus, sur les trapèzes et
+       les lombaires. D'où la possibilité de charger beaucoup plus
+       lourd, et d'où la liste de muscles de la fiche, qui n'est
+       pas celle du soulevé complet.
+   Sens      : redressement = concentrique ; retour à la sécurité
+               = excentrique.
+   ROM       : tibia +7,2° ; genou −42,3° relatif ; hanche +58,5°
+               relatif ; bras −20,88° relatif. La barre monte de
+               10,4 unités seulement — contre 25,3 au soulevé
+               complet.
+   Agonistes : TRAPÈZES (c'est eux que l'exercice surcharge),
+               érecteurs du rachis, grands fessiers.
+               L'« hyper-extension exagérée en haut » est
+               l'erreur n°2 : le schéma s'arrête donc à
+               l'alignement, hanche à 178°, sans jamais partir en
+               arrière.
+   Distinction : ≠ soulevé de terre (amplitude complète depuis le
+               sol, genou dominant en bas) ; ≠ rowing Pendlay (là
+               le buste ne se redresse PAS et c'est le coude qui
+               travaille) ; ≠ shrugs (aucune extension de hanche).
+   GÉOMÉTRIE (calculée) — départ : cheville (104,146),
+   genou (99.83,120.36), hanche (115.48,99.64), épaule (95.84,64.78),
+   barre (98.24,119.18), tête (90.21,55.21).
+   ========================================================= */
+EXERCISE_MOTIONS["rack-pull"] = {
+  vb: "62 28 84 128",
+  dur: 3.6,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Barre posée sur les sécurités d'un rack à hauteur de genoux : redressement complet des hanches et des genoux, bras tendus, puis retour contrôlé sur les sécurités.",
+  fixe: `
+    <line class="mo-ground" x1="66" y1="150" x2="142" y2="150"/>
+    <line class="mo-body" x1="96" y1="150" x2="116" y2="150"/>
+    <!-- POWER RACK : deux montants et la sécurité qui porte la barre.
+         Sans elle, la barre serait en l'air sans rien pour la tenir. -->
+    <line class="mo-gear" x1="70" y1="30" x2="70" y2="150"/>
+    <line class="mo-gear" x1="136" y1="30" x2="136" y2="150"/>
+    <line class="mo-bar3" x1="70" y1="121.5" x2="136" y2="121.5"/>`,
+  parts: [
+    {
+      /* TIBIA : enraciné à la CHEVILLE (104,146). +7,2° seulement — le
+         genou est DÉJÀ à 134° au départ, contre 112° au soulevé complet.
+         C'est toute la différence : le bas du mouvement a été supprimé. */
+      o: "104px 146px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(7.2deg)"], [42, "rotate(7.2deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="104" y1="146" x2="99.83" y2="120.36"/>
+        <circle class="mo-joint" cx="99.83" cy="120.36" r="2.6"/>`,
+      children: [
+        {
+          /* CUISSE : extension du GENOU. −42,3° le mène de 134° à 178°. */
+          o: "99.83px 120.36px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(-42.3deg)"], [42, "rotate(-42.3deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Fessiers",
+          muscle: `<circle cx="112" cy="102" r="4.4"/>`,
+          svg: `
+            <line class="mo-body" x1="99.83" y1="120.36" x2="115.48" y2="99.64"/>
+            <circle class="mo-joint" cx="115.48" cy="99.64" r="2.6"/>`,
+          children: [
+            {
+              /* TRONC : extension de la HANCHE, +58,5°, de 113,5° à 178°.
+                 Le schéma s'arrête à l'alignement : pas d'hyper-extension. */
+              o: "115.48px 99.64px",
+              k: [[0, "rotate(0deg)"], [34, "rotate(58.5deg)"], [42, "rotate(58.5deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: ["Trapèzes", "Lombaires"],
+              muscle: `<ellipse cx="98" cy="68" rx="7" ry="3.4" transform="rotate(29 98 68)"/>
+                       <ellipse cx="106" cy="82" rx="2.8" ry="11" transform="rotate(29 106 82)"/>`,
+              childrenFirst: true,
+              svg: `
+                <line class="mo-body" x1="115.48" y1="99.64" x2="95.84" y2="64.78"/>
+                <circle class="mo-head" cx="90.21" cy="55.21" r="9"/>`,
+              children: [
+                {
+                  /* BRAS + BARRE : suspendus à l'ÉPAULE. Coude VERROUILLÉ,
+                     donc un seul segment rigide. */
+                  o: "95.84px 64.78px",
+                  k: [[0, "rotate(0deg)"], [34, "rotate(-20.88deg)"], [42, "rotate(-20.88deg)"],
+                      [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="95.84" y1="64.78" x2="98.24" y2="119.18"/>
+                    <circle class="mo-plate-o" cx="98.24" cy="119.18" r="12"/>
+                    <circle class="mo-hub" cx="98.24" cy="119.18" r="2.8"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M124 92 L124 62 M119 70 L124 62 L129 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M124 62 L124 92 M119 84 L124 92 L129 84"/>` }
+  ]
+};
