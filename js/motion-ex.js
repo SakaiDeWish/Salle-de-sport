@@ -4397,3 +4397,108 @@ EXERCISE_MOTIONS["rowing-inverse"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M132 104 L132 130 M127 122 L132 130 L137 122"/>` }
   ]
 };
+
+/* =========================================================
+   46. POMPES PIQUÉES  (pompes-pike)
+   -----------------------------------------------------------
+   Position  : mains et pieds au sol, BASSIN HAUT — le corps forme un
+               V inversé —, mains largeur d'épaules, tête entre les
+               bras.
+   Matériel  : aucun.
+   Mobiles   : le COUDE et l'ÉPAULE. Le sommet de la tête descend
+               vers le sol entre les mains, puis remonte.
+   Fixes     : les MAINS et les PIEDS au sol — double chaîne fermée.
+               Et l'ANGLE DU V lui-même, qui doit être MAINTENU :
+               tronc et jambes forment ici un bloc rigide à 85°, et
+               le bassin ne redescend pas. S'il redescend, on revient
+               à une pompe classique.
+   POURQUOI LE V — c'est toute la raison d'être de l'exercice : il
+               rend la poussée VERTICALE. Corps horizontal (pompe
+               classique), la ligne de poussée est horizontale et ce
+               sont les PECTORAUX qui travaillent. En V, la ligne de
+               poussée passe au-dessus des épaules et c'est le
+               DELTOÏDE ANTÉRIEUR qui prend le relais. C'est le
+               développé militaire du poids du corps — même
+               contraste qu'entre développé couché et développé
+               militaire, obtenu sans changer de matériel, juste en
+               changeant l'orientation du corps.
+   Sens/plan : descente de la tête = excentrique ; poussée =
+               concentrique. Le cycle commence bras tendus.
+   ROM       : coude de 166,0° à 90,0°. La tête descend jusqu'à
+               frôler le sol — vérifié : elle s'arrête à 1,1 unité
+               au-dessus, sans jamais le traverser.
+   Agonistes : DELTOÏDE ANTÉRIEUR surtout, TRICEPS, trapèze
+               supérieur. Les pectoraux ne sont qu'en assistance
+               mineure, contrairement à la pompe classique.
+   Distinction : bassin HAUT -> poussée verticale -> épaules.
+               ≠ pompes classiques (corps horizontal, poussée
+               horizontale, pectoraux).
+   GÉOMÉTRIE (calculée) — main(70,140) et pied(150,140) fixes, bras
+   et avant-bras 20, tronc 32, jambes 52, angle du V 85° fixe
+   (donc |épaule-pied| = 58,63 constant).
+   Vérification d'atteignabilité faite AVANT de dessiner : avec les
+   mains à 80 des pieds, les deux positions extrêmes sont bien dans
+   le domaine atteignable — ce n'était pas acquis, un écartement
+   main-pied trop grand rend le coude à 90° impossible.
+   Haut : épaule(98.36,112.22), coude(82.47,124.36), hanche(124.96,94.43).
+   Bas  : épaule(93.51,124.28), coude(73.90,120.38), hanche(115.53,101.07).
+   -> avant-bras −27,34°, bras +75,97° rel, corps en V −61,36° rel.
+   ========================================================= */
+EXERCISE_MOTIONS["pompes-pike"] = {
+  vb: "55 80 125 78",
+  dur: 3.8,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Mains et pieds au sol, bassin haut en V inversé : la tête descend entre les mains par flexion des coudes, puis les épaules repoussent le corps vers le haut.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="140" x2="176" y2="140"/>
+    <circle class="mo-hand" cx="70" cy="140" r="3.6"/>
+    <line class="mo-limb" x1="144" y1="140" x2="158" y2="140"/>
+    <circle class="mo-joint" cx="150" cy="140" r="2.8"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS enraciné à la MAIN, qui ne quitte pas le sol. */
+      o: "70px 140px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-27.34deg)"], [52, "rotate(-27.34deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <line class="mo-limb" x1="70" y1="140" x2="82.47" y2="124.36"/>
+        <circle class="mo-joint" cx="82.47" cy="124.36" r="2.6"/>`,
+      children: [
+        {
+          /* BRAS : +75,97° relatif. Il porte le TRICEPS. */
+          o: "82.47px 124.36px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(75.97deg)"], [52, "rotate(75.97deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="92" cy="121" rx="3" ry="7" transform="rotate(52 92 121)"/>`,
+          svg: `<line class="mo-limb" x1="82.47" y1="124.36" x2="98.36" y2="112.22"/>`,
+          children: [
+            {
+              /* CORPS EN V : bloc RIGIDE tronc + jambes, angle de 85°
+                 conservé. Son extrémité retombe exactement sur le pied
+                 ancré, aux deux positions. */
+              o: "98.36px 112.22px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-61.36deg)"], [52, "rotate(-61.36deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: ["Deltoïde antérieur", "Trapèze supérieur"],
+              muscle: `
+                <circle cx="101" cy="115" r="5"/>
+                <ellipse cx="107" cy="110" rx="6" ry="3" transform="rotate(-34 107 110)"/>`,
+              svg: `
+                <circle class="mo-joint" cx="98.36" cy="112.22" r="2.8"/>
+                <line class="mo-body" x1="98.36" y1="112.22" x2="124.96" y2="94.43"/>
+                <circle class="mo-joint" cx="124.96" cy="94.43" r="2.6"/>
+                <line class="mo-body" x1="124.96" y1="94.43" x2="150" y2="140"/>
+                <circle class="mo-head" cx="88.39" cy="118.89" r="7"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M166 128 L166 98 M161 106 L166 98 L171 106"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M166 98 L166 128 M161 120 L166 128 L171 120"/>` }
+  ]
+};
