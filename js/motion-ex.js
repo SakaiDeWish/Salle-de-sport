@@ -5073,3 +5073,103 @@ EXERCISE_MOTIONS["ecarte-halteres"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M64 96 L46 82 M53 84 L46 82 L48 89"/>` }
   ]
 };
+
+/* =========================================================
+   53. ÉCARTÉ INCLINÉ AUX HALTÈRES  (ecarte-incline-halteres)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ sur un banc INCLINÉ à ~30°, un haltère dans
+               chaque main, coudes légèrement fléchis et BLOQUÉS.
+   Matériel  : banc incliné + deux haltères.
+   Mobiles   : l'ÉPAULE seule, en adduction horizontale.
+   Fixes     : le COUDE — angle vérifié à 150,0° aux deux positions,
+               |épaule-main| constant à 42,51. Bras rigide, comme à
+               l'écarté plat.
+   CONSTAT HONNÊTE, ISSU DU CALCUL : l'ARC EST LE MÊME qu'à l'écarté
+               plat, 118° dans les deux cas. Ce n'est pas une
+               approximation, c'est le fait : l'amplitude se mesure
+               PAR RAPPORT AU TRONC, et les bras s'arrêtent dans les
+               deux cas au plan du dossier. Ce qui change n'est donc
+               pas le geste mais l'ORIENTATION DU TRONC DANS
+               L'ESPACE, et par conséquent quelles fibres du pectoral
+               se retrouvent alignées avec la résistance : le
+               FAISCEAU CLAVICULAIRE, le haut du pectoral, ici.
+               Les deux schémas se distinguent donc par le
+               MONTAGE — dossier incliné vu en fuite, corps plus haut
+               dans le cadre — et non par une amplitude inventée pour
+               les différencier.
+   VUE       : de FACE, depuis les pieds, pour les mêmes raisons qu'à
+               l'écarté plat : l'ouverture se fait dans un plan qui
+               serait invisible de profil. Le dossier est dessiné en
+               FUITE vers le haut, ce qui donne son inclinaison sans
+               masquer l'arc.
+   ROM       : 118° d'adduction d'épaule. On ne descend pas sous le
+               plan du dossier : au-delà la tête humérale encaisse
+               une contrainte antérieure pour un gain nul.
+   Agonistes : HAUT DU GRAND PECTORAL (faisceau claviculaire),
+               deltoïde antérieur en assistance. Pas de triceps :
+               monoarticulaire.
+   La famille des écartés suit donc la même logique d'angle que celle
+   des développés — plat pour le milieu du pectoral, incliné pour le
+   haut — à ceci près que le geste, lui, est rigoureusement identique.
+   GÉOMÉTRIE (calculée) — épaules(94,102) et (126,102), bras 24,
+   avant-bras 20, coude figé à 150°.
+   Haut : main gauche(109.24,62.31), coude(107.63,82.25).
+   Bas  : main gauche(51.80,107.18), coude(70.16,99.24).
+   -> bras gauche −118°, bras droit +118° (miroir).
+   ========================================================= */
+EXERCISE_MOTIONS["ecarte-incline-halteres"] = {
+  vb: "34 48 152 100",
+  dur: 4.0,
+  vue: "Vu de face",
+  phases: { ecc: [0, 45], con: [52, 82] },
+  alt: "Vu de face depuis les pieds. Allongé sur un banc incliné, coudes bloqués : les bras s'ouvrent en arc jusqu'au plan du dossier, puis se referment au-dessus du haut de la poitrine.",
+  fixe: `
+    <line class="mo-ground" x1="76" y1="142" x2="144" y2="142"/>
+    <!-- dossier INCLINÉ, dessiné EN FUITE vers le haut : c'est lui qui
+         donne l'inclinaison sans masquer l'arc des bras. -->
+    <line class="mo-pad" x1="92" y1="134" x2="100" y2="82"/>
+    <line class="mo-pad" x1="128" y1="134" x2="120" y2="82"/>
+    <line class="mo-pad" x1="100" y1="82" x2="120" y2="82"/>
+    <line class="mo-gear" x1="110" y1="134" x2="110" y2="142"/>
+    <!-- buste en coupe, plus haut dans le cadre que sur le banc plat -->
+    <ellipse class="mo-head-solid mo-head" cx="110" cy="90" rx="9" ry="9"/>
+    <ellipse class="mo-torse" cx="110" cy="108" rx="17" ry="9"/>
+    <circle class="mo-joint" cx="94" cy="102" r="2.8"/>
+    <circle class="mo-joint" cx="126" cy="102" r="2.8"/>`,
+  muscles: [
+    { nom: "Haut du grand pectoral",
+      svg: `<ellipse cx="101" cy="102" rx="8" ry="4"/><ellipse cx="119" cy="102" rx="8" ry="4"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE : segment RIGIDE, coude figé. −118°. */
+      o: "94px 102px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-118deg)"], [52, "rotate(-118deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="94" y1="102" x2="107.63" y2="82.25"/>
+        <circle class="mo-joint" cx="107.63" cy="82.25" r="2.4"/>
+        <line class="mo-limb" x1="107.63" y1="82.25" x2="109.24" y2="62.31"/>
+        <line class="mo-bar2" x1="103" y1="62" x2="116" y2="62"/>
+        <rect class="mo-mass" x="100" y="57" width="6" height="10" rx="2"/>
+        <rect class="mo-mass" x="113" y="57" width="6" height="10" rx="2"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact, +118°. */
+      o: "126px 102px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(118deg)"], [52, "rotate(118deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="126" y1="102" x2="112.37" y2="82.25"/>
+        <circle class="mo-joint" cx="112.37" cy="82.25" r="2.4"/>
+        <line class="mo-limb" x1="112.37" y1="82.25" x2="110.76" y2="62.31"/>
+        <line class="mo-bar2" x1="104" y1="62" x2="117" y2="62"/>
+        <rect class="mo-mass" x="101" y="57" width="6" height="10" rx="2"/>
+        <rect class="mo-mass" x="114" y="57" width="6" height="10" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M46 78 L64 92 M57 90 L64 92 L62 85"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M64 92 L46 78 M53 80 L46 78 L48 85"/>` }
+  ]
+};
