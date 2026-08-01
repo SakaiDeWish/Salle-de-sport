@@ -3616,50 +3616,74 @@ EXERCISE_MOTIONS["mollets-assis"] = {
 
 /* =========================================================
    38. PLANCHE (GAINAGE)  (planche)
-   >>> SCHÉMA NON LIVRÉ DANS CE FORMAT — SIGNALÉ, PAS BÂCLÉ <<<
    -----------------------------------------------------------
-   ANALYSE (faite, et valide) :
    Position  : appui sur les AVANT-BRAS et les pointes de pieds,
-               coudes à l'aplomb des épaules, corps en LIGNE DROITE
-               de la tête aux talons.
+               COUDES À L'APLOMB DES ÉPAULES, corps en LIGNE DROITE
+               de la tête aux talons, nuque neutre dans l'alignement.
    Matériel  : aucun.
    Mobiles   : RIEN. Premier exercice purement ISOMÉTRIQUE de la
                bibliothèque : aucune articulation ne bouge, aucun
                muscle ne change de longueur.
    Le travail : il consiste précisément à NE PAS bouger. Il faut
-               empêcher le bassin de S'AFFAISSER (lombaires en
-               hyperextension) et de REMONTER en chien tête en bas
-               (position qui décharge tout). La performance se mesure
+               empêcher le bassin de S'AFFAISSER — lombaires en
+               hyperextension — et de REMONTER en chien tête en bas,
+               position qui décharge tout. La performance se mesure
                en TEMPS SOUS TENSION, pas en répétitions.
    Agonistes : transverse et grand droit de l'abdomen, obliques,
                fessiers et érecteurs du rachis en co-contraction.
 
-   POURQUOI AUCUN SCHÉMA N'EST LIVRÉ ICI :
-   le format de EXERCISE_MOTIONS encode structurellement un MOUVEMENT
-   DIRIGÉ — deux phases (concentrique / excentrique), deux flèches de
-   sens, une amplitude entre deux positions extrêmes, et des muscles
-   qui s'allument sur la phase active. Un isométrique n'a NI phase,
-   NI sens, NI amplitude. Fabriquer un faux aller-retour pour
-   satisfaire le contrat produirait exactement ce qu'il faut éviter :
-   un schéma qui montre un mouvement là où l'exercice consiste à n'en
-   faire aucun. Un lecteur en conclurait qu'il faut monter et
-   descendre le bassin, c'est-à-dire précisément la faute.
-
-   CE QU'IL FAUDRAIT POUR BIEN FAIRE — à traiter comme un chantier à
-   part entière, pas à glisser en douce dans un schéma :
-     - un MODE ISOMÉTRIQUE dans le moteur : corps immobile, pas de
-       flèches de sens mais un repère de MAINTIEN, muscles en tension
-       continue plutôt qu'en pulsation de phase ;
-     - un repère d'ALIGNEMENT tête-talons, qui est le vrai point
-       technique ;
-     - éventuellement les deux dérives (bassin bas / bassin haut)
-       montrées en pointillés et EXPLICITEMENT étiquetées comme
-       fautes, sans quoi elles seraient lues comme le mouvement.
-   Plusieurs exercices de la bibliothèque sont dans ce cas (planche,
-   gainage latéral, hollow hold) : cela justifie une extension du
-   moteur, faite et vérifiée proprement, plutôt qu'un bricolage.
-
-   En attendant, l'exercice retombe sur le pictogramme générique,
-   explicitement étiqueté « Schéma générique » — ce qui est honnête,
-   là où une fausse animation ne le serait pas.
+   COMMENT CE SCHÉMA EST CONSTRUIT — et pourquoi il a fallu étendre
+   le moteur plutôt que bricoler :
+     - le corps est ENTIÈREMENT dans les éléments fixes. Rien ne
+       tourne, rien ne translate. C'est la vérité du mouvement ;
+     - pas de flèches de sens, car il n'y a pas de sens. Elles sont
+       remplacées par un ANNEAU DE MAINTIEN qui se remplit une fois
+       par cycle : il parle de TEMPS sous tension et ne peut pas
+       être lu comme un geste à exécuter ;
+     - les muscles ne pulsent pas « sur la phase concentrique »,
+       ils restent allumés en CONTINU, très légèrement respirants ;
+     - un repère d'ALIGNEMENT traverse tout le corps et DÉPASSE aux
+       deux bouts, ce qui rend la rectitude tête-talons lisible.
+       C'est le seul point technique de l'exercice.
+   Fabriquer un faux aller-retour aurait montré un mouvement là où
+   l'exercice consiste à n'en faire aucun : un lecteur en aurait
+   déduit qu'il faut monter et descendre le bassin, c'est-à-dire
+   exactement la faute à éviter.
+   GÉOMÉTRIE — épaule S(60,106) à l'aplomb exact du coude (60,130).
+   Tête, épaule, hanche(91.3,112.8), genou(116.6,118.4) et
+   cheville(142,123.9) sont COLINÉAIRES, vérifié par construction :
+   tous placés sur la droite S -> orteils.
    ========================================================= */
+EXERCISE_MOTIONS["planche"] = {
+  vb: "30 74 150 68",
+  dur: 4.0,
+  isometrique: true,
+  maintien: "104 88",
+  alt: "Gainage sur les avant-bras et la pointe des pieds : le corps forme une ligne droite de la tête aux talons et cette position se maintient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="130" x2="172" y2="130"/>
+    <!-- REPÈRE D'ALIGNEMENT : il dépasse aux deux bouts pour que la
+         rectitude tête-talons se lise d'un coup d'oeil. -->
+    <line class="mo-rom" x1="34" y1="100" x2="166" y2="129"/>
+    <!-- avant-bras au sol, coude À L'APLOMB de l'épaule -->
+    <line class="mo-limb" x1="60" y1="130" x2="86" y2="130"/>
+    <line class="mo-limb" x1="60" y1="130" x2="60" y2="106"/>
+    <circle class="mo-joint" cx="60" cy="130" r="2.8"/>
+    <circle class="mo-joint" cx="60" cy="106" r="2.8"/>
+    <!-- corps : une seule ligne droite, tête comprise -->
+    <circle class="mo-head" cx="47.3" cy="103.2" r="8"/>
+    <line class="mo-body" x1="60" y1="106" x2="91.3" y2="112.8"/>
+    <line class="mo-body" x1="91.3" y1="112.8" x2="116.6" y2="118.4"/>
+    <line class="mo-body" x1="116.6" y1="118.4" x2="142" y2="123.9"/>
+    <circle class="mo-joint" cx="91.3" cy="112.8" r="2.6"/>
+    <circle class="mo-joint" cx="116.6" cy="118.4" r="2.6"/>
+    <!-- pointe de pied au sol -->
+    <line class="mo-limb" x1="142" y1="123.9" x2="152" y2="130"/>`,
+  muscles: [
+    { nom: "Transverse · grand droit",
+      svg: `<ellipse cx="75.6" cy="113.4" rx="12" ry="3.4" transform="rotate(12.3 75.6 113.4)"/>` },
+    { nom: "Grand fessier",
+      svg: `<circle cx="93" cy="108" r="4.5"/>` }
+  ],
+  parts: []
+};

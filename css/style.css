@@ -2131,3 +2131,11 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
 /* Tête au premier plan : elle occulte ce qui est derrière (indice de
    profondeur pour les vues où le corps pointe vers l'observateur) */
 .mo-head-solid { fill: var(--card); }
+
+/* ---------- V10 · mode ISOMÉTRIQUE des schémas ----------
+   Un exercice de gainage n'a ni sens ni amplitude : les flèches de
+   direction sont remplacées par un anneau de MAINTIEN qui se remplit
+   une fois par cycle. Il parle de temps sous tension, pas de geste. */
+.mo-hold-piste { fill: none; stroke: var(--text-soft); stroke-width: 3; opacity: .28; }
+.mo-hold-ring  { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
+.mo-hold-core  { fill: var(--accent); }
