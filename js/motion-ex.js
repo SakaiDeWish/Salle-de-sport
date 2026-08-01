@@ -8501,3 +8501,98 @@ EXERCISE_MOTIONS["curl-spider"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M98 62 L98 90 M93 82 L98 90 L103 82"/>` }
   ]
 };
+
+/* =========================================================
+   79. CURL INVERSÉ (PRONATION)  (curl-inverse)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre saisie en PRONATION (paumes vers le
+               bas), mains largeur d'épaules, coudes au corps.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS, collé au flanc — « coudes qui s'écartent »
+               est l'erreur n°3 ; et le POIGNET, verrouillé.
+   ROM       : coude de 167,6° à 47,6°, soit 120° de flexion.
+   >>> LA DIFFÉRENCE AVEC LE CURL BARRE N'EST PAS GÉOMÉTRIQUE,
+       ELLE EST MUSCULAIRE — ET C'EST POUR CELA QUE LE SCHÉMA NE
+       CHANGE PAS L'ARC MAIS CHANGE LES MUSCLES <<< L'arc décrit
+       par la barre est le même qu'à prise supinée : même coude,
+       même rayon, même amplitude. Inventer une trajectoire
+       différente serait faux. Ce qui change tient à la position
+       du radius.
+       Le BICEPS est un supinateur autant qu'un fléchisseur. En
+       pronation son tendon s'enroule autour du radius : sa ligne
+       d'action est dégradée et il perd une grande part de son
+       efficacité. Il n'est donc PAS dessiné ici, alors qu'il
+       l'est au curl barre — c'est la traduction visuelle du
+       « moins de charge » annoncé par la fiche.
+       Prennent le relais le BRACHIAL ANTÉRIEUR, qui s'insère sur
+       l'ULNA et se moque donc de la rotation du radius, et le
+       BRACHIO-RADIAL, le long supinateur, seul muscle de ce
+       catalogue dessiné sur l'AVANT-BRAS mobile.
+       Réserve honnête : le brachio-radial franchit le coude, une
+       partie de son corps charnu est donc sur le bras. Le
+       dessiner entièrement solidaire de l'avant-bras est une
+       approximation, assumée faute de pouvoir scinder un muscle
+       entre deux segments.
+   LE POIGNET EST DESSINÉ COMME UNE ARTICULATION MARQUÉE MAIS
+       IMMOBILE : « poignets qui cassent » est l'erreur n°1, et
+       en pronation ce sont les EXTENSEURS du poignet qui doivent
+       tenir la barre relevée. Avant-bras et main forment donc un
+       seul segment rigide de 33, avec le poignet matérialisé au
+       milieu : si le schéma le laissait plier, il dessinerait la
+       faute.
+   Sens      : montée = concentrique ; descente lente =
+               excentrique.
+   Agonistes : BRACHIAL ANTÉRIEUR et BRACHIO-RADIAL.
+   Distinction : ≠ curl barre (supination, biceps dominant, plus
+               de charge) ; ≠ curl marteau (prise NEUTRE — le
+               brachio-radial y est encore mieux placé, mais le
+               biceps reste efficace, ce qui n'est pas le cas
+               ici) ; ≠ curl poulie basse (résistance oblique).
+   GÉOMÉTRIE (calculée) — épaule (116,56), bras 32 vertical FIXE,
+   coude (118,88), avant-bras + main 33 d'un bloc, poignet à 26.
+     bas  barre (112.90,120.70)  poignet (114,113.7)
+     haut barre ( 92.29, 67.27)  poignet (97.74,71.67)
+   -> bloc avant-bras/main, rotation +120° autour du coude.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-inverse"] = {
+  vb: "74 26 76 138",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout de profil, barre saisie paumes vers le bas et poignets verrouillés : la barre monte vers les épaules par la seule flexion des coudes, puis redescend lentement.",
+  fixe: `
+    <line class="mo-ground" x1="90" y1="158" x2="140" y2="158"/>
+    <!-- corps debout de profil, face à gauche, immobile -->
+    <circle class="mo-head" cx="110" cy="40" r="9"/>
+    <line class="mo-body" x1="113" y1="48" x2="116" y2="56"/>
+    <line class="mo-body" x1="116" y1="56" x2="120" y2="106"/>
+    <line class="mo-body" x1="120" y1="106" x2="118" y2="132"/>
+    <line class="mo-body" x1="118" y1="132" x2="114" y2="158"/>
+    <!-- BRAS : dans les fixes, collé au flanc -->
+    <line class="mo-limb" x1="116" y1="56" x2="118" y2="88"/>
+    <circle class="mo-joint" cx="118" cy="88" r="2.8"/>
+    <!-- amplitude : l'arc réellement parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M112.90 120.70 A33 33 0 0 1 92.29 67.27"/>`,
+  muscles: [
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="114" cy="76" rx="3" ry="8"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + MAIN + BARRE : UN SEUL segment rigide de 33, poignet
+         marqué au milieu mais immobile. Rotation +120° autour du COUDE. */
+      o: "118px 88px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(120deg)"], [40, "rotate(120deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Brachio-radial",
+      muscle: `<ellipse cx="115.5" cy="97" rx="3" ry="8" transform="rotate(-9 115.5 97)"/>`,
+      svg: `
+        <line class="mo-limb" x1="118" y1="88" x2="112.90" y2="120.70"/>
+        <circle class="mo-joint" cx="114" cy="113.7" r="2.4"/>
+        <line class="mo-bar2" x1="105.98" y1="119.62" x2="119.82" y2="121.78"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M140 110 L140 84 M135 92 L140 84 L145 92"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 84 L140 110 M135 102 L140 110 L145 102"/>` }
+  ]
+};
