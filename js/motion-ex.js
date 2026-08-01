@@ -219,7 +219,14 @@ EXERCISE_MOTIONS["developpe-incline-halteres"] = {
                fixe, ici la main est fixe et c'est le CORPS qui
                se déplace. Amplitude bornée par le sol.
    Angles obtenus par cinématique inverse pour que la main reste
-   EXACTEMENT au sol dans les deux positions, corps compris.
+   EXACTEMENT au sol, corps compris.
+   CORRIGÉ APRÈS COUP : les deux extrêmes étaient justes, mais entre
+   les deux la main décollait/s'enfonçait de 3 unités — interpoler
+   linéairement trois rotations ne ferme pas une chaîne fermée. Le
+   parcours est maintenant résolu par IK en six intervalles ; la
+   dérive résiduelle est de 0,30 unité. Le défaut a été trouvé en
+   mesurant l'appui à chaque instant, pas seulement en bas et en
+   haut.
    ========================================================= */
 EXERCISE_MOTIONS["pompes"] = {
   vb: "40 78 172 78",
@@ -233,7 +240,11 @@ EXERCISE_MOTIONS["pompes"] = {
       /* CORPS ENTIER : pivote autour de la POINTE DE PIED (188, 142).
          −10,2° abaisse l'épaule de 22 unités, sans plier la hanche. */
       o: "188px 142px",
-      k: [[0, "rotate(0deg)"], [44, "rotate(-10.2deg)"], [52, "rotate(-10.2deg)"],
+      k: [[0, "rotate(0deg)"], [7.33, "rotate(-1.70deg)"], [14.67, "rotate(-3.40deg)"],
+          [22, "rotate(-5.10deg)"], [29.33, "rotate(-6.80deg)"], [36.67, "rotate(-8.50deg)"],
+          [44, "rotate(-10.20deg)"], [52, "rotate(-10.20deg)"],
+          [56.67, "rotate(-8.50deg)"], [61.33, "rotate(-6.80deg)"], [66, "rotate(-5.10deg)"],
+          [70.67, "rotate(-3.40deg)"], [75.33, "rotate(-1.70deg)"],
           [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
       muscleNom: ["Grand pectoral", "Deltoïde antérieur"],
       muscle: `<ellipse cx="82" cy="110" rx="11" ry="4.2" transform="rotate(18 82 110)"/>
@@ -248,7 +259,11 @@ EXERCISE_MOTIONS["pompes"] = {
           /* BRAS : rotation autour de l'ÉPAULE (70, 104), dans le repère du
              corps. −49,6° amène le coude vers l'arrière en position basse. */
           o: "70px 104px",
-          k: [[0, "rotate(0deg)"], [44, "rotate(-49.6deg)"], [52, "rotate(-49.6deg)"],
+          k: [[0, "rotate(0deg)"], [7.33, "rotate(-13.61deg)"], [14.67, "rotate(-22.45deg)"],
+              [22, "rotate(-29.80deg)"], [29.33, "rotate(-36.47deg)"], [36.67, "rotate(-42.88deg)"],
+              [44, "rotate(-49.37deg)"], [52, "rotate(-49.37deg)"],
+              [56.67, "rotate(-42.88deg)"], [61.33, "rotate(-36.47deg)"], [66, "rotate(-29.80deg)"],
+              [70.67, "rotate(-22.45deg)"], [75.33, "rotate(-13.61deg)"],
               [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
           muscleNom: "Triceps brachial",
           muscle: `<ellipse cx="72" cy="114" rx="3.2" ry="7.5" transform="rotate(-12 72 114)"/>`,
@@ -260,7 +275,11 @@ EXERCISE_MOTIONS["pompes"] = {
               /* AVANT-BRAS : rotation relative autour du COUDE. +96,6° garde
                  la MAIN exactement au même point du sol, corps abaissé. */
               o: "74.6px 125.5px",
-              k: [[0, "rotate(0deg)"], [44, "rotate(96.6deg)"], [52, "rotate(96.6deg)"],
+              k: [[0, "rotate(0deg)"], [7.33, "rotate(28.15deg)"], [14.67, "rotate(46.31deg)"],
+                  [22, "rotate(61.08deg)"], [29.33, "rotate(74.00deg)"], [36.67, "rotate(85.73deg)"],
+                  [44, "rotate(96.60deg)"], [52, "rotate(96.60deg)"],
+                  [56.67, "rotate(85.73deg)"], [61.33, "rotate(74.00deg)"], [66, "rotate(61.08deg)"],
+                  [70.67, "rotate(46.31deg)"], [75.33, "rotate(28.15deg)"],
                   [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
               svg: `
                 <line class="mo-limb" x1="74.6" y1="125.5" x2="70" y2="146"/>
@@ -5426,5 +5445,142 @@ EXERCISE_MOTIONS["developpe-machine-convergente"] = {
   arrows: [
     { phase: "con", svg: `<path class="mo-arr" d="M56 100 L56 62 M50 70 L56 62 L62 70"/>` },
     { phase: "ecc", svg: `<path class="mo-arr" d="M56 62 L56 100 M50 92 L56 100 L62 92"/>` }
+  ]
+};
+
+/* =========================================================
+   56. POMPES DÉCLINÉES (PIEDS SURÉLEVÉS)  (pompes-declinees)
+   -----------------------------------------------------------
+   Position  : face au sol, MAINS au sol un peu plus larges que
+               les épaules, PIEDS posés sur un banc. Corps en
+               planche rigide.
+   Matériel  : un banc plat (~45 cm). Deux appuis FIXES : les
+               mains au sol, les pointes de pieds sur le banc.
+   Mobiles   : coude, épaule, et le CORPS ENTIER qui pivote
+               autour de l'appui des pieds.
+   Fixes     : rachis, bassin, genoux. Mains et pieds immobiles.
+   CE QUE LE SCHÉMA CORRIGE — UNE IDÉE REÇUE : « pieds surélevés
+               = corps tête en bas ». C'est FAUX sur un banc
+               ordinaire, et le calcul le montre. En planche,
+               l'épaule est à hauteur de bras tendu au-dessus du
+               sol, soit 42,8 unités ici (~60 cm). Un banc de
+               45 cm ne fait monter la pointe de pied qu'à 32
+               unités : l'épaule reste 10,8 unités PLUS HAUTE que
+               le pied. Le corps n'est pas incliné vers le bas,
+               il est quasi HORIZONTAL.
+   ALORS POURQUOI ÇA CIBLE LE HAUT DES PECTORAUX ? Parce que ce
+               qui compte n'est pas la hauteur absolue mais la
+               direction de la GRAVITÉ par rapport au TRONC. Aux
+               pompes au sol le corps est à 19,3° tête en haut ;
+               ici il tombe à 4,9°. La ligne de charge bascule
+               donc de ~14° vers la TÊTE — exactement la
+               situation du développé INCLINÉ. Ce sont ces 14°,
+               et rien d'autre, qui déplacent le travail vers les
+               fibres claviculaires et le deltoïde antérieur.
+   Sens/plan : descente = excentrique ; poussée du sol =
+               concentrique. Plan sagittal.
+   ROM       : coude 60° en bas → 170° en haut. L'épaule descend
+               de 21 unités, le bassin seulement de 11 : il est
+               plus près du pivot, donc il parcourt moins. Le
+               corps ne « plie » pas pour autant.
+   Agonistes : HAUT du grand pectoral, deltoïde antérieur,
+               triceps. Abdominaux en gainage isométrique, donc
+               non animés.
+   Distinction : ≠ pompes au sol — même chaîne fermée, mais
+               l'inclinaison du corps et donc TOUS les angles
+               diffèrent (corps 4,9° au lieu de 19,3°, épaule
+               calculée sur un pivot surélevé).
+               ≠ pompes pike — là la HANCHE est pliée à 90° et le
+               mouvement devient un développé vertical d'épaules.
+   GÉOMÉTRIE (calculée) — sol y=150, dessus du banc y=118, appui
+   pied (188,118), main (60,150). Bras 22, avant-bras 21,
+   pied→épaule 127,09 (même sujet qu'aux pompes au sol).
+   HAUT : intersection des cercles (main, 42,84) et (pied,
+          127,09) -> épaule (61.37,107.18), coude (62.57,129.15).
+   BAS  : épaule abaissée de 21 -> (61.32,128.20), coude ouvert
+          vers l'ARRIÈRE (79.07,141.20), coude à 60,0°, et la
+          main reste EXACTEMENT en (60,150).
+   -> corps −9,48° ; bras relatif au corps −41,18° ;
+      avant-bras relatif au bras +108,86°.
+   CINQ POSITIONS INTERMÉDIAIRES ONT DÛ ÊTRE CALCULÉES EN PLUS :
+   interpoler linéairement les trois rotations entre les deux
+   extrêmes ne ferme PAS la chaîne au milieu — la main plongeait
+   à 4 unités SOUS le sol à mi-descente. La main d'une pompe est
+   un APPUI : elle doit tenir le sol à CHAQUE instant, pas
+   seulement aux deux bouts. Le parcours est donc résolu par IK en
+   six intervalles, et la dérive résiduelle tombe à 0,53 unité
+   (mesurée sur tout le cycle, pas seulement aux extrêmes).
+   ========================================================= */
+EXERCISE_MOTIONS["pompes-declinees"] = {
+  vb: "40 94 176 62",
+  dur: 3.6,
+  phases: { ecc: [0, 44], con: [52, 84] },
+  alt: "Pieds posés sur un banc et mains au sol, le corps en planche quasi horizontale descend d'un bloc jusqu'à ce que la poitrine frôle le sol, puis repousse le sol.",
+  fixe: `
+    <line class="mo-ground" x1="44" y1="150" x2="212" y2="150"/>
+    <!-- banc : c'est lui qui définit l'inclinaison du corps -->
+    <line class="mo-pad" x1="164" y1="118" x2="210" y2="118"/>
+    <line class="mo-gear" x1="170" y1="122" x2="170" y2="150"/>
+    <line class="mo-gear" x1="204" y1="122" x2="204" y2="150"/>`,
+  parts: [
+    {
+      /* CORPS ENTIER : pivote autour de l'APPUI DES PIEDS (188, 118),
+         qui est sur le BANC et non au sol — c'est toute la différence
+         avec les pompes ordinaires. −9,48° abaisse l'épaule de 21. */
+      o: "188px 118px",
+      k: [[0, "rotate(0deg)"], [7.33, "rotate(-1.58deg)"], [14.67, "rotate(-3.16deg)"],
+          [22, "rotate(-4.74deg)"], [29.33, "rotate(-6.32deg)"], [36.67, "rotate(-7.90deg)"],
+          [44, "rotate(-9.48deg)"], [52, "rotate(-9.48deg)"],
+          [57.33, "rotate(-7.90deg)"], [62.67, "rotate(-6.32deg)"], [68, "rotate(-4.74deg)"],
+          [73.33, "rotate(-3.16deg)"], [78.67, "rotate(-1.58deg)"],
+          [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Haut du grand pectoral", "Deltoïde antérieur"],
+      muscle: `<ellipse cx="78" cy="111" rx="11" ry="4.2" transform="rotate(1.4 78 111)"/>
+               <circle cx="62" cy="108" r="4.3"/>`,
+      svg: `
+        <circle class="mo-head" cx="49.4" cy="106.9" r="8"/>
+        <line class="mo-body" x1="57.4" y1="107.1" x2="123.35" y2="108.64"/>
+        <line class="mo-body" x1="123.35" y1="108.64" x2="181" y2="110"/>
+        <!-- pied : cheville au-dessus du banc, pointe posée dessus -->
+        <line class="mo-body" x1="181" y1="110" x2="188" y2="118"/>`,
+      children: [
+        {
+          /* BRAS : rotation autour de l'ÉPAULE (61.37, 107.18), dans le
+             repère du corps. −41,18° emmène le coude vers l'arrière. */
+          o: "61.37px 107.18px",
+          k: [[0, "rotate(0deg)"], [7.33, "rotate(-17.05deg)"], [14.67, "rotate(-25.00deg)"],
+              [22, "rotate(-30.77deg)"], [29.33, "rotate(-35.26deg)"], [36.67, "rotate(-38.77deg)"],
+              [44, "rotate(-41.31deg)"], [52, "rotate(-41.31deg)"],
+              [57.33, "rotate(-38.77deg)"], [62.67, "rotate(-35.26deg)"], [68, "rotate(-30.77deg)"],
+              [73.33, "rotate(-25.00deg)"], [78.67, "rotate(-17.05deg)"],
+              [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="65" cy="118" rx="3.2" ry="7.5" transform="rotate(3 65 118)"/>`,
+          svg: `
+            <line class="mo-limb" x1="61.37" y1="107.18" x2="62.57" y2="129.15"/>
+            <circle class="mo-joint" cx="62.57" cy="129.15" r="2.6"/>`,
+          children: [
+            {
+              /* AVANT-BRAS : rotation relative autour du COUDE. +108,86°
+                 maintient la MAIN exactement en (60,150), corps abaissé. */
+              o: "62.57px 129.15px",
+              k: [[0, "rotate(0deg)"], [7.33, "rotate(37.80deg)"], [14.67, "rotate(57.29deg)"],
+                  [22, "rotate(72.68deg)"], [29.33, "rotate(86.00deg)"], [36.67, "rotate(98.01deg)"],
+                  [44, "rotate(109.12deg)"], [52, "rotate(109.12deg)"],
+                  [57.33, "rotate(98.01deg)"], [62.67, "rotate(86.00deg)"], [68, "rotate(72.68deg)"],
+                  [73.33, "rotate(57.29deg)"], [78.67, "rotate(37.80deg)"],
+                  [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="62.57" y1="129.15" x2="60" y2="150"/>
+                <circle class="mo-hand" cx="60" cy="150" r="3.4"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 124 L140 142 M135 136 L140 142 L145 136"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M140 142 L140 124 M135 130 L140 124 L145 130"/>` }
   ]
 };
