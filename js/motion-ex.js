@@ -3779,3 +3779,114 @@ EXERCISE_MOTIONS["crunch"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M112 88 L112 110 M107 102 L112 110 L117 102"/>` }
   ]
 };
+
+/* =========================================================
+   40. RELEVÉ DE JAMBES SUSPENDU  (releve-jambes-suspendu)
+   -----------------------------------------------------------
+   Position  : SUSPENDU à une barre fixe, bras tendus, corps gainé,
+               jambes tendues.
+   Matériel  : barre fixe.
+   Mobiles   : la HANCHE, et surtout — c'est LE point technique — la
+               RÉTROVERSION DU BASSIN.
+   Fixes     : les MAINS sur la barre : chaîne fermée enracinée à la
+               barre. Les bras et le haut du buste ne bougent pas,
+               ils sont dans les éléments fixes. Aucun balancement :
+               l'élan qui viendrait des épaules retirerait tout le
+               travail aux abdominaux.
+   CE QUE LE SCHÉMA MONTRE ET QU'ON RATE SOUVENT : le mouvement n'est
+               PAS une simple flexion de hanche. Le tronc bas est un
+               segment à part, articulé, qui BASCULE de 25° — c'est
+               la rétroversion du bassin. Tant qu'elle n'a pas lieu,
+               ce sont les FLÉCHISSEURS DE HANCHE qui montent les
+               jambes, pas les abdominaux. Un repère pointillé marque
+               l'horizontale de la hanche : c'est le seuil au-delà
+               duquel le travail devient réellement abdominal, et les
+               jambes le franchissent de 9 unités.
+   Sens/plan : montée des jambes = concentrique ; descente contrôlée
+               = excentrique. Le cycle commence jambes basses.
+   ROM       : hanche de 180° à 105°, soit 75° de flexion, PLUS 25°
+               de rétroversion du bassin. Le genou ne bouge pas :
+               rotation relative du tibia de 0,00°, jambes tendues.
+   Agonistes : GRAND DROIT de l'abdomen, sa portion basse en premier
+               puisque c'est la rétroversion qui la sollicite ;
+               obliques ; et le PSOAS en co-agoniste inévitable, qui
+               est signalé sur la cuisse plutôt que passé sous
+               silence.
+   Distinction : c'est le BASSIN et les JAMBES qui bougent, le buste
+               reste fixe — l'EXACT INVERSE du crunch, où le buste
+               s'enroule et le bassin reste au sol. Les deux sont
+               complémentaires et se lisent en miroir.
+   GÉOMÉTRIE — mains(120,24) ancrées, bras 40, haut du buste
+   (120,64)->(120,82) fixes. Bassin (120,82)->(120,96) pivotant
+   de +25° -> hanche(114.08,94.69). Cuisse 26 et tibia 26 alignés
+   à 190° -> genou(88.48,90.17), cheville(62.87,85.66).
+   -> bassin +25°, cuisse +75° rel, tibia 0,00° rel.
+   ========================================================= */
+EXERCISE_MOTIONS["releve-jambes-suspendu"] = {
+  vb: "50 14 146 150",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Suspendu à une barre fixe, jambes tendues : le bassin bascule en rétroversion et les jambes montent au-dessus de l'horizontale, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-bar3" x1="60" y1="24" x2="180" y2="24"/>
+    <line class="mo-gear" x1="66" y1="24" x2="66" y2="156"/>
+    <line class="mo-gear" x1="174" y1="24" x2="174" y2="156"/>
+    <line class="mo-ground" x1="56" y1="156" x2="184" y2="156"/>
+    <!-- suspension : mains, bras et haut du buste, tous immobiles -->
+    <circle class="mo-hand" cx="120" cy="24" r="3.6"/>
+    <line class="mo-limb" x1="120" y1="24" x2="120" y2="64"/>
+    <circle class="mo-joint" cx="120" cy="64" r="2.8"/>
+    <line class="mo-body" x1="120" y1="62" x2="126" y2="55"/>
+    <circle class="mo-head" cx="130" cy="50" r="9"/>
+    <line class="mo-body" x1="120" y1="64" x2="120" y2="82"/>
+    <!-- SEUIL : au-dessus de cette horizontale, le travail devient
+         réellement abdominal ; en dessous ce sont les fléchisseurs. -->
+    <line class="mo-rom" x1="58" y1="95" x2="112" y2="95"/>`,
+  muscles: [
+    { nom: "Obliques",
+      svg: `<ellipse cx="116.5" cy="74" rx="3" ry="7"/>` }
+  ],
+  parts: [
+    {
+      /* BASSIN : +25° de RÉTROVERSION. C'est ce segment-là qui fait
+         la différence entre un vrai relevé abdominal et un simple
+         balancement de jambes. */
+      o: "120px 82px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(25deg)"], [40, "rotate(25deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Grand droit (portion basse)",
+      muscle: `<ellipse cx="116.5" cy="89" rx="3" ry="7"/>`,
+      svg: `<line class="mo-body" x1="120" y1="82" x2="120" y2="96"/>`,
+      children: [
+        {
+          /* CUISSE : +75° relatif. Elle porte le PSOAS, co-agoniste
+             qu'il serait malhonnête de ne pas montrer. */
+          o: "120px 96px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(75deg)"], [40, "rotate(75deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Psoas (fléchisseur de hanche)",
+          muscle: `<ellipse cx="123.5" cy="103" rx="3" ry="7"/>`,
+          svg: `
+            <circle class="mo-joint" cx="120" cy="96" r="2.8"/>
+            <line class="mo-limb" x1="120" y1="96" x2="120" y2="122"/>`,
+          children: [
+            {
+              /* TIBIA : rotation relative NULLE — le genou ne bouge
+                 pas, les jambes restent tendues. */
+              o: "120px 122px",
+              k: [[0, "rotate(0deg)"], [32, "rotate(0deg)"], [40, "rotate(0deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="120" cy="122" r="2.6"/>
+                <line class="mo-limb" x1="120" y1="122" x2="120" y2="148"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M162 140 L162 104 M157 112 L162 104 L167 112"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M162 104 L162 140 M157 132 L162 140 L167 132"/>` }
+  ]
+};
