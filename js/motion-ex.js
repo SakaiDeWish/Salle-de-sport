@@ -3393,3 +3393,99 @@ EXERCISE_MOTIONS["pont-fessier"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M84 106 L84 132 M79 124 L84 132 L89 124"/>` }
   ]
 };
+
+/* =========================================================
+   36. EXTENSIONS MOLLETS DEBOUT  (mollets-debout)
+   -----------------------------------------------------------
+   Position  : DEBOUT à la machine, coussinets sur les épaules,
+               AVANT-PIEDS sur la cale, TALONS DANS LE VIDE, jambes
+               TENDUES, buste droit.
+   Matériel  : machine à mollets debout (charge sur les épaules) ou
+               simple marche.
+   Mobiles   : la CHEVILLE, et elle seule (flexion plantaire).
+   Fixes     : le GENOU — TENDU, et c'est capital, voir plus bas —
+               la hanche et le rachis.
+   POURQUOI UNE CALE : le talon doit pouvoir descendre SOUS le niveau
+               de l'avant-pied. À plat sur le sol, on perd toute la
+               moitié basse de l'amplitude, celle qui met le muscle en
+               étirement. Ici le talon parcourt 16,5 unités.
+   Sens/plan : montée sur la pointe = concentrique ; descente
+               contrôlée en étirement = excentrique. Le cycle commence
+               talon bas. Plan sagittal.
+   ROM       : 45° de rotation du pied autour de l'avant-pied, du
+               talon nettement sous la cale jusqu'à l'extension
+               complète sur la pointe.
+   MODÉLISATION : seul le PIED tourne, autour de l'appui d'avant-pied.
+               Toute la jambe et le corps reçoivent une
+               contre-rotation exacte de +45° : ils ne basculent donc
+               pas, ils MONTENT. C'est bien ce qui se passe — le corps
+               s'élève sans jamais pencher, sinon on tomberait.
+   Agonistes : TRICEPS SURAL, et plus précisément le GASTROCNÉMIEN.
+               C'EST TOUTE LA RAISON D'ÊTRE DE LA VERSION DEBOUT : le
+               gastrocnémien croise le GENOU. Genou TENDU, il est
+               étiré donc pleinement efficace, et il domine le
+               mouvement. Genou FLÉCHI — la version assise — il part
+               raccourci, devient inefficace, et c'est le SOLÉAIRE
+               qui prend le relais.
+               C'est le même principe que la longue portion du triceps
+               (poulie / front / nuque), que le droit fémoral à la leg
+               extension et que les ischios au leg curl : un muscle
+               qui croise deux articulations voit son efficacité
+               décidée par la position de l'AUTRE articulation. Quatre
+               familles d'exercices, une seule règle.
+   Distinction : genou TENDU -> gastrocnémien. ≠ mollets assis (genou
+               fléchi -> soléaire). Ce n'est pas une variante de
+               confort, les deux ne travaillent pas le même muscle.
+   GÉOMÉTRIE (calculée) — appui d'avant-pied P(110,140) qui sert de
+   PIVOT. Cheville A(118,135), talon(130,148).
+   Rotation du pied −45° -> cheville(112.12,130.81), talon(129.80,
+   131.52). Le talon s'élève de 16,48 et le corps entier de 4,19.
+   ========================================================= */
+EXERCISE_MOTIONS["mollets-debout"] = {
+  vb: "84 24 92 140",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Avant-pieds sur une cale, talons dans le vide, jambes tendues : montée complète sur la pointe des pieds, puis descente lente jusqu'à l'étirement sous le niveau de la cale.",
+  fixe: `
+    <line class="mo-ground" x1="88" y1="158" x2="168" y2="158"/>
+    <!-- cale : son bord est le pivot, le talon passe dans le vide -->
+    <rect class="mo-gear" x="88" y="140" width="32" height="18" rx="2"/>
+    <line class="mo-pad" x1="88" y1="140" x2="120" y2="140"/>
+    <circle class="mo-pulley" cx="110" cy="140" r="4"/>`,
+  parts: [
+    {
+      /* PIED : rotation autour de l'appui d'AVANT-PIED. −45°. */
+      o: "110px 140px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-45deg)"], [40, "rotate(-45deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="110" y1="140" x2="130" y2="148"/>
+        <line class="mo-limb" x1="110" y1="140" x2="118" y2="135"/>`,
+      children: [
+        {
+          /* JAMBE + CORPS : contre-rotation exacte de +45°. Rotation
+             absolue nulle : le corps MONTE sans jamais basculer. */
+          o: "118px 135px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(45deg)"], [40, "rotate(45deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Gastrocnémien (jumeaux)",
+          muscle: `<ellipse cx="122.5" cy="120" rx="4" ry="11"/>`,
+          svg: `
+            <circle class="mo-joint" cx="118" cy="135" r="2.8"/>
+            <line class="mo-limb" x1="118" y1="135" x2="119" y2="109"/>
+            <circle class="mo-joint" cx="119" cy="109" r="2.6"/>
+            <line class="mo-limb" x1="119" y1="109" x2="120" y2="83"/>
+            <line class="mo-body" x1="120" y1="83" x2="121" y2="51"/>
+            <circle class="mo-head" cx="116" cy="37" r="9"/>
+            <!-- coussinets de charge sur les épaules -->
+            <rect class="mo-mass" x="110" y="46" width="22" height="7" rx="2"/>
+            <line class="mo-limb" x1="121" y1="53" x2="126" y2="72"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M152 148 L152 116 M147 124 L152 116 L157 124"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M152 116 L152 148 M147 140 L152 148 L157 140"/>` }
+  ]
+};
