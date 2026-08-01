@@ -7644,3 +7644,170 @@ EXERCISE_MOTIONS["rowing-menton"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M56 80 L56 110 M51 102 L56 110 L61 102"/>` }
   ]
 };
+
+/* =========================================================
+   72. DÉVELOPPÉ ÉPAULES À LA MACHINE
+       (developpe-epaules-machine)
+   -----------------------------------------------------------
+   Position  : ASSIS dos plaqué au dossier, poignées à hauteur
+               d'OREILLES, coudes bas et écartés, avant-bras
+               verticaux.
+   Matériel  : machine à développé vertical, trajectoire
+               RECTILIGNE imposée. Deux rails guident les
+               poignées ; c'est cela, « guidé ».
+   Mobiles   : ÉPAULE et COUDE.
+   Fixes     : le bassin et le dos, plaqués au dossier —
+               « cambrure excessive » est l'erreur n°3.
+   Vue de FACE : la poussée et l'écartement des coudes vivent
+               dans le plan frontal.
+   ROM       : coude de 80° à 165°. La poignée monte de 26,39 à la
+               VERTICALE. « Descente trop courte » est l'erreur
+               n°2 : le schéma redescend donc jusqu'à la hauteur
+               d'oreilles exactement, bornée par un repère
+               pointillé.
+   >>> CE QUE LE RÉGLAGE DU SIÈGE DÉCIDE <<< « Siège trop bas »
+       est l'erreur n°1, et ce n'est pas un détail de confort :
+       la hauteur du siège fixe le POINT BAS de l'amplitude,
+       puisque la poignée, elle, est sur un rail. Siège trop bas,
+       la poignée démarre au-dessus des oreilles et toute la
+       portion basse — celle où le deltoïde est le plus étiré —
+       disparaît. Le repère pointillé du schéma est donc à
+       hauteur d'oreilles, et c'est le siège qui le respecte ou
+       non.
+   >>> CE QUI LE SÉPARE DU DÉVELOPPÉ HALTÈRES (schéma 15) <<<
+       Les mains. Aux haltères elles CONVERGENT : de x=76 à
+       x=108, soit 32 unités de rapprochement, parce que rien ne
+       les relie et que la trajectoire naturelle de l'épaule les
+       ramène vers l'axe. Ici la poignée est sur un rail
+       VERTICAL : l'écartement ne change pas d'une unité. Zéro
+       contre 32. C'est toute la différence entre une charge
+       libre et une charge guidée, et elle est visible sans rien
+       lire.
+       Précision honnête : il existe aussi des machines à bras
+       CONVERGENTS, qui reproduisent le rapprochement des
+       haltères. Le schéma dessine la version à rails
+       rectilignes, la plus répandue, et le dit.
+   Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
+   Distinction : ≠ développé haltères assis (charge libre, mains
+               convergentes, stabilisateurs sollicités) ;
+               ≠ développé militaire (debout, gainage) ;
+               ≠ élévations latérales (le coude ne s'y ferme pas).
+   GÉOMÉTRIE (calculée) — épaule gauche (104,70), bras 30,
+   avant-bras 27. Trajet de la poignée imposé STRICTEMENT VERTICAL
+   (x = 74,46 constant), de y=48,21 à y=21,82, six intervalles,
+   IK à chacun :
+     coude 80,0 -> 87,5 -> 96,3 -> 106,8 -> 119,4 -> 135,8 -> 165,0
+     coude (point) de (74.46,75.21) à (85.28,46.56)
+   -> bras +61,39° ; avant-bras relatif −85,03° ; poignée en
+      TRANSLATION verticale pure de −26,39.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-epaules-machine"] = {
+  vb: "52 12 138 156",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Vu de face, assis dos au dossier dans une machine à développé : les poignées montent à la verticale depuis la hauteur des oreilles jusqu'aux bras presque tendus, sans se rapprocher, puis redescendent.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="160" x2="188" y2="160"/>
+    <!-- bâti de la machine -->
+    <line class="mo-gear" x1="58" y1="16" x2="58" y2="160"/>
+    <line class="mo-gear" x1="182" y1="16" x2="182" y2="160"/>
+    <line class="mo-gear" x1="58" y1="16" x2="182" y2="16"/>
+    <!-- RAILS : la trajectoire imposée, verticale et parallèle -->
+    <line class="mo-gear" x1="74.46" y1="18" x2="74.46" y2="56"/>
+    <line class="mo-gear" x1="165.54" y1="18" x2="165.54" y2="56"/>
+    <!-- siège et dossier -->
+    <rect class="mo-gear" x="108" y="62" width="24" height="62" rx="4"/>
+    <line class="mo-pad" x1="100" y1="124" x2="140" y2="124"/>
+    <line class="mo-gear" x1="120" y1="124" x2="120" y2="160"/>
+    <!-- corps assis de face, dos plaqué -->
+    <circle class="mo-head" cx="120" cy="50" r="10"/>
+    <line class="mo-body" x1="104" y1="70" x2="136" y2="70"/>
+    <line class="mo-body" x1="120" y1="60" x2="120" y2="116"/>
+    <line class="mo-body" x1="120" y1="116" x2="112" y2="160"/>
+    <line class="mo-body" x1="120" y1="116" x2="128" y2="160"/>
+    <!-- REPÈRE : hauteur d'oreilles, le point bas que le réglage du
+         siège respecte ou non -->
+    <line class="mo-rom" x1="86" y1="48.21" x2="100" y2="48.21"/>
+    <line class="mo-rom" x1="140" y1="48.21" x2="154" y2="48.21"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="104" cy="70" r="5.5"/><circle cx="136" cy="70" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* POIGNÉES : TRANSLATION verticale pure. Sur rail, donc jamais de
+         rapprochement — c'est le point qui les sépare des haltères. */
+      k: [[0, "translate(0px,0px)"], [5.33, "translate(0px,-4.40px)"], [10.67, "translate(0px,-8.80px)"],
+          [16, "translate(0px,-13.20px)"], [21.33, "translate(0px,-17.59px)"], [26.67, "translate(0px,-21.99px)"],
+          [32, "translate(0px,-26.39px)"], [40, "translate(0px,-26.39px)"],
+          [48, "translate(0px,-21.99px)"], [56, "translate(0px,-17.59px)"],
+          [64, "translate(0px,-13.20px)"], [72, "translate(0px,-8.80px)"],
+          [80, "translate(0px,-4.40px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-bar2" x1="66" y1="48.21" x2="83" y2="48.21"/>
+        <line class="mo-bar2" x1="157" y1="48.21" x2="174" y2="48.21"/>`
+    },
+    {
+      /* BRAS GAUCHE : rotation autour de l'ÉPAULE (104,70), +61,39°. */
+      o: "104px 70px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(8.46deg)"], [10.67, "rotate(16.87deg)"],
+          [16, "rotate(25.45deg)"], [21.33, "rotate(34.58deg)"], [26.67, "rotate(45.09deg)"],
+          [32, "rotate(61.39deg)"], [40, "rotate(61.39deg)"],
+          [48, "rotate(45.09deg)"], [56, "rotate(34.58deg)"], [64, "rotate(25.45deg)"],
+          [72, "rotate(16.87deg)"], [80, "rotate(8.46deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="90" cy="76" rx="7" ry="3.2" transform="rotate(10 90 76)"/>`,
+      svg: `
+        <line class="mo-limb" x1="104" y1="70" x2="74.46" y2="75.21"/>
+        <circle class="mo-joint" cx="74.46" cy="75.21" r="2.6"/>`,
+      children: [
+        {
+          o: "74.46px 75.21px",
+          k: [[0, "rotate(0deg)"], [5.33, "rotate(-7.51deg)"], [10.67, "rotate(-16.36deg)"],
+              [16, "rotate(-26.79deg)"], [21.33, "rotate(-39.39deg)"], [26.67, "rotate(-55.76deg)"],
+              [32, "rotate(-85.03deg)"], [40, "rotate(-85.03deg)"],
+              [48, "rotate(-55.76deg)"], [56, "rotate(-39.39deg)"], [64, "rotate(-26.79deg)"],
+              [72, "rotate(-16.36deg)"], [80, "rotate(-7.51deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="74.46" y1="75.21" x2="74.46" y2="48.21"/>
+            <circle class="mo-hand" cx="74.46" cy="48.21" r="3.2"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir exact autour de x=120. */
+      o: "136px 70px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(-8.46deg)"], [10.67, "rotate(-16.87deg)"],
+          [16, "rotate(-25.45deg)"], [21.33, "rotate(-34.58deg)"], [26.67, "rotate(-45.09deg)"],
+          [32, "rotate(-61.39deg)"], [40, "rotate(-61.39deg)"],
+          [48, "rotate(-45.09deg)"], [56, "rotate(-34.58deg)"], [64, "rotate(-25.45deg)"],
+          [72, "rotate(-16.87deg)"], [80, "rotate(-8.46deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscle: `<ellipse cx="150" cy="76" rx="7" ry="3.2" transform="rotate(-10 150 76)"/>`,
+      svg: `
+        <line class="mo-limb" x1="136" y1="70" x2="165.54" y2="75.21"/>
+        <circle class="mo-joint" cx="165.54" cy="75.21" r="2.6"/>`,
+      children: [
+        {
+          o: "165.54px 75.21px",
+          k: [[0, "rotate(0deg)"], [5.33, "rotate(7.51deg)"], [10.67, "rotate(16.36deg)"],
+              [16, "rotate(26.79deg)"], [21.33, "rotate(39.39deg)"], [26.67, "rotate(55.76deg)"],
+              [32, "rotate(85.03deg)"], [40, "rotate(85.03deg)"],
+              [48, "rotate(55.76deg)"], [56, "rotate(39.39deg)"], [64, "rotate(26.79deg)"],
+              [72, "rotate(16.36deg)"], [80, "rotate(7.51deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="165.54" y1="75.21" x2="165.54" y2="48.21"/>
+            <circle class="mo-hand" cx="165.54" cy="48.21" r="3.2"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M94 118 L94 92 M89 100 L94 92 L99 100"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M94 92 L94 118 M89 110 L94 118 L99 110"/>` }
+  ]
+};
