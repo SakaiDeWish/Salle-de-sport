@@ -4868,3 +4868,102 @@ EXERCISE_MOTIONS["shrugs-halteres"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M150 52 L150 82 M145 74 L150 82 L155 74"/>` }
   ]
 };
+
+/* =========================================================
+   51. DÉVELOPPÉ DÉCLINÉ À LA BARRE  (developpe-decline-barre)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ sur un banc DÉCLINÉ d'environ 20° — tête plus
+               BASSE que les hanches —, pieds bloqués sous les
+               rouleaux, barre en pronation.
+   Matériel  : banc décliné + barre.
+   Mobiles   : l'ÉPAULE (adduction horizontale) et le COUDE.
+   Fixes     : le banc, les pieds sous les rouleaux, le dos plaqué.
+   CE QUE LE DÉCLIN CHANGE : la ligne de poussée reste
+               PERPENDICULAIRE AU TORSE, et comme le torse est
+               incliné vers le bas, cette ligne bascule vers la tête.
+               Elle recrute davantage le FAISCEAU INFÉRIEUR du grand
+               pectoral et moins le deltoïde antérieur.
+               Le schéma le construit littéralement : le verrouillage
+               est calculé sur la perpendiculaire au tronc, pas sur
+               la verticale. C'est cette perpendiculaire qui définit
+               tous les développés.
+   LA FAMILLE EST MAINTENANT COMPLÈTE et se lit comme un continuum
+               d'angles, un schéma par angle :
+                 incliné (+30°) -> haut des pectoraux, épaule très
+                                   sollicitée
+                 plat    (0°)   -> milieu
+                 décliné (−20°) -> bas des pectoraux, épaule
+                                   nettement moins sollicitée
+               Trois exercices, un seul paramètre qui change, et
+               c'est l'inclinaison du banc.
+   ROM       : coude de 176,5° à 78,6°. Plus courte qu'au plat : la
+               barre descend vers le BAS de la poitrine, pas vers le
+               sternum.
+   Agonistes : BAS DU GRAND PECTORAL en premier, TRICEPS, deltoïde
+               antérieur en retrait.
+   Distinction : banc DÉCLINÉ, pieds bloqués. ≠ développé couché
+               (banc plat), ≠ développé incliné (banc relevé, effet
+               inverse sur le pectoral).
+   GÉOMÉTRIE (calculée) — épaule(72,110) fixe, hanche(102,99), donc
+   un tronc incliné dont la perpendiculaire vaut (−0.344,−0.938).
+   Bras et avant-bras de 22.
+   Haut : main(56.86,68.73) sur cette perpendiculaire, coude(64.43,89.36).
+   Bas  : main(62,84) au bas de la poitrine, coude(82.89,90.89).
+   -> bras +49,82°, avant-bras −101,44° relatif.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-decline-barre"] = {
+  vb: "36 56 132 90",
+  dur: 3.8,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur un banc décliné, pieds bloqués : la barre descend vers le bas de la poitrine puis est repoussée perpendiculairement au torse jusqu'aux bras tendus.",
+  fixe: `
+    <line class="mo-ground" x1="42" y1="140" x2="162" y2="140"/>
+    <!-- banc DÉCLINÉ : la tête est plus basse que les hanches -->
+    <line class="mo-pad" x1="52" y1="118" x2="134" y2="89"/>
+    <line class="mo-gear" x1="62" y1="116" x2="62" y2="140"/>
+    <line class="mo-gear" x1="126" y1="93" x2="126" y2="140"/>
+    <!-- rouleaux qui bloquent les pieds au point haut -->
+    <circle class="mo-mass" cx="143" cy="112" r="5"/>
+    <circle class="mo-mass" cx="153" cy="106" r="5"/>
+    <!-- corps plaqué : tête en bas, jambes en haut -->
+    <circle class="mo-head" cx="52" cy="116" r="8"/>
+    <line class="mo-body" x1="72" y1="110" x2="102" y2="99"/>
+    <circle class="mo-joint" cx="72" cy="110" r="2.8"/>
+    <line class="mo-body" x1="102" y1="99" x2="126.5" y2="90.4"/>
+    <circle class="mo-joint" cx="126.5" cy="90.4" r="2.6"/>
+    <line class="mo-body" x1="126.5" y1="90.4" x2="145" y2="109"/>`,
+  muscles: [
+    { nom: "Bas du grand pectoral",
+      svg: `<ellipse cx="80" cy="103" rx="10" ry="4" transform="rotate(-20 80 103)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE. +49,82°. */
+      o: "72px 110px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(49.82deg)"], [52, "rotate(49.82deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="70" cy="100" rx="3" ry="7" transform="rotate(20 70 100)"/>`,
+      svg: `<line class="mo-limb" x1="72" y1="110" x2="64.43" y2="89.36"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : −101,44° relatif. Le verrouillage se
+             fait sur la PERPENDICULAIRE AU TRONC, pas sur la verticale
+             — c'est ce qui distingue les trois développés. */
+          o: "64.43px 89.36px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(-101.44deg)"], [52, "rotate(-101.44deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="64.43" cy="89.36" r="2.6"/>
+            <line class="mo-limb" x1="64.43" y1="89.36" x2="56.86" y2="68.73"/>
+            <circle class="mo-plate-o" cx="56.86" cy="68.73" r="9"/>
+            <circle class="mo-hub" cx="56.86" cy="68.73" r="2.6"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M104 78 L92 62 M99 66 L92 62 L91 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M92 62 L104 78 M97 74 L104 78 L105 70"/>` }
+  ]
+};
