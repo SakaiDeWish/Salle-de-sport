@@ -5584,3 +5584,118 @@ EXERCISE_MOTIONS["pompes-declinees"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M140 142 L140 124 M135 130 L140 124 L145 130"/>` }
   ]
 };
+
+/* =========================================================
+   57. PULL-OVER HALTÈRE  (pull-over)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ SUR LE DOS le long d'un banc, tête à
+               l'extrémité et la débordant légèrement, pieds au
+               sol. Un haltère tenu à deux mains.
+   Matériel  : un haltère, tenu VERTICALEMENT à deux mains par
+               l'intérieur du disque supérieur. De profil on le
+               voit par la tranche : un disque.
+   Mobile    : l'ÉPAULE, et elle seule. Le bras décrit un grand
+               arc de cercle au-dessus de la tête.
+   Fixes     : le rachis, le bassin, les jambes — et surtout le
+               COUDE, dont l'angle reste constant à 160°. Bras et
+               avant-bras forment donc un BLOC RIGIDE, exactement
+               comme à l'écarté ou au pec-deck. « Casser les
+               coudes » est l'erreur n°1 : le mouvement cesse
+               alors d'être une extension d'épaule pour devenir
+               un demi-triceps.
+   MOUVEMENT MONO-ARTICULAIRE : un seul segment mobile dans ce
+               schéma, et c'est la modélisation JUSTE — pas une
+               simplification. Ajouter une rotation au coude
+               dessinerait précisément la faute.
+   Sens/plan : descente derrière la tête = excentrique (mise en
+               tension maximale) ; retour au-dessus de la
+               poitrine = concentrique. Plan sagittal.
+   ROM       : 88° de flexion d'épaule, de 90° (bras vertical,
+               au-dessus de la poitrine) à 178° (bras dans le
+               prolongement du tronc). 178° est la limite
+               anatomique de la flexion d'épaule : le schéma
+               s'y arrête et ne la dépasse pas. La main parcourt
+               un arc de rayon 42,35 centré sur l'épaule.
+   Agonistes : GRAND DORSAL et faisceau STERNAL du grand
+               pectoral. Les deux sont extenseurs de l'épaule
+               depuis la position haute : ils travaillent
+               ensemble, et la vieille querelle « pull-over
+               pectoraux OU dorsaux » n'a pas lieu d'être sur
+               cette amplitude-là. Au-delà de la verticale, seul
+               le dorsal continuerait — mais le mouvement
+               s'arrête à la verticale.
+   CE QUE LE SCHÉMA NE MONTRE PAS, ET POURQUOI : ni « ouverture
+               de la cage thoracique » ni dentelé antérieur. La
+               cage d'un adulte ne s'élargit pas sous l'effet
+               d'un exercice — c'est une croyance des années 70,
+               et une animation qui ferait gonfler le thorax
+               dessinerait une chose qui n'arrive pas. Le
+               dentelé, lui, est un muscle de la SCAPULA : il ne
+               produit pas ce mouvement d'épaule.
+   Distinction : ≠ écarté (adduction horizontale, plan
+               transverse) ; ≠ tirage vertical / traction (le
+               coude s'y ferme, chaîne à deux articulations) ;
+               ≠ extension nuque haltère (là c'est le COUDE qui
+               bouge et l'épaule qui est fixe — exactement
+               l'inverse).
+   GÉOMÉTRIE (calculée) — épaule (66,102), bras 22, avant-bras
+   21, coude bloqué à 160° -> distance épaule-main constante
+   42,35.
+     haut  main (66.00,59.65)   coude (62.26,80.32)
+     bas   main (23.68,100.52)  coude (44.21,104.98)
+   -> un seul bloc, rotation −88° autour de l'épaule.
+   Le coude en position basse est à y=104,98, donc AU-DESSUS de
+   la surface du banc (111,5) et en deçà de son extrémité (56) :
+   il passe à côté du banc et non dedans. Vérifié, car c'est ce
+   qui a imposé d'arrêter l'amplitude à 178° et non plus bas.
+   L'épaisseur du buste a également dû être corrigée : la ligne du
+   rachis était à 3,5 unités du banc, soit un tronc plat. Elle est
+   maintenant à 7,5 — une demi-épaisseur de torse plausible.
+   ========================================================= */
+EXERCISE_MOTIONS["pull-over"] = {
+  vb: "14 48 148 106",
+  dur: 4,
+  phases: { ecc: [0, 46], con: [54, 86] },
+  alt: "Allongé sur le dos le long d'un banc, un haltère tenu à deux mains bras quasi tendus : l'haltère descend en arc de cercle derrière la tête jusqu'à l'alignement du tronc, puis revient au-dessus de la poitrine.",
+  fixe: `
+    <line class="mo-ground" x1="20" y1="150" x2="160" y2="150"/>
+    <!-- banc : le dossier s'arrête avant la tête, qui le déborde -->
+    <line class="mo-pad" x1="56" y1="116" x2="128" y2="116"/>
+    <line class="mo-gear" x1="64" y1="120" x2="64" y2="150"/>
+    <line class="mo-gear" x1="122" y1="120" x2="122" y2="150"/>
+    <!-- corps allongé sur le dos, pieds au sol -->
+    <circle class="mo-head" cx="52" cy="100" r="8"/>
+    <line class="mo-body" x1="60" y1="101" x2="118" y2="104"/>
+    <line class="mo-body" x1="118" y1="104" x2="152" y2="118"/>
+    <line class="mo-body" x1="152" y1="118" x2="148" y2="150"/>
+    <!-- amplitude : l'arc RÉELLEMENT parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M66 59.65 A42.35 42.35 0 0 0 23.68 100.52"/>`,
+  muscles: [
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="92" cy="106.5" rx="16" ry="3.2" transform="rotate(3 92 106.5)"/>` },
+    { nom: "Grand pectoral (faisceau sternal)",
+      svg: `<ellipse cx="80" cy="97" rx="11" ry="4" transform="rotate(3 80 97)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS ENTIER : bloc RIGIDE (coude figé à 160°) tournant autour
+         de l'ÉPAULE (66,102). −88° : de la verticale au prolongement
+         du tronc. Aucun enfant : le coude ne bouge pas, et c'est le
+         propos même de l'exercice. */
+      o: "66px 102px",
+      k: [[0, "rotate(0deg)"], [46, "rotate(-88deg)"], [54, "rotate(-88deg)"],
+          [86, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="66" y1="102" x2="62.26" y2="80.32"/>
+        <circle class="mo-joint" cx="62.26" cy="80.32" r="2.6"/>
+        <line class="mo-limb" x1="62.26" y1="80.32" x2="66" y2="59.65"/>
+        <!-- haltère vu par la tranche : un disque -->
+        <circle class="mo-plate-o" cx="66" cy="59.65" r="8"/>
+        <circle class="mo-hub" cx="66" cy="59.65" r="2.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M102 70 L78 70 M85 65 L78 70 L85 75"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M78 70 L102 70 M95 65 L102 70 L95 75"/>` }
+  ]
+};
