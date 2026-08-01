@@ -4192,3 +4192,94 @@ EXERCISE_MOTIONS["extension-lombaire-banc"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M180 86 L180 122 M175 114 L180 122 L185 114"/>` }
   ]
 };
+
+/* =========================================================
+   44. SUPERMAN AU SOL  (superman)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ SUR LE VENTRE, bras tendus devant, jambes
+               tendues, front vers le sol.
+   Matériel  : aucun.
+   Mobiles   : le RACHIS en EXTENSION — le buste se soulève — ET les
+               HANCHES en extension : les jambes se soulèvent. Les
+               deux extrémités décollent EN MÊME TEMPS.
+   Fixes     : le BASSIN et l'abdomen, seul point resté au sol. C'est
+               le pivot autour duquel les deux extrémités montent, et
+               le schéma est construit exactement ainsi : deux
+               segments partant du même point d'appui et tournant en
+               sens OPPOSÉS (+12° pour le haut, −12° pour le bas).
+   >>> LE CONTRASTE AVEC LE BANC À 45° EST L'INFORMATION PRINCIPALE :
+       ici la colonne SE CAMBRE, c'est une VRAIE extension du rachis,
+       et les ÉRECTEURS sont les MOTEURS. Au banc à 45°, la colonne
+       reste NEUTRE, c'est la hanche qui bouge, et les mêmes érecteurs
+       n'y travaillent qu'en ISOMÉTRIE. Deux exercices aux noms
+       voisins, deux contraintes opposées — les schémas le montrent :
+       segment rigide là-bas, segments qui se cassent au bassin ici.
+   Sens/plan : montée = concentrique ; retour au sol = excentrique.
+               Le cycle commence à plat. Plan sagittal.
+   ROM       : FAIBLE, et c'est volontaire — 12° de chaque côté. Les
+               mains s'élèvent de 13,8 et les chevilles de 10,9. Ce
+               n'est pas un exercice d'amplitude mais de contraction
+               et de contrôle : pousser la cambrure plus loin
+               comprime les articulations postérieures du rachis pour
+               un gain nul.
+   Agonistes : ÉRECTEURS DU RACHIS en moteurs, GRAND FESSIER et
+               ISCHIO-JAMBIERS pour l'extension de hanche.
+   Distinction : les deux extrémités décollent d'un abdomen resté au
+               sol. ≠ extension lombaire au banc (charnière de hanche,
+               colonne neutre, corps soutenu), ≠ planche (isométrique
+               anti-extension, exactement l'inverse du travail ici).
+   GÉOMÉTRIE — bassin(120,124) pivot. Haut : épaule(88,124) et
+   main(54,126) -> +12° -> épaule(88.70,117.35), main(55.03,112.23).
+   Bas : genou(146,126) et cheville(172,128) -> −12° ->
+   genou(145.85,120.55), cheville(171.70,117.10).
+   ========================================================= */
+EXERCISE_MOTIONS["superman"] = {
+  vb: "44 94 142 52",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé sur le ventre, bras et jambes tendus : les deux extrémités se soulèvent en même temps de quelques centimètres, l'abdomen restant au sol, puis redescendent.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="130" x2="182" y2="130"/>
+    <!-- seul point resté au sol : l'abdomen, pivot des deux segments -->
+    <circle class="mo-joint" cx="120" cy="124" r="3.4"/>
+    <!-- niveau de départ : au repos le corps est sur cette ligne, en
+         haut les deux extrémités passent au-dessus. -->
+    <line class="mo-rom" x1="52" y1="125" x2="178" y2="125"/>`,
+  muscles: [
+    { nom: "Grand fessier",
+      svg: `<circle cx="127" cy="120" r="5"/>` }
+  ],
+  parts: [
+    {
+      /* HAUT DU CORPS : +12° autour du bassin. Le rachis s'étend
+         réellement — c'est ici que les érecteurs sont MOTEURS. */
+      o: "120px 124px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(12deg)"], [40, "rotate(12deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Érecteurs du rachis (moteurs)",
+      muscle: `<ellipse cx="104" cy="120" rx="12" ry="3.2"/>`,
+      svg: `
+        <line class="mo-body" x1="120" y1="124" x2="88" y2="124"/>
+        <circle class="mo-joint" cx="88" cy="124" r="2.6"/>
+        <line class="mo-limb" x1="88" y1="124" x2="54" y2="126"/>
+        <circle class="mo-head" cx="78" cy="120" r="7"/>`
+    },
+    {
+      /* BAS DU CORPS : −12°, sens OPPOSÉ. Les jambes montent pendant
+         que le buste monte : c'est la signature du superman. */
+      o: "120px 124px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-12deg)"], [40, "rotate(-12deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Ischio-jambiers",
+      muscle: `<ellipse cx="133" cy="122" rx="10" ry="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="120" y1="124" x2="146" y2="126"/>
+        <circle class="mo-joint" cx="146" cy="126" r="2.6"/>
+        <line class="mo-limb" x1="146" y1="126" x2="172" y2="128"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 114 L100 98 M95 105 L100 98 L105 105"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M100 98 L100 114 M95 107 L100 114 L105 107"/>` }
+  ]
+};
