@@ -4782,3 +4782,89 @@ EXERCISE_MOTIONS["mountain-climbers"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M112 96 L138 96 M131 91 L138 96 L131 101"/>` }
   ]
 };
+
+/* =========================================================
+   50. SHRUGS (HAUSSEMENTS D'ÉPAULES)  (shrugs-halteres)
+   -----------------------------------------------------------
+   Position  : DEBOUT, un haltère dans chaque main le long du corps,
+               bras TENDUS, buste droit, regard horizontal.
+   Matériel  : deux haltères.
+   Mobiles   : l'OMOPLATE, en ÉLÉVATION. C'est le seul exercice de
+               toute la bibliothèque dont le segment mobile n'est pas
+               un os long articulé mais une SCAPULA qui COULISSE sur
+               la cage thoracique. Il est donc animé par une
+               TRANSLATION pure, et non par une rotation : c'est la
+               modélisation juste, l'omoplate ne pivote pas autour
+               d'un axe, elle glisse.
+   Fixes     : le COUDE — et c'est l'erreur numéro un de cet
+               exercice : dès qu'on plie les bras pour aider, ce sont
+               les biceps qui prennent le relais et les trapèzes
+               cessent de travailler. Le schéma garde donc le bras
+               parfaitement rigide, il monte et descend sans jamais
+               se plier. Fixes aussi : le rachis, les hanches.
+   Sens/plan : élévation des épaules vers les oreilles =
+               concentrique ; descente contrôlée = excentrique.
+   ROM       : TRÈS COURTE — 8 unités, quelques centimètres. C'est
+               l'amplitude naturelle de l'élévation scapulaire, et
+               un repère pointillé marque la hauteur de départ pour
+               que ce déplacement se voie. Aucune ROTATION d'épaule :
+               les « rolls » n'ajoutent rien et malmènent
+               l'articulation, le schéma ne les montre donc pas.
+   Agonistes : TRAPÈZE SUPÉRIEUR et ANGULAIRE DE L'OMOPLATE. Ils sont
+               dessinés en muscles FIXES bien qu'ils raccourcissent :
+               ils relient le rachis immobile à l'omoplate mobile,
+               donc aucune des deux catégories ne leur convient
+               exactement. Les laisser sur la partie fixe est la
+               simplification la moins trompeuse.
+   Distinction : seule l'omoplate bouge, le coude reste verrouillé.
+               ≠ tous les autres exercices de dos, où c'est le BRAS
+               qui se déplace.
+   GÉOMÉTRIE — épaule au repos(122,64), élevée(122,56) : translation
+   verticale pure de 8. Bras rigide épaule -> coude(120,86) ->
+   main(119,108), haltère solidaire.
+   ========================================================= */
+EXERCISE_MOTIONS["shrugs-halteres"] = {
+  vb: "92 30 80 130",
+  dur: 3.0,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout, un haltère dans chaque main bras tendus : les épaules montent vers les oreilles de quelques centimètres puis redescendent, les coudes restant parfaitement tendus.",
+  fixe: `
+    <line class="mo-ground" x1="112" y1="152" x2="160" y2="152"/>
+    <!-- rachis et jambes : immobiles -->
+    <circle class="mo-head" cx="120" cy="42" r="9"/>
+    <line class="mo-body" x1="128" y1="56" x2="132" y2="110"/>
+    <line class="mo-body" x1="132" y1="110" x2="128" y2="152"/>
+    <line class="mo-body" x1="132" y1="110" x2="137" y2="152"/>
+    <!-- hauteur de départ de l'épaule : sans ce repère, un
+         déplacement de 8 unités passerait inaperçu. -->
+    <line class="mo-rom" x1="98" y1="64" x2="116" y2="64"/>`,
+  muscles: [
+    { nom: "Trapèze supérieur",
+      svg: `<ellipse cx="125" cy="60" rx="6.5" ry="3.4" transform="rotate(-40 125 60)"/>` },
+    { nom: "Angulaire de l'omoplate",
+      svg: `<ellipse cx="129" cy="50" rx="2.6" ry="6.5" transform="rotate(14 129 50)"/>` }
+  ],
+  parts: [
+    {
+      /* CEINTURE SCAPULAIRE + BRAS + HALTÈRE : TRANSLATION verticale
+         pure de 8. L'omoplate coulisse, elle ne pivote pas — et le
+         bras monte d'un bloc, coude jamais fléchi. */
+      k: [[0, "translate(0px,0px)"], [32, "translate(0px,-8px)"],
+          [40, "translate(0px,-8px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-limb" x1="128" y1="58" x2="122" y2="64"/>
+        <circle class="mo-joint" cx="122" cy="64" r="2.8"/>
+        <line class="mo-limb" x1="122" y1="64" x2="120" y2="86"/>
+        <circle class="mo-joint" cx="120" cy="86" r="2.4"/>
+        <line class="mo-limb" x1="120" y1="86" x2="119" y2="108"/>
+        <line class="mo-bar2" x1="113" y1="108" x2="125" y2="108"/>
+        <rect class="mo-mass" x="110" y="103" width="6" height="10" rx="2"/>
+        <rect class="mo-mass" x="122" y="103" width="6" height="10" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M150 82 L150 52 M145 60 L150 52 L155 60"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 52 L150 82 M145 74 L150 82 L155 74"/>` }
+  ]
+};
