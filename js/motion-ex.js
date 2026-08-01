@@ -8596,3 +8596,108 @@ EXERCISE_MOTIONS["curl-inverse"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M140 84 L140 110 M135 102 L140 110 L145 102"/>` }
   ]
 };
+
+/* =========================================================
+   80. CURL À LA MACHINE  (curl-machine)
+   -----------------------------------------------------------
+   Position  : ASSIS, arrière des bras posé sur le pupitre
+               incliné de la machine, poignées en mains.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS, plaqué sur le pupitre ; le bassin sur le
+               siège — « se soulever du siège » est l'erreur n°1.
+   ROM       : coude de 165° à 45°, soit 120° de flexion, la
+               poignée décrivant un arc de rayon 26 autour de
+               l'axe.
+   >>> L'AXE DE LA MACHINE EST CONFONDU AVEC LE COUDE, ET C'EST
+       CE QUI CHANGE TOUT <<< Sur cette machine la charge n'agit
+       PAS au bout du bras de levier : elle agit sur une poulie
+       CONCENTRIQUE À L'AXE DU COUDE. Le couple résistant vaut
+       donc poids × rayon de la poulie — deux grandeurs
+       constantes. Il est le même à chaque degré de l'amplitude,
+       par construction, et non par réglage.
+       Comparé aux deux autres façons de faire un curl bras
+       calés, dont les bras de levier ont été calculés aux
+       schémas 76 et 78 :
+         pupitre barre  18,4 -> 26,0 -> 0      (nul en haut)
+         curl spider     0   -> 26,0 -> 16,7   (nul en bas)
+         machine        CONSTANT
+       C'est exactement pour cela que « amplitude courte en
+       haut » est l'erreur n°3 de cette fiche et pas des autres :
+       au pupitre, arriver en haut ne coûte rien puisque le bras
+       de levier y est nul — s'y arrêter ne fait rien perdre. Sur
+       la machine, la fin de course est chargée autant que le
+       reste, et l'écourter revient à jeter l'unique avantage de
+       l'engin.
+   POURQUOI L'AXE DOIT ÊTRE RÉGLÉ SUR LE COUDE : même raison
+               qu'au pec-deck. Si l'axe de la machine et celui du
+               coude ne coïncident pas, la distance entre le coude
+               et la poignée devrait varier au cours du mouvement
+               — ce qu'un avant-bras rigide interdit. Le schéma
+               dessine donc la machine bien réglée, poulie
+               centrée sur le coude.
+   Sens      : montée = concentrique ; descente lente =
+               excentrique. « Extension brutale » est l'erreur
+               n°2 : l'excentrique est donc une fois et demie plus
+               long que le concentrique.
+   Agonistes : BICEPS BRACHIAL et BRACHIAL ANTÉRIEUR, dans les
+               éléments fixes puisque le bras repose sur le
+               pupitre.
+   Distinction : ≠ curl pupitre (barre, couple nul en haut) ;
+               ≠ curl spider (à plat ventre, couple nul en bas) ;
+               ≠ curl poulie basse (debout, câble oblique).
+   GÉOMÉTRIE (calculée) — épaule (126,74), bras 32 posé sur le
+   pupitre, coude/AXE (104.4,97.6), avant-bras 26.
+     bas  poignée (82.47,111.57)   haut poignée (103.27,71.62)
+   -> avant-bras +120° autour de l'axe.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-machine"] = {
+  vb: "66 40 104 128",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis de profil dans une machine à curl, arrière des bras posé sur le pupitre : les poignées montent en arc de cercle autour de l'axe confondu avec le coude, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="70" y1="160" x2="166" y2="160"/>
+    <!-- siège -->
+    <line class="mo-pad" x1="118" y1="126" x2="156" y2="126"/>
+    <line class="mo-gear" x1="136" y1="130" x2="136" y2="160"/>
+    <!-- PUPITRE incliné : c'est lui qui immobilise le bras -->
+    <line class="mo-pad" x1="122" y1="76" x2="96" y2="106"/>
+    <!-- corps assis de profil -->
+    <circle class="mo-head" cx="118" cy="60" r="9"/>
+    <line class="mo-body" x1="123" y1="67" x2="126" y2="74"/>
+    <line class="mo-body" x1="126" y1="74" x2="140" y2="120"/>
+    <line class="mo-body" x1="140" y1="120" x2="110" y2="128"/>
+    <line class="mo-body" x1="110" y1="128" x2="104" y2="160"/>
+    <!-- BRAS : dans les fixes, posé sur le pupitre -->
+    <line class="mo-limb" x1="126" y1="74" x2="104.4" y2="97.6"/>
+    <!-- MÉCANISME : poulie CONCENTRIQUE au coude, câble et colonne -->
+    <circle class="mo-pulley" cx="104.4" cy="97.6" r="7"/>
+    <circle class="mo-hub" cx="104.4" cy="97.6" r="2.6"/>
+    <line class="mo-cable" x1="104.4" y1="104.6" x2="104.4" y2="140"/>
+    <rect class="mo-gear" x="97" y="140" width="15" height="18" rx="2"/>
+    <!-- amplitude : l'arc réellement parcouru par la poignée -->
+    <path class="mo-rom" fill="none" d="M82.47 111.57 A26 26 0 0 1 103.27 71.62"/>`,
+  muscles: [
+    { nom: "Biceps brachial",
+      svg: `<ellipse cx="117" cy="84" rx="3.4" ry="9" transform="rotate(42.5 117 84)"/>` },
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="110" cy="92" rx="2.8" ry="6" transform="rotate(42.5 110 92)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + POIGNÉE : rotation autour de l'AXE (104.4,97.6), qui
+         est aussi le coude. +120°. */
+      o: "104.4px 97.6px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(120deg)"], [40, "rotate(120deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="104.4" y1="97.6" x2="82.47" y2="111.57"/>
+        <line class="mo-bar2" x1="78.71" y1="105.67" x2="86.23" y2="117.47"/>
+        <circle class="mo-hand" cx="82.47" cy="111.57" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M156 100 L156 70 M151 78 L156 70 L161 78"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M156 70 L156 100 M151 92 L156 100 L161 92"/>` }
+  ]
+};
