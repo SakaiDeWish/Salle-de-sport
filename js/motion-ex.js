@@ -8035,3 +8035,146 @@ EXERCISE_MOTIONS["handstand-pushup"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M112 96 L112 64 M107 72 L112 64 L117 72"/>` }
   ]
 };
+
+/* =========================================================
+   75. CURL HALTÈRES ALTERNÉ AVEC SUPINATION
+       (curl-halteres-alterne)
+   -----------------------------------------------------------
+   Position  : DEBOUT, un haltère dans chaque main le long du
+               corps, PAUMES VERS LES CUISSES (prise neutre),
+               coudes collés au buste.
+   Mobiles   : le COUDE, et la RADIO-ULNAIRE (supination).
+   Fixes     : le BRAS, collé au flanc — s'il partait vers
+               l'avant ce serait un début d'élévation ; le buste,
+               les jambes.
+   >>> DEUX CHOSES DISTINGUENT CET EXERCICE, ET LES DEUX SONT
+       ANIMÉES <<<
+   1. L'ALTERNANCE. Ce n'est pas un détail de confort : pendant
+      qu'un bras monte, l'autre DESCEND. Les deux avant-bras ont
+      donc la même grille d'instants-clés mais des valeurs en
+      opposition de phase — au départ du cycle, le bras proche
+      est en bas et le bras éloigné est en haut. C'est ce que
+      « alterné » veut dire, et une seule image ne peut pas le
+      montrer.
+   2. LA SUPINATION, et ici — contrairement au développé Arnold
+      (exercice 68, non livré) — elle EST projetable, pour une
+      raison précise. À l'Arnold, la rotation portait sur
+      l'HUMÉRUS, segment dont l'axe est confondu avec lui-même :
+      aucune projection ne peut la montrer. Ici la rotation porte
+      sur l'AVANT-BRAS, mais ce qu'on regarde n'est pas
+      l'avant-bras : c'est l'HALTÈRE, qui lui est
+      PERPENDICULAIRE. Un objet perpendiculaire à l'axe de
+      rotation change bel et bien d'orientation, et de profil sa
+      longueur projetée passe de sa longueur vraie à presque
+      rien.
+      Prise NEUTRE : l'axe de l'haltère est dans le plan
+      sagittal, on le voit en entier. Prise SUPINÉE : l'axe est
+      perpendiculaire au plan sagittal, on le voit par le bout.
+      Le schéma applique donc à l'haltère une homothétie sur son
+      SEUL AXE — scaleX de 1 à 0,25 — appliquée dans le repère de
+      l'avant-bras, donc bien le long de la barre quelle que soit
+      sa position. C'est la projection exacte de la supination.
+      Ce qui reste approximatif, et qui est dit : l'épaisseur
+      apparente du manche est maintenue constante (trait à
+      épaisseur non mise à l'échelle), alors qu'un vrai haltère
+      montrerait la face de ses disques en fin de rotation.
+   Sens      : montée = concentrique ; descente lente =
+               excentrique. Les repères de sens et le muscle
+               suivent le bras PROCHE ; le bras éloigné est en
+               opposition de phase, c'est le principe même.
+   ROM       : coude de 167,6° à 45°, soit 122,56° de flexion.
+   Agonistes : BICEPS BRACHIAL et BRACHIAL ANTÉRIEUR. Le biceps
+               est fléchisseur ET supinateur : c'est pour cela que
+               tourner la paume pendant la montée le sollicite
+               davantage qu'un curl à prise fixe — il fait ses
+               deux métiers en même temps.
+   Distinction : ≠ curl barre (les deux bras ensemble, prise
+               supinée d'emblée, aucune rotation) ; ≠ curl marteau
+               (prise neutre du début à la fin, donc haltère
+               jamais tourné) ; ≠ curl pupitre (bras posé sur un
+               pupitre incliné).
+   GÉOMÉTRIE (calculée) — épaule (120,54), bras 32,06 FIXE,
+   avant-bras 26. Coude proche (122,86), coude éloigné (130,86).
+     bas  main (118,111.7)      haut main (102.49,68.81)
+   -> avant-bras +122,56° autour du coude ; haltère scaleX 1
+      -> 0,25 autour de la main, sur la même grille.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-halteres-alterne"] = {
+  vb: "96 26 52 136",
+  dur: 4.2,
+  phases: { con: [0, 40], ecc: [50, 90] },
+  alt: "Debout de profil, un haltère dans chaque main : un bras monte en tournant la paume vers le ciel pendant que l'autre redescend, puis les rôles s'inversent.",
+  fixe: `
+    <line class="mo-ground" x1="100" y1="156" x2="142" y2="156"/>
+    <!-- corps debout de profil, face à gauche, immobile -->
+    <circle class="mo-head" cx="114" cy="38" r="9"/>
+    <line class="mo-body" x1="117" y1="46" x2="120" y2="54"/>
+    <line class="mo-body" x1="120" y1="54" x2="124" y2="104"/>
+    <line class="mo-body" x1="124" y1="104" x2="122" y2="130"/>
+    <line class="mo-body" x1="122" y1="130" x2="118" y2="156"/>
+    <!-- BRAS : dans les fixes, collés au flanc. Deux, décalés en
+         profondeur pour que l'alternance se lise. -->
+    <line class="mo-limb" x1="120" y1="54" x2="122" y2="86"/>
+    <circle class="mo-joint" cx="122" cy="86" r="2.8"/>
+    <line class="mo-body" x1="122" y1="55" x2="130" y2="86"/>
+    <circle class="mo-joint" cx="130" cy="86" r="2.6"/>`,
+  muscles: [
+    { nom: "Biceps brachial",
+      svg: `<ellipse cx="117.5" cy="68" rx="3.4" ry="9" transform="rotate(4 117.5 68)"/>` },
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="118.5" cy="80" rx="2.8" ry="6" transform="rotate(4 118.5 80)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS PROCHE : rotation autour du COUDE (122,86), +122,56°.
+         Grille partagée avec le bras éloigné, valeurs en opposition. */
+      o: "122px 86px",
+      k: [[0, "rotate(0deg)"], [10, "rotate(30.64deg)"], [20, "rotate(61.28deg)"],
+          [30, "rotate(91.92deg)"], [40, "rotate(122.56deg)"], [50, "rotate(122.56deg)"],
+          [60, "rotate(91.92deg)"], [70, "rotate(61.28deg)"], [80, "rotate(30.64deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="122" y1="86" x2="118" y2="111.7"/>`,
+      children: [
+        {
+          /* HALTÈRE PROCHE : homothétie sur son SEUL AXE, dans le repère de
+             l'avant-bras. C'est la supination, en projection exacte. */
+          o: "118px 111.7px",
+          k: [[0, "scaleX(1)"], [10, "scaleX(0.8125)"], [20, "scaleX(0.625)"],
+              [30, "scaleX(0.4375)"], [40, "scaleX(0.25)"], [50, "scaleX(0.25)"],
+              [60, "scaleX(0.4375)"], [70, "scaleX(0.625)"], [80, "scaleX(0.8125)"],
+              [90, "scaleX(1)"], [100, "scaleX(1)"]],
+          svg: `
+            <line class="mo-bar2" vector-effect="non-scaling-stroke" x1="109" y1="111.7" x2="127" y2="111.7"/>
+            <circle class="mo-hand" cx="118" cy="111.7" r="2.8"/>`
+        }
+      ]
+    },
+    {
+      /* AVANT-BRAS ÉLOIGNÉ : même grille, valeurs en OPPOSITION DE PHASE.
+         Au départ du cycle il est en haut pendant que l'autre est en bas. */
+      o: "130px 86px",
+      k: [[0, "rotate(122.56deg)"], [10, "rotate(91.92deg)"], [20, "rotate(61.28deg)"],
+          [30, "rotate(30.64deg)"], [40, "rotate(0deg)"], [50, "rotate(0deg)"],
+          [60, "rotate(30.64deg)"], [70, "rotate(61.28deg)"], [80, "rotate(91.92deg)"],
+          [90, "rotate(122.56deg)"], [100, "rotate(122.56deg)"]],
+      svg: `
+        <line class="mo-body" x1="130" y1="86" x2="126" y2="111.7"/>`,
+      children: [
+        {
+          o: "126px 111.7px",
+          k: [[0, "scaleX(0.25)"], [10, "scaleX(0.4375)"], [20, "scaleX(0.625)"],
+              [30, "scaleX(0.8125)"], [40, "scaleX(1)"], [50, "scaleX(1)"],
+              [60, "scaleX(0.8125)"], [70, "scaleX(0.625)"], [80, "scaleX(0.4375)"],
+              [90, "scaleX(0.25)"], [100, "scaleX(0.25)"]],
+          svg: `
+            <line class="mo-bar3" vector-effect="non-scaling-stroke" x1="117" y1="111.7" x2="135" y2="111.7"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M138 104 L138 74 M133 82 L138 74 L143 82"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M138 74 L138 104 M133 96 L138 104 L143 96"/>` }
+  ]
+};
