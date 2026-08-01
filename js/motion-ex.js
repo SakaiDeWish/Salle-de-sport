@@ -4634,3 +4634,53 @@ EXERCISE_MOTIONS["fentes-bulgares"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M76 96 L76 128 M71 120 L76 128 L81 120"/>` }
   ]
 };
+
+/* =========================================================
+   48. BURPEES  (burpees)
+   >>> SCHÉMA NON LIVRÉ — SIGNALÉ, PAS BÂCLÉ <<<
+   -----------------------------------------------------------
+   ANALYSE (faite, et valide) :
+   Séquence  : DEBOUT -> flexion, mains posées au sol -> jambes
+               projetées en arrière, position de PLANCHE -> souvent
+               une pompe -> jambes ramenées sous le corps -> SAUT
+               vertical, bras au-dessus de la tête -> retour debout.
+   Matériel  : aucun.
+   Mobiles   : tout le corps.
+   Agonistes : quadriceps, fessiers, pectoraux, triceps, épaules,
+               gainage. C'est un mouvement cardio full-body, pas un
+               exercice de muscle isolé.
+
+   POURQUOI AUCUN SCHÉMA N'EST LIVRÉ :
+   ce n'est PAS le nombre de positions qui bloque — le format de
+   keyframes en accepte autant qu'on veut, et plusieurs schémas déjà
+   livrés en utilisent cinq. Le blocage est ailleurs, et il est
+   structurel : PENDANT UN BURPEE, AUCUN POINT DU CORPS N'EST FIXE.
+   Les pieds quittent le sol au saut, les mains le touchent puis le
+   quittent. Or tout le moteur est bâti sur des chaînes articulées
+   ENRACINÉES à un point immobile — c'est ce qui garantit que les
+   segments restent solidaires et que les contacts au sol tiennent.
+   Sans ancrage, il faudrait calculer indépendamment la trajectoire
+   de chaque segment à chaque instant : ce n'est plus un squelette
+   articulé, c'est de l'animation image par image. Les phases
+   concentrique/excentrique et les deux flèches de sens n'auraient
+   pas davantage de signification sur un enchaînement.
+
+   POURQUOI JE N'ÉTENDS PAS LE MOTEUR POUR AUTANT — c'est un choix,
+   pas une impossibilité :
+   un « mode séquence » (frise de positions clés numérotées) serait
+   la bonne réponse SI plusieurs exercices en avaient besoin. J'ai
+   vérifié : sur toute la bibliothèque, le burpee est le SEUL vrai
+   enchaînement sans ancrage. Les autres candidats gardent tous un
+   point fixe et sont des mouvements dirigés normaux — mountain
+   climbers (mains au sol), step-ups (pied sur le banc), kettlebell
+   swing (pieds au sol). Un mode de rendu entier construit pour un
+   cas unique serait plus difficile à garder juste qu'il ne
+   rapporterait. Le moteur a déjà été étendu deux fois, à chaque fois
+   parce qu'un exercice l'imposait et qu'aucune alternative honnête
+   n'existait ; ici l'alternative existe et elle est honnête.
+
+   L'exercice retombe donc sur le pictogramme générique, explicitement
+   étiqueté « Schéma générique ». Si d'autres enchaînements entrent
+   un jour dans la bibliothèque, le mode séquence se justifiera et
+   cette note sera le point de départ.
+   ========================================================= */
