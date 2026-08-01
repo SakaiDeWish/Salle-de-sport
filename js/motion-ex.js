@@ -4684,3 +4684,101 @@ EXERCISE_MOTIONS["fentes-bulgares"] = {
    un jour dans la bibliothèque, le mode séquence se justifiera et
    cette note sera le point de départ.
    ========================================================= */
+
+/* =========================================================
+   49. MOUNTAIN CLIMBERS  (mountain-climbers)
+   -----------------------------------------------------------
+   Position  : en PLANCHE BRAS TENDUS, mains sous les épaules, corps
+               en ligne droite de la tête aux talons.
+   Matériel  : aucun.
+   Mobiles   : les HANCHES et les GENOUX, en ALTERNANCE — un genou
+               vient sous la poitrine pendant que l'autre jambe reste
+               tendue, puis on inverse.
+   Fixes     : les MAINS au sol, les BRAS tendus, et surtout le
+               TRONC. C'est LE point technique et c'est pour cela que
+               tout le haut du corps est dans les éléments fixes : le
+               bassin ne doit ni monter, ni descendre, ni tourner. Le
+               gainage est la moitié de l'exercice ; sans lui il ne
+               reste qu'un pédalage.
+   LES DEUX « PHASES » SONT LES DEUX JAMBES, pas un concentrique et un
+               excentrique. Comme au russian twist, le mouvement est
+               ALTERNÉ : chaque jambe est motrice à son tour, et les
+               deux flèches indiquent les deux jambes plutôt qu'une
+               montée et une descente. Les deux jambes portent donc
+               des animations en OPPOSITION DE PHASE.
+   ROM       : hanche de 179,7° (jambe tendue) à 45,2° (genou sous la
+               poitrine) ; genou de 180,0° à 55,2°. Le genou fléchi
+               s'arrête 11 unités au-dessus du sol et le pied 2 : on
+               reste au ras du sol sans le toucher, ce qui est
+               l'exécution réelle.
+   Agonistes : GAINAGE avant tout — grand droit, obliques, transverse
+               — pour immobiliser le tronc, plus les FLÉCHISSEURS DE
+               HANCHE qui ramènent le genou. Composante cardio forte.
+   Distinction : PLANCHE DYNAMIQUE à jambes alternées, tronc
+               immobile. ≠ planche (statique, rien ne bouge),
+               ≠ burpee (le corps entier se déplace, aucun point fixe).
+   GÉOMÉTRIE (calculée) — main(66,140) et bras vertical de 32 ->
+   épaule(66,108) ; tronc 32,6 -> hanche(98,114). Cuisse et tibia 26,5.
+   Jambe tendue : genou(124,119), cheville(150,124).
+   Jambe fléchie : genou(76.2,129), pied(100,138).
+   -> cuisse +134,58°, tibia −124,75° relatif.
+   ========================================================= */
+EXERCISE_MOTIONS["mountain-climbers"] = {
+  vb: "48 86 130 66",
+  dur: 2.6,
+  phases: { con: [0, 45], ecc: [55, 100] },
+  alt: "En position de planche bras tendus : les genoux viennent alternativement sous la poitrine, au ras du sol, pendant que le tronc reste parfaitement immobile.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="140" x2="172" y2="140"/>
+    <!-- main au sol, bras tendu vertical : rien de tout cela ne bouge -->
+    <circle class="mo-hand" cx="66" cy="140" r="3.6"/>
+    <line class="mo-limb" x1="66" y1="140" x2="66" y2="108"/>
+    <circle class="mo-joint" cx="66" cy="108" r="2.8"/>
+    <!-- TRONC IMMOBILE : c'est l'exercice. -->
+    <line class="mo-body" x1="66" y1="108" x2="98" y2="114"/>
+    <circle class="mo-joint" cx="98" cy="114" r="2.8"/>
+    <circle class="mo-head" cx="54" cy="105" r="7"/>`,
+  muscles: [
+    { nom: "Gainage (grand droit · obliques)",
+      svg: `<ellipse cx="82" cy="115" rx="12" ry="3.4" transform="rotate(10.6 82 115)"/>` }
+  ],
+  parts: [
+    {
+      /* JAMBE A : tendue au départ, elle se replie à mi-cycle. */
+      o: "98px 114px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(134.58deg)"], [55, "rotate(134.58deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Fléchisseurs de hanche",
+      muscle: `<ellipse cx="104" cy="117" rx="6" ry="3"/>`,
+      svg: `<line class="mo-limb" x1="98" y1="114" x2="124" y2="119"/>`,
+      children: [
+        { o: "124px 119px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(-124.75deg)"], [55, "rotate(-124.75deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="124" cy="119" r="2.6"/>
+            <line class="mo-limb" x1="124" y1="119" x2="150" y2="124"/>` }
+      ]
+    },
+    {
+      /* JAMBE B : EN OPPOSITION DE PHASE — repliée quand l'autre est
+         tendue. C'est l'alternance qui définit l'exercice. */
+      o: "98px 114px",
+      k: [[0, "rotate(134.58deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"],
+          [100, "rotate(134.58deg)"]],
+      svg: `<line class="mo-body" x1="98" y1="114" x2="124" y2="119"/>`,
+      children: [
+        { o: "124px 119px",
+          k: [[0, "rotate(-124.75deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"],
+              [100, "rotate(-124.75deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="124" cy="119" r="2.4"/>
+            <line class="mo-body" x1="124" y1="119" x2="150" y2="124"/>` }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M138 96 L112 96 M119 91 L112 96 L119 101"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M112 96 L138 96 M131 91 L138 96 L131 101"/>` }
+  ]
+};
