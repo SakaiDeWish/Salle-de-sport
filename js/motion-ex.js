@@ -8813,3 +8813,125 @@ EXERCISE_MOTIONS["developpe-couche-prise-serree"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M158 84 L158 50 M153 58 L158 50 L163 58"/>` }
   ]
 };
+
+/* =========================================================
+   82. EXTENSION TRICEPS UN BRAS À LA POULIE
+       (extension-un-bras-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à une poulie haute, poignée tenue
+               d'UNE main, coude collé au flanc, bras libre le
+               long du corps.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS, collé au flanc — « coude qui décolle »
+               est l'erreur n°1, un cercle pointillé marque donc
+               la position que le coude ne doit pas quitter ; le
+               buste, car « rotation du buste » est l'erreur n°2
+               et c'est la faute propre à l'unilatéral, rien ne
+               s'oppose plus à la traction du côté opposé.
+   ROM       : coude de 75,4° à 175°, soit 99,63° d'extension.
+               « Amplitude écourtée » est l'erreur n°3.
+   >>> PAS DE POINT MORT ICI, ET C'EST DÉMONTRABLE <<< Au curl à
+       la poulie basse (schéma 77) le calcul avait révélé un
+       creux : à un moment l'avant-bras pointait vers la poulie,
+       le câble tirait dans son axe et le bras de levier tombait
+       à 6,6. La même vérification ici donne un critère général,
+       et il est simple :
+         il y a un point mort si — et seulement si — la direction
+         COUDE -> POULIE tombe DANS le secteur angulaire balayé
+         par l'avant-bras.
+       Ici la direction coude->poulie vaut 225°, et l'avant-bras
+       ne balaie que de 91,4° à 191,1°. 225 est en dehors : aucun
+       alignement possible, donc aucun point mort. Le bras de
+       levier reste entre 15,4 et 25,9 sur toute l'amplitude,
+       soit un rapport de 1,7 seulement :
+         t      0    1/6    2/6    3/6    4/6    5/6      1
+         levier 18,8  23,8  25,9  25,6  23,4  19,9  15,4
+   POURQUOI LE CHEF LATÉRAL : le chef LONG du triceps franchit
+               l'épaule. Ici l'épaule reste NEUTRE, bras le long
+               du corps : le chef long est donc à une longueur
+               moyenne, ni étiré ni raccourci, position où il
+               n'est pas à son avantage. Les chefs latéral et
+               médial, qui ne franchissent pas l'épaule, font
+               l'essentiel. C'est l'inverse exact de l'extension
+               nuque, où l'épaule fléchie étire le chef long et
+               le met en avant.
+   Sens      : extension vers le bas = concentrique ; remontée
+               contrôlée = excentrique.
+   Agonistes : TRICEPS, chef latéral surtout.
+   Distinction : ≠ extension poulie à la barre (bilatéral, les
+               deux coudes solidaires) ; ≠ extension nuque
+               (épaule fléchie, chef long) ; ≠ kickback (haltère,
+               résistance verticale).
+   GÉOMÉTRIE (calculée) — épaule (116,56), bras 32 FIXE, coude
+   (118,88), avant-bras 26, poulie (56,26).
+     haut main (92.48,83.02)   bas main (117.36,113.99)
+   -> avant-bras −99,63° ; câble rotation faible (+4,8° au plus,
+      puis −2,3°) et allongement ×1,5848, six intervalles.
+   ========================================================= */
+EXERCISE_MOTIONS["extension-un-bras-poulie"] = {
+  vb: "44 18 102 146",
+  dur: 3.6,
+  phases: { con: [0, 34], ecc: [46, 90] },
+  alt: "Debout de profil face à une poulie haute, une seule main sur la poignée et le coude collé au flanc : l'avant-bras descend jusqu'à l'extension complète du coude, puis remonte lentement.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="158" x2="140" y2="158"/>
+    <!-- colonne et poulie HAUTE -->
+    <line class="mo-gear" x1="52" y1="22" x2="52" y2="158"/>
+    <circle class="mo-pulley" cx="56" cy="26" r="5"/>
+    <!-- corps debout de profil, face à gauche, immobile -->
+    <circle class="mo-head" cx="116" cy="40" r="9"/>
+    <line class="mo-body" x1="119" y1="48" x2="122" y2="56"/>
+    <line class="mo-body" x1="122" y1="56" x2="126" y2="106"/>
+    <line class="mo-body" x1="126" y1="106" x2="124" y2="132"/>
+    <line class="mo-body" x1="124" y1="132" x2="120" y2="158"/>
+    <!-- bras LIBRE, discret -->
+    <line class="mo-body" x1="124" y1="57" x2="132" y2="88"/>
+    <line class="mo-body" x1="132" y1="88" x2="130" y2="112"/>
+    <!-- BRAS DE TRAVAIL : fixe, collé au flanc, dessiné en avant du tronc
+         pour que les deux ne se confondent pas -->
+    <line class="mo-limb" x1="121" y1="57" x2="118" y2="88"/>
+    <circle class="mo-joint" cx="118" cy="88" r="2.8"/>
+    <!-- le coude ne doit pas quitter ce cercle -->
+    <circle class="mo-rom" fill="none" cx="118" cy="88" r="8"/>
+    <!-- amplitude : l'arc réellement parcouru par la poignée -->
+    <path class="mo-rom" fill="none" d="M92.48 83.02 A26 26 0 0 0 117.36 113.99"/>`,
+  muscles: [
+    { nom: "Triceps (chef latéral)",
+      svg: `<ellipse cx="122.5" cy="72" rx="3.2" ry="9" transform="rotate(5 122.5 72)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation faible et allongement ×1,5848, échantillonnés sur
+         l'arc réel de la poignée. */
+      o: "56px 26px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.67, "rotate(3.37deg) scale(1.0924)"],
+          [11.33, "rotate(4.78deg) scale(1.1997)"], [17, "rotate(4.55deg) scale(1.3105)"],
+          [22.67, "rotate(3.09deg) scale(1.4158)"], [28.33, "rotate(0.73deg) scale(1.5089)"],
+          [34, "rotate(-2.27deg) scale(1.5848)"], [46, "rotate(-2.27deg) scale(1.5848)"],
+          [53.33, "rotate(0.73deg) scale(1.5089)"], [60.67, "rotate(3.09deg) scale(1.4158)"],
+          [68, "rotate(4.55deg) scale(1.3105)"], [75.33, "rotate(4.78deg) scale(1.1997)"],
+          [82.67, "rotate(3.37deg) scale(1.0924)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="56" y1="26" x2="92.48" y2="83.02"/>`
+    },
+    {
+      /* AVANT-BRAS + POIGNÉE : rotation autour du COUDE (118,88), −99,63°.
+         Même grille que le câble. */
+      o: "118px 88px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-16.61deg)"], [11.33, "rotate(-33.21deg)"],
+          [17, "rotate(-49.81deg)"], [22.67, "rotate(-66.42deg)"], [28.33, "rotate(-83.02deg)"],
+          [34, "rotate(-99.63deg)"], [46, "rotate(-99.63deg)"],
+          [53.33, "rotate(-83.02deg)"], [60.67, "rotate(-66.42deg)"], [68, "rotate(-49.81deg)"],
+          [75.33, "rotate(-33.21deg)"], [82.67, "rotate(-16.61deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="118" y1="88" x2="92.48" y2="83.02"/>
+        <line class="mo-bar2" x1="91.52" y1="87.93" x2="93.44" y2="78.11"/>
+        <circle class="mo-hand" cx="92.48" cy="83.02" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M136 70 L136 100 M131 92 L136 100 L141 92"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M136 100 L136 70 M131 78 L136 70 L141 78"/>` }
+  ]
+};
