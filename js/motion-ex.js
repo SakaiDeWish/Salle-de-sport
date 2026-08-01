@@ -326,8 +326,12 @@ EXERCISE_MOTIONS["pompes"] = {
                pas confondre avec l'écarté couché aux haltères,
                allongé et sans tension en haut.
    Cinématique : le câble suit la main par rotation autour de la
-               poulie ET allongement (facteur 2,62), calculé pour
-               que son extrémité tombe exactement sur la poignée.
+               poulie ET allongement (×2,6911 au total), échantillonné
+               en SIX intervalles le long de l'arc réel de la main.
+               CORRIGÉ APRÈS COUP : calé sur les seules positions
+               extrêmes, le câble se détachait de 18,9 unités de la
+               poignée à mi-parcours, parce que sa rotation n'est pas
+               monotone (+9,4 / +12,1 / +10,8 / +7,5 / +2,9 / −2,5).
    ========================================================= */
 EXERCISE_MOTIONS["ecarte-poulie-vis-a-vis"] = {
   vb: "14 6 212 148",
@@ -359,15 +363,27 @@ EXERCISE_MOTIONS["ecarte-poulie-vis-a-vis"] = {
       /* CÂBLE GAUCHE : tourne autour de la POULIE (26, 20) et s'allonge
          (×2,62) pour que son extrémité reste sur la poignée. */
       o: "26px 20px",
-      k: [[0, "rotate(0deg) scale(1)"], [35, "rotate(-3.6deg) scale(2.62)"],
-          [45, "rotate(-3.6deg) scale(2.62)"], [90, "rotate(0deg) scale(1)"], [100, "rotate(0deg) scale(1)"]],
+      k: [[0, "rotate(0deg) scale(1)"], [5.83, "rotate(9.44deg) scale(1.2665)"],
+          [11.67, "rotate(12.06deg) scale(1.5845)"], [17.5, "rotate(10.83deg) scale(1.9069)"],
+          [23.33, "rotate(7.47deg) scale(2.2083)"], [29.17, "rotate(2.87deg) scale(2.4733)"],
+          [35, "rotate(-2.48deg) scale(2.6911)"], [45, "rotate(-2.48deg) scale(2.6911)"],
+          [52.5, "rotate(2.87deg) scale(2.4733)"], [60, "rotate(7.47deg) scale(2.2083)"],
+          [67.5, "rotate(10.83deg) scale(1.9069)"], [75, "rotate(12.06deg) scale(1.5845)"],
+          [82.5, "rotate(9.44deg) scale(1.2665)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
       svg: `<line class="mo-cable" x1="26" y1="20" x2="56" y2="54"/>`
     },
     {
       /* CÂBLE DROIT : miroir exact du gauche. */
       o: "214px 20px",
-      k: [[0, "rotate(0deg) scale(1)"], [35, "rotate(3.6deg) scale(2.62)"],
-          [45, "rotate(3.6deg) scale(2.62)"], [90, "rotate(0deg) scale(1)"], [100, "rotate(0deg) scale(1)"]],
+      k: [[0, "rotate(0deg) scale(1)"], [5.83, "rotate(-9.44deg) scale(1.2665)"],
+          [11.67, "rotate(-12.06deg) scale(1.5845)"], [17.5, "rotate(-10.83deg) scale(1.9069)"],
+          [23.33, "rotate(-7.47deg) scale(2.2083)"], [29.17, "rotate(-2.87deg) scale(2.4733)"],
+          [35, "rotate(2.48deg) scale(2.6911)"], [45, "rotate(2.48deg) scale(2.6911)"],
+          [52.5, "rotate(-2.87deg) scale(2.4733)"], [60, "rotate(-7.47deg) scale(2.2083)"],
+          [67.5, "rotate(-10.83deg) scale(1.9069)"], [75, "rotate(-12.06deg) scale(1.5845)"],
+          [82.5, "rotate(-9.44deg) scale(1.2665)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
       svg: `<line class="mo-cable" x1="214" y1="20" x2="184" y2="54"/>`
     },
     {
@@ -375,8 +391,13 @@ EXERCISE_MOTIONS["ecarte-poulie-vis-a-vis"] = {
          l'ÉPAULE (104, 60). Le coude ne bouge PAS par rapport au bras :
          c'est bien une adduction d'épaule pure, pas une extension de coude. */
       o: "104px 60px",
-      k: [[0, "rotate(0deg)"], [35, "rotate(-105deg)"], [45, "rotate(-105deg)"],
-          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      /* même grille que le câble gauche : sinon les deux se
+         désynchronisent entre les instants-clés (easing par segment). */
+      k: [[0, "rotate(0deg)"], [5.83, "rotate(-17.5deg)"], [11.67, "rotate(-35deg)"],
+          [17.5, "rotate(-52.5deg)"], [23.33, "rotate(-70deg)"], [29.17, "rotate(-87.5deg)"],
+          [35, "rotate(-105deg)"], [45, "rotate(-105deg)"], [52.5, "rotate(-87.5deg)"],
+          [60, "rotate(-70deg)"], [67.5, "rotate(-52.5deg)"], [75, "rotate(-35deg)"],
+          [82.5, "rotate(-17.5deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
       svg: `
         <polyline class="mo-limb" points="104,60 80,61 56,54"/>
         <circle class="mo-joint" cx="80" cy="61" r="2.4"/>
@@ -385,8 +406,11 @@ EXERCISE_MOTIONS["ecarte-poulie-vis-a-vis"] = {
     {
       /* BRAS DROIT : miroir. */
       o: "136px 60px",
-      k: [[0, "rotate(0deg)"], [35, "rotate(105deg)"], [45, "rotate(105deg)"],
-          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      k: [[0, "rotate(0deg)"], [5.83, "rotate(17.5deg)"], [11.67, "rotate(35deg)"],
+          [17.5, "rotate(52.5deg)"], [23.33, "rotate(70deg)"], [29.17, "rotate(87.5deg)"],
+          [35, "rotate(105deg)"], [45, "rotate(105deg)"], [52.5, "rotate(87.5deg)"],
+          [60, "rotate(70deg)"], [67.5, "rotate(52.5deg)"], [75, "rotate(35deg)"],
+          [82.5, "rotate(17.5deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
       svg: `
         <polyline class="mo-limb" points="136,60 160,61 184,54"/>
         <circle class="mo-joint" cx="160" cy="61" r="2.4"/>
@@ -832,7 +856,9 @@ EXERCISE_MOTIONS["tirage-vertical"] = {
     {
       /* CÂBLE : s'allonge (×2,23) depuis la poulie quand la barre descend. */
       o: "120px 16px",
-      k: [[0, "scaleY(1)"], [34, "scaleY(2.231)"], [42, "scaleY(2.231)"],
+      /* scaleY exact : l'extrémité doit tomber SUR la barre (y=44+32=76),
+         donc (76−16)/28 = 2,1429. Le 2,231 précédent la dépassait de 2,5. */
+      k: [[0, "scaleY(1)"], [34, "scaleY(2.1429)"], [42, "scaleY(2.1429)"],
           [88, "scaleY(1)"], [100, "scaleY(1)"]],
       svg: `<line class="mo-cable" x1="120" y1="16" x2="120" y2="44"/>`
     },
@@ -1526,30 +1552,43 @@ EXERCISE_MOTIONS["face-pull"] = {
       /* CORDE GAUCHE : tourne autour de la POULIE (120, 22) et s'allonge
          (×3,08) pour rester accrochée à la main. */
       o: "120px 22px",
-      k: [[0, "rotate(0deg) scale(1)"], [32, "rotate(6.3deg) scale(3.08)"],
-          [40, "rotate(6.3deg) scale(3.08)"], [88, "rotate(0deg) scale(1)"], [100, "rotate(0deg) scale(1)"]],
+      k: [[0, "rotate(0.00deg) scale(1.0000)"], [5.33, "rotate(9.18deg) scale(1.3039)"], [10.67, "rotate(12.64deg) scale(1.6505)"],
+          [16, "rotate(13.02deg) scale(2.0113)"], [21.33, "rotate(11.70deg) scale(2.3725)"], [26.67, "rotate(9.36deg) scale(2.7261)"],
+          [32, "rotate(6.37deg) scale(3.0665)"], [40, "rotate(6.37deg) scale(3.0665)"], [48, "rotate(9.36deg) scale(2.7261)"],
+          [56, "rotate(11.70deg) scale(2.3725)"], [64, "rotate(13.02deg) scale(2.0113)"], [72, "rotate(12.64deg) scale(1.6505)"],
+          [80, "rotate(9.18deg) scale(1.3039)"], [88, "rotate(0.00deg) scale(1.0000)"], [100, "rotate(0deg) scale(1)"]],
       svg: `<line class="mo-cable" x1="120" y1="22" x2="113" y2="30"/>`
     },
     {
       /* CORDE DROITE : miroir. */
       o: "120px 22px",
-      k: [[0, "rotate(0deg) scale(1)"], [32, "rotate(-6.3deg) scale(3.08)"],
-          [40, "rotate(-6.3deg) scale(3.08)"], [88, "rotate(0deg) scale(1)"], [100, "rotate(0deg) scale(1)"]],
+      k: [[0, "rotate(0.00deg) scale(1.0000)"], [5.33, "rotate(-9.18deg) scale(1.3039)"], [10.67, "rotate(-12.64deg) scale(1.6505)"],
+          [16, "rotate(-13.02deg) scale(2.0113)"], [21.33, "rotate(-11.70deg) scale(2.3725)"], [26.67, "rotate(-9.36deg) scale(2.7261)"],
+          [32, "rotate(-6.37deg) scale(3.0665)"], [40, "rotate(-6.37deg) scale(3.0665)"], [48, "rotate(-9.36deg) scale(2.7261)"],
+          [56, "rotate(-11.70deg) scale(2.3725)"], [64, "rotate(-13.02deg) scale(2.0113)"], [72, "rotate(-12.64deg) scale(1.6505)"],
+          [80, "rotate(-9.18deg) scale(1.3039)"], [88, "rotate(0.00deg) scale(1.0000)"], [100, "rotate(0deg) scale(1)"]],
       svg: `<line class="mo-cable" x1="120" y1="22" x2="127" y2="30"/>`
     },
     {
       /* BRAS GAUCHE : −61,4° écarte le COUDE largement vers l'extérieur —
          c'est la signature du face pull, coude haut et non collé au corps. */
       o: "102px 72px",
-      k: [[0, "rotate(0deg)"], [32, "rotate(-61.4deg)"], [40, "rotate(-61.4deg)"],
-          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      /* même grille que les cordes : easing par segment. */
+      k: [[0, "rotate(-0.00deg)"], [5.33, "rotate(-10.23deg)"], [10.67, "rotate(-20.47deg)"],
+          [16, "rotate(-30.70deg)"], [21.33, "rotate(-40.93deg)"], [26.67, "rotate(-51.17deg)"],
+          [32, "rotate(-61.40deg)"], [40, "rotate(-61.40deg)"], [48, "rotate(-51.17deg)"],
+          [56, "rotate(-40.93deg)"], [64, "rotate(-30.70deg)"], [72, "rotate(-20.47deg)"],
+          [80, "rotate(-10.23deg)"], [88, "rotate(-0.00deg)"], [100, "rotate(0.00deg)"]],
       svg: `
         <line class="mo-limb" x1="102" y1="72" x2="99.9" y2="50.1"/>
         <circle class="mo-joint" cx="99.9" cy="50.1" r="2.5"/>`,
       children: [
         { o: "99.9px 50.1px",
-          k: [[0, "rotate(0deg)"], [32, "rotate(64.5deg)"], [40, "rotate(64.5deg)"],
-              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          k: [[0, "rotate(0.00deg)"], [5.33, "rotate(10.75deg)"], [10.67, "rotate(21.50deg)"],
+              [16, "rotate(32.25deg)"], [21.33, "rotate(43.00deg)"], [26.67, "rotate(53.75deg)"],
+              [32, "rotate(64.50deg)"], [40, "rotate(64.50deg)"], [48, "rotate(53.75deg)"],
+              [56, "rotate(43.00deg)"], [64, "rotate(32.25deg)"], [72, "rotate(21.50deg)"],
+              [80, "rotate(10.75deg)"], [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
           svg: `
             <line class="mo-limb" x1="99.9" y1="50.1" x2="113" y2="30"/>
             <circle class="mo-hand" cx="113" cy="30" r="3.2"/>` }
@@ -1558,15 +1597,21 @@ EXERCISE_MOTIONS["face-pull"] = {
     {
       /* BRAS DROIT : miroir. */
       o: "138px 72px",
-      k: [[0, "rotate(0deg)"], [32, "rotate(61.4deg)"], [40, "rotate(61.4deg)"],
-          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      k: [[0, "rotate(0.00deg)"], [5.33, "rotate(10.23deg)"], [10.67, "rotate(20.47deg)"],
+          [16, "rotate(30.70deg)"], [21.33, "rotate(40.93deg)"], [26.67, "rotate(51.17deg)"],
+          [32, "rotate(61.40deg)"], [40, "rotate(61.40deg)"], [48, "rotate(51.17deg)"],
+          [56, "rotate(40.93deg)"], [64, "rotate(30.70deg)"], [72, "rotate(20.47deg)"],
+          [80, "rotate(10.23deg)"], [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
       svg: `
         <line class="mo-limb" x1="138" y1="72" x2="140.1" y2="50.1"/>
         <circle class="mo-joint" cx="140.1" cy="50.1" r="2.5"/>`,
       children: [
         { o: "140.1px 50.1px",
-          k: [[0, "rotate(0deg)"], [32, "rotate(-64.5deg)"], [40, "rotate(-64.5deg)"],
-              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          k: [[0, "rotate(-0.00deg)"], [5.33, "rotate(-10.75deg)"], [10.67, "rotate(-21.50deg)"],
+              [16, "rotate(-32.25deg)"], [21.33, "rotate(-43.00deg)"], [26.67, "rotate(-53.75deg)"],
+              [32, "rotate(-64.50deg)"], [40, "rotate(-64.50deg)"], [48, "rotate(-53.75deg)"],
+              [56, "rotate(-43.00deg)"], [64, "rotate(-32.25deg)"], [72, "rotate(-21.50deg)"],
+              [80, "rotate(-10.75deg)"], [88, "rotate(-0.00deg)"], [100, "rotate(0.00deg)"]],
           svg: `
             <line class="mo-limb" x1="140.1" y1="50.1" x2="127" y2="30"/>
             <circle class="mo-hand" cx="127" cy="30" r="3.2"/>` }
@@ -1947,8 +1992,13 @@ EXERCISE_MOTIONS["extension-poulie"] = {
       /* CÂBLE : rotation + mise à l'échelle autour de la POULIE, de sorte
          que son extrémité colle à la main pendant tout le mouvement. */
       o: "96px 30px",
-      k: [[0, "rotate(0deg) scale(1)"], [32, "rotate(-10.1deg) scale(1.5263)"],
-          [40, "rotate(-10.1deg) scale(1.5263)"], [88, "rotate(0deg) scale(1)"],
+      k: [[0, "rotate(0deg) scale(1)"], [5.33, "rotate(1.10deg) scale(1.1045)"],
+          [10.67, "rotate(0.63deg) scale(1.2105)"], [16, "rotate(-1.02deg) scale(1.3105)"],
+          [21.33, "rotate(-3.52deg) scale(1.3990)"], [26.67, "rotate(-6.62deg) scale(1.4720)"],
+          [32, "rotate(-10.11deg) scale(1.5264)"], [40, "rotate(-10.11deg) scale(1.5264)"],
+          [48, "rotate(-6.62deg) scale(1.4720)"], [56, "rotate(-3.52deg) scale(1.3990)"],
+          [64, "rotate(-1.02deg) scale(1.3105)"], [72, "rotate(0.63deg) scale(1.2105)"],
+          [80, "rotate(1.10deg) scale(1.1045)"], [88, "rotate(0deg) scale(1)"],
           [100, "rotate(0deg) scale(1)"]],
       svg: `<line class="mo-cable" x1="96" y1="30" x2="105.34" y2="86.18"/>`
     },
@@ -1957,8 +2007,13 @@ EXERCISE_MOTIONS["extension-poulie"] = {
          −95° tend le coude de 80° à 175°. La barre reste perpendiculaire
          à l'avant-bras : c'est la prise pronation de la barre droite. */
       o: "127px 90px",
-      k: [[0, "rotate(0deg)"], [32, "rotate(-95deg)"], [40, "rotate(-95deg)"],
-          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      /* MÊME grille que le câble : l'easing est ease-in-out par SEGMENT,
+         des instants-clés différents désynchronisent les deux pièces. */
+      k: [[0, "rotate(0.00deg)"], [5.33, "rotate(-15.83deg)"], [10.67, "rotate(-31.67deg)"],
+          [16, "rotate(-47.50deg)"], [21.33, "rotate(-63.33deg)"], [26.67, "rotate(-79.17deg)"],
+          [32, "rotate(-95.00deg)"], [40, "rotate(-95.00deg)"], [48, "rotate(-79.17deg)"],
+          [56, "rotate(-63.33deg)"], [64, "rotate(-47.50deg)"], [72, "rotate(-31.67deg)"],
+          [80, "rotate(-15.83deg)"], [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
       svg: `
         <line class="mo-limb" x1="127" y1="90" x2="105.34" y2="86.18"/>
         <line class="mo-bar2" x1="106.56" y1="79.29" x2="104.12" y2="93.08"/>
@@ -5756,9 +5811,14 @@ EXERCISE_MOTIONS["pull-over"] = {
      bas  main (97.48,108.72)  coude (100.09,83.86)
      haut main (156.72,49.48)  coude (133.88,59.65)
    -> bloc bras : rotation −120° autour de l'épaule.
-   Câble : poulie (54,138). Longueur 52,42 en bas, 135,60 en haut
-   -> rotation −6,79° et allongement ×2,587, pour que son
-   extrémité tombe exactement sur la poignée aux deux positions.
+   Câble : poulie (54,138), échantillonné en SIX intervalles le long
+   de l'arc réel de la poignée. Caler la rotation sur les seules
+   positions extrêmes ne suffit pas ici, et le garde-fou l'a montré :
+   la rotation du câble n'est pas MONOTONE (+9,2 / +11,1 / +9,1 /
+   +4,9 / −0,6 / −6,8), parce que la poignée passe d'abord à
+   l'aplomb de la poulie avant de s'en éloigner. Une interpolation
+   entre les deux bouts détachait le câble de 21,7 unités à
+   mi-parcours. Allongement ×1 -> ×2,5868.
    ========================================================= */
 EXERCISE_MOTIONS["ecarte-poulie-basse"] = {
   vb: "46 32 120 122",
@@ -5791,8 +5851,13 @@ EXERCISE_MOTIONS["ecarte-poulie-basse"] = {
       /* CÂBLE : tourne autour de la POULIE (54,138) et s'allonge
          (×2,587) pour que son extrémité reste sur la poignée. */
       o: "54px 138px",
-      k: [[0, "rotate(0deg) scale(1)"], [38, "rotate(-6.79deg) scale(2.587)"],
-          [46, "rotate(-6.79deg) scale(2.587)"], [90, "rotate(0deg) scale(1)"],
+      k: [[0, "rotate(0deg) scale(1)"], [6.33, "rotate(9.16deg) scale(1.2654)"],
+          [12.67, "rotate(11.14deg) scale(1.5821)"], [19, "rotate(9.09deg) scale(1.8965)"],
+          [25.33, "rotate(4.86deg) scale(2.1796)"], [31.67, "rotate(-0.61deg) scale(2.4136)"],
+          [38, "rotate(-6.80deg) scale(2.5868)"], [46, "rotate(-6.80deg) scale(2.5868)"],
+          [53.33, "rotate(-0.61deg) scale(2.4136)"], [60.67, "rotate(4.86deg) scale(2.1796)"],
+          [68, "rotate(9.09deg) scale(1.8965)"], [75.33, "rotate(11.14deg) scale(1.5821)"],
+          [82.67, "rotate(9.16deg) scale(1.2654)"], [90, "rotate(0deg) scale(1)"],
           [100, "rotate(0deg) scale(1)"]],
       svg: `<line class="mo-cable" x1="54" y1="138" x2="97.48" y2="108.72"/>`
     },
@@ -5801,8 +5866,14 @@ EXERCISE_MOTIONS["ecarte-poulie-basse"] = {
          l'ÉPAULE (110,62). Aucun enfant : le coude ne bouge pas, et
          c'est précisément ce que l'exercice demande. */
       o: "110px 62px",
-      k: [[0, "rotate(0deg)"], [38, "rotate(-120deg)"], [46, "rotate(-120deg)"],
-          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      /* MÊME grille de keyframes que le câble : l'easing est ease-in-out
+         PAR SEGMENT, deux pièces aux instants-clés différents se
+         désynchronisent entre ces instants. */
+      k: [[0, "rotate(0deg)"], [6.33, "rotate(-20deg)"], [12.67, "rotate(-40deg)"],
+          [19, "rotate(-60deg)"], [25.33, "rotate(-80deg)"], [31.67, "rotate(-100deg)"],
+          [38, "rotate(-120deg)"], [46, "rotate(-120deg)"], [53.33, "rotate(-100deg)"],
+          [60.67, "rotate(-80deg)"], [68, "rotate(-60deg)"], [75.33, "rotate(-40deg)"],
+          [82.67, "rotate(-20deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
       svg: `
         <line class="mo-limb" x1="110" y1="62" x2="100.09" y2="83.86"/>
         <circle class="mo-joint" cx="100.09" cy="83.86" r="2.6"/>
