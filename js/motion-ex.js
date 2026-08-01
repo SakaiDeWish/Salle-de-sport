@@ -5699,3 +5699,119 @@ EXERCISE_MOTIONS["pull-over"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M78 70 L102 70 M95 65 L102 70 L95 75"/>` }
   ]
 };
+
+/* =========================================================
+   58. ÉCARTÉ À LA POULIE BASSE  (ecarte-poulie-basse)
+   -----------------------------------------------------------
+   Position  : DEBOUT entre deux poulies BASSES, un pied devant,
+               buste droit et gainé, une poignée dans chaque main.
+   Matériel  : deux câbles partant du BAS des colonnes, derrière
+               les hanches. La ligne de traction va donc du bas
+               vers le haut : c'est l'inverse exact de l'écarté
+               à la poulie haute.
+   Mobile    : l'ÉPAULE seule, en flexion (le bras monte vers
+               l'avant) combinée à une adduction horizontale.
+   Fixes     : le COUDE, bloqué à 161°, donc bras et avant-bras
+               forment un BLOC RIGIDE ; rachis, bassin, jambes.
+               « Plier les coudes » est l'erreur n°1 : le
+               mouvement deviendrait un tirage.
+   Sens/plan : montée des bras = CONCENTRIQUE ; descente contrôlée
+               = excentrique, plus lente (phase d'étirement).
+   ROM       : 120° d'arc, de 15° d'extension d'épaule (mains
+               derrière les hanches) à 105° de flexion (mains à
+               hauteur de visage). La main parcourt un arc de
+               rayon 48,37 centré sur l'épaule.
+   Agonistes : HAUT du grand pectoral (faisceau claviculaire) et
+               deltoïde antérieur. C'est la direction basse-haute
+               de la traction qui les sollicite : le faisceau
+               claviculaire est celui dont les fibres tirent le
+               bras vers le HAUT et l'avant.
+   >>> POURQUOI CE SCHÉMA EST DE PROFIL, ET CE QU'IL NE MONTRE
+       PAS <<< L'écarté poulie HAUTE (schéma 4) est dessiné de
+       FACE, et c'était le bon choix : ses mains finissent devant
+       le BASSIN, presque dans le plan du corps, donc peu
+       raccourcies en projection. Ici les mains finissent devant
+       le VISAGE, c'est-à-dire loin en AVANT du corps. Calcul
+       fait : bras tendu de 48,37, mains ramenées vers l'axe
+       médian à hauteur de visage, la longueur APPARENTE du bras
+       de face tomberait à 17,9 — 37 % de sa longueur réelle. Un
+       schéma de face devrait donc faire RÉTRÉCIR le bras au
+       cours du mouvement, ce qui est le contraire d'un membre
+       rigide. Le profil est retenu parce qu'il montre l'arc
+       bas-haut à sa VRAIE longueur.
+       Ce que le profil ne montre pas, en revanche : le
+       rapprochement des mains vers l'axe médian. Il est réel,
+       mais secondaire par rapport à la montée, et aucune vue ne
+       peut rendre les deux exactement. C'est dit ici plutôt que
+       dessiné approximativement.
+   Distinction : ≠ écarté poulie haute (traction haut-bas, mains
+               finissant en bas, vue de face) ; ≠ élévation
+               frontale (là aussi le bras monte, mais avec une
+               charge LIBRE dont la résistance s'annule en haut,
+               et sans composante d'adduction : la poulie basse
+               garde une tension oblique constante) ; ≠ développé
+               incliné (le coude s'y ferme).
+   GÉOMÉTRIE (calculée) — épaule (110,62), bras 24, avant-bras 25,
+   coude bloqué à 161,6° -> épaule-main constante 48,37.
+     bas  main (97.48,108.72)  coude (100.09,83.86)
+     haut main (156.72,49.48)  coude (133.88,59.65)
+   -> bloc bras : rotation −120° autour de l'épaule.
+   Câble : poulie (54,138). Longueur 52,42 en bas, 135,60 en haut
+   -> rotation −6,79° et allongement ×2,587, pour que son
+   extrémité tombe exactement sur la poignée aux deux positions.
+   ========================================================= */
+EXERCISE_MOTIONS["ecarte-poulie-basse"] = {
+  vb: "46 32 120 122",
+  dur: 4,
+  phases: { con: [0, 38], ecc: [46, 90] },
+  alt: "Debout de profil entre deux poulies basses, coudes bloqués : les bras montent en arc de cercle depuis derrière les hanches jusqu'à hauteur du visage, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="50" y1="150" x2="164" y2="150"/>
+    <!-- colonne de poulie BASSE, derrière le pratiquant -->
+    <line class="mo-gear" x1="54" y1="36" x2="54" y2="150"/>
+    <circle class="mo-pulley" cx="54" cy="138" r="5"/>
+    <!-- corps de profil, face à droite, un pied devant -->
+    <circle class="mo-head" cx="108" cy="44" r="9"/>
+    <line class="mo-body" x1="108" y1="53" x2="110" y2="62"/>
+    <line class="mo-body" x1="110" y1="62" x2="114" y2="104"/>
+    <line class="mo-body" x1="114" y1="104" x2="128" y2="126"/>
+    <line class="mo-body" x1="128" y1="126" x2="136" y2="150"/>
+    <line class="mo-body" x1="114" y1="104" x2="106" y2="126"/>
+    <line class="mo-body" x1="106" y1="126" x2="100" y2="150"/>
+    <!-- amplitude : l'arc RÉELLEMENT parcouru par la poignée -->
+    <path class="mo-rom" fill="none" d="M97.48 108.72 A48.37 48.37 0 0 0 156.72 49.48"/>`,
+  muscles: [
+    { nom: "Haut du grand pectoral",
+      svg: `<ellipse cx="117" cy="72" rx="4.5" ry="8" transform="rotate(10 117 72)"/>` },
+    { nom: "Deltoïde antérieur",
+      svg: `<circle cx="113" cy="62" r="4"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : tourne autour de la POULIE (54,138) et s'allonge
+         (×2,587) pour que son extrémité reste sur la poignée. */
+      o: "54px 138px",
+      k: [[0, "rotate(0deg) scale(1)"], [38, "rotate(-6.79deg) scale(2.587)"],
+          [46, "rotate(-6.79deg) scale(2.587)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="54" y1="138" x2="97.48" y2="108.72"/>`
+    },
+    {
+      /* BLOC BRAS : coude figé à 161,6°, rotation −120° autour de
+         l'ÉPAULE (110,62). Aucun enfant : le coude ne bouge pas, et
+         c'est précisément ce que l'exercice demande. */
+      o: "110px 62px",
+      k: [[0, "rotate(0deg)"], [38, "rotate(-120deg)"], [46, "rotate(-120deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="110" y1="62" x2="100.09" y2="83.86"/>
+        <circle class="mo-joint" cx="100.09" cy="83.86" r="2.6"/>
+        <line class="mo-limb" x1="100.09" y1="83.86" x2="97.48" y2="108.72"/>
+        <circle class="mo-hand" cx="97.48" cy="108.72" r="3.4"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M66 98 L90 72 M82 72 L90 72 L89 80"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M90 72 L66 98 M67 90 L66 98 L74 97"/>` }
+  ]
+};
