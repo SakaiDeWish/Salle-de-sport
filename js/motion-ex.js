@@ -6534,3 +6534,143 @@ EXERCISE_MOTIONS["tirage-bras-tendus"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M72 136 L72 104 M67 112 L72 104 L77 112"/>` }
   ]
 };
+
+/* =========================================================
+   63. TIRAGE VERTICAL PRISE SERRÉE (TRIANGLE)
+       (tirage-vertical-prise-serree)
+   -----------------------------------------------------------
+   Position  : ASSIS, cuisses bloquées sous le boudin, poignée
+               TRIANGLE (prise neutre, mains jointes), bras
+               tendus au-dessus de la tête, buste incliné de 15°
+               vers l'arrière, thorax bombé.
+   Matériel  : poulie haute, poignée en V.
+   Mobiles   : ÉPAULE (extension) et COUDE (flexion).
+   Fixes     : le bassin sous les boudins, et le BUSTE — « se
+               coucher en arrière » est l'erreur n°1, donc
+               l'inclinaison de 15° est prise au départ et ne
+               bouge plus d'un degré pendant la traction. Un
+               buste qui s'inclinerait davantage en tirant
+               dessinerait la faute.
+   >>> POURQUOI DE PROFIL, ALORS QUE LE TIRAGE VERTICAL PRISE
+       LARGE EST DE FACE <<< C'est la même règle que pour le
+       couple traction pronation / traction supination, et elle
+       est maintenant systématique dans ce catalogue : c'est la
+       PRISE qui décide du plan de travail, et le plan décide de
+       la vue. Prise LARGE en pronation : les coudes partent sur
+       les côtés, plan FRONTAL, vue de face. Prise SERRÉE en
+       neutre : les coudes descendent DEVANT le corps le long des
+       côtes, plan SAGITTAL, vue de profil. Deux prises, deux
+       plans, deux vues — et deux exercices.
+   Sens      : traction de la poignée vers le bas du sternum =
+               concentrique ; retour bras tendus en laissant le
+               dorsal s'étirer = excentrique.
+   ROM       : coude de 172° à 37°, puis 47° en fin de course.
+               Cette légère RÉOUVERTURE de 10° n'est pas une
+               erreur : la barre descend le long d'une verticale,
+               elle passe donc au plus près de l'épaule (14,35)
+               à hauteur de sternum, puis s'en écarte un peu
+               (17,80) en arrivant au haut des abdominaux. Le
+               coude finit 7,7 unités DERRIÈRE le tronc, ce qui
+               est la marque d'une prise serrée menée au bout.
+   Agonistes : GRAND DORSAL, fibres basses — c'est le trajet
+               coudes serrés le long du corps qui les sollicite —
+               et BICEPS, fortement engagé par la prise neutre.
+   Distinction : ≠ tirage vertical prise large (plan frontal, vue
+               de face, coudes écartés, peu de biceps) ;
+               ≠ traction supination (même plan sagittal, mais
+               CHAÎNE FERMÉE : là c'est le corps qui monte vers
+               une barre fixe) ; ≠ tirage horizontal (traction
+               horizontale, omoplates).
+   GÉOMÉTRIE (calculée) — épaule (128,68), bras 24, avant-bras 20.
+   Segments volontairement INÉGAUX ici : la position du coude en
+   fin de course dépend du rapport bras/avant-bras, et deux
+   segments égaux plaçaient le coude 21 unités derrière le tronc,
+   ce qui est trop.
+   Trajet de la barre imposé quasi VERTICAL, de (112.99,26.76) à
+   (114.00,79.00), échantillonné en six intervalles, IK à chacun :
+     coude 171,7 -> 108,4 -> 78,4 -> 56,0 -> 40,6 -> 36,7 -> 46,6
+     coude (point) de (118.33,46.03) à (129.23,91.97)
+   Câble : poulie (118,20), rotation −32,66° et allongement
+   ×7,0281, échantillonnés sur la même grille.
+   ========================================================= */
+EXERCISE_MOTIONS["tirage-vertical-prise-serree"] = {
+  vb: "56 8 92 152",
+  dur: 4,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Assis de profil sous une poulie haute, poignée triangle : la poignée descend le long d'une verticale jusqu'au bas du sternum, les coudes passant derrière le tronc, puis remonte lentement.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="156" x2="146" y2="156"/>
+    <!-- bâti : colonne, potence et poulie haute -->
+    <line class="mo-gear" x1="60" y1="12" x2="60" y2="156"/>
+    <line class="mo-gear" x1="60" y1="12" x2="122" y2="12"/>
+    <circle class="mo-pulley" cx="118" cy="20" r="5"/>
+    <!-- siège et BOUDIN de cuisses : le bassin est bloqué -->
+    <line class="mo-pad" x1="100" y1="118" x2="136" y2="118"/>
+    <line class="mo-gear" x1="118" y1="122" x2="118" y2="156"/>
+    <line class="mo-gear" x1="100" y1="104" x2="100" y2="88"/>
+    <circle class="mo-pulley" cx="100" cy="110" r="6"/>
+    <!-- corps assis de profil, buste incliné de 15° et IMMOBILE -->
+    <circle class="mo-head" cx="134" cy="50" r="9"/>
+    <line class="mo-body" x1="131" y1="58" x2="128" y2="68"/>
+    <line class="mo-body" x1="128" y1="68" x2="116" y2="112"/>
+    <line class="mo-body" x1="116" y1="112" x2="86" y2="120"/>
+    <line class="mo-body" x1="86" y1="120" x2="82" y2="152"/>
+    <line class="mo-body" x1="82" y1="152" x2="74" y2="156"/>`,
+  muscles: [
+    { nom: "Grand dorsal (fibres basses)",
+      svg: `<ellipse cx="124" cy="100" rx="3.6" ry="11" transform="rotate(15 124 100)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation + allongement autour de la POULIE (118,20),
+         échantillonnés sur la trajectoire réelle de la poignée. */
+      o: "118px 20px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.67, "rotate(-19.16deg) scale(1.9261)"],
+          [11.33, "rotate(-25.60deg) scale(2.9261)"], [17, "rotate(-28.74deg) scale(3.9442)"],
+          [22.67, "rotate(-30.59deg) scale(4.9693)"], [28.33, "rotate(-31.81deg) scale(5.9977)"],
+          [34, "rotate(-32.66deg) scale(7.0281)"], [42, "rotate(-32.66deg) scale(7.0281)"],
+          [49.67, "rotate(-31.81deg) scale(5.9977)"], [57.33, "rotate(-30.59deg) scale(4.9693)"],
+          [65, "rotate(-28.74deg) scale(3.9442)"], [72.67, "rotate(-25.60deg) scale(2.9261)"],
+          [80.33, "rotate(-19.16deg) scale(1.9261)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="118" y1="20" x2="112.99" y2="26.76"/>`
+    },
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (128,68). −159,17° : le coude
+         part de haut-devant, passe par l'horizontale et finit derrière le
+         tronc. Même grille de keyframes que le câble. */
+      o: "128px 68px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-32.83deg)"], [11.33, "rotate(-52.31deg)"],
+          [17, "rotate(-72.36deg)"], [22.67, "rotate(-98.04deg)"], [28.33, "rotate(-131.76deg)"],
+          [34, "rotate(-159.17deg)"], [42, "rotate(-159.17deg)"],
+          [49.67, "rotate(-131.76deg)"], [57.33, "rotate(-98.04deg)"], [65, "rotate(-72.36deg)"],
+          [72.67, "rotate(-52.31deg)"], [80.33, "rotate(-32.83deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Biceps brachial",
+      muscle: `<ellipse cx="120" cy="58.4" rx="3" ry="6.5" transform="rotate(-24 120 58.4)"/>`,
+      svg: `
+        <line class="mo-limb" x1="128" y1="68" x2="118.33" y2="46.03"/>
+        <circle class="mo-joint" cx="118.33" cy="46.03" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + POIGNÉE TRIANGLE : rotation RELATIVE au bras. */
+          o: "118.33px 46.03px",
+          k: [[0, "rotate(0deg)"], [5.67, "rotate(63.36deg)"], [11.33, "rotate(93.34deg)"],
+              [17, "rotate(115.75deg)"], [22.67, "rotate(131.18deg)"], [28.33, "rotate(135.07deg)"],
+              [34, "rotate(125.09deg)"], [42, "rotate(125.09deg)"],
+              [49.67, "rotate(135.07deg)"], [57.33, "rotate(131.18deg)"], [65, "rotate(115.75deg)"],
+              [72.67, "rotate(93.34deg)"], [80.33, "rotate(63.36deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="118.33" y1="46.03" x2="112.99" y2="26.76"/>
+            <line class="mo-bar2" x1="109.14" y1="27.83" x2="116.84" y2="25.69"/>
+            <circle class="mo-hand" cx="112.99" cy="26.76" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M72 44 L72 76 M67 68 L72 76 L77 68"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M72 76 L72 44 M67 52 L72 44 L77 52"/>` }
+  ]
+};
