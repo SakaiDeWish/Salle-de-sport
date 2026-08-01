@@ -8398,3 +8398,106 @@ EXERCISE_MOTIONS["curl-poulie-basse"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M100 126 L100 150 M95 142 L100 150 L105 142"/>` }
   ]
 };
+
+/* =========================================================
+   78. CURL SPIDER (BANC INCLINÉ À PLAT VENTRE)
+       (curl-spider)
+   -----------------------------------------------------------
+   Position  : À PLAT VENTRE sur un banc incliné à 45°, poitrine
+               contre le dossier, bras PENDANTS À LA VERTICALE
+               par-dessus le bord haut du banc.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS, qui pend à la verticale et ne peut ni
+               avancer ni reculer — « coudes qui reculent » est
+               l'erreur n°2 ; les épaules, plaquées contre le
+               banc — « balancer les épaules » est l'erreur n°1.
+               Le banc fait ici tout le travail de blocage.
+   ROM       : coude de 180° à 40°, soit 140° de flexion.
+   >>> CURL SPIDER ET CURL PUPITRE SONT LES DEUX MOITIÉS
+       COMPLÉMENTAIRES DE LA MÊME COURBE <<< C'est ce que donne
+       le calcul du bras de levier, qui vaut ici distance
+       HORIZONTALE entre le coude et la main :
+         spider   0 -> 10,3 -> 18,9 -> 24,4 -> 26,0 -> 23,2 -> 16,7
+       Zéro en bas — le bras pend à la verticale, la charge ne
+       pèse rien —, maximum aux deux tiers, et surtout ENCORE
+       16,7 en haut.
+       Au pupitre, le bras repose sur un plan incliné à 45° : la
+       charge est maximale dès le BAS, et en haut l'avant-bras
+       arrive à la VERTICALE, donc bras de levier NUL. C'est le
+       fameux temps mort du curl pupitre en position haute.
+       Les deux exercices chargent donc les deux moitiés opposées
+       de l'amplitude : le pupitre l'étirement, le spider la
+       contraction. « Pic de contraction » n'est pas un slogan
+       ici, c'est la seule portion où cet exercice charge encore
+       et où le pupitre ne charge plus.
+   POURQUOI LA COURTE PORTION : le buste étant à plat ventre et
+               incliné, les bras pendants sont en FLEXION d'épaule
+               par rapport au tronc. Or la longue portion du
+               biceps franchit l'épaule : épaule fléchie, elle est
+               raccourcie, donc en mauvaise position de force. La
+               courte portion, qui ne franchit pas l'épaule, prend
+               le relais. C'est l'inverse exact du curl incliné,
+               où le bras part en arrière et étire la longue
+               portion.
+   Agonistes : BICEPS, courte portion surtout, et BRACHIAL
+               ANTÉRIEUR. Dans les éléments fixes, puisque le bras
+               ne bouge pas.
+   Sens      : montée = concentrique ; descente lente =
+               excentrique. « Rythme trop rapide » est l'erreur
+               n°3.
+   Distinction : ≠ curl pupitre (bras sur un plan incliné, courbe
+               inverse) ; ≠ curl concentration (assis, coude sur
+               la cuisse) ; ≠ curl incliné (allongé sur le DOS,
+               bras en arrière).
+   GÉOMÉTRIE (calculée) — épaule (136,64), bras 32 vertical et
+   FIXE, coude (136,96), avant-bras 26.
+     bas  main (136,122)   haut main (119.28,76.08)
+   -> avant-bras +140° autour du coude.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-spider"] = {
+  vb: "66 36 94 132",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 90] },
+  alt: "À plat ventre sur un banc incliné, bras pendants à la verticale par-dessus le bord : les haltères montent par la seule flexion des coudes jusqu'à la contraction complète, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="70" y1="160" x2="156" y2="160"/>
+    <!-- banc incliné à 45° et son pied -->
+    <line class="mo-pad" x1="152" y1="50" x2="102" y2="118"/>
+    <line class="mo-gear" x1="127" y1="84" x2="127" y2="160"/>
+    <line class="mo-gear" x1="108" y1="160" x2="140" y2="160"/>
+    <!-- corps à plat ventre sur le banc -->
+    <circle class="mo-head" cx="126" cy="50" r="9"/>
+    <line class="mo-body" x1="132" y1="57" x2="136" y2="64"/>
+    <line class="mo-body" x1="136" y1="64" x2="108" y2="102"/>
+    <line class="mo-body" x1="108" y1="102" x2="88" y2="134"/>
+    <line class="mo-body" x1="88" y1="134" x2="76" y2="160"/>
+    <!-- BRAS : dans les fixes, pendant à la VERTICALE -->
+    <line class="mo-limb" x1="136" y1="64" x2="136" y2="96"/>
+    <circle class="mo-joint" cx="136" cy="96" r="2.8"/>
+    <!-- amplitude : l'arc réellement parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M136 122 A26 26 0 0 1 119.28 76.08"/>`,
+  muscles: [
+    { nom: "Biceps (courte portion)",
+      svg: `<ellipse cx="131.5" cy="76" rx="3.4" ry="9"/>` },
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="132.5" cy="89" rx="2.8" ry="6"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (136,96), +140°.
+         Le bras ne bouge pas : le banc l'en empêche. */
+      o: "136px 96px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(140deg)"], [40, "rotate(140deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="136" y1="96" x2="136" y2="122"/>
+        <line class="mo-bar2" x1="128" y1="122" x2="144" y2="122"/>
+        <rect class="mo-mass" x="124" y="115.5" width="6" height="13" rx="2"/>
+        <rect class="mo-mass" x="142" y="115.5" width="6" height="13" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M98 90 L98 62 M93 70 L98 62 L103 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M98 62 L98 90 M93 82 L98 90 L103 82"/>` }
+  ]
+};
