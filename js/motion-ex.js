@@ -3613,3 +3613,53 @@ EXERCISE_MOTIONS["mollets-assis"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M182 110 L182 142 M177 134 L182 142 L187 134"/>` }
   ]
 };
+
+/* =========================================================
+   38. PLANCHE (GAINAGE)  (planche)
+   >>> SCHÉMA NON LIVRÉ DANS CE FORMAT — SIGNALÉ, PAS BÂCLÉ <<<
+   -----------------------------------------------------------
+   ANALYSE (faite, et valide) :
+   Position  : appui sur les AVANT-BRAS et les pointes de pieds,
+               coudes à l'aplomb des épaules, corps en LIGNE DROITE
+               de la tête aux talons.
+   Matériel  : aucun.
+   Mobiles   : RIEN. Premier exercice purement ISOMÉTRIQUE de la
+               bibliothèque : aucune articulation ne bouge, aucun
+               muscle ne change de longueur.
+   Le travail : il consiste précisément à NE PAS bouger. Il faut
+               empêcher le bassin de S'AFFAISSER (lombaires en
+               hyperextension) et de REMONTER en chien tête en bas
+               (position qui décharge tout). La performance se mesure
+               en TEMPS SOUS TENSION, pas en répétitions.
+   Agonistes : transverse et grand droit de l'abdomen, obliques,
+               fessiers et érecteurs du rachis en co-contraction.
+
+   POURQUOI AUCUN SCHÉMA N'EST LIVRÉ ICI :
+   le format de EXERCISE_MOTIONS encode structurellement un MOUVEMENT
+   DIRIGÉ — deux phases (concentrique / excentrique), deux flèches de
+   sens, une amplitude entre deux positions extrêmes, et des muscles
+   qui s'allument sur la phase active. Un isométrique n'a NI phase,
+   NI sens, NI amplitude. Fabriquer un faux aller-retour pour
+   satisfaire le contrat produirait exactement ce qu'il faut éviter :
+   un schéma qui montre un mouvement là où l'exercice consiste à n'en
+   faire aucun. Un lecteur en conclurait qu'il faut monter et
+   descendre le bassin, c'est-à-dire précisément la faute.
+
+   CE QU'IL FAUDRAIT POUR BIEN FAIRE — à traiter comme un chantier à
+   part entière, pas à glisser en douce dans un schéma :
+     - un MODE ISOMÉTRIQUE dans le moteur : corps immobile, pas de
+       flèches de sens mais un repère de MAINTIEN, muscles en tension
+       continue plutôt qu'en pulsation de phase ;
+     - un repère d'ALIGNEMENT tête-talons, qui est le vrai point
+       technique ;
+     - éventuellement les deux dérives (bassin bas / bassin haut)
+       montrées en pointillés et EXPLICITEMENT étiquetées comme
+       fautes, sans quoi elles seraient lues comme le mouvement.
+   Plusieurs exercices de la bibliothèque sont dans ce cas (planche,
+   gainage latéral, hollow hold) : cela justifie une extension du
+   moteur, faite et vérifiée proprement, plutôt qu'un bricolage.
+
+   En attendant, l'exercice retombe sur le pictogramme générique,
+   explicitement étiqueté « Schéma générique » — ce qui est honnête,
+   là où une fausse animation ne le serait pas.
+   ========================================================= */
