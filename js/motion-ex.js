@@ -4093,3 +4093,102 @@ EXERCISE_MOTIONS["roulette-abdos"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M66 70 L104 70 M97 65 L104 70 L97 75"/>` }
   ]
 };
+
+/* =========================================================
+   43. EXTENSION LOMBAIRE AU BANC À 45°  (extension-lombaire-banc)
+   -----------------------------------------------------------
+   Position  : sur un banc à lombaires incliné à 45°, cuisses
+               appuyées sur le coussin, chevilles bloquées sous les
+               rouleaux, bras croisés sur la poitrine.
+   Matériel  : banc à lombaires à 45°.
+   Mobiles   : la HANCHE.
+   Fixes     : les CUISSES sur le coussin et les CHEVILLES sous les
+               rouleaux — double ancrage. Et le RACHIS, dessiné comme
+               un segment RIGIDE.
+   LE NOM DE L'EXERCICE EST TROMPEUR, et le schéma corrige cela :
+               malgré « extension lombaire » — et pire, « hyper-
+               extension » en anglais — le mouvement bien exécuté
+               n'est PAS une extension du rachis. C'est une CHARNIÈRE
+               DE HANCHE, colonne neutre. La colonne ne doit ni
+               s'enrouler ni se cambrer : d'où un tronc modélisé
+               comme un seul segment rigide, exactement comme au
+               soulevé de terre roumain.
+   Sens/plan : descente (flexion de hanche) = excentrique ; remontée
+               = concentrique. Le cycle commence en haut, corps
+               aligné. Plan sagittal.
+   ROM       : hanche de 180,0° à 45,0°, vérifié — le buste finit
+               À LA VERTICALE, ce que la gravité impose sur un banc
+               incliné à 45°. On ne remonte PAS
+               au-delà de l'alignement : l'hyperextension lombaire
+               sous charge est précisément ce qu'il faut éviter,
+               quoi qu'en dise le nom anglais. Un repère pointillé
+               matérialise cette ligne d'alignement, qui est la
+               butée haute du mouvement.
+   Agonistes : contrairement à ce que le nom suggère encore, les
+               moteurs sont le GRAND FESSIER et les ISCHIO-JAMBIERS —
+               ce sont eux qui font l'extension de hanche. Les
+               ÉRECTEURS DU RACHIS travaillent en ISOMÉTRIE, pour
+               tenir la colonne neutre, pas pour créer le mouvement.
+               Même répartition qu'au roumain.
+   Distinction : charnière de hanche assistée, tronc soutenu, sans
+               charge dans les mains. ≠ superman au sol (là c'est une
+               VRAIE extension du rachis), ≠ soulevé de terre roumain
+               (debout, charge, et c'est le bassin qui recule).
+   GÉOMÉTRIE (calculée) — hanche P(120,96) au bord du coussin, sert
+   de pivot. Cuisse et tibia de 26 le long du banc à 45° ->
+   genou(138.38,114.38), cheville(156.77,132.77).
+   Tronc 32 : épaule haut(97.37,73.37) -> bas(120,128), tête finissant
+   en (120,141), buste vertical.
+   -> tronc −135,00°.
+   ========================================================= */
+EXERCISE_MOTIONS["extension-lombaire-banc"] = {
+  vb: "70 52 124 116",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Sur un banc à lombaires à 45°, cuisses calées et chevilles bloquées : le buste descend par flexion de hanche en gardant le dos droit, puis remonte jusqu'à l'alignement, sans aller au-delà.",
+  fixe: `
+    <line class="mo-ground" x1="94" y1="160" x2="188" y2="160"/>
+    <!-- coussin des cuisses, incliné à 45° -->
+    <line class="mo-pad" x1="126" y1="102" x2="148" y2="124"/>
+    <line class="mo-gear" x1="136" y1="114" x2="136" y2="160"/>
+    <line class="mo-gear" x1="164" y1="136" x2="164" y2="160"/>
+    <!-- rouleaux qui bloquent les chevilles : le second ancrage -->
+    <circle class="mo-mass" cx="152" cy="139" r="5"/>
+    <circle class="mo-mass" cx="166" cy="128" r="5"/>
+    <!-- jambes immobiles, plaquées sur le banc -->
+    <line class="mo-limb" x1="120" y1="96" x2="138.38" y2="114.38"/>
+    <circle class="mo-joint" cx="138.38" cy="114.38" r="2.6"/>
+    <line class="mo-limb" x1="138.38" y1="114.38" x2="156.77" y2="132.77"/>
+    <circle class="mo-joint" cx="120" cy="96" r="3.2"/>
+    <!-- LIGNE D'ALIGNEMENT : butée haute du mouvement, on ne la
+         dépasse pas. -->
+    <line class="mo-rom" x1="150" y1="126" x2="84" y2="60"/>`,
+  muscles: [
+    { nom: "Grand fessier",
+      svg: `<circle cx="127" cy="101" r="5"/>` },
+    { nom: "Ischio-jambiers",
+      svg: `<ellipse cx="132" cy="102.4" rx="3" ry="10" transform="rotate(-45 132 102.4)"/>` }
+  ],
+  parts: [
+    {
+      /* TRONC : segment RIGIDE pivotant autour de la HANCHE. −90°.
+         Le rachis ne s'enroule pas et ne se cambre pas : c'est tout
+         l'enjeu de l'exercice, et le schéma ne montre donc aucune
+         courbure du dos. */
+      o: "120px 96px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-135deg)"], [52, "rotate(-135deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Érecteurs du rachis (isométrique)",
+      muscle: `<ellipse cx="110" cy="86" rx="3" ry="11" transform="rotate(-45 110 86)"/>`,
+      svg: `
+        <line class="mo-body" x1="120" y1="96" x2="97.37" y2="73.37"/>
+        <circle class="mo-head" cx="88.18" cy="64.18" r="8"/>
+        <line class="mo-limb" x1="97.37" y1="73.37" x2="106" y2="82"/>
+        <line class="mo-limb" x1="106" y1="82" x2="97" y2="88"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M180 122 L180 86 M175 94 L180 86 L185 94"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M180 86 L180 122 M175 114 L180 122 L185 114"/>` }
+  ]
+};
