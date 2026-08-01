@@ -5275,3 +5275,156 @@ EXERCISE_MOTIONS["pec-deck"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M82 110 L58 110 M65 105 L58 110 L65 115"/>` }
   ]
 };
+
+/* =========================================================
+   55. DÉVELOPPÉ ASSIS À LA MACHINE CONVERGENTE
+       (developpe-machine-convergente)
+   -----------------------------------------------------------
+   Position  : ASSIS, dos plaqué au dossier, poignées à hauteur de
+               poitrine, coudes fléchis ~67° et ouverts vers
+               l'arrière-dehors.
+   Matériel  : machine de développé à bras INDÉPENDANTS dont les
+               trajectoires CONVERGENT vers l'axe médian à
+               l'extension.
+   Mobiles   : l'ÉPAULE (flexion + adduction horizontale) et le
+               COUDE (extension). Vraie chaîne à deux articulations.
+   Fixes     : dos, bassin, tête — plaqués au dossier et au siège.
+   CE QUE LA CONVERGENCE APPORTE : à la barre, l'écartement des mains
+               est IMPOSÉ constant ; les pectoraux finissent donc leur
+               course sans jamais raccourcir complètement. En faisant
+               se rapprocher les poignées à la fin de la poussée, la
+               machine convergente ajoute l'ADDUCTION horizontale au
+               développé : le pectoral peut arriver en course interne
+               complète. C'est un développé auquel on a greffé la fin
+               d'un écarté.
+   >>> VU DE DESSUS <<< La poussée vers l'avant ET la convergence se
+               font toutes deux dans le plan TRANSVERSE. De profil, la
+               convergence — le seul trait qui distingue cette machine
+               d'un développé ordinaire — serait strictement
+               invisible. Quatrième schéma hors plan sagittal, et le
+               seul plan où l'exercice se lit.
+   Sens      : poussée en avant = concentrique ; retour contrôlé =
+               excentrique. Le cycle commence en position basse.
+   ROM       : coude de 67° à 168° (extension quasi complète sans
+               verrouillage) ; l'écart entre les deux mains passe de
+               76 à 20 unités — c'est la convergence, mesurée.
+   Agonistes : GRAND PECTORAL, deltoïde antérieur, triceps.
+   Distinction : ≠ développé couché barre (écartement fixe, allongé,
+               gravité), ≠ pec-deck (MONO-articulaire, coude
+               verrouillé, aucune poussée), ≠ développé haltères
+               (les mains se rapprochent aussi, mais rien ne guide le
+               trajet et la résistance chute en haut).
+   POURQUOI AUCUN AXE DE PIVOT N'EST DESSINÉ : la convergence d'une
+               telle machine vient d'axes de rotation INCLINÉS dans
+               le plan sagittal. La projection d'un cercle incliné sur
+               une vue de dessus est une ELLIPSE, pas un cercle :
+               planter un pivot vertical quelque part et faire tourner
+               un bras rigide autour donnerait une trajectoire fausse.
+               Le schéma montre donc la TRAJECTOIRE imposée aux
+               poignées (arc pointillé), qui est vérifiable, plutôt
+               qu'une timonerie inventée.
+   GÉOMÉTRIE (calculée) — épaule gauche (96,80), bras 22, avant-bras
+   22. Trajectoire de la poignée = arc de centre (112.92,75.98) et de
+   rayon 41.70, parcouru sur 82.75°, échantillonné en 4 points :
+     main   (72.00,84.00) (72.94,64.14) (82.94,46.99) (99.80,36.40)
+     coude  (87.01,100.08)(74.86,86.05) (77.39,68.28) (95.66,58.01)
+     |S-main| 24.33 → 27.99 → 35.50 → 43.77   (monotone : le bras
+              s'allonge sans jamais se refermer en cours de poussée —
+              c'est la vérification qui a fait rejeter une première
+              trajectoire RECTILIGNE, qui passait à 18.7 de l'épaule
+              et aurait REFERMÉ le coude au milieu de la poussée.)
+     coude    67.1° → 79.0° → 107.6° → 168.2°  (monotone)
+   -> bras gauche  +0 / +49.89 / +98.07 / +154.98°
+      avant-bras relatif  0 / −11.85 / −40.40 / −101.08°
+      côté droit : miroir exact autour de x=110, angles opposés.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-machine-convergente"] = {
+  vb: "44 28 132 92",
+  dur: 3.8,
+  vue: "Vu de dessus",
+  phases: { con: [0, 40], ecc: [48, 88] },
+  alt: "Vu de dessus. Assis dos au dossier, les deux poignées partent de chaque côté de la poitrine, sont poussées vers l'avant et se rapprochent l'une de l'autre en fin de course, puis reviennent en contrôlant.",
+  fixe: `
+    <!-- DOSSIER, vu de dessus. Volontairement plus court que la
+         largeur d'épaules : en position basse le coude passe DERRIÈRE
+         le plan du torse, et il doit passer à CÔTÉ du dossier, pas
+         dedans. -->
+    <line class="mo-pad" x1="96" y1="104" x2="124" y2="104"/>
+    <!-- bâti : deux rails latéraux et une traverse arrière -->
+    <line class="mo-gear" x1="68" y1="110" x2="68" y2="42"/>
+    <line class="mo-gear" x1="152" y1="110" x2="152" y2="42"/>
+    <line class="mo-gear" x1="68" y1="110" x2="152" y2="110"/>
+    <!-- corps assis, vu de dessus -->
+    <ellipse class="mo-torse" cx="110" cy="86" rx="17" ry="9"/>
+    <circle class="mo-head mo-head-solid" cx="110" cy="68" r="9"/>
+    <!-- TRAJECTOIRES imposées aux poignées : elles CONVERGENT -->
+    <path class="mo-rom" fill="none" d="M72 84 A41.7 41.7 0 0 1 99.8 36.4"/>
+    <path class="mo-rom" fill="none" d="M148 84 A41.7 41.7 0 0 0 120.2 36.4"/>`,
+  muscles: [
+    { nom: "Grand pectoral",
+      svg: `<ellipse cx="102" cy="83" rx="7" ry="3.8"/><ellipse cx="118" cy="83" rx="7" ry="3.8"/>` },
+    { nom: "Deltoïde antérieur",
+      svg: `<circle cx="95" cy="78" r="3.4"/><circle cx="125" cy="78" r="3.4"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE : rotation autour de l'ÉPAULE (96,80).
+         0 / +49.89 / +98.07 / +154.98°, échantillonnage régulier de
+         l'arc de la poignée (et non des angles) : c'est la poignée
+         qui est guidée, pas l'épaule. */
+      o: "96px 80px",
+      k: [[0, "rotate(0deg)"], [13.3, "rotate(49.89deg)"], [26.7, "rotate(98.07deg)"],
+          [40, "rotate(154.98deg)"], [48, "rotate(154.98deg)"],
+          [61.3, "rotate(98.07deg)"], [74.7, "rotate(49.89deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="96" y1="80" x2="87.01" y2="100.08"/>
+        <circle class="mo-joint" cx="87.01" cy="100.08" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + POIGNÉE : rotation RELATIVE au bras, autour du
+             COUDE (87.01,100.08). Négative : le coude s'ouvre de 67° à
+             168° pendant que le bras avance. */
+          o: "87.01px 100.08px",
+          k: [[0, "rotate(0deg)"], [13.3, "rotate(-11.85deg)"], [26.7, "rotate(-40.40deg)"],
+              [40, "rotate(-101.08deg)"], [48, "rotate(-101.08deg)"],
+              [61.3, "rotate(-40.40deg)"], [74.7, "rotate(-11.85deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="87.01" y1="100.08" x2="72" y2="84"/>
+            <!-- poignée verticale, tenue en pronation -->
+            <line class="mo-bar2" x1="66.8" y1="88.9" x2="77.2" y2="79.1"/>
+            <circle class="mo-hand" cx="72" cy="84" r="2.8"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir exact autour de x=110, angles opposés. */
+      o: "124px 80px",
+      k: [[0, "rotate(0deg)"], [13.3, "rotate(-49.89deg)"], [26.7, "rotate(-98.07deg)"],
+          [40, "rotate(-154.98deg)"], [48, "rotate(-154.98deg)"],
+          [61.3, "rotate(-98.07deg)"], [74.7, "rotate(-49.89deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="124" y1="80" x2="132.99" y2="100.08"/>
+        <circle class="mo-joint" cx="132.99" cy="100.08" r="2.6"/>`,
+      children: [
+        {
+          o: "132.99px 100.08px",
+          k: [[0, "rotate(0deg)"], [13.3, "rotate(11.85deg)"], [26.7, "rotate(40.40deg)"],
+              [40, "rotate(101.08deg)"], [48, "rotate(101.08deg)"],
+              [61.3, "rotate(40.40deg)"], [74.7, "rotate(11.85deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="132.99" y1="100.08" x2="148" y2="84"/>
+            <line class="mo-bar2" x1="153.2" y1="88.9" x2="142.8" y2="79.1"/>
+            <circle class="mo-hand" cx="148" cy="84" r="2.8"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M56 100 L56 62 M50 70 L56 62 L62 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M56 62 L56 100 M50 92 L56 100 L62 92"/>` }
+  ]
+};
