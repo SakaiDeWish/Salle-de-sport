@@ -5815,3 +5815,134 @@ EXERCISE_MOTIONS["ecarte-poulie-basse"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M90 72 L66 98 M67 90 L66 98 L74 97"/>` }
   ]
 };
+
+/* =========================================================
+   59. TRACTIONS SUPINATION (CHIN-UP)  (tractions-supination)
+   -----------------------------------------------------------
+   Position  : SUSPENDU à une barre fixe, prise SUPINATION
+               (paumes vers soi), mains LARGEUR D'ÉPAULES, bras
+               tendus, gainage actif.
+   Matériel  : barre fixe. Les MAINS sont le point fixe (chaîne
+               fermée) : c'est le corps qui monte.
+   Mobiles   : coude (flexion) et épaule (EXTENSION) ; le buste
+               s'incline vers l'arrière.
+   Fixes     : les mains sur la barre ; le rachis et les jambes,
+               qui restent solidaires du buste — « balancement »
+               est l'erreur n°1, donc le corps est modélisé
+               RIGIDE. Que les pieds partent vers l'avant n'est
+               pas un balancement : c'est la conséquence
+               géométrique de l'inclinaison du buste.
+   >>> POURQUOI CE SCHÉMA EST DE PROFIL ALORS QUE LA TRACTION
+       PRONATION EST DE FACE <<< Ce n'est pas une variation de
+       présentation, c'est le mouvement lui-même qui change de
+       plan. En pronation LARGE, les coudes partent sur les
+       CÔTÉS : le geste est une adduction, il vit dans le plan
+       FRONTAL, et seule une vue de face le montre. En supination
+       SERRÉE, les coudes descendent DEVANT le corps, le long des
+       côtes : le geste devient une extension d'épaule, il vit
+       dans le plan SAGITTAL, et seule une vue de profil le
+       montre. Les deux vues disent la même chose que les deux
+       prises : ce sont deux exercices différents.
+   Sens      : montée jusqu'au menton au-dessus de la barre =
+               CONCENTRIQUE ; descente contrôlée = excentrique.
+   ROM       : coude de 180° (suspension complète) à 35°. Le
+               buste s'incline de 25° vers l'arrière — c'est
+               indispensable, et le calcul le montre : bras et
+               avant-bras mesurant 22 chacun, un coude fermé à
+               35° ne place l'épaule qu'à 13,2 de la barre. Sans
+               inclinaison, le menton resterait SOUS la barre.
+               C'est cette contrainte, et non un choix graphique,
+               qui impose l'inclinaison du buste.
+   Agonistes : GRAND DORSAL et BICEPS BRACHIAL, ce dernier
+               beaucoup plus qu'en pronation. Raison : le biceps
+               est aussi un SUPINATEUR ; avant-bras supiné, il
+               est dans sa position de force et peut fléchir le
+               coude à plein régime. En pronation il est
+               partiellement mis hors course. C'est pour cela, et
+               non par magie, que le chin-up est plus facile.
+   Distinction : ≠ traction pronation (prise large, plan frontal,
+               vue de face, peu de biceps) ; ≠ tirage vertical
+               poulie (assis, c'est la barre qui descend vers un
+               corps fixe).
+   GÉOMÉTRIE (calculée) — main (120,30) FIXE, avant-bras 22,
+   bras 22.
+     bas   coude (120,52)     épaule (120,74)    coude à 180°
+     haut  coude (110.16,49.68) épaule (129.51,39.21) coude à 35°
+     menton : de (108.34,65.66) à (126.04,26.72), soit 3,3
+              AU-DESSUS de la barre (y=30). C'EST CE QUI A FIXÉ LES
+              25° : le même calcul à 0° d'inclinaison place le
+              menton à 30,87, donc SOUS la barre. L'inclinaison
+              n'est pas un effet de style, elle est la condition
+              pour que la répétition soit complète.
+   -> avant-bras +26,57° ; bras relatif −145,0° ; corps relatif
+      +143,43° (soit +25° en absolu : l'inclinaison du buste).
+   JAMBES : genoux fléchis à ~90°, tibias vers l'arrière — c'est la
+   position réelle d'une traction, et c'est aussi la seule qui tienne
+   dans le cadre : jambes tendues, les pieds tomberaient 30 unités
+   plus bas que le sol, c'est-à-dire que le sujet serait debout.
+   Cuisse (122,116)->(116,148) = 32,6 ; tibia ->(147.4,153.9) = 32,0.
+   ========================================================= */
+EXERCISE_MOTIONS["tractions-supination"] = {
+  vb: "90 8 94 162",
+  dur: 4,
+  phases: { con: [0, 34], ecc: [42, 86] },
+  alt: "Suspendu de profil à une barre fixe en prise supination largeur d'épaules : le corps monte, les coudes descendent devant les côtes et le buste s'incline en arrière jusqu'à ce que le menton passe au-dessus de la barre.",
+  fixe: `
+    <line class="mo-ground" x1="94" y1="168" x2="180" y2="168"/>
+    <!-- barre murale : montant, potence et descente jusqu'à la barre -->
+    <line class="mo-gear" x1="176" y1="12" x2="176" y2="168"/>
+    <line class="mo-gear" x1="116" y1="12" x2="176" y2="12"/>
+    <line class="mo-gear" x1="120" y1="12" x2="120" y2="25.5"/>
+    <!-- barre vue par la tranche : un tube en bout -->
+    <circle class="mo-pulley" cx="120" cy="30" r="6.5"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS : enraciné à la MAIN (120,30), qui ne quitte jamais
+         la barre. +26,57° : l'avant-bras bascule vers l'AVANT du corps,
+         ce qui est propre à la prise serrée en supination. */
+      o: "120px 30px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(26.57deg)"], [42, "rotate(26.57deg)"],
+          [86, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="120" cy="30" r="3.6"/>
+        <line class="mo-limb" x1="120" y1="30" x2="120" y2="52"/>
+        <circle class="mo-joint" cx="120" cy="52" r="2.5"/>`,
+      children: [
+        {
+          /* BRAS : flexion du coude autour de (120,52). −145° ferme le
+             coude de 180° à 35°. */
+          o: "120px 52px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(-145deg)"], [42, "rotate(-145deg)"],
+              [86, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Biceps brachial",
+          muscle: `<ellipse cx="116.5" cy="71" rx="3" ry="4.5"/>`,
+          svg: `<line class="mo-limb" x1="120" y1="52" x2="120" y2="74"/>`,
+          children: [
+            {
+              /* CORPS : contre-rotation de +143,43° autour de l'ÉPAULE
+                 (120,74). Elle ne laisse pas le buste vertical — elle le
+                 laisse à +25°, l'inclinaison arrière sans laquelle le
+                 menton ne passerait pas la barre. */
+              o: "120px 74px",
+              k: [[0, "rotate(0deg)"], [34, "rotate(143.43deg)"], [42, "rotate(143.43deg)"],
+                  [86, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Grand dorsal",
+              muscle: `<ellipse cx="124.5" cy="92" rx="3.8" ry="13" transform="rotate(3 124.5 92)"/>`,
+              svg: `
+                <circle class="mo-head" cx="114" cy="60" r="8"/>
+                <line class="mo-body" x1="116" y1="67" x2="120" y2="74"/>
+                <line class="mo-body" x1="120" y1="74" x2="122" y2="116"/>
+                <line class="mo-body" x1="122" y1="116" x2="116" y2="148"/>
+                <line class="mo-body" x1="116" y1="148" x2="147.4" y2="153.9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M164 76 L164 44 M159 52 L164 44 L169 52"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M164 44 L164 76 M159 68 L164 76 L169 68"/>` }
+  ]
+};
