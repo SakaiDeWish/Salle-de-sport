@@ -7050,3 +7050,152 @@ EXERCISE_MOTIONS["rack-pull"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M124 62 L124 92 M119 84 L124 92 L129 84"/>` }
   ]
 };
+
+/* =========================================================
+   67. TRACTIONS LESTÉES  (tractions-lestees)
+   -----------------------------------------------------------
+   Position  : SUSPENDU à une barre fixe, prise PRONATION large,
+               une CEINTURE DE LEST à la taille et un disque
+               pendu au bout d'une chaîne entre les jambes.
+               Genoux fléchis et chevilles croisées — ce n'est pas
+               un détail de style : jambes tendues, le disque
+               toucherait le sol.
+   Matériel  : barre fixe + ceinture de lest. Les MAINS sont le
+               point fixe (chaîne fermée).
+   Mobiles   : coude, épaule.
+   Fixes     : les mains sur la barre ; le rachis gainé.
+   >>> CE QUE CE SCHÉMA NE PRÉTEND PAS ÊTRE <<< Le mouvement
+       articulaire est CELUI DE LA TRACTION PRONATION, et le
+       schéma ne fait pas semblant du contraire : coude de 172° à
+       48,6°, corps qui monte de 38,1. Prétendre à une cinématique
+       différente serait faux. Ce qui change tient en trois
+       choses, et ce sont elles que le schéma montre.
+     1. LE LEST, et sa contrainte : disque de 38 unités de
+        diamètre suspendu à 14 de chaîne sous une ceinture placée
+        à la hanche. Avec les jambes tendues il descendrait sous
+        le sol. Les genoux fléchis et les chevilles croisées ne
+        sont donc pas décoratifs, ils sont IMPOSÉS par la
+        géométrie du lest.
+     2. LA CHAÎNE D'APLOMB, qui est un détecteur de balancement.
+        Une chaîne est un pendule : elle ne reste verticale que si
+        rien ne pousse le corps horizontalement. Ici la chaîne des
+        segments — avant-bras +1,47°, bras −122,44°, corps
+        +120,97° — a une somme EXACTEMENT NULLE : le corps ne
+        tourne pas d'un degré, donc la chaîne reste d'aplomb.
+        « Balancement » est l'erreur n°2, et la construction même
+        du schéma l'interdit.
+     3. LE TEMPO. Excentrique deux fois plus long que le
+        concentrique (56 % du cycle contre 28 %) : « descente en
+        chute libre » est l'erreur n°3, et avec du lest c'est
+        elle qui casse en premier.
+   POURQUOI LE COUDE NE SE FERME QU'À 48,6° : ce n'est pas un
+               manque d'amplitude, c'est une contrainte de la
+               prise LARGE. La main est 18 unités plus loin de
+               l'axe que l'épaule, écart qui ne peut pas
+               disparaître. Or épaule-main = 2×22×sin(coude/2) :
+               dès que cette distance atteint 18, le coude ne
+               peut plus se fermer davantage. À 48,6° elle vaut
+               18,10 — on est à la butée géométrique, et le
+               menton passe la barre de 2,1 unités. « Amplitude
+               sacrifiée » est l'erreur n°1 : le schéma va donc
+               jusqu'à cette butée et pas moins.
+   Agonistes : grand dorsal, biceps. Le GAINAGE travaille aussi
+               mais en isométrique : il tient, il ne raccourcit
+               pas, donc il n'est pas animé.
+   Distinction : ≠ traction pronation (aucun lest, tempo régulier,
+               jambes libres) ; ≠ traction supination (prise
+               serrée neutre, plan sagittal, vue de profil).
+   GÉOMÉTRIE (calculée) — main (88,20) FIXE, avant-bras 22,
+   bras 22, épaule (106,60) -> (106,21.9).
+     bas  coude (95.42,40.71)   haut coude (94.90,40.90)
+     menton de y=56 à y=17,9, pour une barre à y=20.
+   ========================================================= */
+EXERCISE_MOTIONS["tractions-lestees"] = {
+  vb: "44 -6 152 174",
+  dur: 4.6,
+  phases: { con: [0, 28], ecc: [36, 92] },
+  alt: "Suspendu en pronation large avec un disque pendu à une ceinture entre les jambes fléchies : le corps monte jusqu'au menton au-dessus de la barre, la chaîne du lest restant strictement verticale, puis redescend deux fois plus lentement.",
+  fixe: `
+    <line class="mo-bar3" x1="48" y1="20" x2="192" y2="20"/>
+    <line class="mo-gear" x1="54" y1="20" x2="54" y2="164"/>
+    <line class="mo-gear" x1="186" y1="20" x2="186" y2="164"/>
+    <line class="mo-ground" x1="46" y1="164" x2="194" y2="164"/>
+    <!-- repère : hauteur du menton au départ. L'écart jusqu'à la barre
+         EST l'amplitude à parcourir, et rien de moins. -->
+    <line class="mo-rom" x1="142" y1="56" x2="158" y2="56"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS GAUCHE : enraciné à la MAIN (88,20). +1,47° : la main
+         ne quitte jamais la barre. */
+      o: "88px 20px",
+      k: [[0, "rotate(0deg)"], [28, "rotate(1.47deg)"], [36, "rotate(1.47deg)"],
+          [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="88" cy="20" r="3.6"/>
+        <line class="mo-limb" x1="88" y1="20" x2="95.42" y2="40.71"/>
+        <circle class="mo-joint" cx="95.42" cy="40.71" r="2.5"/>`,
+      children: [
+        {
+          /* BRAS GAUCHE : flexion du COUDE, −122,44°, jusqu'à la BUTÉE
+             géométrique de la prise large. */
+          o: "95.42px 40.71px",
+          k: [[0, "rotate(0deg)"], [28, "rotate(-122.44deg)"], [36, "rotate(-122.44deg)"],
+              [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Biceps brachial",
+          muscle: `<ellipse cx="101" cy="50" rx="3.2" ry="6.5" transform="rotate(29 101 50)"/>`,
+          svg: `<line class="mo-limb" x1="95.42" y1="40.71" x2="106" y2="60"/>`,
+          children: [
+            {
+              /* CORPS + CEINTURE + LEST : contre-rotation de +120,97°.
+                 Somme des trois rotations = 0,00° : le corps ne tourne
+                 pas, donc la chaîne du lest reste D'APLOMB. */
+              o: "106px 60px",
+              k: [[0, "rotate(0deg)"], [28, "rotate(120.97deg)"], [36, "rotate(120.97deg)"],
+                  [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Grand dorsal",
+              muscle: `<ellipse cx="112" cy="76" rx="3.8" ry="11" transform="rotate(-9 112 76)"/>
+                       <ellipse cx="128" cy="76" rx="3.8" ry="11" transform="rotate(9 128 76)"/>`,
+              svg: `
+                <circle class="mo-head" cx="120" cy="46" r="10"/>
+                <line class="mo-body" x1="106" y1="60" x2="134" y2="60"/>
+                <line class="mo-body" x1="120" y1="58" x2="120" y2="102"/>
+                <!-- jambes fléchies, chevilles croisées : imposé par le lest -->
+                <line class="mo-body" x1="120" y1="102" x2="104" y2="132"/>
+                <line class="mo-body" x1="104" y1="132" x2="128" y2="152"/>
+                <line class="mo-body" x1="120" y1="102" x2="136" y2="132"/>
+                <line class="mo-body" x1="136" y1="132" x2="112" y2="152"/>
+                <!-- ceinture, chaîne d'aplomb et disque vu par la tranche -->
+                <line class="mo-bar3" x1="110" y1="100" x2="130" y2="100"/>
+                <line class="mo-cable" x1="120" y1="102" x2="120" y2="116"/>
+                <rect class="mo-mass" x="117.5" y="116" width="5" height="38" rx="2"/>`
+            }
+          ]
+        }
+      ]
+    },
+    {
+      /* AVANT-BRAS DROIT : miroir exact, enraciné à la main (152,20). */
+      o: "152px 20px",
+      k: [[0, "rotate(0deg)"], [28, "rotate(-1.47deg)"], [36, "rotate(-1.47deg)"],
+          [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <circle class="mo-hand" cx="152" cy="20" r="3.6"/>
+        <line class="mo-limb" x1="152" y1="20" x2="144.58" y2="40.71"/>
+        <circle class="mo-joint" cx="144.58" cy="40.71" r="2.5"/>`,
+      children: [
+        {
+          o: "144.58px 40.71px",
+          k: [[0, "rotate(0deg)"], [28, "rotate(122.44deg)"], [36, "rotate(122.44deg)"],
+              [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscle: `<ellipse cx="139" cy="50" rx="3.2" ry="6.5" transform="rotate(-29 139 50)"/>`,
+          svg: `<line class="mo-limb" x1="144.58" y1="40.71" x2="134" y2="60"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M170 78 L170 40 M165 48 L170 40 L175 48"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M170 40 L170 78 M165 70 L170 78 L175 70"/>` }
+  ]
+};
