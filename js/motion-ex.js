@@ -6674,3 +6674,136 @@ EXERCISE_MOTIONS["tirage-vertical-prise-serree"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M72 76 L72 44 M67 52 L72 44 L77 52"/>` }
   ]
 };
+
+/* =========================================================
+   64. SHRUGS À LA BARRE  (shrugs-barre)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre tenue à deux mains DEVANT LES
+               CUISSES, bras tendus, dos droit, regard devant.
+   Matériel  : une barre chargée. C'est elle qui fait tout
+               l'intérêt : deux mains sur un seul engin, on peut
+               charger bien plus lourd qu'avec des haltères.
+   Mobile    : l'OMOPLATE, en ÉLÉVATION. Rien d'autre.
+   Fixes     : le COUDE, qui reste tendu — « plier les coudes »
+               est l'erreur n°2 et transformerait le mouvement en
+               tirage ; le rachis ; les jambes.
+   >>> VU DE FACE, ALORS QUE LES SHRUGS AUX HALTÈRES SONT DE
+       PROFIL <<< L'élévation de l'omoplate est un glissement
+       vers le HAUT le long des côtes : elle vit dans le plan
+       FRONTAL. Et le trapèze supérieur va de la nuque à
+       l'acromion — deux points qui ne sont alignés que de face.
+       C'est donc la seule vue où l'on peut montrer le muscle en
+       train de se RACCOURCIR entre ses deux insertions, ce que
+       ce schéma fait : le trapèze passe de 15,62 à 12,17 de
+       longueur, soit −22 %, et se redresse de 30°.
+       CE QUE CETTE VUE NE MONTRE PAS, ET OÙ LE VOIR : « rouler
+       les épaules » est l'erreur n°1, et c'est une faute
+       SAGITTALE — de face elle serait invisible. C'est
+       précisément ce que montre le schéma des shrugs aux
+       haltères, dessiné de profil, où l'épaule monte à la
+       verticale sans partir vers l'avant. Les deux vues sont
+       complémentaires, chacune montre ce que son matériel rend
+       saillant.
+   Sens      : montée des épaules = concentrique, suivie d'une
+               TENUE d'une seconde en haut ; descente contrôlée =
+               excentrique.
+   ROM       : 8 unités d'élévation verticale, soit ≈8 cm à
+               l'échelle du sujet. « Amplitude minuscule » est
+               l'erreur n°3 : le schéma va donc au bout de
+               l'élévation, et deux repères pointillés fixes
+               bornent le trajet — sans eux, 8 unités passeraient
+               inaperçues.
+   Agonistes : TRAPÈZE SUPÉRIEUR. L'angulaire de l'omoplate élève
+               lui aussi, mais il est dessiné NULLE PART ici : ses
+               deux insertions, rachis cervical et angle supérieur
+               de la scapula, tombent de face DERRIÈRE le crâne et
+               le trapèze. Le placer visible aurait voulu dire le
+               placer faux.
+   PROPORTION DU BRAS : bras entier 58 pour un tronc de 50, et non
+               44 comme dans les schémas à coude fléchi. Sur un
+               mouvement à bras TENDUS, c'est la longueur du bras
+               qui décide où tombe la barre : à 44 elle arrivait à
+               la ceinture, à 58 elle arrive au haut des cuisses,
+               ce que dit la consigne.
+   POURQUOI L'OMOPLATE N'EST PAS DESSINÉE EN TRAIN DE TOURNER :
+               l'élévation pure est une TRANSLATION. La rotation
+               de l'omoplate, elle, appartient aux mouvements
+               au-dessus de la tête. Faire pivoter l'omoplate ici
+               serait dessiner un autre mouvement.
+   Distinction : ≠ shrugs haltères (charges séparées pendant sur
+               les côtés, vue de profil) ; ≠ rowing (le coude s'y
+               ferme) ; ≠ face pull (rétraction, pas élévation).
+   GÉOMÉTRIE (calculée) — acromion gauche (102,62) -> (102,54),
+   ancrage cervical du trapèze (114,52).
+     longueur du trapèze 15,62 -> 12,17  (facteur 0,779)
+     orientation 140,19° -> 170,54°      (rotation +30,35°)
+   Le trapèze est donc animé comme un câble l'est : rotation ET
+   homothétie autour de son insertion FIXE, calculées pour que son
+   extrémité tombe exactement sur l'acromion aux deux positions.
+   ========================================================= */
+EXERCISE_MOTIONS["shrugs-barre"] = {
+  vb: "68 28 98 132",
+  dur: 3.2,
+  phases: { con: [0, 30], ecc: [48, 88] },
+  alt: "Vu de face, debout, barre tenue à deux mains devant les cuisses : les deux épaules montent verticalement vers les oreilles, coudes tendus, puis redescendent.",
+  fixe: `
+    <line class="mo-ground" x1="96" y1="156" x2="146" y2="156"/>
+    <!-- corps de face : tête, rachis, jambes — immobiles -->
+    <circle class="mo-head" cx="120" cy="40" r="10"/>
+    <line class="mo-body" x1="120" y1="50" x2="120" y2="112"/>
+    <line class="mo-body" x1="120" y1="112" x2="112" y2="156"/>
+    <line class="mo-body" x1="120" y1="112" x2="128" y2="156"/>
+    <!-- repères FIXES du trajet de l'acromion : bas et haut -->
+    <line class="mo-rom" x1="90" y1="62" x2="99" y2="62"/>
+    <line class="mo-rom" x1="90" y1="54" x2="99" y2="54"/>
+    <line class="mo-rom" x1="141" y1="62" x2="150" y2="62"/>
+    <line class="mo-rom" x1="141" y1="54" x2="150" y2="54"/>`,
+  parts: [
+    {
+      /* TRAPÈZE GAUCHE : animé comme un câble — rotation +30,35° et
+         homothétie ×0,779 autour de son insertion CERVICALE, fixe en
+         (114,52), pour que son autre extrémité suive l'acromion. C'est
+         le raccourcissement du muscle lui-même qui est dessiné. */
+      o: "114px 52px",
+      k: [[0, "rotate(0deg) scale(1)"], [30, "rotate(30.35deg) scale(0.779)"],
+          [48, "rotate(30.35deg) scale(0.779)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      muscleNom: "Trapèze supérieur",
+      muscle: `<ellipse cx="108" cy="57" rx="8.5" ry="3.6" transform="rotate(-39.81 108 57)"/>`
+    },
+    {
+      /* TRAPÈZE DROIT : miroir. */
+      o: "126px 52px",
+      k: [[0, "rotate(0deg) scale(1)"], [30, "rotate(-30.35deg) scale(0.779)"],
+          [48, "rotate(-30.35deg) scale(0.779)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      muscle: `<ellipse cx="132" cy="57" rx="8.5" ry="3.6" transform="rotate(39.81 132 57)"/>`
+    },
+    {
+      /* CEINTURE SCAPULAIRE + BRAS + BARRE : TRANSLATION verticale pure
+         de 8. Le coude ne bouge pas : bras et barre montent d'un bloc. */
+      o: "120px 62px",
+      k: [[0, "translate(0px,0px)"], [30, "translate(0px,-8px)"],
+          [48, "translate(0px,-8px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-limb" x1="102" y1="62" x2="138" y2="62"/>
+        <circle class="mo-joint" cx="102" cy="62" r="3"/>
+        <circle class="mo-joint" cx="138" cy="62" r="3"/>
+        <line class="mo-limb" x1="102" y1="62" x2="100" y2="120"/>
+        <line class="mo-limb" x1="138" y1="62" x2="140" y2="120"/>
+        <circle class="mo-joint" cx="101" cy="91" r="2.4"/>
+        <circle class="mo-joint" cx="139" cy="91" r="2.4"/>
+        <!-- barre chargée, vue de face : disques de plein fouet -->
+        <line class="mo-bar2" x1="84" y1="120" x2="156" y2="120"/>
+        <circle class="mo-plate-o" cx="88" cy="120" r="11"/>
+        <circle class="mo-hub" cx="88" cy="120" r="2.6"/>
+        <circle class="mo-plate-o" cx="152" cy="120" r="11"/>
+        <circle class="mo-hub" cx="152" cy="120" r="2.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M74 88 L74 58 M69 66 L74 58 L79 66"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M74 58 L74 88 M69 80 L74 88 L79 80"/>` }
+  ]
+};
