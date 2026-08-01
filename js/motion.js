@@ -28,7 +28,14 @@ function moKeyframes(name, frames) {
 
 /* Surlignage musculaire : discret pendant l'excentrique,
    marqué pendant le concentrique (c'est là que le muscle tire). */
-function moMuscleKeyframes(name, phases) {
+function moMuscleKeyframes(name, phases, iso) {
+  /* ISOMÉTRIQUE : le muscle ne s'allume pas « pendant une phase », il est
+     sous tension EN PERMANENCE. On ne montre donc pas une montée puis une
+     retombée, mais une intensité haute et continue, très légèrement
+     respirante pour signaler que c'est vivant et non figé. */
+  if (iso) {
+    return `@keyframes ${name}{0%{opacity:.8}50%{opacity:1}100%{opacity:.8}}`;
+  }
   const [c0, c1] = phases.con;
   const pts = [
     [0, 0.18], [Math.max(0, c0 - 6), 0.18], [c0, 0.85],
@@ -36,6 +43,15 @@ function moMuscleKeyframes(name, phases) {
   ];
   return `@keyframes ${name}{` +
     pts.map(([p, o]) => `${p}%{opacity:${o}}`).join("") + "}";
+}
+
+/* Repère de MAINTIEN : anneau qui se remplit une fois par cycle.
+   Il remplace les flèches de sens sur un exercice isométrique — il parle de
+   TEMPS SOUS TENSION, jamais de direction, et ne peut donc pas être lu comme
+   un mouvement à effectuer. */
+function moHoldKeyframes(name, circonference) {
+  return `@keyframes ${name}{0%{stroke-dashoffset:${circonference}}` +
+    `90%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}`;
 }
 
 /* Flèche de direction : visible seulement pendant sa phase */
@@ -68,11 +84,13 @@ function renderDedicatedMotion(ex, spec) {
   /* Un muscle porté par un segment mobile (triceps sur le bras, quadriceps
      sur la cuisse…) doit suivre ce segment : il est dessiné DANS le groupe
      mobile, avec sa propre animation d'intensité. */
+  const iso = !!spec.isometrique;
+
   let mi = 0;
   const muscleIn = svg => {
     if (!svg) return "";
     const name = `${uid}mi${mi++}`;
-    css.push(moMuscleKeyframes(name, spec.phases));
+    css.push(moMuscleKeyframes(name, spec.phases, iso));
     return `<g class="mo-anim mo-muscle" style="animation-name:${name}">${svg}</g>`;
   };
 
@@ -94,11 +112,28 @@ function renderDedicatedMotion(ex, spec) {
 
   const muscles = (spec.muscles || []).map((m, i) => {
     const name = `${uid}m${i}`;
-    css.push(moMuscleKeyframes(name, spec.phases));
+    css.push(moMuscleKeyframes(name, spec.phases, iso));
     return `<g class="mo-anim mo-muscle" style="animation-name:${name}">${m.svg}</g>`;
   }).join("");
 
-  const arrows = (spec.arrows || []).map((a, i) => {
+  /* Sur un isométrique il n'y a NI phase NI sens : pas de flèches, mais un
+     repère de maintien. Les deux sont exclusifs, jamais cumulés. */
+  const hold = iso && spec.maintien ? (() => {
+    const [hx, hy] = spec.maintien.split(/\s+/).map(Number);
+    const r = spec.maintienR || 9;
+    const c = (2 * Math.PI * r).toFixed(1);
+    const name = `${uid}h`;
+    css.push(moHoldKeyframes(name, c));
+    return `<g class="mo-hold">
+      <circle class="mo-hold-piste" cx="${hx}" cy="${hy}" r="${r}"/>
+      <circle class="mo-anim mo-hold-ring" cx="${hx}" cy="${hy}" r="${r}"
+        style="stroke-dasharray:${c};animation-name:${name}"
+        transform="rotate(-90 ${hx} ${hy})"/>
+      <circle class="mo-hold-core" cx="${hx}" cy="${hy}" r="2.4"/>
+    </g>`;
+  })() : "";
+
+  const arrows = iso ? "" : (spec.arrows || []).map((a, i) => {
     const name = `${uid}a${i}`;
     css.push(moArrowKeyframes(name, spec.phases[a.phase] || spec.phases.con));
     const inner = a.o
@@ -121,8 +156,9 @@ function renderDedicatedMotion(ex, spec) {
       ${muscles}
       ${parts}
       ${arrows}
+      ${hold}
     </svg>
-    <span class="motion-tag">Schéma vérifié</span>
+    <span class="motion-tag">${iso ? "Schéma vérifié · maintien" : "Schéma vérifié"}</span>
     <figcaption class="motion-cap">
       <span class="mo-legend">${musclesNoms.map(n => `<span class="mo-leg-item">${esc(n)}</span>`).join("")}</span>
       <span class="mo-ctl">
