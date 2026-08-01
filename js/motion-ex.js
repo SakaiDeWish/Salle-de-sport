@@ -7925,3 +7925,113 @@ EXERCISE_MOTIONS["pec-deck-inverse"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M70 108 L96 108 M89 103 L96 108 L89 113 M150 108 L124 108 M131 103 L124 108 L131 113"/>` }
   ]
 };
+
+/* =========================================================
+   74. POMPES EN ÉQUILIBRE (HANDSTAND PUSH-UP)
+       (handstand-pushup)
+   -----------------------------------------------------------
+   Position  : EN ÉQUILIBRE SUR LES MAINS, poitrine côté mur,
+               mains largeur d'épaules au sol, corps gainé et
+               quasi vertical — 11° d'inclinaison, les orteils en
+               appui léger contre le mur.
+   Matériel  : le sol et un mur. Les MAINS sont le point fixe :
+               chaîne fermée, c'est le CORPS qui descend.
+   Mobiles   : coude et épaule.
+   Fixes     : les mains au sol ; le rachis, la hanche et le
+               genou — « cambrure excessive » est l'erreur n°1,
+               donc le corps est un segment rigide.
+   >>> POURQUOI POITRINE CÔTÉ MUR, ET PAS DOS AU MUR <<< Ce n'est
+       pas indifférent, et c'est la géométrie qui tranche. Au
+       point bas, le coude se retrouve 17,18 unités EN ARRIÈRE de
+       la ligne des mains. Dos au mur, le mur est justement de ce
+       côté-là : les coudes le heurteraient, et il faudrait les
+       écarter LATÉRALEMENT — un déplacement qui, de profil,
+       serait strictement invisible et ferait paraître le bras
+       plus court. Poitrine côté mur, les coudes partent du côté
+       libre : le mouvement reste entier dans le plan du dessin.
+       Le choix de la variante découle donc de ce que la vue peut
+       montrer honnêtement.
+   Sens      : descente de la tête vers le sol = excentrique ;
+               poussée = concentrique.
+   ROM       : coude de 180° à 75°. Le corps descend de 17
+               unités ; la tête arrive à 3 unités du sol —
+               « descente incontrôlée sur la tête » est l'erreur
+               n°2, le schéma s'arrête donc AVANT le contact.
+   LE CORPS NE TOURNE PAS D'UN DEGRÉ, ET C'EST STRUCTUREL : la
+               somme des trois rotations de la chaîne vaut
+               exactement zéro — avant-bras +59,23°, bras
+               −104,98°, corps +45,75°. Le gainage n'est donc pas
+               une consigne écrite à côté du dessin, il est dans
+               la construction : le corps garde ses 11°
+               d'inclinaison du début à la fin.
+   Agonistes : DELTOÏDES et TRICEPS ; trapèzes et gainage en
+               isométrique, donc non animés.
+   Distinction : ≠ développé militaire (debout, c'est la BARRE qui
+               monte vers un corps fixe ; ici c'est l'inverse) ;
+               ≠ pompes pike (hanche pliée à 90°, corps en V) ;
+               ≠ pompes (corps horizontal, charge partielle).
+   GÉOMÉTRIE (calculée) — main (100,150) FIXE, avant-bras 20,
+   bras 24.
+     haut  coude (100,130)        épaule (100,106)
+     bas   coude (117.18,139.77)  épaule (100,123.03)
+   Corps incliné de 11° : épaule (100,106), hanche (91.1,60.9),
+   genou (85.7,33.4), pied (80.7,7.9) contre le mur en x=80.
+   ========================================================= */
+EXERCISE_MOTIONS["handstand-pushup"] = {
+  vb: "74 0 52 156",
+  dur: 3.6,
+  phases: { ecc: [0, 44], con: [52, 84] },
+  alt: "En équilibre sur les mains, poitrine côté mur et corps gainé : les coudes fléchissent et le corps entier descend jusqu'à ce que la tête frôle le sol, puis repousse jusqu'aux bras tendus.",
+  fixe: `
+    <line class="mo-ground" x1="76" y1="150" x2="140" y2="150"/>
+    <!-- MUR : c'est lui qui stabilise l'équilibre -->
+    <line class="mo-gear" x1="80" y1="4" x2="80" y2="150"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS : enraciné à la MAIN (100,150), qui ne quitte pas le
+         sol. +59,23° : le coude part vers l'arrière, côté libre. */
+      o: "100px 150px",
+      k: [[0, "rotate(0deg)"], [44, "rotate(59.23deg)"], [52, "rotate(59.23deg)"],
+          [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="100" cy="150" r="3.6"/>
+        <line class="mo-limb" x1="100" y1="150" x2="100" y2="130"/>
+        <circle class="mo-joint" cx="100" cy="130" r="2.6"/>`,
+      children: [
+        {
+          /* BRAS : flexion du COUDE autour de (100,130). −104,98° le ferme
+             de 180° à 75°. */
+          o: "100px 130px",
+          k: [[0, "rotate(0deg)"], [44, "rotate(-104.98deg)"], [52, "rotate(-104.98deg)"],
+              [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="103.5" cy="118" rx="3.2" ry="7"/>`,
+          svg: `<line class="mo-limb" x1="100" y1="130" x2="100" y2="106"/>`,
+          children: [
+            {
+              /* CORPS : contre-rotation de +45,75°. Somme des trois
+                 rotations = 0,00° : le corps garde EXACTEMENT ses 11°
+                 d'inclinaison, il ne se cambre pas. */
+              o: "100px 106px",
+              k: [[0, "rotate(0deg)"], [44, "rotate(45.75deg)"], [52, "rotate(45.75deg)"],
+                  [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Deltoïdes",
+              muscle: `<circle cx="96.5" cy="103" r="5"/>`,
+              svg: `
+                <circle class="mo-head" cx="90" cy="121" r="9"/>
+                <line class="mo-body" x1="94" y1="114" x2="100" y2="106"/>
+                <line class="mo-body" x1="100" y1="106" x2="91.1" y2="60.9"/>
+                <line class="mo-body" x1="91.1" y1="60.9" x2="85.7" y2="33.4"/>
+                <line class="mo-body" x1="85.7" y1="33.4" x2="80.7" y2="7.9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M112 64 L112 96 M107 88 L112 96 L117 88"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M112 96 L112 64 M107 72 L112 64 L117 72"/>` }
+  ]
+};
