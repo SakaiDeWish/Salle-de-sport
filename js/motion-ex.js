@@ -7811,3 +7811,117 @@ EXERCISE_MOTIONS["developpe-epaules-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M94 92 L94 118 M89 110 L94 118 L99 110"/>` }
   ]
 };
+
+/* =========================================================
+   73. PEC-DECK INVERSÉ (REVERSE FLY)  (pec-deck-inverse)
+   -----------------------------------------------------------
+   Position  : ASSIS FACE au dossier, poitrine plaquée contre le
+               support, poignées saisies devant soi à hauteur
+               d'épaules, coudes bloqués à 160°.
+   Matériel  : pec-deck utilisé à l'envers. Les bras de machine
+               pivotent sur des axes VERTICAUX confondus avec les
+               épaules.
+   Mobile    : l'ÉPAULE seule, en ABDUCTION HORIZONTALE.
+   Fixes     : le COUDE — « plier les coudes » est l'erreur n°1,
+               bras et avant-bras forment donc un BLOC RIGIDE ;
+               et le BUSTE, que la poitrinière empêche de reculer
+               (erreur n°2).
+   >>> VU DE DESSUS, ET CETTE FOIS C'EST POSSIBLE <<< L'oiseau
+       aux haltères (exercice 16) n'a PAS reçu de schéma, et la
+       raison était de projection : buste penché à l'horizontale,
+       les bras s'écartent vers l'observateur de profil, et de
+       face c'est le tronc qui devient illisible. Ici la machine
+       supprime le problème à la racine : elle assoit le
+       pratiquant BUSTE VERTICAL. L'abduction horizontale se fait
+       alors dans le plan TRANSVERSE, et une vue de dessus la
+       montre entière, à la vraie longueur des bras, avec un
+       tronc de vraie taille. Même muscle, même geste — mais
+       cette fois une vue existe.
+       C'est aussi ce qui rend ce schéma le symétrique exact de
+       celui du pec-deck (schéma 54) : même vue, même machine,
+       même axe confondu avec l'épaule, sens inverse.
+   Sens      : OUVERTURE des bras vers l'arrière = concentrique ;
+               retour contrôlé, sans laisser les charges claquer
+               = excentrique.
+   ROM       : 105° d'abduction horizontale, des mains jointes
+               devant la poitrine jusqu'aux bras écartés 5 unités
+               EN ARRIÈRE de la ligne d'épaules. « Amplitude
+               courte » est l'erreur n°3 : le schéma va donc
+               jusqu'à dépasser la ligne d'épaules, ce qui est la
+               définition d'une ouverture complète.
+   Agonistes : DELTOÏDE POSTÉRIEUR et RHOMBOÏDES. Le trapèze
+               moyen participe, mais son territoire de dessus se
+               confond avec celui des rhomboïdes : il est
+               mentionné et non tracé à part.
+   Distinction : ≠ pec-deck (sens inverse, pectoral) ; ≠ face pull
+               (le coude s'y ferme, traction vers le visage) ;
+               ≠ rowing (le coude s'y ferme aussi).
+   GÉOMÉTRIE (calculée) — axe/épaule gauche (93,70), bras 24,
+   avant-bras 24, coude bloqué à 160° -> épaule-main constante
+   47,30.
+     fermé  main (100.12,23.22)  coude (92.51,45.99)
+     ouvert main ( 46.00,75.22)
+   -> bloc rigide, rotation −105° autour de l'axe.
+   ========================================================= */
+EXERCISE_MOTIONS["pec-deck-inverse"] = {
+  vb: "36 14 148 102",
+  dur: 3.8,
+  vue: "Vu de dessus",
+  phases: { con: [0, 38], ecc: [46, 88] },
+  alt: "Vu de dessus. Assis poitrine plaquée contre le support, bras tendus devant soi : les bras s'ouvrent vers l'arrière en écartant les mains, jusqu'à dépasser la ligne des épaules, puis reviennent en contrôlant.",
+  fixe: `
+    <!-- bâti : rails latéraux -->
+    <line class="mo-gear" x1="40" y1="22" x2="40" y2="100"/>
+    <line class="mo-gear" x1="180" y1="22" x2="180" y2="100"/>
+    <line class="mo-gear" x1="40" y1="100" x2="180" y2="100"/>
+    <!-- POITRINIÈRE : elle interdit au buste de reculer -->
+    <line class="mo-pad" x1="98" y1="58" x2="122" y2="58"/>
+    <!-- siège -->
+    <line class="mo-pad" x1="96" y1="96" x2="124" y2="96"/>
+    <!-- corps assis vu de dessus, face au dossier -->
+    <ellipse class="mo-torse" cx="110" cy="72" rx="17" ry="11"/>
+    <circle class="mo-head mo-head-solid" cx="110" cy="46" r="9"/>
+    <!-- AXES de la machine, confondus avec les épaules -->
+    <circle class="mo-pulley" cx="93" cy="70" r="4.5"/>
+    <circle class="mo-pulley" cx="127" cy="70" r="4.5"/>
+    <!-- repère : la ligne des épaules, que l'ouverture doit dépasser -->
+    <line class="mo-rom" x1="44" y1="70" x2="86" y2="70"/>
+    <line class="mo-rom" x1="134" y1="70" x2="176" y2="70"/>`,
+  muscles: [
+    { nom: "Deltoïde postérieur",
+      svg: `<circle cx="95" cy="77" r="4.5"/><circle cx="125" cy="77" r="4.5"/>` },
+    { nom: "Rhomboïdes",
+      svg: `<ellipse cx="104" cy="79" rx="4" ry="5"/><ellipse cx="116" cy="79" rx="4" ry="5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE + POIGNÉE : bloc RIGIDE tournant autour de l'axe
+         épaule/machine (93,70). −105° d'abduction horizontale. */
+      o: "93px 70px",
+      k: [[0, "rotate(0deg)"], [38, "rotate(-105deg)"], [46, "rotate(-105deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="93" y1="70" x2="92.51" y2="45.99"/>
+        <circle class="mo-joint" cx="92.51" cy="45.99" r="2.6"/>
+        <line class="mo-limb" x1="92.51" y1="45.99" x2="100.12" y2="23.22"/>
+        <line class="mo-bar2" x1="94.43" y1="21.32" x2="105.81" y2="25.12"/>
+        <circle class="mo-hand" cx="100.12" cy="23.22" r="3"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact autour de x=110. */
+      o: "127px 70px",
+      k: [[0, "rotate(0deg)"], [38, "rotate(105deg)"], [46, "rotate(105deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="127" y1="70" x2="127.49" y2="45.99"/>
+        <circle class="mo-joint" cx="127.49" cy="45.99" r="2.6"/>
+        <line class="mo-limb" x1="127.49" y1="45.99" x2="119.88" y2="23.22"/>
+        <line class="mo-bar2" x1="125.57" y1="21.32" x2="114.19" y2="25.12"/>
+        <circle class="mo-hand" cx="119.88" cy="23.22" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M96 108 L70 108 M77 103 L70 108 L77 113 M124 108 L150 108 M143 103 L150 108 L143 113"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M70 108 L96 108 M89 103 L96 108 L89 113 M150 108 L124 108 M131 103 L124 108 L131 113"/>` }
+  ]
+};
