@@ -4283,3 +4283,117 @@ EXERCISE_MOTIONS["superman"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M100 98 L100 114 M95 107 L100 114 L105 107"/>` }
   ]
 };
+
+/* =========================================================
+   45. ROWING INVERSÉ  (rowing-inverse)
+   -----------------------------------------------------------
+   Position  : SUSPENDU SOUS une barre basse, prise pronation largeur
+               d'épaules, bras tendus, corps GAINÉ EN LIGNE DROITE,
+               talons au sol.
+   Matériel  : barre basse (cage, machine Smith) ou anneaux.
+   Mobiles   : le COUDE (flexion) et l'ÉPAULE (extension horizontale
+               avec rétraction des omoplates).
+   Fixes     : les MAINS sur la barre ET les TALONS au sol. Double
+               ancrage : le corps pivote autour des talons pendant que
+               les mains ne bougent pas.
+   LE CORPS EST UN SEGMENT RIGIDE : c'est un gainage anti-affaissement
+               exactement comme la planche, greffé sur un tirage. Si
+               le bassin tombe, l'exercice perd son sens — d'où un
+               corps modélisé d'un seul tenant, sans cassure possible.
+   Sens/plan : tirage vers la barre = concentrique ; descente =
+               excentrique. Le cycle commence bras tendus.
+   ROM       : coude de 163,8° à 66,7°, le corps se redressant de
+               14,7° et l'épaule montant de 20,7.
+               CONTRAINTE GÉOMÉTRIQUE INTÉRESSANTE, découverte en
+               calculant : avec un corps rigide de 84 ancré aux
+               talons et des mains fixes à 102,96 de là, la distance
+               main-épaule ne peut PAS descendre sous 18,96 — c'est
+               la position où corps, épaule et main sont alignés. Le
+               coude ne peut donc pas se fermer autant qu'à une
+               traction : sa limite absolue ici est ~57°. Ce n'est pas
+               un choix de dessin, c'est la géométrie de l'exercice.
+   Agonistes : GRAND DORSAL, TRAPÈZE MOYEN et RHOMBOÏDES pour la
+               rétraction, DELTOÏDE POSTÉRIEUR, biceps.
+   RÉGLAGE DE LA DIFFICULTÉ : elle se règle par l'INCLINAISON du
+               corps — plus il est proche de l'horizontale, plus
+               c'est dur. Le schéma montre la version exigeante,
+               corps à 7,5° de l'horizontale au départ. C'est ce
+               réglage continu qui en fait la progression naturelle
+               vers les tractions.
+   Distinction : pendant HORIZONTAL et en chaîne fermée du rowing
+               barre. ≠ tractions (verticales, corps libre),
+               ≠ rowing barre (debout penché, charge externe, corps
+               non ancré).
+   GÉOMÉTRIE (calculée) — mains(80,96) et talons(170,146) fixes,
+   corps rigide 84, bras et avant-bras 20.
+   Départ : épaule(86.72,135.03), coude(86.14,115.03).
+   Fin    : épaule(92.21,114.30), coude(100,95.88).
+   -> corps +14,66°, avant-bras (enraciné à la main) −72,47°,
+      bras +97,05° relatif.
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-inverse"] = {
+  vb: "56 74 140 92",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 88] },
+  alt: "Suspendu sous une barre basse, corps gainé en ligne droite et talons au sol : la poitrine est tirée vers la barre par flexion des coudes et rétraction des omoplates, puis redescend.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="150" x2="192" y2="150"/>
+    <!-- barre basse + montants -->
+    <line class="mo-bar3" x1="62" y1="96" x2="112" y2="96"/>
+    <line class="mo-gear" x1="68" y1="96" x2="68" y2="150"/>
+    <!-- talon ancré au sol : le second point fixe -->
+    <line class="mo-limb" x1="164" y1="150" x2="180" y2="150"/>
+    <circle class="mo-joint" cx="170" cy="146" r="2.8"/>
+    <!-- main sur la barre : elle ne bouge pas -->
+    <circle class="mo-hand" cx="80" cy="96" r="3.6"/>`,
+  parts: [
+    {
+      /* CORPS : segment RIGIDE pivotant autour des TALONS. +14,66°.
+         Aucune cassure au bassin : le gainage est l'exercice. */
+      o: "170px 146px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(14.66deg)"], [42, "rotate(14.66deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Grand dorsal", "Trapèze moyen · Rhomboïdes"],
+      muscle: `
+        <ellipse cx="104" cy="139" rx="12" ry="3.6" transform="rotate(7.5 104 139)"/>
+        <circle cx="90" cy="131" r="4.5"/>`,
+      svg: `
+        <line class="mo-body" x1="170" y1="146" x2="86.72" y2="135.03"/>
+        <!-- hanche et genou marqués : ces articulations EXISTENT, elles
+             ne bougent simplement pas. Sans elles le corps se lirait
+             comme une planche de bois plutôt que comme un gainage. -->
+        <circle class="mo-joint" cx="118.45" cy="139.21" r="2.4"/>
+        <circle class="mo-joint" cx="144.2" cy="142.6" r="2.4"/>
+        <circle class="mo-joint" cx="86.72" cy="135.03" r="2.8"/>
+        <circle class="mo-head" cx="74" cy="133" r="8"/>`
+    },
+    {
+      /* AVANT-BRAS enraciné à la MAIN, qui ne quitte pas la barre.
+         childrenFirst : le bras au premier plan passe par-dessus le
+         corps, sinon le coude disparaîtrait derrière le buste. */
+      o: "80px 96px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-72.47deg)"], [42, "rotate(-72.47deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <line class="mo-limb" x1="80" y1="96" x2="86.14" y2="115.03"/>
+        <circle class="mo-joint" cx="86.14" cy="115.03" r="2.6"/>`,
+      children: [
+        {
+          /* BRAS : +97,05° relatif. Son extrémité rejoint exactement
+             l'épaule portée par le corps, aux deux positions. */
+          o: "86.14px 115.03px",
+          k: [[0, "rotate(0deg)"], [34, "rotate(97.05deg)"], [42, "rotate(97.05deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Deltoïde postérieur",
+          muscle: `<ellipse cx="86.4" cy="125" rx="3" ry="7"/>`,
+          svg: `<line class="mo-limb" x1="86.14" y1="115.03" x2="86.72" y2="135.03"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M132 130 L132 104 M127 112 L132 104 L137 112"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M132 104 L132 130 M127 122 L132 130 L137 122"/>` }
+  ]
+};
