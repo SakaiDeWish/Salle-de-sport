@@ -8282,3 +8282,119 @@ EXERCISE_MOTIONS["curl-concentration"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M140 70 L140 100 M135 92 L140 100 L145 92"/>` }
   ]
 };
+
+/* =========================================================
+   77. CURL À LA POULIE BASSE  (curl-poulie-basse)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à une poulie basse, à environ 50 cm
+               d'elle, barre en mains, COUDES COLLÉS au buste.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS — « coudes qui avancent » est l'erreur
+               n°2, le bras est donc dans les éléments fixes ; le
+               buste, car « reculer le buste » est l'erreur n°1.
+   ROM       : coude de 156° à 34°, soit 122,56° de flexion.
+   >>> LA FICHE DIT « TENSION DU DÉBUT À LA FIN ». LE CALCUL DIT
+       AUTRE CHOSE, ET C'EST PLUS INTÉRESSANT <<< Bras de levier
+       de la résistance autour du COUDE, comparé à la même
+       flexion faite à la barre :
+         t        0    1/6    2/6    3/6    4/6    5/6      1
+         câble  18,2   7,0    6,6   17,9   24,3   26,0   24,5
+         barre   4,0  12,7   19,8   24,5   26,0   24,3   19,5
+       Le câble n'aplatit PAS la courbe : il l'INVERSE. Il charge
+       beaucoup plus aux deux extrémités — 18,2 contre 4,0 en bas,
+       24,5 contre 19,5 en haut — et beaucoup moins dans le tiers
+       bas, où il tombe à 6,6.
+       Ce creux n'est pas un artefact, et il a une cause précise :
+       à ce moment-là l'AVANT-BRAS POINTE VERS LA POULIE. Le câble
+       tire alors exactement dans l'axe de l'avant-bras, donc en
+       pure compression, sans aucun bras de levier sur le coude.
+       C'est géométriquement inévitable dès que la poulie est
+       devant soi, et le vérifier a demandé de tester quatre
+       distances de placement : le creux ne disparaît jamais, il
+       se DÉPLACE — plus on se rapproche de la poulie, plus il
+       glisse vers le bas de l'amplitude.
+       Ce que la fiche a raison de dire : en HAUT, là où la barre
+       s'allège nettement (19,5), le câble tient encore 24,5. Le
+       « parfait pour la congestion en fin de séance » vise juste,
+       même si la raison n'est pas celle qu'on croit.
+   Sens      : montée = concentrique ; descente lente =
+               excentrique. « Relâcher en bas » est l'erreur n°3,
+               et le tableau dit pourquoi : c'est justement en bas
+               que le câble charge le plus.
+   Agonistes : BICEPS BRACHIAL et BRACHIAL ANTÉRIEUR, dans les
+               éléments fixes puisque le bras ne bouge pas.
+   Distinction : ≠ curl barre (résistance verticale, profil
+               inverse) ; ≠ curl concentration (assis, coude calé
+               sur la cuisse) ; ≠ curl pupitre (bras sur un
+               pupitre incliné).
+   GÉOMÉTRIE (calculée) — épaule (120,54), bras 32,06 FIXE,
+   coude (122,86), avant-bras 26, poulie (72,146).
+     bas  main (118,111.69)   haut main (102.50,68.80)
+   -> avant-bras +122,56° ; câble rotation −31,73° et longueur
+      ×1,4464, échantillonnés en six intervalles. Sa longueur
+      DIMINUE d'abord (×0,918) avant d'augmenter : la main se
+      rapproche de la poulie avant de s'en éloigner.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-poulie-basse"] = {
+  vb: "60 24 76 138",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 90] },
+  alt: "Debout de profil face à une poulie basse, coudes collés au buste : la barre monte vers les épaules par la seule flexion des coudes, puis redescend lentement.",
+  fixe: `
+    <line class="mo-ground" x1="64" y1="156" x2="132" y2="156"/>
+    <!-- colonne et poulie basse -->
+    <line class="mo-gear" x1="68" y1="26" x2="68" y2="156"/>
+    <circle class="mo-pulley" cx="72" cy="146" r="5"/>
+    <!-- corps debout de profil, face à gauche, immobile -->
+    <circle class="mo-head" cx="114" cy="38" r="9"/>
+    <line class="mo-body" x1="117" y1="46" x2="120" y2="54"/>
+    <line class="mo-body" x1="120" y1="54" x2="124" y2="104"/>
+    <line class="mo-body" x1="124" y1="104" x2="122" y2="130"/>
+    <line class="mo-body" x1="122" y1="130" x2="118" y2="156"/>
+    <!-- BRAS : dans les fixes, collé au flanc -->
+    <line class="mo-limb" x1="120" y1="54" x2="122" y2="86"/>
+    <circle class="mo-joint" cx="122" cy="86" r="2.8"/>
+    <!-- amplitude : l'arc réellement parcouru par la barre -->
+    <path class="mo-rom" fill="none" d="M118 111.69 A26 26 0 0 1 102.50 68.80"/>`,
+  muscles: [
+    { nom: "Biceps brachial",
+      svg: `<ellipse cx="117.5" cy="68" rx="3.4" ry="9" transform="rotate(4 117.5 68)"/>` },
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="118.5" cy="80" rx="2.8" ry="6" transform="rotate(4 118.5 80)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation et longueur échantillonnées sur l'arc réel de la
+         barre. Sa longueur commence par DIMINUER (×0,918). */
+      o: "72px 146px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.67, "rotate(-8.31deg) scale(0.9193)"],
+          [11.33, "rotate(-18.34deg) scale(0.9180)"], [17, "rotate(-26.75deg) scale(0.9965)"],
+          [22.67, "rotate(-31.56deg) scale(1.1301)"], [28.33, "rotate(-32.92deg) scale(1.2882)"],
+          [34, "rotate(-31.73deg) scale(1.4464)"], [42, "rotate(-31.73deg) scale(1.4464)"],
+          [50, "rotate(-32.92deg) scale(1.2882)"], [58, "rotate(-31.56deg) scale(1.1301)"],
+          [66, "rotate(-26.75deg) scale(0.9965)"], [74, "rotate(-18.34deg) scale(0.9180)"],
+          [82, "rotate(-8.31deg) scale(0.9193)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="72" y1="146" x2="118" y2="111.69"/>`
+    },
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (122,86), +122,56°.
+         Même grille que le câble. */
+      o: "122px 86px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(20.43deg)"], [11.33, "rotate(40.85deg)"],
+          [17, "rotate(61.28deg)"], [22.67, "rotate(81.71deg)"], [28.33, "rotate(102.13deg)"],
+          [34, "rotate(122.56deg)"], [42, "rotate(122.56deg)"],
+          [50, "rotate(102.13deg)"], [58, "rotate(81.71deg)"], [66, "rotate(61.28deg)"],
+          [74, "rotate(40.85deg)"], [82, "rotate(20.43deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="122" y1="86" x2="118" y2="111.69"/>
+        <line class="mo-bar2" x1="112.1" y1="110.15" x2="123.9" y2="113.23"/>
+        <circle class="mo-hand" cx="118" cy="111.69" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 150 L100 126 M95 134 L100 126 L105 134"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M100 126 L100 150 M95 142 L100 150 L105 142"/>` }
+  ]
+};
