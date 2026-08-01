@@ -5173,3 +5173,105 @@ EXERCISE_MOTIONS["ecarte-incline-halteres"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M64 92 L46 78 M53 80 L46 78 L48 85"/>` }
   ]
 };
+
+/* =========================================================
+   54. PEC-DECK (BUTTERFLY)  (pec-deck)
+   -----------------------------------------------------------
+   Position  : ASSIS, dos plaqué au dossier, avant-bras posés sur les
+               coussinets verticaux, coudes à hauteur d'épaules.
+   Matériel  : machine pec-deck — deux bras articulés pivotant chacun
+               sur un axe VERTICAL, reliés à la colonne de charges.
+   Mobiles   : l'ÉPAULE seule, en adduction horizontale.
+   Fixes     : le dos, le bassin, et le COUDE dont l'angle ne change
+               pas — l'avant-bras reste plaqué sur le coussinet. Bras
+               et avant-bras forment donc un bloc RIGIDE, comme à
+               l'écarté.
+   POURQUOI L'AXE DE LA MACHINE EST DESSINÉ CONFONDU AVEC L'ÉPAULE :
+               ce n'est pas une simplification de confort. Un
+               pec-deck bien conçu aligne précisément son axe de
+               rotation sur celui de l'épaule — c'est la condition
+               pour que le coussinet suive l'arc du coude au lieu de
+               le contrarier. Si les deux axes divergent, la distance
+               épaule-coussinet varierait au cours du mouvement, ce
+               qu'un humérus rigide ne permet pas : le bras se
+               ferait tirer. Le schéma dessine donc la machine bien
+               réglée.
+   >>> VU DE DESSUS <<< L'adduction horizontale se fait dans le plan
+               TRANSVERSE. De profil elle irait vers le spectateur et
+               serait invisible ; assis, seule la vue de dessus la
+               montre. Troisième schéma hors plan sagittal, et pour
+               la même raison que les deux autres.
+   Sens      : fermeture des coussinets = concentrique ; ouverture
+               contrôlée = excentrique. Le cycle commence OUVERT.
+   ROM       : 85° d'adduction, des bras dans le plan du torse
+               jusqu'aux coussinets qui se rejoignent devant. On ne
+               s'ouvre pas au-delà du plan du torse.
+   Agonistes : GRAND PECTORAL, deltoïde antérieur en assistance.
+   CE QUE LA MACHINE APPORTE, ET CE QU'ELLE COÛTE : la résistance est
+               CONTINUE — elle ne s'effondre pas en position fermée
+               comme avec des haltères, où la gravité cesse d'agir
+               perpendiculairement. En contrepartie le trajet est
+               IMPOSÉ : les stabilisateurs ne travaillent plus. C'est
+               le même arbitrage que partout ailleurs entre machine
+               et poids libres.
+   Distinction : assis, guidé, résistance continue. ≠ écarté couché
+               haltères (gravité, résistance nulle en haut),
+               ≠ écarté poulie (debout, non guidé).
+   GÉOMÉTRIE (calculée) — épaule/axe(96,86) à gauche, (124,86) à
+   droite ; bras au coussinet 34, avant-bras 18 à angle constant.
+   Ouvert : coussinet(64.05,74.37), main(70.21,57.46).
+   Fermé  : coussinet(104.80,53.16).
+   -> bras gauche +85°, bras droit −85° (miroir).
+   ========================================================= */
+EXERCISE_MOTIONS["pec-deck"] = {
+  vb: "38 38 144 92",
+  dur: 3.6,
+  vue: "Vu de dessus",
+  phases: { con: [0, 40], ecc: [48, 88] },
+  alt: "Vu de dessus. Assis dans la machine, avant-bras sur les coussinets : les bras se referment devant la poitrine par adduction des épaules, puis s'ouvrent en contrôlant.",
+  fixe: `
+    <!-- siège et dossier, vus de dessus -->
+    <line class="mo-pad" x1="92" y1="104" x2="128" y2="104"/>
+    <line class="mo-gear" x1="92" y1="104" x2="92" y2="118"/>
+    <line class="mo-gear" x1="128" y1="104" x2="128" y2="118"/>
+    <line class="mo-gear" x1="88" y1="118" x2="132" y2="118"/>
+    <!-- corps assis, vu de dessus -->
+    <ellipse class="mo-torse" cx="110" cy="90" rx="18" ry="9"/>
+    <circle class="mo-head mo-head-solid" cx="110" cy="70" r="9"/>
+    <!-- AXES de la machine, confondus avec les épaules -->
+    <circle class="mo-pulley" cx="96" cy="86" r="4.5"/>
+    <circle class="mo-pulley" cx="124" cy="86" r="4.5"/>`,
+  muscles: [
+    { nom: "Grand pectoral",
+      svg: `<ellipse cx="102" cy="84" rx="7" ry="4"/><ellipse cx="118" cy="84" rx="7" ry="4"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE + COUSSINET : bloc RIGIDE tournant autour de
+         l'axe épaule/machine. +85°. */
+      o: "96px 86px",
+      k: [[0, "rotate(0deg)"], [40, "rotate(85deg)"], [48, "rotate(85deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="96" y1="86" x2="64.05" y2="74.37"/>
+        <circle class="mo-joint" cx="64.05" cy="74.37" r="2.6"/>
+        <line class="mo-limb" x1="64.05" y1="74.37" x2="70.21" y2="57.46"/>
+        <rect class="mo-mass" x="59" y="62" width="7" height="16" rx="2" transform="rotate(20 62.5 70)"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact, −85°. */
+      o: "124px 86px",
+      k: [[0, "rotate(0deg)"], [40, "rotate(-85deg)"], [48, "rotate(-85deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="124" y1="86" x2="155.95" y2="74.37"/>
+        <circle class="mo-joint" cx="155.95" cy="74.37" r="2.6"/>
+        <line class="mo-limb" x1="155.95" y1="74.37" x2="149.79" y2="57.46"/>
+        <rect class="mo-mass" x="154" y="62" width="7" height="16" rx="2" transform="rotate(-20 157.5 70)"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 110 L82 110 M75 105 L82 110 L75 115"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M82 110 L58 110 M65 105 L58 110 L65 115"/>` }
+  ]
+};
