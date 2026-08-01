@@ -4502,3 +4502,135 @@ EXERCISE_MOTIONS["pompes-pike"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M166 98 L166 128 M161 120 L166 128 L171 120"/>` }
   ]
 };
+
+/* =========================================================
+   47. FENTES BULGARES  (fentes-bulgares)
+   -----------------------------------------------------------
+   Position  : en fente, PIED ARRIÈRE POSÉ EN HAUTEUR sur un banc,
+               pied avant à plat au sol bien devant, haltères le long
+               du corps, buste droit et légèrement penché.
+   Matériel  : deux haltères + un banc.
+   Mobiles   : hanche, genou et cheville de la jambe AVANT. La jambe
+               arrière SUIT passivement.
+   Fixes     : le PIED AVANT au sol et le PIED ARRIÈRE sur le banc.
+               Double ancrage, mais à des hauteurs TRÈS différentes
+               (34 unités d'écart) — c'est la première fois dans la
+               bibliothèque, et c'est justement ce qui définit
+               l'exercice.
+   CE QUE LA SURÉLÉVATION CHANGE : la jambe arrière étant en hauteur,
+               elle ne PEUT PAS pousser. Tout le travail est reporté
+               sur la jambe avant : l'exercice est quasi UNILATÉRAL,
+               la charge par jambe est bien supérieure à ce que le
+               poids des haltères laisse croire, et la demande
+               d'équilibre est forte.
+   OBSERVATION ISSUE DU CALCUL, contre-intuitive : le genou ARRIÈRE
+               ne se fléchit pas pendant la descente, il SE TEND —
+               il passe de 139,0° à 107,9°... en réalité il se
+               referme de 31°, mais bien moins que le genou avant qui
+               se referme de 84°. La jambe arrière accompagne, elle
+               ne travaille pas. Son genou descend de 15,7 et
+               s'arrête à 23,7 du sol.
+   Sens/plan : descente = excentrique, remontée = concentrique.
+   ROM       : genou AVANT de 173,8° à 89,8°, genou arrière de 139,0°
+               à 107,9°. Le genou avant s'arrête 3 unités EN ARRIÈRE
+               de l'orteil : il ne part pas loin devant, ce qui est la
+               consigne.
+   INCLINAISON DU BUSTE : elle passe de 5° à 15°. Ce n'est pas un
+               détail — plus le buste penche, plus le FESSIER
+               travaille ; plus il est vertical, plus c'est le
+               QUADRICEPS. Le schéma montre la version équilibrée.
+   Agonistes : QUADRICEPS et GRAND FESSIER de la jambe avant, plus
+               les stabilisateurs de hanche pour l'équilibre.
+   Distinction : pied arrière SURÉLEVÉ -> jambe arrière hors jeu ->
+               unilatéral. ≠ fentes marchées (les deux pieds au sol,
+               la jambe arrière participe à la poussée).
+   GÉOMÉTRIE (calculée, atteignabilité vérifiée avant tracé) —
+   pied avant(96,150) et pied arrière(156,116) ancrés, distants de
+   68,96 pour deux jambes de 52 : le bassin doit rester dans la
+   lentille d'intersection, ce qui est vérifié aux deux positions.
+   Haut : hanche(110,100), genou av(101.64,124.62), ar(130.01,116.60).
+   Bas  : hanche(114,118), genou av(88.95,124.97), ar(135.73,132.28).
+   -> AVANT tibia −28,25°, cuisse +83,93° rel, tronc −65,68° rel.
+      ARRIÈRE tibia −37,43°, cuisse +31,06° rel.
+   ========================================================= */
+EXERCISE_MOTIONS["fentes-bulgares"] = {
+  vb: "62 42 132 124",
+  dur: 4.2,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Pied arrière posé sur un banc, pied avant au sol devant : le bassin descend en pliant la jambe avant jusqu'à 90°, la jambe arrière accompagnant sans pousser, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="70" y1="156" x2="188" y2="156"/>
+    <!-- banc : c'est lui qui surélève le pied arrière -->
+    <line class="mo-pad" x1="148" y1="120" x2="186" y2="120"/>
+    <line class="mo-gear" x1="156" y1="122" x2="156" y2="156"/>
+    <line class="mo-gear" x1="180" y1="122" x2="180" y2="156"/>
+    <!-- pied AVANT à plat au sol -->
+    <line class="mo-limb" x1="86" y1="156" x2="106" y2="156"/>
+    <line class="mo-limb" x1="96" y1="150" x2="89" y2="156"/>
+    <circle class="mo-joint" cx="96" cy="150" r="2.8"/>
+    <!-- pied ARRIÈRE posé sur le banc -->
+    <line class="mo-limb" x1="156" y1="116" x2="170" y2="120"/>
+    <circle class="mo-joint" cx="156" cy="116" r="2.8"/>`,
+  parts: [
+    {
+      /* JAMBE ARRIÈRE : elle ACCOMPAGNE. Dessinée en premier, elle
+         passe derrière le corps. */
+      o: "156px 116px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-37.43deg)"], [52, "rotate(-37.43deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-body" x1="156" y1="116" x2="130.01" y2="116.60"/>`,
+      children: [
+        { o: "130.01px 116.6px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(31.06deg)"], [52, "rotate(31.06deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="130.01" cy="116.6" r="2.6"/>
+            <line class="mo-body" x1="130.01" y1="116.6" x2="110" y2="100"/>` }
+      ]
+    },
+    {
+      /* JAMBE AVANT : elle porte tout le travail, et le tronc. */
+      o: "96px 150px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-28.25deg)"], [52, "rotate(-28.25deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="96" y1="150" x2="101.64" y2="124.62"/>`,
+      children: [
+        {
+          o: "101.64px 124.62px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(83.93deg)"], [52, "rotate(83.93deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="103" cy="112" rx="3.4" ry="9" transform="rotate(-19 103 112)"/>
+            <circle cx="112" cy="103" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="101.64" cy="124.62" r="2.8"/>
+            <line class="mo-limb" x1="101.64" y1="124.62" x2="110" y2="100"/>`,
+          children: [
+            {
+              /* TRONC : son inclinaison passe de 5° à 15°. Plus il
+                 penche, plus le fessier prend ; plus il est vertical,
+                 plus c'est le quadriceps. */
+              o: "110px 100px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-65.68deg)"], [52, "rotate(-65.68deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="110" cy="100" r="2.8"/>
+                <line class="mo-body" x1="110" y1="100" x2="107.21" y2="68.12"/>
+                <line class="mo-limb" x1="107.21" y1="68.12" x2="101" y2="84"/>
+                <line class="mo-limb" x1="101" y1="84" x2="97" y2="99"/>
+                <line class="mo-bar2" x1="91" y1="99" x2="103" y2="99"/>
+                <rect class="mo-mass" x="88" y="94" width="6" height="10" rx="2"/>
+                <rect class="mo-mass" x="100" y="94" width="6" height="10" rx="2"/>
+                <circle class="mo-head" cx="106" cy="55" r="9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M76 128 L76 96 M71 104 L76 96 L81 104"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M76 96 L76 128 M71 120 L76 128 L81 120"/>` }
+  ]
+};
