@@ -7260,3 +7260,114 @@ EXERCISE_MOTIONS["tractions-lestees"] = {
    exemple l'orientation de la paume. Les deux sortent d'un
    moteur de rotations planes à segments rigides.
    ========================================================= */
+
+/* =========================================================
+   69. ÉLÉVATIONS FRONTALES  (elevations-frontales)
+   -----------------------------------------------------------
+   Position  : DEBOUT, haltère devant la cuisse, bras le long du
+               corps, buste droit et gainé.
+   Matériel  : un haltère par main, PRISE NEUTRE. La fiche laisse
+               le choix entre pronation et neutre ; c'est la prise
+               neutre qui est dessinée, et pour une raison de
+               lisibilité assumée : en pronation l'axe de
+               l'haltère est perpendiculaire au plan sagittal,
+               donc vu par le bout — un simple disque, dont
+               l'orientation ne dit plus rien. En prise neutre
+               l'axe reste DANS le plan du dessin, et l'haltère
+               tourne visiblement avec l'avant-bras. La résistance
+               est la GRAVITÉ.
+   Mobile    : l'ÉPAULE seule, en FLEXION.
+   Fixes     : le COUDE, bloqué à 170° — bloc rigide ; le buste,
+               car « balancer le buste » est l'erreur n°1 ; les
+               jambes.
+   Plan      : SAGITTAL. Vue de profil, donc, et un seul bras
+               dessiné : de profil le bras éloigné est
+               exactement derrière le bras proche.
+   Sens      : montée = concentrique ; descente lente = excentrique.
+   ROM       : 85°, de 5° d'extension (haltère devant la cuisse) à
+               90° de flexion — L'HORIZONTALE, et pas un degré de
+               plus. Un repère pointillé matérialise cette limite.
+   >>> POURQUOI S'ARRÊTER À L'HORIZONTALE, ET POURQUOI C'EST
+       GÉOMÉTRIQUE <<< « Monter au-dessus des yeux » est l'erreur
+       n°2. La raison n'est pas une convention : avec un haltère,
+       le couple résistant vaut poids × distance HORIZONTALE
+       entre l'épaule et la main. Cette distance est maximale
+       quand le bras est horizontal — 57,78 ici — et elle
+       DIMINUE au-delà. Monter plus haut n'ajoute donc aucune
+       charge au deltoïde ; ça transfère seulement le travail au
+       trapèze. Le schéma s'arrête exactement là où le couple
+       est maximal.
+   >>> CE QUI LE SÉPARE DE L'ÉCARTÉ POULIE BASSE (schéma 58) <<<
+       Les deux montent le bras vers l'avant, de profil, coude
+       bloqué. Mais le PROFIL DE RÉSISTANCE est inversé, et c'est
+       tout l'écart entre les deux exercices.
+       Haltère : couple NUL en bas (bras vertical, distance
+       horizontale nulle), MAXIMAL à l'horizontale. Le début du
+       mouvement ne pèse rien.
+       Poulie basse : le câble tire toujours vers la poulie, donc
+       la tension existe dès le premier degré et ne s'annule
+       jamais. D'où une amplitude de 120° au lieu de 85, et une
+       fin de course à hauteur de visage au lieu de l'épaule.
+   Agonistes : DELTOÏDE ANTÉRIEUR. Le faisceau CLAVICULAIRE du
+               grand pectoral est fléchisseur d'épaule lui aussi
+               et participe franchement : il est dessiné, plutôt
+               que de laisser croire à un muscle unique.
+   Distinction : ≠ élévations latérales (plan frontal, deltoïde
+               moyen) ; ≠ écarté poulie basse (tension continue,
+               amplitude plus grande) ; ≠ développé (le coude s'y
+               ferme).
+   GÉOMÉTRIE (calculée) — épaule (120,54), bras 32, avant-bras 26,
+   coude bloqué à 170° -> épaule-main constante 57,78.
+   Proportions vérifiées : bras entier 58 pour un tronc de 50.
+   C'est ce rapport qui fait tomber l'haltère devant la CUISSE au
+   départ, et non à la ceinture.
+     bas  main (114.96,111.56)  coude (119.74,86.00)
+     haut main ( 62.22, 54.00)
+   -> bloc bras, rotation +85° autour de l'épaule.
+   ========================================================= */
+EXERCISE_MOTIONS["elevations-frontales"] = {
+  vb: "50 26 90 136",
+  dur: 3.4,
+  phases: { con: [0, 30], ecc: [38, 88] },
+  alt: "Debout de profil, haltère en prise neutre devant la cuisse et coude bloqué : le bras monte vers l'avant jusqu'à l'horizontale exactement, puis redescend lentement.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="156" x2="136" y2="156"/>
+    <!-- corps debout de profil, face à gauche, immobile -->
+    <circle class="mo-head" cx="114" cy="38" r="9"/>
+    <line class="mo-body" x1="117" y1="46" x2="120" y2="54"/>
+    <line class="mo-body" x1="120" y1="54" x2="124" y2="104"/>
+    <line class="mo-body" x1="124" y1="104" x2="122" y2="130"/>
+    <line class="mo-body" x1="122" y1="130" x2="118" y2="156"/>
+    <!-- LIMITE : l'horizontale de l'épaule. Le mouvement s'arrête là. -->
+    <line class="mo-rom" x1="56" y1="54" x2="104" y2="54"/>
+    <!-- amplitude : l'arc réellement parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M114.96 111.56 A57.78 57.78 0 0 1 62.22 54"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur",
+      svg: `<circle cx="116" cy="54" r="5"/>` },
+    { nom: "Pectoral claviculaire",
+      svg: `<ellipse cx="119" cy="66" rx="4" ry="7" transform="rotate(6 119 66)"/>` }
+  ],
+  parts: [
+    {
+      /* BLOC BRAS : coude figé à 170°, rotation +85° autour de l'ÉPAULE
+         (120,54). Aucun enfant : plier le coude ferait de cet exercice
+         autre chose. */
+      o: "120px 54px",
+      k: [[0, "rotate(0deg)"], [30, "rotate(85deg)"], [38, "rotate(85deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="120" y1="54" x2="119.74" y2="86"/>
+        <circle class="mo-joint" cx="119.74" cy="86" r="2.6"/>
+        <line class="mo-limb" x1="119.74" y1="86" x2="114.96" y2="111.56"/>
+        <!-- haltère, perpendiculaire à l'avant-bras -->
+        <line class="mo-bar2" x1="107.10" y1="110.09" x2="122.82" y2="113.03"/>
+        <rect class="mo-mass" x="103.4" y="105.2" width="6" height="13" rx="2" transform="rotate(10.6 106.4 111.7)"/>
+        <rect class="mo-mass" x="120.5" y="108.4" width="6" height="13" rx="2" transform="rotate(10.6 123.5 114.9)"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M78 126 L78 102 M73 110 L78 102 L83 110"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M78 102 L78 126 M73 118 L78 126 L83 118"/>` }
+  ]
+};
