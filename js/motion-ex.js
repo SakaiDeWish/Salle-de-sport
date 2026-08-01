@@ -6807,3 +6807,120 @@ EXERCISE_MOTIONS["shrugs-barre"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M74 58 L74 88 M69 80 L74 88 L79 80"/>` }
   ]
 };
+
+/* =========================================================
+   65. ROWING PENDLAY  (rowing-pendlay)
+   -----------------------------------------------------------
+   Position  : buste PARALLÈLE AU SOL, genoux légèrement fléchis,
+               barre POSÉE AU SOL sous les épaules, dos plat.
+   Matériel  : barre chargée de disques pleins. Les disques
+               touchent le sol au départ ET à l'arrivée de chaque
+               répétition — c'est ce qui définit l'exercice.
+   Mobiles   : coude (flexion) et épaule (extension).
+   Fixes     : le BUSTE, à l'horizontale, du début à la fin. « Se
+               redresser pendant le tirage » est l'erreur n°1 : le
+               tronc est donc dans les éléments fixes, et un tronc
+               qui se relèverait dessinerait la faute.
+   TROIS CHOSES SÉPARENT CE SCHÉMA DE CELUI DU ROWING BARRE, ET
+   LES TROIS SONT DESSINÉES :
+     1. L'ANGLE DU BUSTE. 45° au rowing barre, 0° ici. Ce n'est
+        pas un détail de posture : à l'horizontale, le bras de
+        levier des lombaires est maximal, ce qui rend la position
+        beaucoup plus dure à tenir et explique pourquoi la fiche
+        cite les lombaires parmi les muscles.
+     2. LE DÉPART AU SOL. Au rowing barre la barre reste en l'air,
+        bras tendus. Ici elle REPOSE. Le schéma le montre par la
+        géométrie : disques de rayon 16 posés sur le sol, axe de
+        barre à 16 du sol, et l'épaule exactement à 44 au-dessus —
+        une longueur de bras. Rien n'est choisi, tout découle de
+        la taille des disques.
+     3. LE TEMPO. Concentrique EXPLOSIF (18 % du cycle), retour
+        contrôlé (34 %), puis une PAUSE de 40 % barre au sol. Le
+        cycle est donc franchement asymétrique, alors que celui du
+        rowing barre est presque régulier. « Tirer sans reposer »
+        est l'erreur n°3 : le temps mort au sol est l'exercice.
+   Sens      : traction explosive vers le bas de la poitrine =
+               concentrique ; retour au sol = excentrique ; puis
+               arrêt complet.
+   ROM       : coude de 180° (bras tendus, barre au sol) à 42°, la
+               barre parcourant 36 unités à la verticale. Le coude
+               finit 10,8 unités AU-DESSUS de la ligne du dos —
+               c'est la marque d'un rowing mené au bout.
+   Agonistes : GRAND DORSAL, biceps, deltoïde postérieur. Les
+               ÉRECTEURS DU RACHIS travaillent aussi, mais en
+               ISOMÉTRIQUE : ils tiennent le buste à l'horizontale
+               sans raccourcir. Ils ne sont donc pas animés, comme
+               les abdominaux aux pompes — un muscle qui tient
+               n'est pas un muscle qui bouge.
+   Distinction : ≠ rowing barre (buste à 45°, barre en l'air,
+               tempo régulier) ; ≠ rowing T-bar (barre sur pivot) ;
+               ≠ soulevé de terre (là la hanche et le genou
+               s'étendent ; ici ils ne bougent pas du tout).
+   GÉOMÉTRIE (calculée) — épaule (86,90), bras 22, avant-bras 22.
+   Trajet de la barre imposé RECTILIGNE de (86,134) à (98,100),
+   six intervalles, IK à chacun :
+     coude 180,0 -> 121,5 -> 96,8 -> 77,9 -> 62,4 -> 50,0 -> 41,6
+     coude (point) de (86,112) à (105.17,79.20)
+   -> bras −119,40° ; avant-bras relatif +138,41°.
+   ========================================================= */
+EXERCISE_MOTIONS["rowing-pendlay"] = {
+  vb: "42 74 100 84",
+  dur: 3.4,
+  phases: { con: [0, 18], ecc: [26, 60] },
+  alt: "Buste strictement parallèle au sol, barre posée au sol : la barre est tirée explosivement jusqu'au bas de la poitrine, puis reposée au sol où elle marque un arrêt complet avant la répétition suivante.",
+  fixe: `
+    <line class="mo-ground" x1="52" y1="150" x2="136" y2="150"/>
+    <!-- corps immobile : buste À L'HORIZONTALE, genoux fléchis -->
+    <circle class="mo-head" cx="66" cy="90" r="7"/>
+    <line class="mo-body" x1="73" y1="90" x2="86" y2="90"/>
+    <line class="mo-body" x1="86" y1="90" x2="122" y2="90"/>
+    <line class="mo-body" x1="122" y1="90" x2="130" y2="120"/>
+    <line class="mo-body" x1="130" y1="120" x2="124" y2="150"/>
+    <!-- repère : l'horizontale du buste, qui ne doit pas bouger -->
+    <line class="mo-rom" x1="84" y1="82" x2="128" y2="82"/>`,
+  muscles: [
+    { nom: "Grand dorsal",
+      svg: `<ellipse cx="100" cy="84" rx="12" ry="4" transform="rotate(-4 100 84)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (86,90). −119,40° emmène le
+         coude AU-DESSUS de la ligne du dos et vers les hanches. */
+      o: "86px 90px",
+      k: [[0, "rotate(0deg)"], [3, "rotate(-32.25deg)"], [6, "rotate(-48.57deg)"],
+          [9, "rotate(-63.58deg)"], [12, "rotate(-79.37deg)"], [15, "rotate(-97.56deg)"],
+          [18, "rotate(-119.40deg)"], [26, "rotate(-119.40deg)"],
+          [31.67, "rotate(-97.56deg)"], [37.33, "rotate(-79.37deg)"], [43, "rotate(-63.58deg)"],
+          [48.67, "rotate(-48.57deg)"], [54.33, "rotate(-32.25deg)"], [60, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Biceps brachial",
+      muscle: `<ellipse cx="82.5" cy="101" rx="3.2" ry="7"/>`,
+      svg: `
+        <line class="mo-limb" x1="86" y1="90" x2="86" y2="112"/>
+        <circle class="mo-joint" cx="86" cy="112" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : rotation RELATIVE autour du COUDE.
+             +138,41° ferme le coude de 180° à 42°. */
+          o: "86px 112px",
+          k: [[0, "rotate(0deg)"], [3, "rotate(58.52deg)"], [6, "rotate(83.17deg)"],
+              [9, "rotate(102.11deg)"], [12, "rotate(117.63deg)"], [15, "rotate(130.03deg)"],
+              [18, "rotate(138.41deg)"], [26, "rotate(138.41deg)"],
+              [31.67, "rotate(130.03deg)"], [37.33, "rotate(117.63deg)"], [43, "rotate(102.11deg)"],
+              [48.67, "rotate(83.17deg)"], [54.33, "rotate(58.52deg)"], [60, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="86" y1="112" x2="86" y2="134"/>
+            <!-- disque plein format : c'est son rayon qui fixe la hauteur
+                 de départ de la barre, donc toute la géométrie -->
+            <circle class="mo-plate-o" cx="86" cy="134" r="16"/>
+            <circle class="mo-hub" cx="86" cy="134" r="2.6"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M50 126 L50 100 M45 108 L50 100 L55 108"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M50 100 L50 126 M45 118 L50 126 L55 118"/>` }
+  ]
+};
