@@ -10142,3 +10142,171 @@ EXERCISE_MOTIONS["step-ups"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M108 68 L128 88 M120.27 85.93 L128 88 L125.93 80.27"/>` }
   ]
 };
+
+/* =========================================================
+   91. PRESSE À CUISSES UNILATÉRALE  (presse-unilaterale)
+   -----------------------------------------------------------
+   Position  : ASSIS à la presse inclinée à 45°, dos et bassin
+               plaqués, UN SEUL pied au centre du plateau, l'autre
+               jambe pendante à côté.
+   Mobiles   : le CHARIOT (translation pure le long du rail), la
+               CUISSE et le TIBIA de la jambe qui travaille.
+               CHAÎNE FERMÉE : le pied ne quitte pas le plateau.
+   Fixes     : le TRONC et le bassin, plaqués ; la jambe LIBRE, qui
+               ne participe pas et est donc dessinée dans les
+               éléments fixes, en trait effacé.
+   >>> CE QUE CE SCHÉMA PARTAGE AVEC LA PRESSE BILATÉRALE, ET CE
+       QU'IL NE PARTAGE PAS <<< Il faut le dire franchement : dans
+       le plan sagittal, la cinématique d'UNE jambe à la presse
+       unilatérale est la même que celle d'une jambe à la presse
+       classique. Même machine, même rail, même chaîne fermée. Ce
+       qui change tient en trois points, et ce sont eux que ce
+       schéma montre et que l'autre ne montrait pas : la jambe
+       libre, le critère d'appui talon, et la butée de profondeur.
+       Les angles sont d'ailleurs recalculés pour de bon (cuisse
+       −37,50°, tibia +75,00° ici, contre −41,98° et +81,42° à la
+       presse bilatérale) : les deux animations n'ont aucune valeur
+       en commun.
+   >>> À 90° DE GENOU, LE FÉMUR EST EXACTEMENT VERTICAL <<< Ce
+       n'est pas un hasard de dessin, c'est une propriété du rail à
+       45°. La cheville est contrainte sur une droite à 45° passant
+       par la hanche ; quand le genou vaut 90°, cuisse et tibia sont
+       symétriques de part et d'autre de cette droite, donc à ±45°
+       d'elle : le fémur tombe pile à la verticale et le tibia pile
+       à l'horizontale. Cela donne à « descends jusqu'à 90° » un
+       repère visuel exact au lieu d'une estimation, et cela
+       explique l'erreur n°2 : au-delà, le fémur dépasse la
+       verticale, la flexion de hanche passe l'angle du dossier, et
+       le bassin — qui est plaqué — ne peut plus suivre qu'en
+       basculant en arrière. La butée pointillée du schéma est
+       exactement cette position.
+   >>> « POUSSER SUR LA POINTE » : LE CRITÈRE SE DESSINE <<< Le
+       plateau pousse le pied perpendiculairement à lui-même. Soit
+       C le point où passe la résultante de l'appui. Le moment
+       autour de la cheville vaut F × (distance de C à la
+       PROJECTION PERPENDICULAIRE de la cheville sur le plateau).
+       Il est nul si — et seulement si — C tombe sur cette
+       projection. Déplacer l'appui vers les orteils crée un moment
+       que le triceps sural doit encaisser : la force part dans le
+       tendon d'Achille au lieu du quadriceps, et le talon décolle.
+       La cheville étant à 30 % de la longueur du pied depuis le
+       talon, sa projection tombe dans le TIERS TALON — « pousse
+       dans le talon » n'est donc pas une image, c'est la position
+       de moment nul. Le segment pointillé perpendiculaire au
+       plateau, dans le schéma, EST cette projection.
+   >>> UNE ERREUR QUE CETTE VUE NE PEUT PAS MONTRER <<< « Bassin
+       qui pivote » est l'erreur n°1 et elle est TRANSVERSE : avec
+       un seul pied, la ligne d'action ne passe plus par le plan
+       médian de la machine et il apparaît un couple autour de
+       l'axe vertical. C'est précisément pour l'annuler que la
+       fiche dit « un seul pied AU CENTRE du plateau » : centré, le
+       bras de levier latéral est nul. De profil on ne voit que le
+       centrage en HAUTEUR ; le centrage latéral, lui, n'est pas
+       représentable ici et le schéma ne prétend pas le montrer.
+   ROM       : genou de 165° (haut, non verrouillé) à 90,00°
+               exactement. Course du chariot : 14,79 le long du rail.
+   CHAÎNE FERMÉE : résolue à chaque échantillon (six intervalles).
+               Avec les deux seules positions extrêmes, la cheville
+               décollait du plateau de 2,48 à mi-course.
+   Agonistes : QUADRICEPS et grand fessier de la jambe qui pousse.
+   Distinction : ≠ presse à cuisses bilatérale (deux jambes, pas de
+               couple de bassin, pas de butée dessinée) ; ≠ hack
+               squat (le corps est soulevé, pas seulement la charge) ;
+               ≠ leg extension (mono-articulaire, chaîne ouverte).
+   GÉOMÉTRIE (calculée) — hanche FIXE (84,116) ; rail à −45° ;
+   cheville (120.45,79.55) → (110,90) ; cuisse 26 ; tibia 26 ;
+   plateau perpendiculaire au rail, cheville à 8 du plateau.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-unilaterale"] = {
+  vb: "30 46 126 110",
+  dur: 4.2,
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "Assis à la presse inclinée, un seul pied au centre du plateau et l'autre jambe pendante : le chariot revient jusqu'à 90° de flexion du genou, position où la cuisse est exactement verticale, puis est repoussé le long du rail.",
+  fixe: `
+    <line class="mo-ground" x1="34" y1="150" x2="160" y2="150"/>
+    <!-- rail à 45° -->
+    <line class="mo-gear" x1="110" y1="94" x2="158" y2="46"/>
+    <!-- dossier, assise et bâti -->
+    <line class="mo-pad" x1="87" y1="122" x2="47" y2="103"/>
+    <line class="mo-pad" x1="72" y1="122" x2="92" y2="122"/>
+    <line class="mo-gear" x1="58" y1="108" x2="58" y2="150"/>
+    <line class="mo-gear" x1="78" y1="122" x2="78" y2="150"/>
+    <!-- TRONC ENTIER fixe : dos et bassin plaqués -->
+    <circle class="mo-head" cx="40" cy="96" r="8"/>
+    <line class="mo-body" x1="84" y1="116" x2="50" y2="100"/>
+    <line class="mo-limb" x1="50" y1="100" x2="56" y2="114"/>
+    <circle class="mo-joint" cx="84" cy="116" r="3"/>
+    <!-- JAMBE LIBRE : elle ne pousse pas, donc elle ne bouge pas.
+         Trait effacé, et pied qui pend à côté du plateau. -->
+    <line class="mo-body" x1="84" y1="116" x2="108.43" y2="107.11"/>
+    <line class="mo-body" x1="108.43" y1="107.11" x2="112.94" y2="132.71"/>
+    <!-- BUTÉE DE PROFONDEUR : position du plateau à 90° de genou,
+         là où le fémur est exactement vertical. Ne pas dépasser. -->
+    <line class="mo-rom" x1="109.3" y1="78" x2="122.02" y2="90.7"/>`,
+  parts: [
+    {
+      /* CHARIOT : translation PURE le long du rail, 14,79. Il porte le
+         plateau, le pied, et le pointillé qui matérialise la projection
+         perpendiculaire de la cheville — c'est le critère d'appui. */
+      k: [[0, "translate(0px,0px)"], [7, "translate(-1.74px,1.74px)"],
+          [14, "translate(-3.48px,3.48px)"], [21, "translate(-5.23px,5.23px)"],
+          [28, "translate(-6.97px,6.97px)"], [35, "translate(-8.71px,8.71px)"],
+          [42, "translate(-10.45px,10.45px)"], [50, "translate(-10.45px,10.45px)"],
+          [55.33, "translate(-8.71px,8.71px)"], [60.67, "translate(-6.97px,6.97px)"],
+          [66, "translate(-5.23px,5.23px)"], [71.33, "translate(-3.48px,3.48px)"],
+          [76.67, "translate(-1.74px,1.74px)"], [82, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="114.8" y1="62.58" x2="137.42" y2="85.2"/>
+        <line class="mo-gear" x1="126.11" y1="73.89" x2="140.25" y2="59.75"/>
+        <circle class="mo-plate-o" cx="140.25" cy="59.75" r="9"/>
+        <circle class="mo-hub" cx="140.25" cy="59.75" r="2.6"/>
+        <!-- PIED sur le plateau : cheville reliée au talon, puis
+             semelle jusqu'aux orteils. La cheville est à 8 du plateau —
+             l'épaisseur du pied est modélisée, c'est elle qui donne son
+             sens au critère d'appui ci-dessous. -->
+        <line class="mo-limb" x1="120.45" y1="79.55" x2="129.93" y2="77.71"/>
+        <line class="mo-limb" x1="129.93" y1="77.71" x2="117.2" y2="64.98"/>
+        <!-- projection perpendiculaire de la cheville : moment nul ici -->
+        <line class="mo-rom" x1="120.45" y1="79.55" x2="126.11" y2="73.89"/>
+        <circle class="mo-joint" cx="120.45" cy="79.55" r="2.8"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas.
+         −37,50° ; en bas elle est exactement VERTICALE. */
+      o: "84px 116px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(-11.76deg)"], [14, "rotate(-18.78deg)"],
+          [21, "rotate(-24.37deg)"], [28, "rotate(-29.19deg)"], [35, "rotate(-33.52deg)"],
+          [42, "rotate(-37.5deg)"], [50, "rotate(-37.5deg)"],
+          [55.33, "rotate(-33.52deg)"], [60.67, "rotate(-29.19deg)"], [66, "rotate(-24.37deg)"],
+          [71.33, "rotate(-18.78deg)"], [76.67, "rotate(-11.76deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="88.75" cy="103.25" rx="3.4" ry="9.5" transform="rotate(37.5 88.75 103.25)"/>
+        <circle cx="90" cy="117" r="4"/>`,
+      svg: `<line class="mo-limb" x1="84" y1="116" x2="99.83" y2="95.37"/>`,
+      children: [
+        {
+          /* TIBIA : +75,00° relatif. Son extrémité reste collée au
+             plateau à chacun des sept échantillons ; en bas il est
+             exactement HORIZONTAL. */
+          o: "99.83px 95.37px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(23.51deg)"], [14, "rotate(37.55deg)"],
+              [21, "rotate(48.73deg)"], [28, "rotate(58.38deg)"], [35, "rotate(67.04deg)"],
+              [42, "rotate(75deg)"], [50, "rotate(75deg)"],
+              [55.33, "rotate(67.04deg)"], [60.67, "rotate(58.38deg)"], [66, "rotate(48.73deg)"],
+              [71.33, "rotate(37.55deg)"], [76.67, "rotate(23.51deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="99.83" cy="95.37" r="2.8"/>
+            <line class="mo-limb" x1="99.83" y1="95.37" x2="120.45" y2="79.55"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M132 108 L150 90 M147.93 97.73 L150 90 L142.27 92.07"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 90 L132 108 M134.07 100.27 L132 108 L139.73 105.93"/>` }
+  ]
+};
