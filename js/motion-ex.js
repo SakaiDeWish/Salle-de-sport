@@ -9158,3 +9158,118 @@ EXERCISE_MOTIONS["pompes-diamant"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M150 122 L150 102 M145 108 L150 102 L155 108"/>` }
   ]
 };
+
+/* =========================================================
+   85. DIPS À LA MACHINE ASSISTÉE  (dips-machine)
+   -----------------------------------------------------------
+   Position  : à GENOUX sur la plateforme d'assistance, poignées
+               en mains, BUSTE VERTICAL, coudes fléchis à 90°.
+   Matériel  : machine à dips assistée. Les POIGNÉES sont le
+               point fixe : c'est le corps qui monte et descend,
+               exactement comme aux dips libres.
+   Mobiles   : coude et épaule.
+   Fixes     : les mains sur les poignées ; le rachis.
+   >>> BUSTE VERTICAL, ET C'EST CE QUI ORIENTE L'EXERCICE <<< Aux
+       dips pectoraux (schéma 5) le buste est penché de 25° :
+       cette inclinaison place le bras en avant du tronc et charge
+       le bas du grand pectoral. Ici le buste est STRICTEMENT
+       VERTICAL, le bras reste dans l'axe du corps, et c'est
+       l'extension du coude qui fait le travail. Même machine,
+       même chaîne, deux orientations — et c'est l'angle du buste,
+       pas l'engin, qui décide.
+       « Buste qui s'affaisse » est d'ailleurs l'erreur n°3 : le
+       corps est donc modélisé RIGIDE, et la somme des trois
+       rotations de la chaîne vaut exactement zéro — avant-bras
+       +38,76°, bras −84,89°, corps +46,13° — de sorte qu'il ne
+       peut pas s'incliner d'un degré.
+   LA PLATEFORME EST DESSINÉE SOLIDAIRE DES GENOUX : c'est la
+       seule pièce que cette machine ajoute au mouvement, et elle
+       doit suivre le corps. Elle est donc placée DANS le groupe
+       du corps, et descend avec lui de 12,86 unités.
+   ROM       : coude de 175° à 90°, et pas plus. « Amplitude
+               excessive en haut » est l'erreur n°2 : descendre
+               au-delà de 90° fait passer l'épaule sous le coude,
+               position où la tête humérale est la plus exposée.
+               Un repère pointillé marque la hauteur d'épaule à
+               ne pas dépasser.
+   Sens      : descente = excentrique ; poussée = concentrique.
+   Agonistes : TRICEPS surtout, deltoïde antérieur en assistance.
+   Distinction : ≠ dips pectoraux (buste penché à 25°, bas du
+               pectoral) ; ≠ dips banc (mains derrière, pieds au
+               sol) ; ≠ extension poulie (le coude y est fixe et
+               c'est la charge qui bouge).
+   GÉOMÉTRIE (calculée) — poignée (110,110) FIXE, avant-bras 22,
+   bras 22.
+     tendu  coude (110.95,88.02)   épaule (110,66.04)
+     fléchi coude (124.50,93.45)   épaule (108,78.90)
+   -> avant-bras +38,76° ; bras relatif −84,89° ; corps relatif
+      +46,13°, somme nulle.
+   ========================================================= */
+EXERCISE_MOTIONS["dips-machine"] = {
+  vb: "56 36 124 128",
+  dur: 3.6,
+  phases: { ecc: [0, 44], con: [52, 84] },
+  alt: "À genoux sur la plateforme d'une machine à dips assistée, buste vertical : le corps descend jusqu'à 90 degrés de flexion des coudes, puis remonte jusqu'aux bras tendus.",
+  fixe: `
+    <line class="mo-ground" x1="58" y1="158" x2="178" y2="158"/>
+    <!-- bâti de la machine -->
+    <line class="mo-gear" x1="60" y1="40" x2="60" y2="158"/>
+    <line class="mo-gear" x1="176" y1="40" x2="176" y2="158"/>
+    <line class="mo-gear" x1="60" y1="40" x2="176" y2="40"/>
+    <!-- rail de la plateforme d'assistance -->
+    <line class="mo-gear" x1="146" y1="90" x2="146" y2="158"/>
+    <!-- poignée, vue par la tranche -->
+    <circle class="mo-pulley" cx="110" cy="110" r="5"/>
+    <!-- LIMITE : hauteur d'épaule à 90° de coude, à ne pas dépasser -->
+    <line class="mo-rom" x1="84" y1="78.9" x2="102" y2="78.9"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS : enraciné à la POIGNÉE (110,110), qui ne bouge pas.
+         +38,76° : le coude part vers l'arrière. */
+      o: "110px 110px",
+      k: [[0, "rotate(0deg)"], [44, "rotate(38.76deg)"], [52, "rotate(38.76deg)"],
+          [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="110" cy="110" r="3.6"/>
+        <line class="mo-limb" x1="110" y1="110" x2="110.95" y2="88.02"/>
+        <circle class="mo-joint" cx="110.95" cy="88.02" r="2.6"/>`,
+      children: [
+        {
+          /* BRAS : flexion du COUDE, −84,89°, de 175° à 90° exactement. */
+          o: "110.95px 88.02px",
+          k: [[0, "rotate(0deg)"], [44, "rotate(-84.89deg)"], [52, "rotate(-84.89deg)"],
+              [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="114" cy="77" rx="3.2" ry="8" transform="rotate(-2 114 77)"/>`,
+          svg: `<line class="mo-limb" x1="110.95" y1="88.02" x2="110" y2="66.04"/>`,
+          children: [
+            {
+              /* CORPS + PLATEFORME : contre-rotation de +46,13°, qui rend la
+                 somme nulle. Le buste reste donc rigoureusement vertical, et
+                 la plateforme, solidaire des genoux, descend avec lui. */
+              o: "110px 66.04px",
+              k: [[0, "rotate(0deg)"], [44, "rotate(46.13deg)"], [52, "rotate(46.13deg)"],
+                  [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Deltoïde antérieur",
+              muscle: `<circle cx="106" cy="68" r="4.4"/>`,
+              svg: `
+                <circle class="mo-head" cx="104" cy="50" r="9"/>
+                <line class="mo-body" x1="107" y1="58" x2="110" y2="66.04"/>
+                <line class="mo-body" x1="110" y1="66.04" x2="112" y2="112"/>
+                <line class="mo-body" x1="112" y1="112" x2="106" y2="138"/>
+                <line class="mo-body" x1="106" y1="138" x2="128" y2="142"/>
+                <!-- plateforme d'assistance, solidaire des genoux -->
+                <line class="mo-pad" x1="94" y1="142" x2="134" y2="142"/>
+                <line class="mo-gear" x1="134" y1="142" x2="146" y2="142"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M160 62 L160 92 M155 84 L160 92 L165 84"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M160 92 L160 62 M155 70 L160 62 L165 70"/>` }
+  ]
+};
