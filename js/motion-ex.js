@@ -12786,3 +12786,153 @@ EXERCISE_MOTIONS["pull-through-poulie"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M162 60 L136 60 M144 55 L136 60 L144 65"/>` }
   ]
 };
+
+/* =========================================================
+   109. SOULEVÉ DE TERRE UNIJAMBISTE
+        (souleve-terre-unijambiste)
+   -----------------------------------------------------------
+   Position  : DEBOUT sur une jambe, haltère en main, jambe libre
+               tendue derrière.
+   Mobiles   : la CHEVILLE d'appui, la HANCHE, et le BRAS qui
+               contre-tourne pour rester d'aplomb.
+   Fixes     : le PIED d'appui ; l'ANGLE DU GENOU d'appui, tenu à
+               165° — « verrouiller le genou d'appui » est l'erreur
+               n°3, et 165° n'est pas 180°.
+   >>> LA JAMBE LIBRE N'EST PAS UN ORNEMENT, C'EST LE CONTREPOIDS
+       <<< Et c'est là que cet exercice cesse d'être un roumain sur
+       une jambe. Au roumain bilatéral, la contrainte est que la
+       CHARGE reste à l'aplomb du milieu du pied. Ici, elle ne le
+       peut pas : en bas, la main est 17,0 EN AVANT de l'aplomb.
+       Ce qui rétablit l'équilibre, c'est la jambe libre partie
+       64 en arrière du milieu du pied. Le calcul complet — tronc
+       et bras 68 % de la masse, chaque jambe 16 %, haltère 25 % —
+       donne la position de hanche à chaque instant, et c'est elle
+       qui pilote tout le schéma. L'équilibre n'est pas une
+       conséquence du geste, c'est sa contrainte.
+   >>> « CORPS ALIGNÉ DE LA TÊTE AU TALON LIBRE » A UNE TRADUCTION
+       EXACTE <<< La jambe libre est le PROLONGEMENT du tronc :
+       sa rotation RELATIVE au tronc vaut 0° à chaque instant, et
+       elle est donc dessinée dans la même pièce. Comme la rotation
+       relative de la cuisse d'appui vaut elle aussi 0° (hinge), ce
+       schéma contient deux zéros, et chacun est une consigne.
+   ROM       : tronc de 0° à 70° ; le tibia d'appui recule de
+               16,88° ; la hanche recule de 14,92 et ne descend que
+               de 2,53. Six fois plus de recul que de descente —
+               encore plus marqué qu'au pull-through.
+   >>> POURQUOI LA HANCHE DESCEND SI PEU <<< Parce que la jambe
+       libre, en partant vers l'arrière, déplace le centre de masse
+       du système sans que le bassin ait besoin de reculer autant.
+       C'est ce qui rend l'exercice praticable sur une jambe — et
+       ce qui explique que l'étirement des ischios y soit ressenti
+       si tôt : la hanche fléchit de 70° pratiquement sans que le
+       corps ne s'abaisse.
+   ERREUR NON MONTRABLE : « ouvrir la hanche de la jambe libre vers
+       le plafond » est une rotation du BASSIN autour de l'axe
+       long — transverse. De profil, un bassin ouvert et un bassin
+       horizontal se projettent identiquement. Le schéma ne peut
+       pas la montrer, et la consigne « hanches horizontales » de
+       la fiche reste donc à vérifier autrement qu'ici.
+   Agonistes : ISCHIO-JAMBIERS et GRAND FESSIER de la jambe d'appui.
+   Distinction : ≠ roumain bilatéral (schéma 31, charge à l'aplomb
+               obligatoire) ; ≠ pull-through (bilatéral, câble) ;
+               ≠ fente arrière (deux appuis).
+   GÉOMÉTRIE (calculée) — sol y=150 ; cheville d'appui (110,144) ;
+   milieu du pied x=111 ; tibia 26 ; cuisse 26 ; genou CONSTANT à
+   165° ; tronc 34 ; bras 34 ; jambe libre 52 ; hanche
+   (111.07,92.46) → (125.99,94.99).
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-terre-unijambiste"] = {
+  vb: "70 36 112 120",
+  dur: 4.6,
+  phases: { ecc: [0, 42], con: [52, 84] },
+  alt: "Debout de profil sur une jambe, haltère en main : le buste s'incline vers l'avant jusqu'à 70° pendant que la jambe libre part en arrière dans le prolongement exact du tronc, puis retour debout par extension de hanche.",
+  fixe: `
+    <line class="mo-ground" x1="76" y1="150" x2="180" y2="150"/>
+    <line class="mo-limb" x1="100" y1="150" x2="122" y2="150"/>
+    <line class="mo-limb" x1="110" y1="144" x2="104" y2="150"/>
+    <circle class="mo-joint" cx="110" cy="144" r="2.8"/>
+    <!-- APLOMB DU MILIEU DU PIED. Contrairement au roumain
+         bilatéral, la charge le QUITTE : c'est la jambe libre qui
+         rétablit l'équilibre. -->
+    <line class="mo-rom" x1="111" y1="40" x2="111" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA D'APPUI : +16,88°. */
+      o: "110px 144px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(3.57deg)"], [14, "rotate(7.02deg)"],
+          [21, "rotate(10.2deg)"], [28, "rotate(12.98deg)"], [35, "rotate(15.25deg)"],
+          [42, "rotate(16.88deg)"], [52, "rotate(16.88deg)"],
+          [57.33, "rotate(15.25deg)"], [62.67, "rotate(12.98deg)"], [68, "rotate(10.2deg)"],
+          [73.33, "rotate(7.02deg)"], [78.67, "rotate(3.57deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="110" y1="144" x2="107.14" y2="118.16"/>`,
+      children: [
+        {
+          /* CUISSE D'APPUI : rotation relative NULLE — genou tenu à
+             165°, ni verrouillé ni fléchi. Premier des deux zéros. */
+          o: "107.14px 118.16px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(0deg)"], [14, "rotate(0deg)"],
+              [21, "rotate(0deg)"], [28, "rotate(0deg)"], [35, "rotate(0deg)"],
+              [42, "rotate(0deg)"], [52, "rotate(0deg)"],
+              [57.33, "rotate(0deg)"], [62.67, "rotate(0deg)"], [68, "rotate(0deg)"],
+              [73.33, "rotate(0deg)"], [78.67, "rotate(0deg)"], [84, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Ischio-jambiers", "Grand fessier"],
+          muscle: `
+            <ellipse cx="113.06" cy="105.91" rx="3.4" ry="9.5" transform="rotate(8.7 113.06 105.91)"/>
+            <circle cx="116.01" cy="93.22" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="107.14" cy="118.16" r="2.8"/>
+            <!-- le genou d'appui ne se verrouille pas : 165°, pas 180° -->
+            <circle class="mo-rom" fill="none" cx="107.14" cy="118.16" r="7"/>
+            <line class="mo-limb" x1="107.14" y1="118.16" x2="111.07" y2="92.46"/>`,
+          children: [
+            {
+              /* TRONC + JAMBE LIBRE : −86,88° relatif, 70° absolus. La
+                 jambe libre est dessinée DANS cette pièce parce qu'elle
+                 est le prolongement exact du tronc — second des deux
+                 zéros du schéma. */
+              o: "111.07px 92.46px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-15.24deg)"], [14, "rotate(-30.35deg)"],
+                  [21, "rotate(-45.2deg)"], [28, "rotate(-59.65deg)"], [35, "rotate(-73.58deg)"],
+                  [42, "rotate(-86.88deg)"], [52, "rotate(-86.88deg)"],
+                  [57.33, "rotate(-73.58deg)"], [62.67, "rotate(-59.65deg)"], [68, "rotate(-45.2deg)"],
+                  [73.33, "rotate(-30.35deg)"], [78.67, "rotate(-15.24deg)"], [84, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="111.07" cy="92.46" r="2.8"/>
+                <line class="mo-body" x1="111.07" y1="92.46" x2="111.07" y2="58.46"/>
+                <line class="mo-body" x1="111.07" y1="58.46" x2="111.07" y2="55.46"/>
+                <circle class="mo-head" cx="111.07" cy="46.46" r="9"/>
+                <!-- JAMBE LIBRE : prolongement du tronc, trait effacé -->
+                <line class="mo-body" x1="111.07" y1="92.46" x2="111.07" y2="118.46"/>
+                <line class="mo-body" x1="111.07" y1="118.46" x2="111.07" y2="144.46"/>
+                <circle class="mo-joint" cx="111.07" cy="118.46" r="2.4"/>`,
+              children: [
+                {
+                  /* BRAS + HALTÈRE : contre-rotation exacte du tronc,
+                     +70° contre −70°. L'haltère pend d'aplomb — mais
+                     PAS sur l'aplomb du pied, voir l'analyse. */
+                  o: "111.07px 58.46px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(11.67deg)"], [14, "rotate(23.33deg)"],
+                      [21, "rotate(35deg)"], [28, "rotate(46.67deg)"], [35, "rotate(58.33deg)"],
+                      [42, "rotate(70deg)"], [52, "rotate(70deg)"],
+                      [57.33, "rotate(58.33deg)"], [62.67, "rotate(46.67deg)"], [68, "rotate(35deg)"],
+                      [73.33, "rotate(23.33deg)"], [78.67, "rotate(11.67deg)"], [84, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="108" y1="59.5" x2="108" y2="92.46"/>
+                    <line class="mo-bar2" x1="100" y1="92.46" x2="116" y2="92.46"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M145 60 L175 60 M167 55 L175 60 L167 65"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M175 60 L145 60 M153 55 L145 60 L153 65"/>` }
+  ]
+};
