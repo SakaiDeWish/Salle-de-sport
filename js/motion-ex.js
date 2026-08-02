@@ -10575,3 +10575,187 @@ EXERCISE_MOTIONS["wall-sit"] = {
   ],
   parts: []
 };
+
+/* =========================================================
+   94. SQUAT SAUTÉ (JUMP SQUAT)  (squat-jump)
+   -----------------------------------------------------------
+   >>> LE PREMIER EXERCICE DE LA BIBLIOTHÈQUE OÙ LE CORPS QUITTE
+       LE SOL <<< Jusqu'ici, tous les schémas avaient un point de
+       contact FIXE : un pied, une main, un bassin. Ici il y a une
+       PHASE AÉRIENNE, et la chaîne n'est plus fermée du tout. Le
+       squelette est donc emboîté dans une pièce supplémentaire, en
+       translation pure, qui porte tout le corps : elle vaut zéro
+       pendant l'appui et suit la trajectoire du vol pendant qu'il
+       n'y a plus de contact.
+   >>> ET CETTE TRAJECTOIRE EST UNE PARABOLE, PAS UNE RAMPE <<<
+       En vol, plus rien ne pousse : l'accélération est constante,
+       donc la hauteur suit h(τ) = H·(1 − ((τ−T/2)/(T/2))²). Aux
+       sept instants échantillonnés du vol, cela donne
+       0 / 8,89 / 14,22 / 16 / 14,22 / 8,89 / 0. Une interpolation
+       linéaire aurait donné 0 / 5,33 / 10,67 / 16 : le corps
+       serait monté à vitesse constante, ce qui ne ressemble à
+       aucun saut. Et l'easing du moteur étant appliqué PAR
+       SEGMENT, il aurait en plus ralenti au décollage — l'exact
+       contraire d'un saut. La parabole est donc échantillonnée.
+   Position  : debout, pieds largeur d'épaules.
+   Cycle     : descente (0→24 %), extension explosive et décollage
+               (24→36 %), VOL (36→60 %), amorti (60→72 %),
+               retour debout (72→88 %).
+   Mobiles   : le corps entier en translation ; le PIED autour de
+               la pointe ; le TIBIA, la CUISSE, le TRONC, le BRAS.
+   >>> POURQUOI LE PIED PIVOTE SUR LA POINTE <<< La fiche liste les
+       MOLLETS parmi les muscles, et ce n'est pas décoratif : le
+       dernier contact au sol se fait sur les orteils. La cheville
+       part de 0° et finit à 40° de flexion plantaire au décollage.
+       C'est pour cela que le pied est une pièce à part, en
+       rotation autour de la POINTE et non autour de la cheville :
+       c'est la pointe qui reste au sol, pas le talon.
+   >>> « RÉCEPTION JAMBES TENDUES » : LE FACTEUR SE CALCULE <<<
+       Erreur n°1, et c'est de la physique élémentaire. L'énergie à
+       dissiper à la réception est la même quoi qu'il arrive :
+       ½mv². Si elle est absorbée sur une distance d, la force
+       moyenne vaut F = mv²/(2d) — elle est INVERSEMENT
+       proportionnelle à la course d'amortissement. Dans ce schéma,
+       la hanche descend de 22,23 unités entre le contact et le bas
+       de l'amorti, soit environ 34 cm à l'échelle. Une réception
+       jambes tendues n'offre que la course des chevilles et des
+       tissus, de l'ordre de 3 cm. Rapport : 34/3 ≈ 11. Recevoir
+       raide, ce n'est pas « un peu plus dur pour les genoux »,
+       c'est environ ONZE FOIS la force de pointe. Voilà pourquoi
+       l'amorti occupe ici autant de temps d'animation que la
+       poussée.
+   ERREUR NON MONTRABLE : « genoux qui rentrent à la réception »
+       est FRONTALE. De profil, un genou qui rentre se projette au
+       même endroit qu'un genou aligné. C'est le squat sumo
+       (schéma 89) qui traite ce plan ; ce schéma-ci ne prétend pas
+       le montrer.
+   « Dos arrondi » : le tronc est un segment RIGIDE d'un bout à
+       l'autre du cycle — il bascule, il ne se courbe pas.
+   ROM       : genou de 171,4° (debout) à 88,7° (bas du squat),
+               174,9° au décollage ; cheville 0 → 40° de flexion
+               plantaire ; hauteur de saut 16 unités (≈ 25 cm).
+   Agonistes : QUADRICEPS, grand fessier, MOLLETS.
+   Distinction : ≠ squat poids du corps (pas de vol, pas de
+               flexion plantaire terminale) ; ≠ squat barre
+               (charge, tempo contrôlé) ; ≠ mountain climbers.
+   GÉOMÉTRIE (calculée) — sol y=150 ; pointe FIXE (66,150) ;
+   talon (84,150) ; cheville (78,144) ; tibia 26 ; cuisse 26 ;
+   tronc 34 ; hanche debout (74,92.3), bas (83,108), décollage
+   (73.04,85.77).
+   ========================================================= */
+EXERCISE_MOTIONS["squat-jump"] = {
+  vb: "50 10 60 146",
+  dur: 5.0,
+  phases: { con: [24, 36], ecc: [60, 72] },
+  alt: "De profil : descente en squat, extension explosive jusqu'au décollage sur la pointe des pieds, phase aérienne en trajectoire parabolique, puis réception amortie jusqu'au squat avant de se relever.",
+  fixe: `<line class="mo-ground" x1="52" y1="150" x2="106" y2="150"/>`,
+  parts: [
+    {
+      /* CORPS ENTIER : translation pure. Zéro pendant l'appui, parabole
+         pendant le vol — échantillonnée, pas interpolée. */
+      k: [[0, "translate(0px,0px)"], [8, "translate(0px,0px)"], [16, "translate(0px,0px)"],
+          [24, "translate(0px,0px)"], [29, "translate(0px,0px)"], [33, "translate(0px,0px)"],
+          [36, "translate(0px,0px)"], [40, "translate(0px,-8.89px)"], [44, "translate(0px,-14.22px)"],
+          [48, "translate(0px,-16px)"], [52, "translate(0px,-14.22px)"], [56, "translate(0px,-8.89px)"],
+          [60, "translate(0px,0px)"], [64, "translate(0px,0px)"], [68, "translate(0px,0px)"],
+          [72, "translate(0px,0px)"], [80, "translate(0px,0px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: ``,
+      children: [
+        {
+          /* PIED : rotation autour de la POINTE, 0 → −40° de flexion
+             plantaire au décollage. C'est le mollet qui fait ces 40°. */
+          o: "66px 150px",
+          k: [[0, "rotate(0deg)"], [8, "rotate(0deg)"], [16, "rotate(0deg)"], [24, "rotate(0deg)"],
+              [29, "rotate(0deg)"], [33, "rotate(-15deg)"], [36, "rotate(-40deg)"],
+              [40, "rotate(-40deg)"], [44, "rotate(-40deg)"], [48, "rotate(-40deg)"],
+              [52, "rotate(-40deg)"], [56, "rotate(-40deg)"], [60, "rotate(-40deg)"],
+              [64, "rotate(-20deg)"], [68, "rotate(-5deg)"], [72, "rotate(0deg)"],
+              [80, "rotate(0deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="66" y1="150" x2="84" y2="150"/>
+            <line class="mo-limb" x1="78" y1="144" x2="67" y2="150"/>
+            <line class="mo-limb" x1="78" y1="144" x2="83" y2="150"/>`,
+          children: [
+            {
+              /* TIBIA : rotation autour de la CHEVILLE. */
+              o: "78px 144px",
+              k: [[0, "rotate(0deg)"], [8, "rotate(-19.17deg)"], [16, "rotate(-25.96deg)"],
+                  [24, "rotate(-29.04deg)"], [29, "rotate(-21.91deg)"], [33, "rotate(4.26deg)"],
+                  [36, "rotate(48.03deg)"], [40, "rotate(48.03deg)"], [44, "rotate(48.03deg)"],
+                  [48, "rotate(48.03deg)"], [52, "rotate(48.03deg)"], [56, "rotate(48.03deg)"],
+                  [60, "rotate(48.03deg)"], [64, "rotate(6.56deg)"], [68, "rotate(-19.38deg)"],
+                  [72, "rotate(-29.04deg)"], [80, "rotate(-23.14deg)"], [88, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Mollets",
+              muscle: `<ellipse cx="79.98" cy="130.54" rx="3.2" ry="8" transform="rotate(-8.7 79.98 130.54)"/>`,
+              svg: `
+                <circle class="mo-joint" cx="78" cy="144" r="2.8"/>
+                <line class="mo-limb" x1="78" y1="144" x2="74.06" y2="118.3"/>`,
+              children: [
+                {
+                  /* CUISSE : rotation autour du GENOU. */
+                  o: "74.06px 118.3px",
+                  k: [[0, "rotate(0deg)"], [8, "rotate(44.72deg)"], [16, "rotate(66.33deg)"],
+                      [24, "rotate(82.74deg)"], [29, "rotate(56.63deg)"], [33, "rotate(29.85deg)"],
+                      [36, "rotate(-3.46deg)"], [40, "rotate(-3.46deg)"], [44, "rotate(-3.46deg)"],
+                      [48, "rotate(-3.46deg)"], [52, "rotate(-3.46deg)"], [56, "rotate(-3.46deg)"],
+                      [60, "rotate(-3.46deg)"], [64, "rotate(37.66deg)"], [68, "rotate(64.7deg)"],
+                      [72, "rotate(82.74deg)"], [80, "rotate(56.44deg)"], [88, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  muscleNom: ["Quadriceps", "Grand fessier"],
+                  muscle: `
+                    <ellipse cx="70.6" cy="105" rx="3.4" ry="9.5"/>
+                    <circle cx="77.5" cy="95" r="4.5"/>`,
+                  svg: `
+                    <circle class="mo-joint" cx="74.06" cy="118.3" r="2.8"/>
+                    <line class="mo-limb" x1="74.06" y1="118.3" x2="74" y2="92.3"/>`,
+                  children: [
+                    {
+                      /* TRONC : segment RIGIDE, il bascule sans se courber. */
+                      o: "74px 92.3px",
+                      k: [[0, "rotate(0deg)"], [8, "rotate(-37.22deg)"], [16, "rotate(-63.7deg)"],
+                          [24, "rotate(-88.7deg)"], [29, "rotate(-59.22deg)"], [33, "rotate(-32.5deg)"],
+                          [36, "rotate(-9.57deg)"], [40, "rotate(-9.57deg)"], [44, "rotate(-9.57deg)"],
+                          [48, "rotate(-9.57deg)"], [52, "rotate(-9.57deg)"], [56, "rotate(-9.57deg)"],
+                          [60, "rotate(-9.57deg)"], [64, "rotate(-38.22deg)"], [68, "rotate(-66.32deg)"],
+                          [72, "rotate(-88.7deg)"], [80, "rotate(-50.8deg)"], [88, "rotate(0deg)"],
+                          [100, "rotate(0deg)"]],
+                      svg: `
+                        <circle class="mo-joint" cx="74" cy="92.3" r="2.8"/>
+                        <line class="mo-body" x1="74" y1="92.3" x2="74" y2="58.3"/>
+                        <line class="mo-body" x1="74" y1="58.3" x2="74" y2="54.3"/>
+                        <circle class="mo-head" cx="74" cy="47.3" r="8"/>`,
+                      children: [
+                        {
+                          /* BRAS : le balancé, +150° au total, vers l'avant.
+                             Il compte pour une part réelle de la hauteur de
+                             saut, et il est dessiné en avant du tronc. */
+                          o: "74px 58.3px",
+                          k: [[0, "rotate(0deg)"], [8, "rotate(1.67deg)"], [16, "rotate(3.33deg)"],
+                              [24, "rotate(5deg)"], [29, "rotate(55.75deg)"], [33, "rotate(109.4deg)"],
+                              [36, "rotate(150deg)"], [40, "rotate(150deg)"], [44, "rotate(150deg)"],
+                              [48, "rotate(150deg)"], [52, "rotate(150deg)"], [56, "rotate(150deg)"],
+                              [60, "rotate(150deg)"], [64, "rotate(115.5deg)"], [68, "rotate(69.5deg)"],
+                              [72, "rotate(35deg)"], [80, "rotate(17.5deg)"], [88, "rotate(0deg)"],
+                              [100, "rotate(0deg)"]],
+                          svg: `
+                            <line class="mo-limb" x1="71" y1="59.5" x2="71" y2="85.5"/>
+                            <circle class="mo-hand" cx="71" cy="85.5" r="3"/>`
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 90 L100 50 M95 58 L100 50 L105 58"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M100 50 L100 90 M95 82 L100 90 L105 82"/>` }
+  ]
+};
