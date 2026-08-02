@@ -8935,3 +8935,108 @@ EXERCISE_MOTIONS["extension-un-bras-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M136 100 L136 70 M131 78 L136 70 L141 78"/>` }
   ]
 };
+
+/* =========================================================
+   83. KICKBACK TRICEPS  (kickback-triceps)
+   -----------------------------------------------------------
+   Position  : BUSTE PENCHÉ jusqu'à l'HORIZONTALE, main libre en
+               appui sur un banc, dos plat, bras collé au flanc
+               et parallèle au tronc, coude fléchi à 90°.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS — « coude qui tombe » est l'erreur n°1 ;
+               l'ÉPAULE — « élan de l'épaule » est l'erreur n°2 ;
+               le tronc.
+   >>> POURQUOI LE BUSTE EST DESSINÉ EXACTEMENT HORIZONTAL <<<
+       Ce n'est pas une interprétation : c'est ce qu'impose la
+       consigne « coude fléchi à 90° ». Le bras est parallèle au
+       tronc et l'avant-bras pend à la VERTICALE sous l'effet de
+       la charge. L'angle du coude vaut donc 90° + l'inclinaison
+       du tronc par rapport à l'horizontale. Buste à 45°, le
+       coude est déjà à 135° au repos, pas à 90°. Les deux
+       consignes de la fiche ne sont compatibles que pour un
+       buste horizontal — et c'est celui-là qui est dessiné.
+   ROM       : 90° d'extension, du coude à 90° jusqu'à
+               l'alignement complet du bras et de l'avant-bras.
+   >>> LA COURBE DE CHARGE, ET POURQUOI LA FICHE A RAISON <<< Le
+       couple résistant vaut poids × distance HORIZONTALE
+       coude-main. L'avant-bras faisant 26 :
+         rotation   0    15°    30°    45°    60°    75°    90°
+         levier   0,0   6,7   13,0   18,4   22,5   25,1   26,0
+       Croissance MONOTONE, maximum exactement au VERROUILLAGE.
+       C'est unique parmi tous les exercices de bras de ce
+       catalogue : le curl pupitre est nul en haut, le curl
+       spider nul en bas, l'extension à la poulie plafonne au
+       milieu. Ici la charge culmine à l'instant précis où le
+       triceps est le plus court. « La contraction en fin de
+       mouvement est incomparable » est donc exact, et c'est la
+       géométrie qui le dit.
+       Le revers, dit aussi : au DÉPART le bras de levier est
+       NUL. La première moitié du mouvement ne charge presque
+       rien. Et comme le maximum tombe là où le muscle est le
+       plus court donc le plus faible, « charge trop lourde »
+       (erreur n°3) rend le verrouillage impossible — d'où le
+       balancement d'épaule qu'on voit si souvent.
+   Sens      : extension = concentrique, suivie d'une TENUE d'une
+               seconde ; retour = excentrique.
+   Agonistes : TRICEPS, dans les éléments fixes puisque le bras
+               ne bouge pas.
+   Distinction : ≠ extension poulie (câble, maximum au milieu) ;
+               ≠ extension nuque (épaule fléchie, chef long) ;
+               ≠ barre au front (allongé, deux bras).
+   GÉOMÉTRIE (calculée) — épaule (86,88), bras 32 horizontal et
+   FIXE, coude (118,96), avant-bras 26. Le bras est dessiné 8
+   unités SOUS la ligne du tronc, dont il est parallèle : sur la
+   même ligne, les deux traits se confondaient et le schéma
+   devenait illisible.
+     départ main (118,122)   fin main (144,96)
+   -> avant-bras −90° autour du coude.
+   ========================================================= */
+EXERCISE_MOTIONS["kickback-triceps"] = {
+  vb: "50 68 120 98",
+  dur: 3.4,
+  phases: { con: [0, 30], ecc: [48, 88] },
+  alt: "Buste penché à l'horizontale, main libre en appui sur un banc, bras collé au flanc : l'avant-bras se tend vers l'arrière jusqu'à l'alignement complet, marque une seconde, puis revient.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="158" x2="166" y2="158"/>
+    <!-- banc d'appui pour la main libre -->
+    <line class="mo-pad" x1="56" y1="146" x2="112" y2="146"/>
+    <line class="mo-gear" x1="64" y1="150" x2="64" y2="158"/>
+    <line class="mo-gear" x1="104" y1="150" x2="104" y2="158"/>
+    <!-- corps penché, buste HORIZONTAL -->
+    <circle class="mo-head" cx="74" cy="84" r="9"/>
+    <line class="mo-body" x1="81" y1="86" x2="86" y2="88"/>
+    <line class="mo-body" x1="86" y1="88" x2="130" y2="88"/>
+    <line class="mo-body" x1="130" y1="88" x2="136" y2="120"/>
+    <line class="mo-body" x1="136" y1="120" x2="132" y2="158"/>
+    <!-- bras LIBRE, en appui sur le banc -->
+    <line class="mo-body" x1="88" y1="89" x2="78" y2="118"/>
+    <line class="mo-body" x1="78" y1="118" x2="72" y2="146"/>
+    <!-- BRAS DE TRAVAIL : fixe, parallèle au tronc -->
+    <line class="mo-limb" x1="86" y1="88" x2="86" y2="96"/>
+    <line class="mo-limb" x1="86" y1="96" x2="118" y2="96"/>
+    <circle class="mo-joint" cx="118" cy="96" r="2.8"/>
+    <!-- amplitude : l'arc réellement parcouru par l'haltère -->
+    <path class="mo-rom" fill="none" d="M118 122 A26 26 0 0 0 144 96"/>`,
+  muscles: [
+    { nom: "Triceps brachial",
+      svg: `<ellipse cx="102" cy="92" rx="9" ry="3"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (118,88), −90°.
+         Le bras ne bouge pas : c'est tout l'exercice. */
+      o: "118px 96px",
+      k: [[0, "rotate(0deg)"], [30, "rotate(-90deg)"], [48, "rotate(-90deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="118" y1="96" x2="118" y2="122"/>
+        <line class="mo-bar2" x1="110" y1="122" x2="126" y2="122"/>
+        <rect class="mo-mass" x="106" y="115.5" width="6" height="13" rx="2"/>
+        <rect class="mo-mass" x="124" y="115.5" width="6" height="13" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M152 116 L152 94 M147 102 L152 94 L157 102"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M152 94 L152 116 M147 108 L152 116 L157 108"/>` }
+  ]
+};
