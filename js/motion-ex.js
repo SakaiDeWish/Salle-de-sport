@@ -12936,3 +12936,121 @@ EXERCISE_MOTIONS["souleve-terre-unijambiste"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M175 60 L145 60 M153 55 L145 60 L153 65"/>` }
   ]
 };
+
+/* =========================================================
+   110. ADDUCTION À LA MACHINE  (adduction-machine) — VU DE DESSUS
+   -----------------------------------------------------------
+   VUE       : de dessus, pour la même raison démontrée au schéma
+               101 — assis hanche fléchie, le fémur pointe vers le
+               spectateur et sa projection FRONTALE vaudrait
+               26·sin(α), donc 0 quand les jambes sont serrées. De
+               dessus, le fémur reste dans le plan de l'image sur
+               toute l'amplitude : longueur constante, rotation
+               pure. Le tibia pend à la verticale et se projette en
+               un point : il n'est pas dessiné.
+   Position  : ASSIS, dos collé au dossier, jambes écartées,
+               coussins à l'INTÉRIEUR des genoux.
+   Mobile    : les deux HANCHES, en fermeture symétrique.
+   Fixes     : le BASSIN — « décoller le bassin du siège » est
+               l'erreur n°3.
+   ROM       : de 45° d'écartement à 0°, soit 45° par cuisse et 90°
+               d'amplitude totale. L'arc pointillé est le trajet
+               réel du genou.
+   >>> « AMPLITUDE DE DÉPART EXCESSIVE » : LA LIMITE EST À 45° <<<
+       Erreur n°1, et c'est la plus sérieuse des trois. L'abduction
+       passive de hanche plafonne autour de 45° chez la plupart des
+       gens. Le schéma part donc EXACTEMENT à 45°, et les deux
+       petits traits pointillés qui dépassent l'arc marquent 55° —
+       la zone à ne pas chercher. Au-delà de la limite passive, les
+       degrés supplémentaires ne sont plus fournis par le ventre
+       musculaire : avec un bras de levier d'adducteur d'environ
+       4 cm à la hanche, 10° de trop représentent 0,7 cm de
+       longueur que le tendon et l'insertion pubienne doivent
+       absorber à la place du muscle. C'est précisément le site des
+       pubalgies. « Étirement forcé » n'est donc pas une image.
+   >>> LE MUSCLE QUE VOUS AVEZ DÉJÀ CROISÉ AILLEURS <<< Les
+       adducteurs ne sont pas qu'un groupe d'appoint : les fibres
+       postérieures du GRAND ADDUCTEUR naissent de la branche
+       ischio-pubienne et se comportent comme un ischio-jambier —
+       c'est un extenseur de hanche à part entière, ce qui lui vaut
+       le surnom de « quatrième ischio ». C'est le même muscle qui
+       apparaissait comme antagoniste des 48,79° d'abduction du
+       squat sumo (schéma 89). Renforcer l'intérieur des cuisses,
+       ce n'est donc pas seulement « du galbe » : c'est aussi de
+       l'extension de hanche, ce que dit la fiche en parlant de
+       stabilisateur du squat et des fentes.
+   >>> CE QUE CE SCHÉMA NE PEUT PAS MONTRER <<< « Mouvement
+       balistique » (erreur n°2) est une affaire de VITESSE, pas de
+       géométrie. Une animation à vitesse constante ne peut ni la
+       montrer ni la démentir. Le seul indice que le schéma
+       fournit est le tempo choisi : la phase de fermeture occupe
+       36 % du cycle et la réouverture 44 %, parce que la fiche dit
+       « rouvre lentement en retenant la charge ».
+   PAS D'ÉCHANTILLONNAGE : une rotation par cuisse autour d'un axe
+       fixe, sans contrainte de fermeture. L'interpolation linéaire
+       EST le mouvement exact.
+   Agonistes : ADDUCTEURS.
+   Distinction : ≠ abduction machine (schéma 101, mouvement inverse,
+               coussins à l'extérieur, moyen fessier) ; ≠ adduction
+               à la poulie (debout, unilatéral) ; ≠ squat sumo.
+   GÉOMÉTRIE (calculée) — hanches (94,120) et (106,120) ; fémur 26
+   dans le plan de l'image ; genou droit (124.38,101.62) → (106,94).
+   ========================================================= */
+EXERCISE_MOTIONS["adduction-machine"] = {
+  vb: "62 88 76 64",
+  dur: 3.6,
+  vue: "Vu de dessus",
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "Vu de dessus, assis dans la machine jambes écartées à 45° : les deux cuisses se referment symétriquement jusqu'à se toucher contre les coussins intérieurs, le bassin restant collé au siège, puis rouvrent lentement.",
+  fixe: `
+    <!-- dossier, tronc et tête vus de dessus -->
+    <line class="mo-pad" x1="86" y1="142" x2="114" y2="142"/>
+    <circle class="mo-head" cx="100" cy="132" r="7"/>
+    <line class="mo-body" x1="86" y1="126" x2="114" y2="126"/>
+    <line class="mo-limb" x1="86" y1="126" x2="78" y2="120"/>
+    <line class="mo-limb" x1="114" y1="126" x2="122" y2="120"/>
+    <line class="mo-bar3" x1="74" y1="116" x2="82" y2="124"/>
+    <line class="mo-bar3" x1="126" y1="116" x2="118" y2="124"/>
+    <!-- BASSIN : il reste collé au siège -->
+    <line class="mo-body" x1="94" y1="120" x2="106" y2="120"/>
+    <circle class="mo-joint" cx="94" cy="120" r="2.8"/>
+    <circle class="mo-joint" cx="106" cy="120" r="2.8"/>
+    <!-- trajet réel des genoux, 45° chacun -->
+    <path class="mo-rom" fill="none" d="M124.38 101.62 A26 26 0 0 0 106 94"/>
+    <path class="mo-rom" fill="none" d="M75.62 101.62 A26 26 0 0 1 94 94"/>
+    <!-- LIMITE PASSIVE : au-delà de 45°, ce n'est plus le muscle qui
+         s'allonge mais le tendon et l'insertion pubienne. -->
+    <line class="mo-rom" x1="127.3" y1="105.09" x2="135.49" y2="99.35"/>
+    <line class="mo-rom" x1="72.7" y1="105.09" x2="64.51" y2="99.35"/>`,
+  parts: [
+    {
+      /* CUISSE DROITE : rotation autour de la hanche, −45°. */
+      o: "106px 120px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(-45deg)"], [46, "rotate(-45deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Adducteurs",
+      muscle: `<ellipse cx="112.36" cy="107.98" rx="3.4" ry="9" transform="rotate(45 112.36 107.98)"/>`,
+      svg: `
+        <line class="mo-limb" x1="106" y1="120" x2="124.38" y2="101.62"/>
+        <circle class="mo-joint" cx="124.38" cy="101.62" r="2.6"/>
+        <line class="mo-gear" x1="106" y1="120" x2="120.84" y2="98.08"/>
+        <line class="mo-pad" x1="125.08" y1="93.84" x2="116.6" y2="102.32"/>`
+    },
+    {
+      /* CUISSE GAUCHE : miroir exact. */
+      o: "94px 120px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(45deg)"], [46, "rotate(45deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscle: `<ellipse cx="87.64" cy="107.98" rx="3.4" ry="9" transform="rotate(-45 87.64 107.98)"/>`,
+      svg: `
+        <line class="mo-limb" x1="94" y1="120" x2="75.62" y2="101.62"/>
+        <circle class="mo-joint" cx="75.62" cy="101.62" r="2.6"/>
+        <line class="mo-gear" x1="94" y1="120" x2="79.16" y2="98.08"/>
+        <line class="mo-pad" x1="74.92" y1="93.84" x2="83.4" y2="102.32"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M132 146 L110 146 M118 141 L110 146 L118 151"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M110 146 L132 146 M124 141 L132 146 L124 151"/>` }
+  ]
+};
