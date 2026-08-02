@@ -9590,3 +9590,165 @@ EXERCISE_MOTIONS["front-squat"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M141 100 L141 60 M136 68 L141 60 L146 68"/>` }
   ]
 };
+
+/* =========================================================
+   88. HACK SQUAT (MACHINE)  (hack-squat)
+   -----------------------------------------------------------
+   Position  : DEBOUT sur un plateau FIXE incliné, dos et épaules
+               calés contre un chariot qui coulisse sur un rail à
+               45°. Pieds largeur d'épaules.
+   Mobiles   : le CHARIOT (translation pure le long du rail, il ne
+               tourne PAS), et la chaîne CUISSE + TIBIA qui relie
+               la hanche — solidaire du chariot — à la cheville,
+               posée sur le plateau fixe. CHAÎNE FERMÉE.
+   Fixes     : le PLATEAU et le rail ; le TRONC, qui ne change
+               jamais d'orientation : il reste parallèle au rail
+               d'un bout à l'autre.
+   >>> CE QUI CHANGE VRAIMENT PAR RAPPORT AU SQUAT : LA CONTRAINTE
+       DISPARAÎT <<< Aux schémas 25 et 87 (squat barre, front
+       squat), TOUTE la géométrie découlait d'une seule contrainte :
+       la barre reste à l'aplomb du milieu du pied. C'est elle qui
+       imposait l'angle du tronc, et c'est elle qui rendait
+       l'exercice difficile à équilibrer. Ici, le rail la remplace :
+       la ligne d'action est tenue par la machine. Conséquence
+       directe, et c'est exactement ce que dit la fiche par
+       « sans contrainte d'équilibre » : l'angle du tronc n'est
+       plus une variable à calculer, c'est une CONSTANTE de la
+       machine. Le schéma le montre en dessinant le tronc comme un
+       bloc en translation, sans la moindre rotation.
+   >>> ET PAR RAPPORT À LA PRESSE À CUISSES : LES RÔLES SONT
+       INVERSÉS <<< Les deux ont la même chaîne fermée hanche →
+       genou → cheville → plateau, et le même rail à 45°. Mais :
+         presse  : le TRONC est fixe, le CHARIOT s'éloigne ;
+         hack    : le CHARIOT porte le tronc, le PLATEAU est fixe.
+       Cinématiquement c'est le même mouvement relatif ; ce qui
+       diffère est ce qu'on soulève. À la presse le corps ne monte
+       pas : seule la charge est déplacée. Au hack squat le lifter
+       se soulève LUI-MÊME en plus du chariot, et sur un rail à 45°
+       la résistance vaut cos(45°) = 0,707 fois le poids total
+       chariot + haut du corps. C'est le seul des deux où le poids
+       de corps compte.
+   >>> L'INCLINAISON DU PLATEAU N'EST PAS CHOISIE, ELLE EST
+       DÉDUITE <<< « Décoller les talons » est l'erreur n°1. Le
+       talon reste au contact tant que le tibia n'a pas à se
+       coucher sur le plateau. J'ai donc pris l'inclinaison qui
+       rend le tibia PERPENDICULAIRE au plateau dans la position
+       basse : 14,2° au-dessus de l'horizontale, pointes hautes.
+       En haut le tibia est à 24,8° de cette perpendiculaire, en
+       bas à 0° — la cheville est donc au plus près du neutre
+       précisément là où la flexion est la plus profonde, ce qui
+       est toute la raison d'être d'un plateau incliné. (Les
+       machines réelles varient autour de cette valeur ; c'est la
+       relation qui compte, pas le chiffre.)
+   ROM       : genou de 157,2° (haut, non verrouillé — la fiche
+               dit « sans verrouiller brutalement ») à 85,9°, soit
+               71,4° de flexion. Le chariot parcourt 16 unités le
+               long du rail. « Amplitude minuscule chargée lourd »
+               est l'erreur n°3.
+   >>> CHAÎNE FERMÉE : IL A FALLU RÉSOUDRE, PAS INTERPOLER <<<
+       Le pied ne quitte jamais le plateau. En n'inscrivant que
+       les deux positions extrêmes, l'interpolation linéaire des
+       deux rotations décollait la cheville de 2,25 unités à
+       mi-course. Le genou est donc calculé par intersection de
+       cercles à chaque échantillon (six intervalles), et les
+       angles DÉROULÉS — sans quoi le solveur produisait des
+       keyframes à −335° et +315°, un tour complet parasite en
+       plein milieu de la descente.
+   Agonistes : QUADRICEPS, grand fessier.
+   Distinction : ≠ presse à cuisses (tronc fixe, corps non soulevé) ;
+               ≠ squat barre (aplomb à tenir, tronc variable) ;
+               ≠ sissy squat (pas de charge guidée, hanche tendue).
+   GÉOMÉTRIE (calculée) — cheville FIXE (73,125) ; hanche haute
+   (115.36,96.64) ; cuisse 26 ; tibia 26 ; rail à −45° ; course
+   du chariot 16 ; plateau à 14,2°.
+   ========================================================= */
+EXERCISE_MOTIONS["hack-squat"] = {
+  vb: "48 52 124 102",
+  dur: 4.4,
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "Debout sur le plateau incliné d'une machine à hack squat, dos calé contre le chariot : le chariot descend le long du rail à 45° jusqu'à 86° de flexion des genoux, puis remonte, le tronc gardant exactement la même orientation.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="150" x2="174" y2="150"/>
+    <!-- RAIL à 45° : c'est lui qui remplace l'aplomb du squat -->
+    <line class="mo-gear" x1="100" y1="126" x2="168" y2="58"/>
+    <line class="mo-gear" x1="168" y1="58" x2="168" y2="150"/>
+    <line class="mo-gear" x1="100" y1="126" x2="100" y2="150"/>
+    <!-- PLATEAU FIXE incliné à 14,2° : l'inclinaison qui rend le
+         tibia perpendiculaire au plateau en position basse. -->
+    <line class="mo-gear" x1="84.61" y1="136.19" x2="51.65" y2="127.86"/>
+    <line class="mo-gear" x1="84.61" y1="136.19" x2="84.61" y2="150"/>
+    <line class="mo-gear" x1="51.65" y1="127.86" x2="51.65" y2="150"/>
+    <!-- PIED : posé à plat, cheville reliée au talon ET à l'avant.
+         Le talon ne décolle pas — erreur n°1 de la fiche. -->
+    <line class="mo-limb" x1="77.83" y1="134.48" x2="60.38" y2="130.06"/>
+    <line class="mo-limb" x1="73" y1="125" x2="77.83" y2="134.48"/>
+    <line class="mo-limb" x1="73" y1="125" x2="66.48" y2="131.61"/>
+    <circle class="mo-joint" cx="73" cy="125" r="2.8"/>`,
+  parts: [
+    {
+      /* CHARIOT + TRONC : TRANSLATION PURE le long du rail, 16 unités.
+         Aucune rotation : le tronc garde exactement son orientation,
+         c'est la définition même de la machine. */
+      k: [[0, "translate(0px,0px)"], [7, "translate(-1.89px,1.89px)"],
+          [14, "translate(-3.77px,3.77px)"], [21, "translate(-5.66px,5.66px)"],
+          [28, "translate(-7.54px,7.54px)"], [35, "translate(-9.43px,9.43px)"],
+          [42, "translate(-11.31px,11.31px)"], [50, "translate(-11.31px,11.31px)"],
+          [55.33, "translate(-9.43px,9.43px)"], [60.67, "translate(-7.54px,7.54px)"],
+          [66, "translate(-5.66px,5.66px)"], [71.33, "translate(-3.77px,3.77px)"],
+          [76.67, "translate(-1.89px,1.89px)"], [82, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <!-- dossier et coussinets d'épaules, solidaires du chariot -->
+        <line class="mo-pad" x1="124" y1="92.94" x2="141.9" y2="75"/>
+        <line class="mo-pad" x1="136" y1="68" x2="146" y2="78"/>
+        <line class="mo-body" x1="115.36" y1="96.64" x2="137.99" y2="74.01"/>
+        <line class="mo-body" x1="137.99" y1="74.01" x2="142.99" y2="68.01"/>
+        <circle class="mo-head" cx="149" cy="62" r="8.5"/>
+        <!-- bras aux poignées, dessinés en avant du tronc -->
+        <line class="mo-limb" x1="137.99" y1="74.01" x2="127" y2="80"/>
+        <line class="mo-limb" x1="127" y1="80" x2="132" y2="72"/>
+        <line class="mo-bar3" x1="135.4" y1="74.1" x2="128.6" y2="69.9"/>
+        <circle class="mo-joint" cx="115.36" cy="96.64" r="2.8"/>`,
+      children: [
+        {
+          /* CUISSE : rotation autour de la HANCHE, qui voyage avec le
+             chariot. +40,72° au total, mais RÉSOLU par intersection de
+             cercles à chaque échantillon — la chaîne est fermée. */
+          o: "115.36px 96.64px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(10.78deg)"], [14, "rotate(18.28deg)"],
+              [21, "rotate(24.59deg)"], [28, "rotate(30.27deg)"], [35, "rotate(35.6deg)"],
+              [42, "rotate(40.72deg)"], [50, "rotate(40.72deg)"],
+              [55.33, "rotate(35.6deg)"], [60.67, "rotate(30.27deg)"], [66, "rotate(24.59deg)"],
+              [71.33, "rotate(18.28deg)"], [76.67, "rotate(10.78deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="102" cy="98.4" rx="3.4" ry="9.5" transform="rotate(67.58 102 98.4)"/>
+            <circle cx="118" cy="101" r="4.2"/>`,
+          svg: `<line class="mo-limb" x1="115.36" y1="96.64" x2="91.33" y2="106.56"/>`,
+          children: [
+            {
+              /* TIBIA : −71,37° relatif. Son extrémité retombe exactement
+                 sur la cheville fixe (73,125) à chacun des sept
+                 échantillons — c'est la contrainte de fermeture. */
+              o: "91.33px 106.56px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-20.34deg)"], [14, "rotate(-33.96deg)"],
+                  [21, "rotate(-45.05deg)"], [28, "rotate(-54.69deg)"], [35, "rotate(-63.38deg)"],
+                  [42, "rotate(-71.37deg)"], [50, "rotate(-71.37deg)"],
+                  [55.33, "rotate(-63.38deg)"], [60.67, "rotate(-54.69deg)"], [66, "rotate(-45.05deg)"],
+                  [71.33, "rotate(-33.96deg)"], [76.67, "rotate(-20.34deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="91.33" cy="106.56" r="2.8"/>
+                <line class="mo-limb" x1="91.33" y1="106.56" x2="73" y2="125"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M90 74 L66 98 M68.07 90.27 L66 98 L73.73 95.93"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M66 98 L90 74 M87.93 81.73 L90 74 L82.27 76.07"/>` }
+  ]
+};
