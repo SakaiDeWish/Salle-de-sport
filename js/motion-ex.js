@@ -13852,3 +13852,172 @@ EXERCISE_MOTIONS["fire-hydrant"] = {
 
    Le solveur complet est conservé : scratchpad/ik_clamshell.py.
    ───────────────────────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────────────────────
+   117. MARCHE LATÉRALE AVEC ÉLASTIQUE
+        (marche-laterale-elastique)             — VU DE FACE
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Debout, élastique aux chevilles, pieds à 14
+   d'écart, demi-squat léger, buste droit. Hanches à 104, sol à 150.
+
+   POURQUOI LA VUE DE FACE EST EXACTE MALGRÉ LA HANCHE FLÉCHIE. En
+   3D, le fémur fléchi de φ puis abduit de α pointe vers
+   (−cos φ sin α, sin φ, −cos φ cos α). Sa projection frontale a pour
+   longueur cos φ — INDÉPENDANTE de α — et pour angle exactement α.
+   Le demi-squat raccourcit donc le fémur dessiné d'un facteur
+   constant (cos 35° = 0,8192, soit 21,30 au lieu de 26) mais ne
+   fausse pas l'abduction d'un degré. Raccourcissement constant : on
+   le déclare. C'est le contraire du clamshell, où rien n'était
+   constant.
+
+   ARTICULATIONS MOBILES : les deux hanches en abduction/adduction,
+   et le bassin en translation latérale.
+   ARTICULATIONS FIXES : genoux et chevilles. Le demi-squat est tenu,
+   donc la portée hanche→cheville reste constante à 46,0109 : chaque
+   jambe est un TRIANGLE RIGIDE qui pivote autour de sa hanche. C'est
+   la même signature de corps rigide qu'aux schémas 114 et 115, mais
+   sur un triangle au lieu d'un L.
+
+   CE QUE LA RIGIDITÉ IMPOSE, ET QU'ON NE DEVINERAIT PAS. Si la
+   portée est constante et les pieds au sol, alors écarter les pieds
+   FAIT DESCENDRE le bassin : hanche_y = 150 − 46,0109·cos β. De 14 à
+   30 d'écart, β passe de 1,2454° à 11,2803° et le bassin descend de
+   0,878 unité, soit 1,5 cm. Ce n'est pas un détail décoratif : c'est
+   exactement pourquoi « se redresser complètement entre les pas » est
+   une erreur. Le bassin DOIT osciller de 1,5 cm ; s'il remonte plus,
+   le demi-squat a été perdu.
+
+   LE CYCLE, ET POURQUOI IL BOUCLE SANS SAUT. Quatre phases : le pied
+   droit sort (14→30), le gauche suit (30→14, le corps a avancé de
+   16), puis le gauche sort vers la gauche et le droit suit. Le corps
+   revient exactement à son point de départ, donc la boucle est
+   continue — pas de retour en arrière visible. C'est aussi ce que dit
+   la fiche : « d'un côté, puis reviens de l'autre ». Aller à droite,
+   le pied droit mène ; retour, c'est le gauche.
+
+   L'ÉCART NE DESCEND JAMAIS À ZÉRO. Le minimum est 14, soit plus que
+   la largeur de bassin (12) : « pieds qui se rejoignent » est la
+   première erreur listée, et l'élastique ne doit jamais se détendre.
+   Son allongement va de ×1 à ×2,1429 — c'est la tension utile.
+
+   GENOUX QUI RENTRENT. Le genou est calculé, pas placé à vue : fémur
+   21,30, tibia 25,60, portée 46,0109 donnent le genou à 4,52 EN
+   DEHORS de la ligne hanche→cheville, qui est tracée en pointillés
+   sur chaque jambe. Le genou doit rester du bon côté de ce trait.
+
+   CONTRE-ROTATION DES PIEDS. Les pieds restent à plat : ils sont
+   enfants de leur jambe avec la rotation opposée, qui annule celle du
+   segment. Sans cela ils basculeraient de 10° alors qu'ils sont
+   posés.
+
+   MUSCLES AGONISTES. Moyen fessier, marqué en haut et en dehors de
+   chaque hanche. Les stabilisateurs du bassin que cite la fiche
+   travaillent en isométrie et ne se ramènent pas à un point
+   dessinable — un marqueur posé au centre du bassin passait d'ailleurs
+   sous le tronc et restait invisible. Ils sont donc décrits ici plutôt
+   que faussement localisés.
+
+   TEMPO. Cycle de 5 s pour quatre pas — la fiche dit « contrôlés ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["marche-laterale-elastique"] = {
+  vb: "76 44 70 112",
+  dur: 5,
+  vue: "Vu de face",
+  phases: { con: [0, 48], ecc: [52, 100] },
+  alt: "Vu de face en demi-squat, élastique aux chevilles : le pied droit s'écarte, le gauche le rejoint sans jamais relâcher la tension, puis la marche repart dans l'autre sens ; le bassin descend de 1,5 cm à chaque écartement.",
+  fixe: `
+    <line class="mo-ground" x1="78" y1="150" x2="142" y2="150"/>`,
+  parts: [
+    {
+      /* ÉLASTIQUE : origine au bout gauche, translation puis étirement
+         en x. La classe mo-cable porte vector-effect non-scaling-stroke,
+         donc le trait ne s'épaissit pas sous le scaleX. */
+      o: "93px 147px",
+      k: [[0, "translate(0px,0px) scaleX(1)"], [12.5, "translate(0px,0px) scaleX(1.5714)"],
+          [25, "translate(0px,0px) scaleX(2.1429)"], [37.5, "translate(8px,0px) scaleX(1.5714)"],
+          [50, "translate(16px,0px) scaleX(1)"], [62.5, "translate(8px,0px) scaleX(1.5714)"],
+          [75, "translate(0px,0px) scaleX(2.1429)"], [87.5, "translate(0px,0px) scaleX(1.5714)"],
+          [100, "translate(0px,0px) scaleX(1)"]],
+      svg: `<line class="mo-cable" x1="93" y1="147" x2="107" y2="147"/>`
+    },
+    {
+      /* CORPS : translation latérale de 16, plus la descente de 0,878
+         imposée par l'écartement des pieds. Les jambes sont ses
+         enfants : elles héritent de la translation et tournent en plus. */
+      o: "100px 104px",
+      k: [[0, "translate(0px,0px)"], [12.5, "translate(4px,0.2616px)"],
+          [25, "translate(8px,0.878px)"], [37.5, "translate(12px,0.2616px)"],
+          [50, "translate(16px,0px)"], [62.5, "translate(12px,0.2616px)"],
+          [75, "translate(8px,0.878px)"], [87.5, "translate(4px,0.2616px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <circle class="mo-head" cx="100" cy="64" r="9"/>
+        <line class="mo-body" x1="100" y1="75" x2="100" y2="72"/>
+        <line class="mo-body" x1="86" y1="75" x2="114" y2="75"/>
+        <line class="mo-body" x1="100" y1="104" x2="100" y2="75"/>
+        <line class="mo-limb" x1="86" y1="75" x2="78" y2="88"/>
+        <line class="mo-limb" x1="78" y1="88" x2="94" y2="89"/>
+        <circle class="mo-hand" cx="94" cy="89" r="3"/>
+        <line class="mo-limb" x1="114" y1="75" x2="122" y2="88"/>
+        <line class="mo-limb" x1="122" y1="88" x2="106" y2="89"/>
+        <circle class="mo-hand" cx="106" cy="89" r="3"/>
+        <line class="mo-body" x1="94" y1="104" x2="106" y2="104"/>
+        <circle class="mo-joint" cx="94" cy="104" r="2.8"/>
+        <circle class="mo-joint" cx="106" cy="104" r="2.8"/>`,
+      children: [
+        {
+          /* JAMBE DROITE : triangle rigide, rotation −10,0350°. */
+          o: "106px 104px",
+          k: [[0, "rotate(0deg)"], [12.5, "rotate(-4.9934deg)"], [25, "rotate(-10.035deg)"],
+              [37.5, "rotate(-4.9934deg)"], [50, "rotate(0deg)"], [62.5, "rotate(-4.9934deg)"],
+              [75, "rotate(-10.035deg)"], [87.5, "rotate(-4.9934deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Moyen fessier",
+          muscle: `<circle cx="113" cy="99" r="4.5"/>`,
+          svg: `
+            <line class="mo-rom" x1="106" y1="104" x2="107" y2="150"/>
+            <line class="mo-limb" x1="106" y1="104" x2="110.98" y2="124.71"/>
+            <circle class="mo-joint" cx="110.98" cy="124.71" r="2.6"/>
+            <line class="mo-limb" x1="110.98" y1="124.71" x2="107" y2="150"/>`,
+          children: [
+            {
+              /* PIED : contre-rotation, il reste posé à plat. */
+              o: "107px 150px",
+              k: [[0, "rotate(0deg)"], [12.5, "rotate(4.9934deg)"], [25, "rotate(10.035deg)"],
+                  [37.5, "rotate(4.9934deg)"], [50, "rotate(0deg)"], [62.5, "rotate(4.9934deg)"],
+                  [75, "rotate(10.035deg)"], [87.5, "rotate(4.9934deg)"], [100, "rotate(0deg)"]],
+              svg: `<line class="mo-limb" x1="102" y1="150" x2="112" y2="150"/>`
+            }
+          ]
+        },
+        {
+          /* JAMBE GAUCHE : miroir exact. */
+          o: "94px 104px",
+          k: [[0, "rotate(0deg)"], [12.5, "rotate(4.9934deg)"], [25, "rotate(10.035deg)"],
+              [37.5, "rotate(4.9934deg)"], [50, "rotate(0deg)"], [62.5, "rotate(4.9934deg)"],
+              [75, "rotate(10.035deg)"], [87.5, "rotate(4.9934deg)"], [100, "rotate(0deg)"]],
+          muscle: `<circle cx="87" cy="99" r="4.5"/>`,
+          svg: `
+            <line class="mo-rom" x1="94" y1="104" x2="93" y2="150"/>
+            <line class="mo-limb" x1="94" y1="104" x2="89.02" y2="124.71"/>
+            <circle class="mo-joint" cx="89.02" cy="124.71" r="2.6"/>
+            <line class="mo-limb" x1="89.02" y1="124.71" x2="93" y2="150"/>`,
+          children: [
+            {
+              o: "93px 150px",
+              k: [[0, "rotate(0deg)"], [12.5, "rotate(-4.9934deg)"], [25, "rotate(-10.035deg)"],
+                  [37.5, "rotate(-4.9934deg)"], [50, "rotate(0deg)"], [62.5, "rotate(-4.9934deg)"],
+                  [75, "rotate(-10.035deg)"], [87.5, "rotate(-4.9934deg)"], [100, "rotate(0deg)"]],
+              svg: `<line class="mo-limb" x1="88" y1="150" x2="98" y2="150"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M90 50 L118 50 M110 45 L118 50 L110 55"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 50 L90 50 M98 45 L90 50 L98 55"/>` }
+  ]
+};
