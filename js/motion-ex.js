@@ -11777,3 +11777,136 @@ EXERCISE_MOTIONS["abduction-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M132 143 L110 143 M118 138 L110 143 L118 148"/>` }
   ]
 };
+
+/* =========================================================
+   102. KICKBACK FESSIER À LA POULIE  (kickback-fessier-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT FACE à une poulie basse, sangle à la cheville,
+               mains sur le montant, en appui sur l'autre jambe.
+   Mobile    : la HANCHE de la jambe sanglée ; le genou se tend en
+               accompagnement.
+   Fixes     : le BASSIN et le TRONC — « buste qui se redresse à
+               chaque rep » est l'erreur n°3, et le schéma la rend
+               structurellement impossible en dessinant tout le
+               tronc dans les éléments fixes.
+   >>> C'EST L'EXACT COMPLÉMENT DU SCHÉMA 95 <<< Même poulie basse,
+       même sangle de cheville, même hanche : seule change
+       l'orientation du lifter. Dos à la poulie, c'est une FLEXION
+       de hanche (psoas) ; face à la poulie, c'est une EXTENSION
+       (grand fessier). Et les deux profils de résistance sont
+       radicalement différents, ce qui ne se devine pas :
+         flexion (95)  : bras de levier 51,1 -> 23,9, rapport 2,14
+         extension     : bras de levier 43,6 -> 50,9, rapport 1,17
+       Le kickback est donc l'un des exercices à résistance la plus
+       CONSTANTE de toute la bibliothèque — le levier ne varie que
+       de 17 % et reste pratiquement plat sur les deux tiers hauts :
+         t      0    1/6   2/6   3/6   4/6   5/6     1
+         levier 43,6 47,1  49,4  50,6  50,9  50,6  49,6
+       Aucun point mort non plus : la direction hanche->poulie vaut
+       139,40° et le secteur balayé ne va que de 100,00° à 75,00°.
+   >>> « CAMBRER LES LOMBAIRES » : LA LIMITE EST DE 20°, PAS DE 45°
+       <<< Erreur n°1, et c'est la plus importante. L'extension de
+       hanche vraie ne dépasse guère 20° au-delà de l'alignement
+       cuisse-tronc. Or un kickback « spectaculaire » montre souvent
+       une jambe à 45° derrière le corps : les 25° manquants ne
+       viennent pas de la hanche, ils viennent de la BASCULE DU
+       BASSIN et de l'hyperlordose lombaire. Le schéma s'arrête donc
+       à 20° exactement, et le trait pointillé qui part de la hanche
+       marque cette limite. Une amplitude qui paraît plus grande
+       n'est pas un meilleur fessier, c'est un dos qui travaille à
+       sa place.
+   ROM       : cuisse de 40° de FLEXION à 20° d'EXTENSION, soit 60°
+               au total ; genou de 120° à 170°. L'arc pointillé est
+               le trajet réel du genou.
+   ÉCHANTILLONNAGE : le câble tourne de façon NON monotone (+7,38°
+       au maximum puis retour à +6,01°) tout en s'allongeant de
+       ×1,4371. Caler sur les deux extrêmes l'aurait décroché de la
+       sangle ; il est donc échantillonné sur six intervalles.
+   Agonistes : GRAND FESSIER, en isolation.
+   Distinction : ≠ flexion de hanche poulie (schéma 95, mouvement
+               inverse, profil 2,14 contre 1,17) ; ≠ hip thrust
+               (bilatéral, résistance verticale) ; ≠ donkey kick au
+               poids du corps (aucune résistance en position basse).
+   GÉOMÉTRIE (calculée) — sol y=150 ; poulie (48,144) ; hanche FIXE
+   (104,96) ; cuisse 26 ; tibia 26 ; cheville (96.18,140.35) →
+   (117.41,146.04) ; câble ×1,4371.
+   ========================================================= */
+EXERCISE_MOTIONS["kickback-fessier-poulie"] = {
+  vb: "36 42 98 114",
+  dur: 3.8,
+  phases: { con: [0, 42], ecc: [52, 84] },
+  alt: "Debout de profil face à une poulie basse, sangle à la cheville et mains sur le montant : la jambe part en arrière jusqu'à 20° d'extension de hanche en tendant le genou, le bassin restant immobile, puis revient lentement vers l'avant.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="150" x2="130" y2="150"/>
+    <!-- colonne et poulie BASSE, devant le lifter -->
+    <line class="mo-gear" x1="44" y1="44" x2="44" y2="150"/>
+    <circle class="mo-pulley" cx="48" cy="144" r="5"/>
+    <!-- LIMITE VRAIE D'EXTENSION DE HANCHE : 20°, pas davantage -->
+    <line class="mo-rom" x1="104" y1="96" x2="115.63" y2="127.95"/>
+    <!-- trajet réel du genou -->
+    <path class="mo-rom" fill="none" d="M87.29 115.92 A26 26 0 0 0 112.89 120.43"/>
+    <!-- TRONC, TÊTE, BRAS et JAMBE D'APPUI : tous fixes -->
+    <circle class="mo-head" cx="86" cy="53" r="8"/>
+    <line class="mo-body" x1="92.37" y1="64.05" x2="88" y2="58"/>
+    <line class="mo-body" x1="104" y1="96" x2="92.37" y2="64.05"/>
+    <line class="mo-limb" x1="92.37" y1="64.05" x2="72" y2="70"/>
+    <line class="mo-limb" x1="72" y1="70" x2="48" y2="72"/>
+    <circle class="mo-hand" cx="48" cy="72" r="3"/>
+    <line class="mo-body" x1="104" y1="96" x2="106" y2="120"/>
+    <line class="mo-body" x1="106" y1="120" x2="108" y2="144"/>
+    <line class="mo-body" x1="100" y1="150" x2="114" y2="150"/>
+    <line class="mo-body" x1="108" y1="144" x2="101" y2="150"/>
+    <circle class="mo-joint" cx="104" cy="96" r="3"/>`,
+  parts: [
+    {
+      /* CÂBLE : de la poulie basse à la sangle. Rotation NON monotone
+         (+7,38° puis retour à +6,01°) et allongement ×1,4371,
+         échantillonnés sur l'arc réel de la cheville. */
+      o: "48px 144px",
+      k: [[0, "rotate(0deg) scale(1)"], [7, "rotate(3.43deg) scale(1.0593)"],
+          [14, "rotate(5.74deg) scale(1.1296)"], [21, "rotate(7.01deg) scale(1.2061)"],
+          [28, "rotate(7.38deg) scale(1.2849)"], [35, "rotate(7deg) scale(1.3627)"],
+          [42, "rotate(6.01deg) scale(1.4371)"], [52, "rotate(6.01deg) scale(1.4371)"],
+          [57.33, "rotate(7deg) scale(1.3627)"], [62.67, "rotate(7.38deg) scale(1.2849)"],
+          [68, "rotate(7.01deg) scale(1.2061)"], [73.33, "rotate(5.74deg) scale(1.1296)"],
+          [78.67, "rotate(3.43deg) scale(1.0593)"], [84, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="48" y1="144" x2="96.18" y2="140.35"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE fixe, −60°, dont
+         seulement 20° au-delà de l'alignement — voir l'analyse. */
+      o: "104px 96px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(-10deg)"], [14, "rotate(-20deg)"],
+          [21, "rotate(-30deg)"], [28, "rotate(-40deg)"], [35, "rotate(-50deg)"],
+          [42, "rotate(-60deg)"], [52, "rotate(-60deg)"],
+          [57.33, "rotate(-50deg)"], [62.67, "rotate(-40deg)"], [68, "rotate(-30deg)"],
+          [73.33, "rotate(-20deg)"], [78.67, "rotate(-10deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Grand fessier",
+      muscle: `<circle cx="107.83" cy="99.22" r="5"/>`,
+      svg: `<line class="mo-limb" x1="104" y1="96" x2="87.29" y2="115.92"/>`,
+      children: [
+        {
+          /* TIBIA : +70° relatif, le genou passe de 120° à 170°. */
+          o: "87.29px 115.92px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(11.67deg)"], [14, "rotate(23.33deg)"],
+              [21, "rotate(35deg)"], [28, "rotate(46.67deg)"], [35, "rotate(58.33deg)"],
+              [42, "rotate(70deg)"], [52, "rotate(70deg)"],
+              [57.33, "rotate(58.33deg)"], [62.67, "rotate(46.67deg)"], [68, "rotate(35deg)"],
+              [73.33, "rotate(23.33deg)"], [78.67, "rotate(11.67deg)"], [84, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="87.29" cy="115.92" r="2.8"/>
+            <line class="mo-limb" x1="87.29" y1="115.92" x2="96.18" y2="140.35"/>
+            <line class="mo-bar3" x1="92.5" y1="143.2" x2="99.9" y2="137.5"/>
+            <circle class="mo-hand" cx="96.18" cy="140.35" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M114 76 L132 76 M124 71 L132 76 L124 81"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M132 76 L114 76 M122 71 L114 76 L122 81"/>` }
+  ]
+};
