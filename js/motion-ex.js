@@ -13542,3 +13542,132 @@ EXERCISE_MOTIONS["kickback-fessier-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M136 142.8 L116 152 M120.9 145.89 L116 152 L123.82 152.25"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   114. DONKEY KICKS
+        (donkey-kicks)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. À quatre pattes, mains sous les épaules, genou
+   d'appui sous la hanche. Jambe de travail genou fléchi à 90°, déjà
+   DÉCOLLÉE de 1,27 unité (2,2 cm) du sol : la fiche dit « redescends
+   sans poser le genou », donc le bas de la répétition n'est pas la
+   position de repos.
+
+   LE DOS N'EST PAS HORIZONTAL, ET CE N'EST PAS UN CHOIX DE DESSIN.
+   Le genou d'appui touche le sol, donc la hanche est à hauteur de
+   fémur (26). La main touche le sol bras tendu, donc l'épaule est à
+   hauteur de bras (32, valeur du gainage de la bibliothèque). L'épaule
+   est donc 6 plus haut que la hanche et le dos monte de 11,94° vers
+   l'avant — très proche des 10,6° du schéma de gainage. « Dos neutre »
+   veut dire non cambré, pas horizontal.
+
+   CONSÉQUENCE DIRECTE SUR LE POINT D'ARRÊT. « Arrête-toi quand la
+   cuisse est dans l'alignement du dos » ne veut donc PAS dire cuisse
+   horizontale : l'axe du dos prolongé sous la hanche pointe à 11,94°
+   sous l'horizontale vers l'arrière. C'est ce prolongement qui est
+   tracé en pointillés, et le fémur vient exactement dessus en fin de
+   course.
+
+   ARTICULATIONS MOBILES : la hanche, et elle seule.
+   ARTICULATIONS FIXES : le genou de travail, bloqué à 90°. C'est la
+   signature de charnière des schémas 97/98/108/109 : la rotation du
+   tibia RELATIVE au fémur vaut exactement 0,00° à tous les
+   échantillons, ce qui est la définition d'un corps rigide. Le fémur
+   et le tibia sont donc UNE seule pièce en L, pas deux imbriquées —
+   les modéliser séparément suggérerait un degré de liberté qui
+   n'existe pas. Fixes aussi : tronc, bras, tête, jambe d'appui.
+
+   AMPLITUDE RÉELLE, EN DEGRÉS. Fémur de 72° à 11,94°, soit 60,06° de
+   balayage. La flexion de hanche passe de 60,06° à 0° : ZÉRO
+   hyperextension, exactement comme le kickback machine (schéma 113,
+   61,36°). Deux exercices très différents, même conclusion — la
+   position de départ déplace l'amplitude, elle ne l'allonge pas.
+
+   POURQUOI LA CONSIGNE VISE LE TALON. Le talon monte de 36,75 unités
+   (64,3 cm) quand le genou n'en monte que 19,35 : rapport 1,899. Le
+   talon est l'extrémité amplifiée du levier, d'où « monte le talon
+   vers le plafond » plutôt que « monte le genou ». Il décrit un arc
+   de cercle exact de rayon 36,77 = √(26² + 26²) autour de la hanche,
+   et son abscisse n'est pas monotone : elle recule jusqu'à 146,72 à
+   mi-course puis revient à 140,82.
+
+   LES DEUX ERREURS DE LA FICHE, CHIFFRÉES.
+   « Cambrer le dos pour monter plus haut » : 10° de cambrure font
+   monter le talon de 5,05 unités, soit 8,8 cm. Un gain très visible
+   pour une triche invisible — c'est précisément ce qui la rend
+   tentante, et pourquoi le repère du dos est tracé.
+   « Ouvrir la hanche sur le côté » : cette erreur est HORS DU PLAN de
+   la vue. 15° d'abduction ne raccourcissent la projection de profil
+   que de 3,4 % : la triche ne se verrait même pas. Cette vue ne peut
+   pas la montrer, et je le signale plutôt que de faire croire le
+   contraire.
+
+   MUSCLE AGONISTE. Grand fessier seul, comme la fiche : deux
+   marqueurs sur la face postéro-supérieure du fémur, côté calculé par
+   la perpendiculaire (0,951 −0,309) au fémur de départ.
+
+   CE QUI LE DISTINGUE DES VARIANTES PROCHES. Du schéma 105 (poulie) :
+   quadrupédie, poids du corps, et surtout genou VERROUILLÉ à 90° là
+   où le genou s'ouvrait de 50° à la poulie. Du schéma 113 (machine) :
+   chaîne ouverte contre chaîne fermée, un seul degré de liberté
+   contre deux.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["donkey-kicks"] = {
+  vb: "62 92 110 64",
+  dur: 3.2,
+  phases: { con: [0, 34], ecc: [50, 86] },
+  alt: "De profil à quatre pattes, mains sous les épaules et genou d'appui au sol : la jambe de travail, genou bloqué à 90°, pivote d'un bloc autour de la hanche et monte le talon vers le plafond jusqu'à ce que la cuisse rejoigne l'axe du dos.",
+  fixe: `
+    <line class="mo-ground" x1="66" y1="146" x2="156" y2="146"/>
+    <!-- AXE DU DOS PROLONGÉ sous la hanche : le point d'arrêt réel,
+         à 11,94° sous l'horizontale et non à l'horizontale -->
+    <line class="mo-rom" x1="110" y1="120" x2="135.44" y2="125.38"/>
+    <!-- trajet du talon : arc EXACT de rayon 36,77 = √(26²+26²) -->
+    <path class="mo-rom" fill="none" d="M142.76 136.69 A36.77 36.77 0 0 0 140.82 99.94"/>
+    <!-- CORPS à quatre pattes, immobile : le bassin ne balance pas -->
+    <circle class="mo-head" cx="72" cy="112" r="7"/>
+    <line class="mo-body" x1="81.63" y1="114" x2="77.5" y2="112.8"/>
+    <line class="mo-body" x1="110" y1="120" x2="81.63" y2="114"/>
+    <circle class="mo-joint" cx="110" cy="120" r="3"/>
+    <!-- bras tendu, main sous l'épaule -->
+    <line class="mo-limb" x1="81.63" y1="114" x2="81.63" y2="130"/>
+    <line class="mo-limb" x1="81.63" y1="130" x2="81.63" y2="146"/>
+    <circle class="mo-hand" cx="81.63" cy="146" r="3"/>
+    <!-- JAMBE D'APPUI : fémur vertical, tibia posé au sol -->
+    <line class="mo-body" x1="110" y1="120" x2="110" y2="146"/>
+    <line class="mo-body" x1="110" y1="146" x2="136" y2="146"/>
+    <line class="mo-body" x1="136" y1="146" x2="140" y2="143"/>`,
+  parts: [
+    {
+      /* JAMBE DE TRAVAIL : UNE seule pièce en L. Le genou est bloqué
+         à 90°, donc fémur et tibia forment un corps rigide et la
+         rotation relative vaut 0,00° partout. Rotation −60,06°. */
+      o: "110px 120px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-10.01deg)"], [11.33, "rotate(-20.02deg)"],
+          [17, "rotate(-30.03deg)"], [22.67, "rotate(-40.04deg)"], [28.33, "rotate(-50.05deg)"],
+          [34, "rotate(-60.06deg)"], [50, "rotate(-60.06deg)"],
+          [56, "rotate(-50.05deg)"], [62, "rotate(-40.04deg)"], [68, "rotate(-30.03deg)"],
+          [74, "rotate(-20.02deg)"], [80, "rotate(-10.01deg)"], [86, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Grand fessier",
+      muscle: `
+        <circle cx="114.76" cy="118.45" r="5"/>
+        <circle cx="116.87" cy="131.43" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="110" y1="120" x2="118.03" y2="144.73"/>
+        <circle class="mo-joint" cx="118.03" cy="144.73" r="2.8"/>
+        <line class="mo-limb" x1="118.03" y1="144.73" x2="142.76" y2="136.69"/>
+        <!-- pied : le talon est l'extrémité qui monte, la pointe suit -->
+        <line class="mo-limb" x1="142.76" y1="136.69" x2="144.92" y2="143.35"/>`
+    }
+  ],
+  arrows: [
+    /* Hampe à x=163 : la pointe du pied balaie jusqu'à x=152,01 (rayon
+       42,01 autour de la hanche), l'aile à 158 garde donc 5,99 de jeu.
+       À x=155 elles se touchaient. */
+    { phase: "con", svg: `<path class="mo-arr" d="M163 132 L163 108 M158 115 L163 108 L168 115"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M163 108 L163 132 M158 125 L163 132 L168 125"/>` }
+  ]
+};
