@@ -12621,3 +12621,168 @@ EXERCISE_MOTIONS["frog-pumps"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M97 116 L97 136 M93 130 L97 136 L101 130"/>` }
   ]
 };
+
+/* =========================================================
+   108. PULL-THROUGH À LA POULIE  (pull-through-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT, DOS à une poulie basse, corde saisie entre
+               les jambes, quelques pas en avant, genoux souples.
+   Mobiles   : la CHEVILLE (le genou recule), la HANCHE, et le BRAS
+               qui accompagne. La corde suit la main.
+   Fixes     : le PIED ; l'ANGLE DU GENOU ; le dos, segment rigide.
+   >>> LA SIGNATURE DE HINGE, POUR LA TROISIÈME FOIS <<< Rotation
+       relative de la cuisse par rapport au tibia : 0,00° aux sept
+       échantillons, genou tenu à 160°. « Fléchir les genoux comme
+       un squat » est l'erreur n°2, et c'est le même test qu'au
+       good morning (97) et au soulevé jambes tendues (98) : dès
+       que ce nombre cesse d'être nul, ce n'est plus un hinge.
+   >>> « TENSION CONTINUE » : C'EST VRAI, ET ON PEUT DIRE OÙ <<<
+       La fiche annonce une tension continue. Le bras de levier à
+       la hanche — distance de la hanche à la droite main→poulie —
+       vaut :
+         t      0    1/6   2/6   3/6   4/6   5/6     1
+         levier 3,99 5,09  6,42  7,92  9,54 11,20 12,86
+       Il varie donc d'un facteur 3,22, ce qui n'est pas
+       « constant ». Mais ce n'est pas ce que veut dire l'expression,
+       et le vrai point est ailleurs : À L'EXTENSION COMPLÈTE, LE
+       LEVIER VAUT ENCORE 3,99. Comparez au soulevé de terre
+       roumain ou jambes tendues (schéma 98) : debout, la barre est
+       exactement à l'aplomb de la hanche et le levier tombe à
+       ZÉRO. Voilà la différence, et elle est mesurée. C'est aussi
+       pourquoi « s'arrêter avant l'extension complète » (erreur
+       n°3) coûte ici quelque chose alors que la même faute au
+       roumain ne coûte presque rien : au roumain le sommet est
+       déchargé de toute façon.
+   >>> « TIRER AVEC LES BRAS » : POURQUOI C'EST TENTANT ICI ET PAS
+       AU SOULEVÉ DE TERRE <<< Au soulevé, le bras est un segment à
+       DEUX FORCES : la barre pend, donc le bras est vertical et ne
+       peut rien faire d'autre que transmettre. Ici la corde tire
+       en biais — vers l'arrière-bas — et l'épaule doit encaisser
+       une composante transversale. Le bras N'EST PLUS un segment à
+       deux forces, il peut donc tirer, et c'est précisément pour
+       cela que la fiche doit le défendre. Dans le schéma, le bras
+       reste rigide et ne fait que suivre : il tourne de 15,90° par
+       rapport au tronc sur toute la répétition, uniquement pour
+       accompagner la corde.
+   ROM       : tronc de 0° à 50° ; tibia reculé de 30° ; la hanche
+               recule de 25,60 et ne descend que de 6,86 — 3,7 fois
+               plus de recul que de descente, la signature du hinge.
+   CORDE     : elle RACCOURCIT en descendant (×0,7311) — c'est le
+               retour debout qui tire la charge. Sa rotation est
+               minuscule et non monotone (+1,22° puis −0,75°), donc
+               échantillonnée quand même.
+   Agonistes : GRAND FESSIER, ischio-jambiers, érecteurs du rachis.
+   Distinction : ≠ soulevé roumain et jambes tendues (charge
+               verticale, levier NUL au sommet) ; ≠ good morning
+               (barre sur le dos) ; ≠ kickback poulie (unilatéral,
+               hanche seule).
+   GÉOMÉTRIE (calculée) — sol y=150 ; cheville (100,144) ; poulie
+   (176,146) ; tibia 26 ; cuisse 26 ; genou CONSTANT à 160° ; tronc
+   34 ; bras 37 ; hanche (100,92.80) → (125.60,99.66).
+   ========================================================= */
+EXERCISE_MOTIONS["pull-through-poulie"] = {
+  vb: "84 34 102 122",
+  dur: 4.0,
+  phases: { ecc: [0, 42], con: [52, 84] },
+  alt: "Debout de profil, dos à une poulie basse et corde saisie entre les jambes : les hanches reculent et le buste s'incline à 50° dos plat, la corde passant entre les cuisses, puis retour debout par extension de hanche.",
+  fixe: `
+    <line class="mo-ground" x1="88" y1="150" x2="184" y2="150"/>
+    <line class="mo-limb" x1="90" y1="150" x2="112" y2="150"/>
+    <line class="mo-limb" x1="100" y1="144" x2="94" y2="150"/>
+    <circle class="mo-joint" cx="100" cy="144" r="2.8"/>
+    <!-- colonne et poulie BASSE, derrière le lifter -->
+    <line class="mo-gear" x1="180" y1="44" x2="180" y2="150"/>
+    <circle class="mo-pulley" cx="176" cy="146" r="5"/>
+    <!-- EXTENSION COMPLÈTE : tronc à la verticale. Le levier y vaut
+         encore 3,99, contre 0 au soulevé roumain. -->
+    <line class="mo-rom" x1="100" y1="44" x2="100" y2="120"/>`,
+  parts: [
+    {
+      /* CORDE : elle RACCOURCIT quand on recule (×0,7311). Rotation
+         minuscule et non monotone, échantillonnée malgré tout. */
+      o: "176px 146px",
+      k: [[0, "rotate(0deg) scale(1)"], [7, "rotate(0.74deg) scale(0.9674)"],
+          [14, "rotate(1.15deg) scale(0.9301)"], [21, "rotate(1.22deg) scale(0.8878)"],
+          [28, "rotate(0.95deg) scale(0.8404)"], [35, "rotate(0.31deg) scale(0.788)"],
+          [42, "rotate(-0.75deg) scale(0.7311)"], [52, "rotate(-0.75deg) scale(0.7311)"],
+          [57.33, "rotate(0.31deg) scale(0.788)"], [62.67, "rotate(0.95deg) scale(0.8404)"],
+          [68, "rotate(1.22deg) scale(0.8878)"], [73.33, "rotate(1.15deg) scale(0.9301)"],
+          [78.67, "rotate(0.74deg) scale(0.9674)"], [84, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="176" y1="146" x2="97.1" y2="95.69"/>`
+    },
+    {
+      /* TIBIA : +30°. Le genou RECULE, il ne se plie pas. */
+      o: "100px 144px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(5deg)"], [14, "rotate(10deg)"],
+          [21, "rotate(15deg)"], [28, "rotate(20deg)"], [35, "rotate(25deg)"],
+          [42, "rotate(30deg)"], [52, "rotate(30deg)"],
+          [57.33, "rotate(25deg)"], [62.67, "rotate(20deg)"], [68, "rotate(15deg)"],
+          [73.33, "rotate(10deg)"], [78.67, "rotate(5deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="100" y1="144" x2="95.46" y2="118.4"/>`,
+      children: [
+        {
+          /* CUISSE : rotation relative RIGOUREUSEMENT NULLE — genou
+             tenu à 160° d'un bout à l'autre. C'est le test du hinge. */
+          o: "95.46px 118.4px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(0deg)"], [14, "rotate(0deg)"],
+              [21, "rotate(0deg)"], [28, "rotate(0deg)"], [35, "rotate(0deg)"],
+              [42, "rotate(0deg)"], [52, "rotate(0deg)"],
+              [57.33, "rotate(0deg)"], [62.67, "rotate(0deg)"], [68, "rotate(0deg)"],
+              [73.33, "rotate(0deg)"], [78.67, "rotate(0deg)"], [84, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="104.92" cy="93.67" r="4.5"/>
+            <ellipse cx="101.67" cy="106.3" rx="3.4" ry="9.5" transform="rotate(10.06 101.67 106.3)"/>`,
+          svg: `
+            <circle class="mo-joint" cx="95.46" cy="118.4" r="2.8"/>
+            <line class="mo-limb" x1="95.46" y1="118.4" x2="100" y2="92.8"/>`,
+          children: [
+            {
+              /* TRONC : −80° relatif, soit 50° d'inclinaison absolue.
+                 Segment rigide. */
+              o: "100px 92.8px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-13.33deg)"], [14, "rotate(-26.67deg)"],
+                  [21, "rotate(-40deg)"], [28, "rotate(-53.33deg)"], [35, "rotate(-66.67deg)"],
+                  [42, "rotate(-80deg)"], [52, "rotate(-80deg)"],
+                  [57.33, "rotate(-66.67deg)"], [62.67, "rotate(-53.33deg)"], [68, "rotate(-40deg)"],
+                  [73.33, "rotate(-26.67deg)"], [78.67, "rotate(-13.33deg)"], [84, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis",
+              muscle: `<ellipse cx="103" cy="76" rx="2.8" ry="11"/>`,
+              svg: `
+                <circle class="mo-joint" cx="100" cy="92.8" r="2.8"/>
+                <line class="mo-body" x1="100" y1="92.8" x2="100" y2="58.8"/>
+                <line class="mo-body" x1="100" y1="58.8" x2="100" y2="56"/>
+                <circle class="mo-head" cx="100" cy="46.8" r="9"/>`,
+              children: [
+                {
+                  /* BRAS : rigide, coude verrouillé. Il ne tourne que de
+                     15,90° par rapport au tronc sur toute la répétition —
+                     il accompagne la corde, il ne tire pas. */
+                  o: "100px 58.8px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(2.65deg)"], [14, "rotate(5.3deg)"],
+                      [21, "rotate(7.95deg)"], [28, "rotate(10.6deg)"], [35, "rotate(13.25deg)"],
+                      [42, "rotate(15.9deg)"], [52, "rotate(15.9deg)"],
+                      [57.33, "rotate(13.25deg)"], [62.67, "rotate(10.6deg)"], [68, "rotate(7.95deg)"],
+                      [73.33, "rotate(5.3deg)"], [78.67, "rotate(2.65deg)"], [84, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="98" y1="59.4" x2="97.1" y2="95.69"/>
+                    <line class="mo-bar3" x1="93.2" y1="93.9" x2="101" y2="97.5"/>
+                    <circle class="mo-hand" cx="97.1" cy="95.69" r="3"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M136 60 L162 60 M154 55 L162 60 L154 65"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M162 60 L136 60 M144 55 L136 60 L144 65"/>` }
+  ]
+};
