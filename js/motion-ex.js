@@ -10310,3 +10310,168 @@ EXERCISE_MOTIONS["presse-unilaterale"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M150 90 L132 108 M134.07 100.27 L132 108 L139.73 105.93"/>` }
   ]
 };
+
+/* =========================================================
+   92. SISSY SQUAT  (sissy-squat)
+   -----------------------------------------------------------
+   Position  : DEBOUT, TALONS SURÉLEVÉS sur une cale, une main sur
+               un support. Corps aligné des GENOUX à la TÊTE.
+   Mobiles   : le TIBIA (rotation autour de la cheville, le genou
+               part vers l'avant) et le BLOC cuisse+tronc+tête, qui
+               est UN SEUL segment rigide. Le bras, en chaîne
+               fermée sur le support, se plie pour suivre.
+   Fixes     : le PIED et la cale ; la HANCHE, qui ne se plie pas —
+               « casser aux hanches » est l'erreur n°1 et c'est le
+               cercle pointillé du schéma.
+   >>> LE SEUL EXERCICE DE CUISSES OÙ LA HANCHE RESTE TENDUE, ET
+       CE QUE ÇA CHANGE, EN DEGRÉS <<< Le droit fémoral est le seul
+       chef du quadriceps à franchir la hanche. Sa longueur dépend
+       donc des DEUX articulations : elle augmente avec la flexion
+       du genou et DIMINUE avec la flexion de hanche. Les bras de
+       levier du droit fémoral à la hanche et du tendon rotulien au
+       genou sont du même ordre (4 à 5 cm tous les deux dans la
+       littérature), donc, en première approximation, l'allongement
+       est proportionnel à (flexion de genou − flexion de hanche).
+       Le calcul comparé, avec les angles des schémas déjà livrés :
+         front squat (schéma 87) : genou 127,2° − hanche 114,3°
+                                   = 12,9° d'allongement net
+         sissy squat              : genou  81,2° − hanche   0,0°
+                                   = 81,2° d'allongement net
+       Six fois et demie plus, avec une amplitude de genou POURTANT
+       PLUS PETITE. Voilà ce que veut dire « étirement extrême »
+       dans la fiche, et voilà pourquoi « casser aux hanches »
+       n'est pas une imperfection de style : plier la hanche de 40°
+       pendant que le genou plie de 81° supprime la moitié de
+       l'exercice, exactement.
+   >>> LA CALE SOUS LES TALONS N'EST PAS UN CONFORT, ELLE EST LA
+       CONDITION DE L'AMPLITUDE <<< Le pied est incliné de 23,2°
+       par la cale. La flexion dorsale maximale de cheville étant
+       de l'ordre de 38°, le tibia peut donc s'incliner jusqu'à
+       38 + 23,2 = 61,2° vers l'avant, contre 38° pieds à plat.
+       Conséquences chiffrées, lues sur la même chaîne :
+         pieds à plat  : arrêt à 38° d'inclinaison de tibia,
+                         genou 119,0°, soit 58,0° de flexion ;
+         talons calés  : 53° d'inclinaison dessinés, genou 95,8°,
+                         soit 81,2° de flexion.
+       La cale rapporte donc 23,2° de flexion de genou à cette
+       profondeur. (Le rapport n'est pas de 1 pour 1 : le tronc
+       tourne aussi, et 15° de tibia en plus donnent ici 23,2° de
+       genou.)
+   >>> L'INCLINAISON DU TRONC N'EST PAS CHOISIE, ELLE EST RÉSOLUE
+       <<< À chaque échantillon, l'angle du bloc cuisse+tronc est
+       celui qui maintient le CENTRE DE MASSE sur l'aplomb de
+       départ (x = 71,72), en pondérant 88 % pour le bloc et 12 %
+       pour jambes et pieds. C'est la contrainte d'équilibre qui
+       remplace ici l'aplomb de la barre des squats — le corps
+       pivote autour d'une verticale fixe, genoux devant et tête
+       derrière, et c'est le pointillé vertical du schéma.
+   ROM       : genou de 177,0° à 95,79°, soit 81,21° de flexion ;
+               tibia de 3° à 53° d'inclinaison avant ; le genou
+               avance de 19,4 et la tête recule de 20,0.
+   MAIN SUR LE SUPPORT : le poignet est FIXE sur le montant, donc
+               le bras est une chaîne fermée résolue par
+               intersection de cercles : le coude passe de 169,6°
+               (bras presque tendu) à 83,2°. Il ne tire pas, il
+               accompagne — mais il ne peut pas être dessiné droit.
+   Agonistes : QUADRICEPS, DROIT FÉMORAL en particulier.
+   Distinction : ≠ leg extension (assis, hanche FLÉCHIE : le droit
+               fémoral y est raccourci en amont, l'exact inverse) ;
+               ≠ squat (hanche et genou fléchissent ensemble, effet
+               net presque nul sur le droit fémoral) ; ≠ fente
+               (appui décalé, hanche fléchie).
+   GÉOMÉTRIE (calculée) — sol y=150 ; cale 76→94 dessus y=144 ;
+   pointe (66,150) ; talon (80,144) ; cheville FIXE (73,138) ;
+   tibia 26 ; genou→hanche 26 ; hanche→épaule 34 ; main (104,62) ;
+   bras 17 + 17.
+   ========================================================= */
+EXERCISE_MOTIONS["sissy-squat"] = {
+  vb: "42 28 70 126",
+  dur: 4.6,
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "De profil, talons surélevés sur une cale et une main sur un montant : les genoux avancent pendant que le corps, resté rigoureusement aligné des genoux à la tête, bascule en arrière autour de l'aplomb du centre de masse (pointillé vertical), puis remonte.",
+  fixe: `
+    <line class="mo-ground" x1="44" y1="150" x2="110" y2="150"/>
+    <!-- CALE sous les talons : 23,2° d'inclinaison du pied -->
+    <rect class="mo-gear" x="76" y="144" width="18" height="6" rx="1" fill="none"/>
+    <!-- PIED : pointe au sol, talon sur la cale, cheville fixe -->
+    <line class="mo-limb" x1="66" y1="150" x2="80" y2="144"/>
+    <line class="mo-limb" x1="73" y1="138" x2="80" y2="144"/>
+    <line class="mo-limb" x1="73" y1="138" x2="68.5" y2="148.93"/>
+    <circle class="mo-joint" cx="73" cy="138" r="2.8"/>
+    <!-- MONTANT et poignée : la main ne bouge pas -->
+    <line class="mo-gear" x1="104" y1="56" x2="104" y2="150"/>
+    <circle class="mo-hand" cx="104" cy="62" r="3"/>
+    <!-- APLOMB DU CENTRE DE MASSE : le corps pivote autour -->
+    <line class="mo-rom" x1="71.72" y1="56" x2="71.72" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : rotation autour de la CHEVILLE fixe, −50°. Le genou
+         part vers l'avant, c'est le moteur du mouvement. */
+      o: "73px 138px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(-8.33deg)"], [14, "rotate(-16.67deg)"],
+          [21, "rotate(-25deg)"], [28, "rotate(-33.33deg)"], [35, "rotate(-41.67deg)"],
+          [42, "rotate(-50deg)"], [50, "rotate(-50deg)"],
+          [55.33, "rotate(-41.67deg)"], [60.67, "rotate(-33.33deg)"], [66, "rotate(-25deg)"],
+          [71.33, "rotate(-16.67deg)"], [76.67, "rotate(-8.33deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="73" y1="138" x2="71.64" y2="112.04"/>`,
+      children: [
+        {
+          /* BLOC CUISSE + TRONC + TÊTE : UN SEUL segment rigide, c'est
+             toute la technique. +81,21° relatif ; en absolu le corps
+             ne bascule que de 31,21°, résolus par l'équilibre. */
+          o: "71.64px 112.04px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(14.08deg)"], [14, "rotate(28.05deg)"],
+              [21, "rotate(41.84deg)"], [28, "rotate(55.36deg)"], [35, "rotate(68.52deg)"],
+              [42, "rotate(81.21deg)"], [50, "rotate(81.21deg)"],
+              [55.33, "rotate(68.52deg)"], [60.67, "rotate(55.36deg)"], [66, "rotate(41.84deg)"],
+              [71.33, "rotate(28.05deg)"], [76.67, "rotate(14.08deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: "Quadriceps (droit fémoral)",
+          muscle: `<ellipse cx="68.2" cy="99" rx="3.4" ry="10"/>`,
+          svg: `
+            <circle class="mo-joint" cx="71.64" cy="112.04" r="2.8"/>
+            <line class="mo-limb" x1="71.64" y1="112.04" x2="71.64" y2="86.04"/>
+            <line class="mo-body" x1="71.64" y1="86.04" x2="71.64" y2="52.04"/>
+            <line class="mo-body" x1="71.64" y1="52.04" x2="71.64" y2="48.04"/>
+            <circle class="mo-head" cx="71.64" cy="40.04" r="8"/>
+            <!-- la hanche ne doit PAS se plier : c'est l'erreur n°1 -->
+            <circle class="mo-rom" fill="none" cx="71.64" cy="86.04" r="7"/>`,
+          children: [
+            {
+              /* BRAS : chaîne fermée sur le montant, coude de 169,6° à
+                 83,2°. Le poignet reste sur la poignée aux sept
+                 échantillons. */
+              o: "71.64px 52.04px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(11.14deg)"], [14, "rotate(12.92deg)"],
+                  [21, "rotate(10.08deg)"], [28, "rotate(2.33deg)"], [35, "rotate(-10.84deg)"],
+                  [42, "rotate(-28.71deg)"], [50, "rotate(-28.71deg)"],
+                  [55.33, "rotate(-10.84deg)"], [60.67, "rotate(2.33deg)"], [66, "rotate(10.08deg)"],
+                  [71.33, "rotate(12.92deg)"], [76.67, "rotate(11.14deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `<line class="mo-limb" x1="71.64" y1="52.04" x2="87.37" y2="58.49"/>`,
+              children: [
+                {
+                  o: "87.37px 58.49px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(-34.04deg)"], [14, "rotate(-53.5deg)"],
+                      [21, "rotate(-68.8deg)"], [28, "rotate(-80.23deg)"], [35, "rotate(-86.61deg)"],
+                      [42, "rotate(-86.45deg)"], [50, "rotate(-86.45deg)"],
+                      [55.33, "rotate(-86.61deg)"], [60.67, "rotate(-80.23deg)"], [66, "rotate(-68.8deg)"],
+                      [71.33, "rotate(-53.5deg)"], [76.67, "rotate(-34.04deg)"], [82, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <circle class="mo-joint" cx="87.37" cy="58.49" r="2.4"/>
+                    <line class="mo-limb" x1="87.37" y1="58.49" x2="104" y2="62"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M90 38 L104 53 M96.34 50.67 L104 53 L102.17 45.21"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M104 53 L90 38 M97.65 40.33 L90 38 L91.81 45.79"/>` }
+  ]
+};
