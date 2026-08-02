@@ -13671,3 +13671,128 @@ EXERCISE_MOTIONS["donkey-kicks"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M163 108 L163 132 M158 125 L163 132 L168 125"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   115. FIRE HYDRANT
+        (fire-hydrant)                      — VU DE DERRIÈRE
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. À quatre pattes, mains sous les épaules, genoux
+   sous les hanches, genou fléchi à 90°. Même position que les donkey
+   kicks (schéma 114), mouvement perpendiculaire.
+
+   LE CHOIX DE LA VUE EST CALCULÉ, PAS ESTHÉTIQUE. L'abduction est une
+   rotation autour de l'axe antéro-postérieur passant par la hanche.
+   En 3D, le fémur (0 0 −1) devient (0 sin α −cos α) tandis que le
+   tibia (1 0 0) reste INCHANGÉ — il EST l'axe de rotation.
+     · de derrière : fémur projeté 26,00 à tous les angles, donc
+       EXACT ; tibia projeté 0,00 à tous les angles.
+     · de dessus   : tibia exact, mais fémur projeté variant de 0,00
+       à 18,38 selon l'angle.
+   La règle des schémas 99/101/107 tranche : un raccourcissement
+   constant se déclare, un raccourcissement variable ment. Le tibia
+   est raccourci de 100 % mais CONSTAMMENT, donc on le déclare et on
+   le dessine vu en bout, comme les pieds des schémas 111 et 112. Le
+   fémur, seul segment mobile, est rendu exact.
+
+   ARTICULATIONS MOBILES : la hanche, en abduction pure.
+   ARTICULATIONS FIXES : genou bloqué à 90°, tronc, bras, jambe
+   d'appui, et surtout le BASSIN — la barre pelvienne horizontale est
+   le repère de l'erreur « basculer tout le buste sur le côté ».
+
+   AMPLITUDE RÉELLE, EN DEGRÉS. 45°, la limite passive d'abduction
+   établie au schéma 111. Le genou monte de 7,62 au-dessus du sol.
+
+   LA CONSIGNE DE LA FICHE EST UN PLAFOND, PAS UNE CIBLE. « Monte
+   jusqu'à la hauteur de hanche maximum » : pour que le genou atteigne
+   la hauteur de la hanche il faudrait le fémur HORIZONTAL, soit 90°
+   d'abduction — exactement le DOUBLE de la limite passive. À 45° le
+   genou est encore 18,38 unités sous la hanche, soit 32,2 cm. Le
+   pointillé horizontal part de la hanche et le repère marque la
+   position à 90° : on voit que l'arc du genou s'arrête très loin en
+   dessous. Qui touche vraiment la hauteur de hanche a basculé le
+   bassin, ce que la fiche interdit deux lignes plus bas.
+
+   MUSCLES AGONISTES. Moyen fessier sur la face latérale de la hanche
+   et rotateurs externes, plus profonds et plus bas. Vus de derrière,
+   les deux sont dans le plan : c'est l'autre raison de cette vue.
+
+   CE QUI LE DISTINGUE DES VARIANTES PROCHES. Du schéma 114 (donkey
+   kicks) : même position de départ, même L rigide, mais rotation
+   autour d'un axe perpendiculaire — extension contre abduction, et
+   donc vue de profil contre vue de derrière. Du schéma 111
+   (abduction à la poulie, debout) : là le fémur était déjà dans le
+   plan frontal et la vue de FACE était exacte ; ici la hanche est
+   fléchie à 90°, ce qui fait basculer tout le problème.
+
+   UN CHEVAUCHEMENT ASSUMÉ. De derrière, les mains sont plus loin que
+   les genoux mais se projettent au même endroit : le genou de travail
+   croise la main droite vers 20° d'abduction. C'est une vérité de la
+   projection, pas un défaut. Elle est levée par la profondeur — corps
+   fixe en mo-body sombre, jambe de travail en mo-limb clair dessinée
+   par-dessus.
+
+   TEMPO. Concentrique 32 %, excentrique 42 % : la descente est plus
+   longue, « aller trop vite » étant une erreur listée.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["fire-hydrant"] = {
+  vb: "80 94 76 60",
+  dur: 3.6,
+  vue: "Vu de derrière",
+  phases: { con: [0, 32], ecc: [46, 88] },
+  alt: "Vu de derrière, à quatre pattes : le genou fléchi à 90° s'ouvre sur le côté jusqu'à 45° sans que le bassin ne bascule, le tibia étant vu en bout puisqu'il pointe vers le fond.",
+  fixe: `
+    <line class="mo-ground" x1="82" y1="146" x2="154" y2="146"/>
+    <!-- HAUTEUR DE HANCHE : le repère à 132 marque les 90° qu'il
+         faudrait pour l'atteindre, soit le double de la limite passive -->
+    <line class="mo-rom" x1="108" y1="120" x2="132" y2="120"/>
+    <line class="mo-rom" x1="132" y1="117" x2="132" y2="123"/>
+    <!-- trajet réel du genou : arc de rayon 26, 45° seulement -->
+    <path class="mo-rom" fill="none" d="M106 146 A26 26 0 0 0 124.38 138.38"/>
+    <!-- CORPS vu de derrière. Tout en mo-body : les mains se projettent
+         là où passe le genou, la profondeur se lit par le contraste. -->
+    <circle class="mo-head" cx="100" cy="105" r="7"/>
+    <line class="mo-body" x1="100" y1="114" x2="100" y2="110"/>
+    <line class="mo-body" x1="86" y1="114" x2="114" y2="114"/>
+    <line class="mo-body" x1="100" y1="120" x2="100" y2="114"/>
+    <!-- BASSIN : sa barre horizontale est le repère du non-basculement -->
+    <line class="mo-body" x1="94" y1="120" x2="106" y2="120"/>
+    <circle class="mo-joint" cx="106" cy="120" r="3"/>
+    <circle class="mo-joint" cx="94" cy="120" r="2.6"/>
+    <!-- bras tendus, mains sous les épaules -->
+    <line class="mo-body" x1="86" y1="114" x2="86" y2="146"/>
+    <line class="mo-body" x1="114" y1="114" x2="114" y2="146"/>
+    <circle class="mo-hand" cx="86" cy="146" r="3"/>
+    <circle class="mo-hand" cx="114" cy="146" r="3"/>
+    <!-- JAMBE D'APPUI : fémur vertical, tibia vu EN BOUT -->
+    <line class="mo-body" x1="94" y1="120" x2="94" y2="146"/>
+    <line class="mo-body" x1="90.5" y1="146" x2="97.5" y2="146"/>`,
+  parts: [
+    {
+      /* JAMBE DE TRAVAIL : abduction pure de 45°. Le tibia n'est pas
+         une pièce séparée — il pointe vers le fond et se projette sur
+         un point, donc il est dessiné vu en bout, solidaire du fémur. */
+      o: "106px 120px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(-7.5deg)"], [10.67, "rotate(-15deg)"],
+          [16, "rotate(-22.5deg)"], [21.33, "rotate(-30deg)"], [26.67, "rotate(-37.5deg)"],
+          [32, "rotate(-45deg)"], [46, "rotate(-45deg)"],
+          [53, "rotate(-37.5deg)"], [60, "rotate(-30deg)"], [67, "rotate(-22.5deg)"],
+          [74, "rotate(-15deg)"], [81, "rotate(-7.5deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Moyen fessier", "Rotateurs externes"],
+      muscle: `
+        <circle cx="111.5" cy="118" r="4.5"/>
+        <circle cx="109" cy="128.5" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="106" y1="120" x2="106" y2="146"/>
+        <circle class="mo-joint" cx="106" cy="146" r="2.8"/>
+        <!-- TIBIA VU EN BOUT : il pointe vers le fond, projection nulle -->
+        <line class="mo-limb" x1="102.5" y1="146" x2="109.5" y2="146"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M130 136 L148 128.5 M142.89 134.43 L148 128.5 L140.19 127.97"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M148 128.5 L130 136 M135.11 130.07 L130 136 L137.81 136.53"/>` }
+  ]
+};
