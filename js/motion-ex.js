@@ -10759,3 +10759,151 @@ EXERCISE_MOTIONS["squat-jump"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M100 50 L100 90 M95 82 L100 90 L105 82"/>` }
   ]
 };
+
+/* =========================================================
+   95. FLEXION DE HANCHE À LA POULIE  (flexion-hanche-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT, DOS à une poulie basse, sangle à la cheville,
+               une main sur un support, en appui sur l'autre jambe.
+   Mobile    : la HANCHE de la jambe sanglée — et le genou, qui
+               suit passivement.
+   Fixes     : le BASSIN et le TRONC. Ils sont dessinés dans les
+               éléments FIXES, et ce n'est pas une simplification :
+               c'est la consigne. « Élan du bassin » est l'erreur
+               n°2 et « se pencher en arrière » l'erreur n°1 ; le
+               schéma les rend structurellement impossibles.
+   >>> POURQUOI SE PENCHER EN ARRIÈRE EST UNE TRICHERIE EXACTE <<<
+       L'angle qui compte n'est PAS celui de la cuisse par rapport
+       au sol : c'est celui de la cuisse par rapport au TRONC.
+       S'incliner de 20° en arrière ajoute 20° d'élévation apparente
+       de cuisse sans que la hanche ait fléchi d'un degré — le
+       psoas n'a pas raccourci, seul le décor a tourné. C'est
+       exactement la même faute logique que « casser aux hanches »
+       au sissy squat (schéma 92) : mesurer une articulation par
+       rapport au sol au lieu du segment voisin. D'où l'aplomb
+       pointillé qui traverse le tronc : il ne doit pas bouger.
+   >>> LA COURBE DE RÉSISTANCE, ET ELLE SURPREND <<< Le critère du
+       point mort (schéma 82) : direction HANCHE → POULIE = 32,28°,
+       secteur balayé par hanche→cheville = 77,50° à 130,00°.
+       32,28 est dehors : aucun point mort. Mais le bras de levier,
+       lui, est loin d'être constant — c'est la distance de la
+       HANCHE à la droite cheville→poulie :
+         t      0    1/6    2/6    3/6    4/6    5/6      1
+         levier 51,1  51,5  49,1  44,7  38,8  31,8  23,9
+       Il est MAXIMAL en bas, jambe tendue en arrière, et il tombe
+       de moitié en haut. Autrement dit, le plus dur est la sortie,
+       pas la fin. Cela ne rend pas l'erreur n°3 (« amplitude
+       écourtée sous l'horizontale ») moins grave, mais cela change
+       sa raison : ce n'est pas parce qu'on saute le passage le
+       plus chargé, c'est parce qu'on saute le seul passage où le
+       PSOAS est vraiment seul à travailler. Au-delà de
+       l'horizontale, droit fémoral, tenseur du fascia lata et
+       couturier perdent leur bras de levier ; le psoas reste. Un
+       exercice de psoas écourté sous l'horizontale n'est plus un
+       exercice de psoas.
+   ROM       : cuisse de 75° sous l'horizontale arrière à 10°
+               AU-DESSUS de l'horizontale, soit 115° de flexion de
+               hanche. Le genou suit passivement : 175° → 60°,
+               parce que le tibia pend sous la traction du câble et
+               garde une orientation presque constante (80° → 70°).
+   >>> UN CROISEMENT ASSUMÉ <<< En position haute, le câble croise
+       le tibia de la jambe d'appui à l'écran. Dans la réalité il
+       passe À CÔTÉ, hors du plan sagittal. La vue de profil ne
+       peut pas le montrer autrement et le schéma ne cherche pas à
+       le cacher.
+   Agonistes : PSOAS-ILIAQUE d'abord, droit fémoral ensuite.
+   Distinction : ≠ relevé de jambes suspendu (bilatéral, résistance
+               gravitaire, levier maximal à l'horizontale) ;
+               ≠ leg extension (genou, pas hanche) ; ≠ montées de
+               genoux au poids du corps (aucune résistance en bas,
+               justement là où le levier est ici maximal).
+   GÉOMÉTRIE (calculée) — sol y=150 ; poulie (168,144) ; hanche
+   FIXE (92,96) ; cuisse 26 ; tibia 26 ; cheville (103.24,146.72)
+   → (75.29,115.92) ; câble ×1,4946 et +19,26° de rotation.
+   ========================================================= */
+EXERCISE_MOTIONS["flexion-hanche-poulie"] = {
+  vb: "44 38 134 118",
+  dur: 4.2,
+  phases: { con: [0, 42], ecc: [50, 82] },
+  alt: "Debout de profil, dos à une poulie basse avec une sangle à la cheville et une main sur un montant : le genou monte vers la poitrine jusqu'à dépasser l'horizontale de la cuisse, le buste restant rigoureusement vertical, puis la jambe redescend lentement.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="150" x2="176" y2="150"/>
+    <!-- colonne et poulie BASSE, derrière le lifter -->
+    <line class="mo-gear" x1="172" y1="44" x2="172" y2="150"/>
+    <circle class="mo-pulley" cx="168" cy="144" r="5"/>
+    <!-- montant de maintien, devant -->
+    <line class="mo-gear" x1="50" y1="60" x2="50" y2="150"/>
+    <circle class="mo-hand" cx="52" cy="66" r="3"/>
+    <!-- APLOMB DU TRONC : il ne doit pas partir en arrière -->
+    <line class="mo-rom" x1="92" y1="62" x2="92" y2="150"/>
+    <!-- HORIZONTALE DE LA CUISSE : la cuisse doit la dépasser -->
+    <line class="mo-rom" x1="58" y1="96" x2="104" y2="96"/>
+    <!-- TRONC, TÊTE, BRAS et JAMBE D'APPUI : tous fixes -->
+    <circle class="mo-head" cx="90" cy="52" r="8"/>
+    <line class="mo-body" x1="92" y1="62" x2="91" y2="58"/>
+    <line class="mo-body" x1="92" y1="96" x2="92" y2="62"/>
+    <line class="mo-limb" x1="92" y1="62" x2="72" y2="72"/>
+    <line class="mo-limb" x1="72" y1="72" x2="52" y2="66"/>
+    <line class="mo-body" x1="92" y1="96" x2="94" y2="120"/>
+    <line class="mo-body" x1="94" y1="120" x2="96" y2="144"/>
+    <line class="mo-body" x1="88" y1="150" x2="102" y2="150"/>
+    <line class="mo-body" x1="96" y1="144" x2="89" y2="150"/>
+    <circle class="mo-joint" cx="92" cy="96" r="3"/>`,
+  parts: [
+    {
+      /* CÂBLE : de la poulie basse à la sangle de cheville.
+         Rotation +19,26° et allongement ×1,4946, échantillonnés sur
+         l'arc réel de la cheville — la rotation part même légèrement
+         à contresens (−0,27°) au premier sixième. */
+      o: "168px 144px",
+      k: [[0, "rotate(0deg) scale(1)"], [7, "rotate(-0.27deg) scale(1.1219)"],
+          [14, "rotate(1.57deg) scale(1.2391)"], [21, "rotate(4.86deg) scale(1.341)"],
+          [28, "rotate(9.11deg) scale(1.4204)"], [35, "rotate(14deg) scale(1.4725)"],
+          [42, "rotate(19.26deg) scale(1.4946)"], [50, "rotate(19.26deg) scale(1.4946)"],
+          [55.33, "rotate(14deg) scale(1.4725)"], [60.67, "rotate(9.11deg) scale(1.4204)"],
+          [66, "rotate(4.86deg) scale(1.341)"], [71.33, "rotate(1.57deg) scale(1.2391)"],
+          [76.67, "rotate(-0.27deg) scale(1.1219)"], [82, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="168" y1="144" x2="103.24" y2="146.72"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE fixe, +115°. */
+      o: "92px 96px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(19.17deg)"], [14, "rotate(38.33deg)"],
+          [21, "rotate(57.5deg)"], [28, "rotate(76.67deg)"], [35, "rotate(95.83deg)"],
+          [42, "rotate(115deg)"], [50, "rotate(115deg)"],
+          [55.33, "rotate(95.83deg)"], [60.67, "rotate(76.67deg)"], [66, "rotate(57.5deg)"],
+          [71.33, "rotate(38.33deg)"], [76.67, "rotate(19.17deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Psoas-iliaque", "Droit fémoral"],
+      muscle: `
+        <circle cx="94" cy="101" r="3.5"/>
+        <ellipse cx="92" cy="113" rx="3.2" ry="7" transform="rotate(-15 92 113)"/>`,
+      svg: `<line class="mo-limb" x1="92" y1="96" x2="98.73" y2="121.11"/>`,
+      children: [
+        {
+          /* TIBIA : −125° relatif, mais seulement −10° en ABSOLU —
+             il pend sous la traction du câble et garde presque son
+             orientation. C'est le genou qui se plie, pas le tibia qui
+             se lève. */
+          o: "98.73px 121.11px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(-20.83deg)"], [14, "rotate(-41.67deg)"],
+              [21, "rotate(-62.5deg)"], [28, "rotate(-83.33deg)"], [35, "rotate(-104.17deg)"],
+              [42, "rotate(-125deg)"], [50, "rotate(-125deg)"],
+              [55.33, "rotate(-104.17deg)"], [60.67, "rotate(-83.33deg)"], [66, "rotate(-62.5deg)"],
+              [71.33, "rotate(-41.67deg)"], [76.67, "rotate(-20.83deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="98.73" cy="121.11" r="2.8"/>
+            <line class="mo-limb" x1="98.73" y1="121.11" x2="103.24" y2="146.72"/>
+            <line class="mo-bar3" x1="99.3" y1="149.5" x2="107.2" y2="143.9"/>
+            <circle class="mo-hand" cx="103.24" cy="146.72" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M68 134 L56 123 M63.81 124.73 L56 123 L58.4 130.63"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M56 123 L68 134 M60.19 132.27 L68 134 L65.6 126.37"/>` }
+  ]
+};
