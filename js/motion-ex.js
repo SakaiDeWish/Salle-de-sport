@@ -9273,3 +9273,157 @@ EXERCISE_MOTIONS["dips-machine"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M160 92 L160 62 M155 70 L160 62 L165 70"/>` }
   ]
 };
+
+/* =========================================================
+   86. EXTENSION NUQUE À LA CORDE (POULIE BASSE)
+       (extension-corde-nuque-poulie)
+   -----------------------------------------------------------
+   Position  : DEBOUT, DOS à une poulie BASSE, la corde passée
+               derrière la nuque, coudes pointés vers le CIEL,
+               buste légèrement penché en avant.
+   Mobile    : le COUDE seul.
+   Fixes     : le BRAS — « coudes qui s'écartent » est l'erreur
+               n°1, le cercle pointillé marque la position que le
+               coude ne doit pas quitter ; le BUSTE — « buste qui
+               plonge » est l'erreur n°2.
+   >>> POURQUOI LE BUSTE EST PENCHÉ EN AVANT, ET PAS DROIT <<<
+       Le câble part d'une poulie placée DERRIÈRE le lifter et
+       tire donc les mains vers l'arrière-bas. Debout parfaitement
+       vertical, ce couple n'est équilibré par rien et le corps
+       recule. L'inclinaison du tronc (épaule 106,74 → hanche
+       112,114, soit 8,5° vers l'avant) est la contrepartie
+       mécanique de cette traction : elle ramène le centre de
+       gravité en avant du pied. Ce n'est pas un détail de style,
+       c'est ce qui rend la position tenable.
+   >>> POURQUOI LE BRAS SE TEND VERS L'AVANT-HAUT, ET PAS VERS
+       L'ARRIÈRE <<< La fiche dit « tends les bras vers
+       l'avant-haut ». Ce n'est pas une nuance : à 175° de coude
+       il y a DEUX positions possibles, l'avant-bras dépassant la
+       verticale du bras vers l'avant ou vers l'arrière, et elles
+       sont symétriques par rapport à l'alignement parfait. C'est
+       celle de l'avant qui est dessinée (avant-bras à −87,87°,
+       main en 110,96/16,02), et le balayage vaut donc 153° et non
+       130° : la main passe PAR-DESSUS le coude au lieu de rester
+       derrière.
+   ROM       : coude de 32° (flexion profonde, corde sur la nuque)
+               à 175°, soit 143° — et 153° de rotation d'avant-bras.
+               « Amplitude courte » est l'erreur n°3.
+   POURQUOI LE CHEF LONG : c'est l'inverse exact du schéma 82
+               (extension un bras à la poulie, épaule neutre →
+               chefs latéral et médial). Ici l'épaule est
+               FLÉCHIE à fond, bras à la verticale : le chef long,
+               seul des trois à franchir l'épaule, est mis en
+               ÉTIREMENT maximal avant même que le coude bouge.
+               C'est toute la raison d'être de l'exercice.
+   >>> ICI LE CRITÈRE DU POINT MORT RÉPOND OUI, ET LA FICHE EST
+       DÉMENTIE SUR UN POINT <<< Critère établi au schéma 82 : il
+       y a point mort si — et seulement si — la direction COUDE ->
+       POULIE tombe DANS le secteur balayé par l'avant-bras.
+       Direction coude->poulie : 61,03°. Secteur balayé : de
+       65,13° à −87,87°. 61,03 est DEDANS. Il existe donc une
+       position — et une seule — où le câble tire exactement dans
+       l'axe de l'avant-bras, ne produit aucun couple sur le
+       coude, et où le triceps n'a mécaniquement rien à faire.
+       Elle tombe à 4,10° du départ, soit à 2,7 % de l'amplitude :
+       autant dire à la position d'étirement elle-même.
+         t      0    1/6    2/6    3/6    4/6    5/6      1
+         levier 2,33 11,7  21,7  25,9  24,6  19,3  11,4
+       La fiche annonce « tension continue ». C'est vrai sur les
+       cinq sixièmes hauts, c'est FAUX en bas : le levier y vaut
+       2,33 et passe par zéro juste avant. Conséquence pratique,
+       mesurée et non supposée : la position basse est celle où le
+       chef long est le plus ÉTIRÉ et en même temps celle où il
+       est le moins CHARGÉ. Les deux ne coïncident pas, et c'est
+       exactement ce qui distingue cette version de l'extension
+       nuque à l'haltère, où la charge est verticale et le levier
+       maximal en bas.
+   Sens      : extension du coude vers le haut-avant = concentrique ;
+               retour lent derrière la nuque = excentrique.
+   Agonistes : TRICEPS, chef long avant tout.
+   Distinction : ≠ extension nuque haltère (résistance verticale,
+               levier maximal en bas et nul en haut — l'exact
+               opposé de la courbe ci-dessus) ; ≠ extension un bras
+               poulie haute (épaule neutre) ; ≠ extension poulie à
+               la barre (épaule neutre, poulie haute).
+   GÉOMÉTRIE (calculée) — sol y=166 ; poulie (172,154) ; épaule
+   (106,74) ; bras 32,25 FIXE vers le haut ; coude (110,42) ;
+   avant-bras 26 ; direction coude->épaule 97,13°.
+     départ main (120.94,65.59)   fin main (110.96,16.02)
+   -> avant-bras −153° ; câble rotation NON monotone (+12,70° au
+      plus puis redescente à +6,15°) et allongement ×1,4778,
+      échantillonnés sur six intervalles.
+   ========================================================= */
+EXERCISE_MOTIONS["extension-corde-nuque-poulie"] = {
+  vb: "82 8 102 166",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 90] },
+  alt: "Debout de profil, dos à une poulie basse, la corde derrière la nuque et les coudes pointés vers le ciel : les avant-bras se déplient vers le haut et l'avant jusqu'aux bras tendus, puis reviennent lentement derrière la nuque.",
+  fixe: `
+    <line class="mo-ground" x1="86" y1="166" x2="180" y2="166"/>
+    <!-- colonne et poulie BASSE, derrière le lifter -->
+    <line class="mo-gear" x1="176" y1="20" x2="176" y2="166"/>
+    <circle class="mo-pulley" cx="172" cy="154" r="5"/>
+    <!-- corps debout de profil, face à gauche, dos à la poulie,
+         buste légèrement penché en avant (voir analyse) -->
+    <circle class="mo-head" cx="95" cy="56" r="9"/>
+    <line class="mo-body" x1="99.7" y1="63.7" x2="106" y2="74"/>
+    <line class="mo-body" x1="106" y1="74" x2="112" y2="114"/>
+    <line class="mo-body" x1="112" y1="114" x2="110" y2="139"/>
+    <line class="mo-body" x1="110" y1="139" x2="106" y2="166"/>
+    <!-- BRAS : fixe, à la verticale, coude vers le ciel.
+         De profil les deux bras se superposent : un seul est dessiné.
+         La tête est reculée à x=95 pour que le bras levé ne se
+         confonde pas avec le crâne — il passe à 13,25 du centre. -->
+    <line class="mo-limb" x1="106" y1="74" x2="110" y2="42"/>
+    <circle class="mo-joint" cx="110" cy="42" r="2.8"/>
+    <!-- le coude ne doit pas quitter ce cercle -->
+    <circle class="mo-rom" fill="none" cx="110" cy="42" r="8"/>
+    <!-- amplitude : l'arc réellement parcouru par les mains, 153° -->
+    <path class="mo-rom" fill="none" d="M120.94 65.59 A26 26 0 0 0 110.96 16.02"/>`,
+  muscles: [
+    { nom: "Triceps (chef long, étiré)",
+      svg: `<ellipse cx="111.5" cy="58" rx="3.2" ry="10" transform="rotate(7.13 111.5 58)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : la corde monte de la poulie basse jusqu'aux mains.
+         Rotation NON monotone (+12,70° puis retour à +6,15°) et
+         allongement ×1,4778, échantillonnés sur l'arc réel des mains :
+         caler sur les deux extrêmes seulement décrocherait la corde. */
+      o: "172px 154px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.67, "rotate(6.26deg) scale(1.021)"],
+          [11.33, "rotate(10.81deg) scale(1.0958)"], [17, "rotate(12.7deg) scale(1.2016)"],
+          [22.67, "rotate(12.11deg) scale(1.3133)"], [28.33, "rotate(9.71deg) scale(1.4102)"],
+          [34, "rotate(6.15deg) scale(1.4778)"], [42, "rotate(6.15deg) scale(1.4778)"],
+          [50, "rotate(9.71deg) scale(1.4102)"], [58, "rotate(12.11deg) scale(1.3133)"],
+          [66, "rotate(12.7deg) scale(1.2016)"], [74, "rotate(10.81deg) scale(1.0958)"],
+          [82, "rotate(6.26deg) scale(1.021)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="172" y1="154" x2="120.94" y2="65.59"/>`
+    },
+    {
+      /* AVANT-BRAS + CORDE : rotation autour du COUDE (110,42), −153°.
+         Même grille de keyframes que le câble — l'easing étant appliqué
+         PAR SEGMENT, deux grilles différentes se désynchroniseraient
+         entre les instants clés. */
+      o: "110px 42px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-25.5deg)"], [11.33, "rotate(-51deg)"],
+          [17, "rotate(-76.5deg)"], [22.67, "rotate(-102deg)"], [28.33, "rotate(-127.5deg)"],
+          [34, "rotate(-153deg)"], [42, "rotate(-153deg)"],
+          [50, "rotate(-127.5deg)"], [58, "rotate(-102deg)"], [66, "rotate(-76.5deg)"],
+          [74, "rotate(-51deg)"], [82, "rotate(-25.5deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="110" y1="42" x2="120.94" y2="65.59"/>
+        <line class="mo-bar2" x1="125.47" y1="63.48" x2="116.4" y2="67.69"/>
+        <circle class="mo-hand" cx="120.94" cy="65.59" r="3"/>`
+    }
+  ],
+  arrows: [
+    /* x=155 : le câble balaie jusqu'à x=143,3 dans la bande y∈[28,62]
+       (maximum atteint en bas de la bande) — une flèche plus à gauche
+       se confondrait avec lui, ils ont la même couleur d'accent. */
+    { phase: "con", svg: `<path class="mo-arr" d="M155 62 L155 28 M150 36 L155 28 L160 36"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M155 28 L155 62 M150 54 L155 62 L160 54"/>` }
+  ]
+};
