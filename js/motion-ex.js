@@ -14268,3 +14268,116 @@ EXERCISE_MOTIONS["fente-croisee"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M77 76 L77 56 M72 63 L77 56 L82 63"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   119. EXTENSION DE HANCHE AU BANC (FROG REVERSE HYPER)
+        (extension-hanche-banc)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. À plat ventre sur un banc, crêtes de hanche au
+   bord (110 100), mains agrippées SOUS le banc. Jambes pendantes à la
+   verticale, genoux fléchis à 90° et ouverts — la version « frog ».
+
+   POURQUOI LE FROG NE GÊNE PAS LA VUE DE PROFIL. L'ouverture des
+   genoux est une abduction, perpendiculaire au plan du mouvement. En
+   3D, le fémur abduit de β puis étendu de θ pointe vers
+   (cos β sin θ, sin β, −cos β cos θ) : sa projection sagittale a pour
+   longueur cos β — CONSTANTE — et pour angle exactement θ. Avec β=40°
+   les segments se dessinent à 19,92 au lieu de 26, facteur 0,7660,
+   une fois pour toutes. Raccourcissement constant : on le déclare,
+   exactement comme au schéma 117. L'angle de hanche, lui, est exact.
+
+   ARTICULATION MOBILE : la hanche, et elle seule.
+   ARTICULATION FIXE : le genou, bloqué à 90°. Fémur et tibia forment
+   donc un L RIGIDE, même signature qu'aux schémas 114 et 115. Le
+   tronc est immobile : c'est tout l'objet des mains sous le banc.
+
+   LE SENS DU TIBIA, QUI N'EST PAS CELUI QU'ON CROIT. Le corps étant
+   couché sur le ventre, la face postérieure de la cuisse regarde vers
+   le HAUT quand la jambe est alignée, mais vers les PIEDS quand la
+   cuisse pend à la verticale — la flexion du genou l'entraîne. Le
+   tibia part donc horizontalement vers les pieds en bas, et se
+   retrouve dressé vers le plafond en haut, après la rotation de 90°
+   du L. C'est ce qui donne le « monte les talons vers le plafond » de
+   la fiche : le talon n'est pas poussé vers le haut, il y arrive par
+   la rotation de la hanche.
+
+   AMPLITUDE RÉELLE. 90° exactement, de la verticale à l'alignement du
+   tronc. Le talon décrit un arc de rayon 28,1671 et monte de 39,83
+   unités, soit 70 cm.
+
+   ZÉRO HYPEREXTENSION, POUR LA QUATRIÈME FOIS DE CE GROUPE. « Monter
+   au-delà de l'alignement du buste » est une erreur listée : le tronc
+   étant horizontal sur le banc, l'alignement EST l'horizontale, et
+   c'est le trait plein qui prolonge le banc. La hanche va de 90° de
+   flexion à 0° et pas un degré après. Comme aux schémas 113, 114 et
+   115 : la position de départ déplace l'amplitude, elle ne l'allonge
+   pas. Ce qui dépasse vient du dos, d'où « donner de l'élan avec le
+   dos » juste au-dessus dans la liste des erreurs.
+
+   MUSCLES AGONISTES. Grand fessier à la hanche, ischios le long de la
+   cuisse. La fiche mentionne aussi les lombaires « (léger) » : ils
+   travaillent en isométrie pour tenir le tronc sur le banc, pas en
+   mouvement, et ne sont donc pas marqués comme moteurs.
+
+   VARIANTE DÉCLARÉE. La fiche propose aussi « tendues serrées ». Elle
+   se dessinerait sans aucun raccourcissement (β=0, segments à 26)
+   mais perdrait le genou fléchi qui donne son nom à l'exercice. Le
+   frog est retenu ; la version tendue est le même mouvement de hanche
+   avec un L déplié.
+
+   TEMPO. Montée 34 %, descente 40 % : « redescends lentement ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["extension-hanche-banc"] = {
+  vb: "46 64 102 92",
+  dur: 3.6,
+  phases: { con: [0, 34], ecc: [48, 88] },
+  alt: "De profil, à plat ventre sur un banc et mains agrippées dessous : les jambes pendantes, genoux fléchis à 90° et ouverts, remontent d'un bloc de 90° jusqu'à l'alignement du tronc, les talons finissant dressés vers le plafond.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="150" x2="146" y2="150"/>
+    <!-- BANC : sa surface est à 100, le corps repose DESSUS et son axe
+         est donc 6 plus haut — la hanche est au bord, pas dans le banc -->
+    <rect class="mo-gear" x="50" y="100" width="60" height="6"/>
+    <line class="mo-gear" x1="56" y1="106" x2="56" y2="150"/>
+    <line class="mo-gear" x1="104" y1="106" x2="104" y2="150"/>
+    <!-- ALIGNEMENT DU TRONC : la limite haute, à ne pas dépasser -->
+    <line class="mo-rom" x1="110" y1="94" x2="136" y2="94"/>
+    <!-- trajet du talon : arc exact de rayon 28,1671 -->
+    <path class="mo-rom" fill="none" d="M129.92 113.92 A28.17 28.17 0 0 0 129.92 74.08"/>
+    <!-- CORPS à plat ventre, immobile -->
+    <circle class="mo-head" cx="70" cy="94" r="7"/>
+    <line class="mo-body" x1="81" y1="94" x2="76" y2="94"/>
+    <line class="mo-body" x1="110" y1="94" x2="81" y2="94"/>
+    <circle class="mo-joint" cx="110" cy="94" r="3"/>
+    <!-- bras : ils passent SOUS le banc, d'où leur raccourci -->
+    <line class="mo-limb" x1="81" y1="94" x2="72" y2="107"/>
+    <line class="mo-limb" x1="72" y1="107" x2="88" y2="110"/>
+    <circle class="mo-hand" cx="88" cy="110" r="3"/>`,
+  parts: [
+    {
+      /* JAMBE : L RIGIDE de deux segments à 19,92 (facteur frog
+         0,7660), rotation −90° autour de la hanche. */
+      o: "110px 94px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-15deg)"], [11.33, "rotate(-30deg)"],
+          [17, "rotate(-45deg)"], [22.67, "rotate(-60deg)"], [28.33, "rotate(-75deg)"],
+          [34, "rotate(-90deg)"], [48, "rotate(-90deg)"],
+          [54.67, "rotate(-75deg)"], [61.33, "rotate(-60deg)"], [68, "rotate(-45deg)"],
+          [74.67, "rotate(-30deg)"], [81.33, "rotate(-15deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Grand fessier", "Ischio-jambiers"],
+      muscle: `
+        <circle cx="114.5" cy="96" r="4.5"/>
+        <circle cx="114.5" cy="108" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="110" y1="94" x2="110" y2="113.92"/>
+        <circle class="mo-joint" cx="110" cy="113.92" r="2.8"/>
+        <line class="mo-limb" x1="110" y1="113.92" x2="129.92" y2="113.92"/>
+        <line class="mo-limb" x1="129.92" y1="113.92" x2="133.5" y2="112.4"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M141 112 L141 80 M136 87 L141 80 L146 87"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M141 80 L141 112 M136 105 L141 112 L146 105"/>` }
+  ]
+};
