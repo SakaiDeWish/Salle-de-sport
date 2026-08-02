@@ -9040,3 +9040,121 @@ EXERCISE_MOTIONS["kickback-triceps"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M152 94 L152 116 M147 108 L152 116 L157 108"/>` }
   ]
 };
+
+/* =========================================================
+   84. POMPES DIAMANT  (pompes-diamant)
+   -----------------------------------------------------------
+   Position  : en planche, MAINS JOINTES sous la POITRINE, pouces
+               et index formant un losange, coudes le long du
+               corps, pointes de pieds au sol.
+   Mobiles   : coude, épaule, et le CORPS entier qui pivote
+               autour de la pointe des pieds.
+   Fixes     : les mains au sol ; le rachis et le bassin —
+               « bassin qui tombe » est l'erreur n°2, le corps est
+               donc un segment rigide.
+   >>> CE QUE LE PROFIL PEUT ET NE PEUT PAS MONTRER <<< Le
+       LOSANGE formé par les pouces et les index est une figure du
+       plan TRANSVERSE : de profil, deux mains jointes se
+       superposent exactement et la forme disparaît. Elle n'est
+       donc pas dessinée, et ce n'est pas un oubli.
+       Ce que le profil montre, en revanche, est la conséquence
+       GÉOMÉTRIQUE de ces mains jointes, et c'est le cœur de
+       l'exercice : la main n'est plus sous l'ÉPAULE mais sous le
+       STERNUM, soit 19,4 unités plus loin vers les pieds. Un
+       repère pointillé au sol mesure cet écart, entre l'aplomb
+       de l'épaule et la main.
+   CE QUE CET ÉCART CHANGE, CALCULÉ : la main étant plus loin, le
+       bras travaille dans un axe plus proche de celui du corps.
+       Résultat, le coude ne se ferme QUE jusqu'à 79,5°, là où une
+       pompe classique descend à 60°. Et pourtant l'épaule descend
+       PLUS : 24,25 unités contre 21,5. Moins de flexion de coude,
+       plus de descente — c'est cette combinaison qui bascule la
+       charge du pectoral vers le triceps.
+   CE QUI ARRÊTE LA DESCENTE N'EST PAS LE SOL : dans une pompe
+       ordinaire la poitrine descend ENTRE les mains et s'arrête
+       au sol. Ici les mains sont SOUS la poitrine : c'est sur
+       elles que la poitrine vient buter, environ 6 unités plus
+       haut. L'amplitude est bornée par l'épaisseur des mains, et
+       le schéma s'arrête là.
+   Sens      : descente = excentrique ; poussée = concentrique.
+   ROM       : coude de 169,9° à 79,5°.
+   Agonistes : TRICEPS, et portion INTERNE du grand pectoral.
+   Distinction : ≠ pompes (mains sous les épaules, coude à 60°) ;
+               ≠ pompes déclinées (pieds surélevés) ; ≠ développé
+               couché prise serrée (c'est la barre qui bouge).
+   GÉOMÉTRIE (calculée) — main (85,150) FIXE, pointe de pied
+   (188,146) FIXE, pied->épaule 127,1, avant-bras 21, bras 22.
+   Position haute obtenue par intersection des cercles (main,
+   42,84) et (pied, 127,1) -> épaule (65.58,111.82).
+     haut  coude (77.20,130.50)
+     bas   épaule (61.29,136.07)  coude (82.18,129.19)
+   Six intervalles, IK à chacun : coude 169,9 -> 135,9 -> 118,7 ->
+   105,7 -> 95,2 -> 86,5 -> 79,5. La main reste au sol partout.
+   ========================================================= */
+EXERCISE_MOTIONS["pompes-diamant"] = {
+  vb: "42 96 158 62",
+  dur: 3.4,
+  phases: { ecc: [0, 44], con: [52, 84] },
+  alt: "En planche, mains jointes sous la poitrine : le corps descend d'un bloc jusqu'à ce que la poitrine touche les mains, coudes le long du corps, puis repousse le sol.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="150" x2="196" y2="150"/>
+    <!-- écart entre l'aplomb de l'épaule et la main : 19,4 unités -->
+    <line class="mo-rom" x1="65.58" y1="150" x2="85" y2="150"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS : enraciné à la MAIN (85,150), qui ne quitte pas le
+         sol. La main est sous le STERNUM, pas sous l'épaule. */
+      o: "85px 150px",
+      k: [[0, "rotate(0deg)"], [7.33, "rotate(13.51deg)"], [14.67, "rotate(17.96deg)"],
+          [22, "rotate(19.70deg)"], [29.33, "rotate(19.53deg)"], [36.67, "rotate(17.65deg)"],
+          [44, "rotate(14.10deg)"], [52, "rotate(14.10deg)"],
+          [57.33, "rotate(17.65deg)"], [62.67, "rotate(19.53deg)"], [68, "rotate(19.70deg)"],
+          [73.33, "rotate(17.96deg)"], [78.67, "rotate(13.51deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="85" cy="150" r="4"/>
+        <line class="mo-limb" x1="85" y1="150" x2="77.20" y2="130.50"/>
+        <circle class="mo-joint" cx="77.20" cy="130.50" r="2.6"/>`,
+      children: [
+        {
+          /* BRAS : flexion du COUDE. −90,45° le ferme de 169,9° à 79,5°. */
+          o: "77.20px 130.50px",
+          k: [[0, "rotate(0deg)"], [7.33, "rotate(-34.04deg)"], [14.67, "rotate(-51.24deg)"],
+              [22, "rotate(-64.22deg)"], [29.33, "rotate(-74.74deg)"], [36.67, "rotate(-83.41deg)"],
+              [44, "rotate(-90.45deg)"], [52, "rotate(-90.45deg)"],
+              [57.33, "rotate(-83.41deg)"], [62.67, "rotate(-74.74deg)"], [68, "rotate(-64.22deg)"],
+              [73.33, "rotate(-51.24deg)"], [78.67, "rotate(-34.04deg)"], [84, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="74.4" cy="119.4" rx="3.2" ry="7" transform="rotate(-31.9 74.4 119.4)"/>`,
+          svg: `<line class="mo-limb" x1="77.20" y1="130.50" x2="65.58" y2="111.82"/>`,
+          children: [
+            {
+              /* CORPS : contre-rotation, pour qu'il ne pivote que des 11,12°
+                 imposés par le pied fixe. Il ne se cambre jamais. */
+              o: "65.58px 111.82px",
+              k: [[0, "rotate(0deg)"], [7.33, "rotate(18.67deg)"], [14.67, "rotate(29.58deg)"],
+                  [22, "rotate(38.96deg)"], [29.33, "rotate(47.80deg)"], [36.67, "rotate(56.49deg)"],
+                  [44, "rotate(65.23deg)"], [52, "rotate(65.23deg)"],
+                  [57.33, "rotate(56.49deg)"], [62.67, "rotate(47.80deg)"], [68, "rotate(38.96deg)"],
+                  [73.33, "rotate(29.58deg)"], [78.67, "rotate(18.67deg)"], [84, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Pectoral (portion interne)",
+              muscle: `<ellipse cx="81.30" cy="122.44" rx="10" ry="4" transform="rotate(15.6 81.30 122.44)"/>`,
+              svg: `
+                <circle class="mo-head" cx="54.03" cy="108.59" r="8"/>
+                <line class="mo-body" x1="61.73" y1="110.74" x2="125.29" y2="128.50"/>
+                <line class="mo-body" x1="125.29" y1="128.50" x2="179.78" y2="143.72"/>
+                <line class="mo-body" x1="179.78" y1="143.72" x2="188" y2="146"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 102 L150 122 M145 116 L150 122 L155 116"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M150 122 L150 102 M145 108 L150 102 L155 108"/>` }
+  ]
+};
