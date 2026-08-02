@@ -13368,3 +13368,177 @@ EXERCISE_MOTIONS["adduction-hanche-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M80 70 L52 70 M60 65 L52 70 L60 75"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   113. KICKBACK FESSIER À LA MACHINE
+        (kickback-fessier-machine)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Debout sur la jambe d'appui, buste incliné de
+   40° vers l'avant et posé sur le coussin de poitrine, mains sur les
+   poignées. Le pied de travail est sur la plateforme, hanche fléchie
+   à 60,48° et genou fléchi à 67,75°.
+
+   MATÉRIEL ET EMPLACEMENT EXACT. Colonne avant en x=70 portant le
+   coussin (77,26 77,92)–(88,84 91,70) et la poignée en (62 100).
+   Rail incliné de 24,57° au-dessus de l'horizontale, de (110 140) à
+   (141,82 125,45), longueur 34,99. La plateforme coulisse dessus :
+   c'est une TRANSLATION pure, sans rotation.
+
+   ARTICULATIONS MOBILES : hanche ET genou de la jambe de travail.
+   ARTICULATIONS FIXES : la hanche en translation (le coussin la
+   bloque), le rachis, la jambe d'appui, les bras.
+
+   CHAÎNE FERMÉE — et c'est là toute la différence avec le schéma 105
+   (kickback à la poulie). À la poulie le pied est LIBRE : l'angle du
+   genou est un choix. Ici le pied est prisonnier de la plateforme,
+   donc l'angle du genou est DÉDUIT du rail, pas choisi. Résolu par
+   intersection cercle-cercle à chaque échantillon, branche genou en
+   avant — l'autre branche est une hyperextension du genou,
+   anatomiquement impossible.
+
+   CE QUE LA CHAÎNE FERMÉE IMPOSE, ET QU'AUCUN CHOIX LIBRE NE
+   PRODUIRAIT. La flexion du genou n'est PAS monotone : 67,75° →
+   70,63° → 70,43° → 67,14° → 60,51° → 49,73° → 31,69°. Le genou se
+   fléchit d'abord de 2,88° DE PLUS avant de s'étendre, parce que la
+   portée hanche→pied commence par diminuer (43,17 → 42,43) avant de
+   croître. Deux keyframes donneraient une extension régulière : un
+   mouvement qui n'existe pas. Même famille que le schéma 106.
+
+   AMPLITUDE RÉELLE, EN DEGRÉS. Fémur −61,36°, tibia −25,30° absolus,
+   soit +36,06° relatifs au fémur. La hanche passe de 60,48° de
+   flexion à −0,87°.
+
+   LE CHIFFRE QUI COMPTE : ZÉRO HYPEREXTENSION. À la poulie, les 60°
+   de course contiennent 20° AU-DELÀ de l'alignement — de la vraie
+   extension de hanche. Ici les 61,36° sont intégralement dépensés à
+   revenir de 60° de flexion jusqu'au neutre, et pas un degré au-delà.
+   La machine ne rallonge pas l'amplitude, elle la DÉPLACE : le buste
+   incliné de 40° fait que le fémur est déjà à 50° derrière la
+   verticale quand la hanche n'est qu'au neutre.
+
+   D'OÙ L'ERREUR DE LA FICHE, EXPLIQUÉE GÉOMÉTRIQUEMENT. « Cambrer le
+   bas du dos en fin de poussée » : pour obtenir les 20° d'extension
+   de hanche que donne la poulie, il faudrait le fémur à 30° ; en fin
+   de course il est à 49,13°. Il manque 19,13°, que seule une cambrure
+   lombaire peut fournir. Le repère en pointillés prolonge l'axe du
+   tronc sous la hanche : en fin de poussée le fémur vient dessus, et
+   il n'y a rien après.
+
+   LA BUTÉE N'EST PAS OÙ ON CROIT. La jambe serait complètement tendue
+   à s=38,54 sur le rail ; la course utile s'arrête à 34,99. La butée
+   doit donc être réglée 3,55 unités (≈ 6 cm) avant le verrouillage —
+   sinon la charge passe du fessier à l'articulation du genou.
+
+   TALON CONTRE POINTE. « Pousser avec la pointe de pied » est listé
+   comme erreur : le pied est donc dessiné talon EN CONTACT sur la
+   plateforme et avant-pied décollé de 1,66 — un pivotement de 12°
+   qui rend le point d'appui lisible sans ajouter de marqueur, la
+   décoration ayant déjà trompé au schéma 90.
+
+   MUSCLES AGONISTES. Grand fessier autour de la hanche, ischios le
+   long de la face postérieure de la cuisse — côté postérieur calculé
+   par la perpendiculaire au fémur, la personne regardant vers −x.
+
+   TEMPO. Concentrique 34 %, maintien 23 % (1,01 s à 4,4 s de cycle,
+   la « seconde de serrage » demandée), excentrique 36 %.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["kickback-fessier-machine"] = {
+  vb: "56 58 96 104",
+  dur: 4.4,
+  phases: { con: [0, 34], ecc: [57, 93] },
+  alt: "De profil, buste incliné sur un coussin de poitrine et mains aux poignées : le pied pousse la plateforme vers l'arrière et vers le haut le long d'un rail incliné, la hanche et le genou s'étendant ensemble jusqu'à ce que la cuisse s'aligne sur l'axe du tronc.",
+  fixe: `
+    <line class="mo-ground" x1="56" y1="156" x2="150" y2="156"/>
+    <!-- COLONNE AVANT, coussin de poitrine et poignée -->
+    <line class="mo-gear" x1="70" y1="84" x2="70" y2="156"/>
+    <line class="mo-gear" x1="70" y1="84" x2="77.26" y2="77.92"/>
+    <line class="mo-pad" x1="77.26" y1="77.92" x2="88.84" y2="91.7"/>
+    <line class="mo-gear" x1="70" y1="100" x2="62" y2="100"/>
+    <!-- RAIL incliné à 24,57° et ses montants -->
+    <line class="mo-gear" x1="110" y1="140" x2="141.82" y2="125.45"/>
+    <line class="mo-gear" x1="110" y1="140" x2="110" y2="156"/>
+    <line class="mo-gear" x1="141.82" y1="125.45" x2="141.82" y2="156"/>
+    <!-- où la jambe serait TENDUE : la butée doit rester en deçà -->
+    <line class="mo-rom" x1="143.79" y1="121.25" x2="146.29" y2="126.71"/>
+    <!-- AXE DU TRONC PROLONGÉ sous la hanche : la fin de course y amène
+         le fémur, et il n'y a rien après — au-delà, c'est la cambrure -->
+    <line class="mo-rom" x1="100" y1="98" x2="116.71" y2="117.92"/>
+    <!-- CORPS de profil, buste incliné de 40°, immobile -->
+    <circle class="mo-head" cx="74.93" cy="68.12" r="8"/>
+    <line class="mo-body" x1="81.36" y1="75.78" x2="77.5" y2="71.2"/>
+    <line class="mo-body" x1="100" y1="98" x2="81.36" y2="75.78"/>
+    <circle class="mo-joint" cx="100" cy="98" r="3"/>
+    <!-- bras : épaule → coude → poignée, deux segments de 18 -->
+    <line class="mo-limb" x1="81.36" y1="75.78" x2="78.81" y2="93.59"/>
+    <line class="mo-limb" x1="78.81" y1="93.59" x2="62" y2="100"/>
+    <circle class="mo-hand" cx="62" cy="100" r="3"/>
+    <!-- JAMBE D'APPUI, fémur 26 et tibia 26 comme la jambe de travail -->
+    <line class="mo-body" x1="100" y1="98" x2="100" y2="124"/>
+    <line class="mo-body" x1="100" y1="124" x2="100" y2="150"/>
+    <!-- pas de marqueur au genou d'appui : le genou de travail passe
+         exactement dessus à mi-course (101,43 123,96 contre 100 124) et
+         les deux anneaux se confondaient. La jambe d'appui est de toute
+         façon en mo-body, plus sombre que le mo-limb de travail. -->
+    <line class="mo-body" x1="100" y1="150" x2="93" y2="156"/>
+    <line class="mo-body" x1="91" y1="156" x2="105" y2="156"/>`,
+  parts: [
+    {
+      /* PLATEFORME : translation pure le long du rail, 34,99 au total
+         soit (+31,81 −14,54). Elle ne tourne pas. */
+      o: "110px 140px",
+      k: [[0, "translate(0px,0px)"], [5.67, "translate(5.3px,-2.42px)"],
+          [11.33, "translate(10.6px,-4.85px)"], [17, "translate(15.9px,-7.27px)"],
+          [22.67, "translate(21.21px,-9.7px)"], [28.33, "translate(26.51px,-12.12px)"],
+          [34, "translate(31.81px,-14.54px)"], [57, "translate(31.81px,-14.54px)"],
+          [63, "translate(26.51px,-12.12px)"], [69, "translate(21.21px,-9.7px)"],
+          [75, "translate(15.9px,-7.27px)"], [81, "translate(10.6px,-4.85px)"],
+          [87, "translate(5.3px,-2.42px)"], [93, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `<line class="mo-plate-o" x1="106.67" y1="132.72" x2="113.33" y2="147.28"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la hanche fixe, −61,36°, dont
+         ZÉRO au-delà de l'alignement avec l'axe du tronc. */
+      o: "100px 98px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-6.31deg)"], [11.33, "rotate(-14.28deg)"],
+          [17, "rotate(-23.64deg)"], [22.67, "rotate(-34.25deg)"], [28.33, "rotate(-46.33deg)"],
+          [34, "rotate(-61.35deg)"], [57, "rotate(-61.35deg)"],
+          [63, "rotate(-46.33deg)"], [69, "rotate(-34.25deg)"], [75, "rotate(-23.64deg)"],
+          [81, "rotate(-14.28deg)"], [87, "rotate(-6.31deg)"], [93, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Grand fessier", "Ischio-jambiers"],
+      muscle: `
+        <circle cx="105" cy="95" r="5"/>
+        <circle cx="97.91" cy="112.16" r="3"/>`,
+      svg: `<line class="mo-limb" x1="100" y1="98" x2="90.9" y2="122.36"/>`,
+      children: [
+        {
+          /* TIBIA : angle RELATIF au fémur, et il commence par se
+             fléchir de 2,88° avant de s'étendre de 36,06° au total.
+             Ce creux est imposé par le rail, pas choisi. */
+          o: "90.9px 122.36px",
+          k: [[0, "rotate(0deg)"], [5.67, "rotate(-2.88deg)"], [11.33, "rotate(-2.68deg)"],
+              [17, "rotate(0.61deg)"], [22.67, "rotate(7.25deg)"], [28.33, "rotate(18.02deg)"],
+              [34, "rotate(36.06deg)"], [57, "rotate(36.06deg)"],
+              [63, "rotate(18.02deg)"], [69, "rotate(7.25deg)"], [75, "rotate(0.61deg)"],
+              [81, "rotate(-2.68deg)"], [87, "rotate(-2.88deg)"], [93, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="90.9" cy="122.36" r="2.8"/>
+            <line class="mo-limb" x1="90.9" y1="122.36" x2="110" y2="140"/>
+            <!-- PIED : talon en contact sur la plateforme, avant-pied
+                 décollé de 1,66 (12°) — l'appui talon est l'objet
+                 même de l'erreur « pousser avec la pointe » -->
+            <line class="mo-limb" x1="110.83" y1="141.82" x2="106.07" y2="135.4"/>
+            <circle class="mo-joint" cx="110" cy="140" r="2.4"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M116 152 L136 142.8 M131.1 148.91 L136 142.8 L128.18 142.55"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M136 142.8 L116 152 M120.9 145.89 L116 152 L123.82 152.25"/>` }
+  ]
+};
