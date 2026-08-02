@@ -11332,3 +11332,177 @@ EXERCISE_MOTIONS["souleve-terre-jambes-tendues"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M156 100 L156 60 M151 68 L156 60 L161 68"/>` }
   ]
 };
+
+/* =========================================================
+   99. SOULEVÉ DE TERRE SUMO  (souleve-terre-sumo)
+   -----------------------------------------------------------
+   >>> CE SCHÉMA M'A DEMANDÉ CINQ TENTATIVES, ET LA RAISON EST
+       INSTRUCTIVE <<< Le fémur d'un sumo est fortement abducté.
+       Sa PROJECTION dans le plan sagittal ne vaut donc plus 26
+       mais √(26² − 20²) = 16,60 — l'écart latéral genou/hanche
+       étant de 20. La chaîne vue de profil est ainsi bien plus
+       COURTE qu'au soulevé classique, et mes premiers essais ont
+       donné des positions absurdes : hanche à 14 du sol (c'était
+       un squat, pas un soulevé), puis épaule 19 EN AVANT de la
+       barre (buste horizontal, l'inverse du sumo). La cause était
+       une erreur d'échelle de ma part : bras et tronc surestimés.
+       Recalés sur la plaque (r=12 ≈ 21 cm), les segments valent
+       jambe 52, tronc 29, bras 36. Tout se referme ensuite.
+   Position  : pieds TRÈS écartés pointes ouvertes, mains à
+               l'intérieur des genoux, barre au sol contre les
+               tibias.
+   Mobiles   : CHEVILLE, GENOU, HANCHE, et le BRAS qui reste
+               vertical — il ne tire pas, il pend.
+   Fixes     : le PIED ; le dos, segment rigide.
+   >>> TROIS CHIFFRES QUI SÉPARENT LE SUMO DU CLASSIQUE <<< Les
+       deux versions sont calculées ici avec la même méthode, la
+       même barre, le même pied, la même contrainte d'aplomb ; seul
+       change le raccourcissement sagittal dû à l'écartement.
+         inclinaison du tronc au départ : 52,80° contre 63,80°
+                                          → 11,0° plus vertical
+         hauteur de hanche au départ    : 31,4 contre 35,2
+                                          → hanche 3,8 plus basse
+         COURSE DE BARRE                : 26,90 contre 36,17
+                                          → 25,6 % DE MOINS
+       Le troisième est le vrai argument du sumo, et il ne se
+       devine pas : il découle du fait que la jambe, écartée,
+       « dépense » une partie de sa longueur latéralement et
+       verrouille donc plus bas.
+   >>> « HANCHES QUI MONTENT AVANT LES ÉPAULES » : LE RAPPORT EST
+       1,71 <<< Erreur n°2. Sur toute la montée, la hanche s'élève
+       de 15,72 et l'épaule de 26,90 : l'épaule monte 1,71 fois
+       plus que la hanche. C'est ce rapport qui est imposé à
+       chacun des sept échantillons, et c'est ce qui définit une
+       exécution correcte. Si les hanches partent seules, le
+       rapport tombe sous 1 et le mouvement devient un soulevé
+       jambes tendues déguisé — avec la barre encore au sol.
+   >>> LE BRAS EST L'APLOMB <<< Un bras qui tient une barre est un
+       segment à DEUX FORCES : il ne peut transmettre qu'une
+       tension, donc il est nécessairement VERTICAL. La barre est
+       ainsi toujours à l'aplomb de l'épaule, et « barre loin du
+       corps » (erreur n°3) revient exactement à laisser l'ÉPAULE
+       quitter l'aplomb du milieu du pied. C'est cette contrainte,
+       imposée aux sept échantillons, qui détermine l'angle du
+       tronc à chaque instant.
+   ROM       : genou de 117,72° à 173,86° ; tronc de 52,80° à 8°.
+   >>> LIMITE ASSUMÉE DU DESSIN <<< La cuisse est tracée à sa
+       PROJECTION, 16,60, soit 64 % de sa longueur réelle. La
+       silhouette paraît donc tassée, et le disque (r=12, à
+       l'échelle) recouvre effectivement la hanche et le genou en
+       position haute — c'est ce que montre une vraie photo de
+       profil. Le schéma est juste, mais il est serré : c'est le
+       prix d'une position très écartée regardée de côté, et non
+       un défaut de tracé qu'on pourrait corriger.
+   ERREUR NON MONTRABLE : « genoux qui rentrent » est FRONTALE, et
+       les ADDUCTEURS — pourtant cités par la fiche et signature du
+       sumo — sont MÉDIAUX, donc invisibles de profil. Ils ne sont
+       pas marqués ici plutôt que d'être placés où ils ne sont pas ;
+       c'est le squat sumo (schéma 89) qui traite ce plan.
+   Agonistes : GRAND FESSIER, ischio-jambiers (quadriceps et
+               adducteurs non marqués, voir ci-dessus).
+   Distinction : ≠ soulevé de terre classique (tronc 63,80°, course
+               36,17) ; ≠ soulevé roumain et jambes tendues (départ
+               debout, genou quasi fixe) ; ≠ squat sumo (barre sur
+               le dos, vue de face).
+   GÉOMÉTRIE (calculée) — sol y=150 ; pied 94→120 ; cheville
+   (104,146) ; aplomb x=107 ; tibia projeté 27,15 ; fémur projeté
+   16,60 ; tronc 29 ; bras 36 ; barre (107,137.07) → (107,110.16).
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-terre-sumo"] = {
+  vb: "86 50 60 104",
+  dur: 4.4,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil, pieds très écartés et mains à l'intérieur des genoux : extension simultanée des genoux et des hanches pour se redresser, l'épaule montant 1,71 fois plus vite que la hanche et la barre restant à l'aplomb du milieu du pied, puis retour au sol.",
+  fixe: `
+    <line class="mo-ground" x1="90" y1="150" x2="140" y2="150"/>
+    <line class="mo-body" x1="94" y1="150" x2="120" y2="150"/>
+    <circle class="mo-joint" cx="104" cy="146" r="2.6"/>
+    <!-- APLOMB DU MILIEU DU PIED. Le bras étant un segment à deux
+         forces, il est vertical : la barre est donc toujours sous
+         l'épaule, et « barre loin du corps » = épaule hors d'aplomb. -->
+    <line class="mo-rom" x1="107" y1="54" x2="107" y2="96"/>`,
+  parts: [
+    {
+      /* TIBIA (projeté) : enraciné à la CHEVILLE, −13,81°. */
+      o: "104px 146px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(-2.49deg)"], [12, "rotate(-4.8deg)"],
+          [18, "rotate(-6.94deg)"], [24, "rotate(-8.94deg)"], [30, "rotate(-10.89deg)"],
+          [36, "rotate(-13.81deg)"], [46, "rotate(-13.81deg)"],
+          [53.33, "rotate(-10.89deg)"], [60.67, "rotate(-8.94deg)"], [68, "rotate(-6.94deg)"],
+          [75.33, "rotate(-4.8deg)"], [82.67, "rotate(-2.49deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="104" y1="146" x2="113.62" y2="120.61"/>
+        <circle class="mo-joint" cx="113.62" cy="120.61" r="2.6"/>`,
+      children: [
+        {
+          /* CUISSE (projetée, 16,60 et non 26 — voir l'analyse) :
+             extension du GENOU, −56,14°, de 117,72° à 173,86°. */
+          o: "113.62px 120.61px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-5.33deg)"], [12, "rotate(-11.42deg)"],
+              [18, "rotate(-18.5deg)"], [24, "rotate(-27.02deg)"], [30, "rotate(-38.08deg)"],
+              [36, "rotate(-56.14deg)"], [46, "rotate(-56.14deg)"],
+              [53.33, "rotate(-38.08deg)"], [60.67, "rotate(-27.02deg)"], [68, "rotate(-18.5deg)"],
+              [75.33, "rotate(-11.42deg)"], [82.67, "rotate(-5.33deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          /* Deux marqueurs seulement : la cuisse PROJETÉE ne fait que
+             16,60 de long, il n'y a pas la place d'en aligner trois
+             sans qu'ils se confondent. Le quadriceps, cité par la
+             fiche, n'est donc pas marqué — dit plutôt que tassé. */
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="135.06" cy="118" r="4"/>
+            <ellipse cx="121.38" cy="116.2" rx="6" ry="2.6" transform="rotate(-6.95 121.38 116.2)"/>`,
+          svg: `
+            <line class="mo-limb" x1="113.62" y1="120.61" x2="130.1" y2="118.6"/>
+            <circle class="mo-joint" cx="130.1" cy="118.6" r="2.6"/>`,
+          children: [
+            {
+              /* TRONC : +114,75° relatif, soit de 52,80° à 8° en
+                 absolu. RÉSOLU à chaque échantillon pour que l'épaule
+                 reste sur l'aplomb, pas interpolé. */
+              o: "130.1px 118.6px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(12.61deg)"], [12, "rotate(26.18deg)"],
+                  [18, "rotate(41.13deg)"], [24, "rotate(58.27deg)"], [30, "rotate(79.59deg)"],
+                  [36, "rotate(114.75deg)"], [46, "rotate(114.75deg)"],
+                  [53.33, "rotate(79.59deg)"], [60.67, "rotate(58.27deg)"], [68, "rotate(41.13deg)"],
+                  [75.33, "rotate(26.18deg)"], [82.67, "rotate(12.61deg)"], [90, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis",
+              muscle: `<ellipse cx="120" cy="112" rx="10" ry="2.8" transform="rotate(37.2 120 112)"/>`,
+              childrenFirst: true,
+              svg: `
+                <line class="mo-body" x1="130.1" y1="118.6" x2="107" y2="101.07"/>
+                <line class="mo-body" x1="107" y1="101.07" x2="100.5" y2="96.1"/>
+                <circle class="mo-head" cx="97.45" cy="93.82" r="9"/>`,
+              children: [
+                {
+                  /* BRAS : suspendu à l'ÉPAULE, coude VERROUILLÉ, un seul
+                     segment. −44,79° relatif, ce qui le laisse
+                     rigoureusement VERTICAL dans le monde à chaque
+                     instant — c'est la condition d'un segment à deux
+                     forces, et c'est ce qui fait de lui l'aplomb. */
+                  o: "107px 101.07px",
+                  k: [[0, "rotate(0deg)"], [6, "rotate(-4.78deg)"], [12, "rotate(-9.95deg)"],
+                      [18, "rotate(-15.69deg)"], [24, "rotate(-22.31deg)"], [30, "rotate(-30.62deg)"],
+                      [36, "rotate(-44.79deg)"], [46, "rotate(-44.79deg)"],
+                      [53.33, "rotate(-30.62deg)"], [60.67, "rotate(-22.31deg)"], [68, "rotate(-15.69deg)"],
+                      [75.33, "rotate(-9.95deg)"], [82.67, "rotate(-4.78deg)"], [90, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="107" y1="101.07" x2="107" y2="137.07"/>
+                    <circle class="mo-plate-o" cx="107" cy="137.07" r="12"/>
+                    <circle class="mo-hub" cx="107" cy="137.07" r="2.8"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M140 110 L140 78 M135 86 L140 78 L145 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 78 L140 110 M135 102 L140 110 L145 102"/>` }
+  ]
+};
