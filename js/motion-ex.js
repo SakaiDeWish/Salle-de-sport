@@ -12477,3 +12477,147 @@ EXERCISE_MOTIONS["hip-thrust-unilateral"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M186 114 L186 142 M181 134 L186 142 L191 134"/>` }
   ]
 };
+
+/* =========================================================
+   107. FROG PUMPS  (frog-pumps)
+   -----------------------------------------------------------
+   Position  : ALLONGÉ au sol, plantes de pieds l'une contre
+               l'autre, genoux ouverts vers l'extérieur.
+   Mobiles   : le TRONC (autour de l'appui d'épaule), la CUISSE et
+               le TIBIA. CHAÎNE FERMÉE : épaule et pieds fixes.
+   Fixes     : l'appui d'épaule, les PIEDS, les bras posés au sol,
+               et la TÊTE qui contre-tourne — menton rentré.
+   >>> POURQUOI UNE VUE DE PROFIL EST ICI LÉGITIME, ALORS QU'ELLE
+       NE L'ÉTAIT PAS À L'ABDUCTION MACHINE <<< Genoux ouverts, les
+       fémurs sortent du plan sagittal : leur projection ne vaut
+       plus 26 mais √(26² − 20²) = 16,60, soit 0,638. Même chose
+       pour les tibias, qui reviennent des genoux vers les pieds
+       joints sur l'axe. La silhouette est donc raccourcie — MAIS
+       le facteur est CONSTANT, parce que l'écartement des genoux
+       ne change pas pendant la répétition. Une fois le coefficient
+       annoncé, tout le reste du schéma est rigoureux. C'est
+       exactement l'inverse de l'abduction machine (schéma 101), où
+       la projection frontale passait de 2,3 à 18,4 en cours de
+       mouvement et rendait la vue impossible. Un raccourcissement
+       constant se déclare ; un raccourcissement variable ment.
+   >>> LE PLUS DUR EST EN BAS, ET C'EST L'INVERSE DU HIP THRUST <<<
+       Le moment à la hanche est proportionnel à la distance
+       HORIZONTALE hanche → appui d'épaule, c'est-à-dire à
+       longueur_de_tronc × cos(inclinaison). Or :
+         hip thrust sur banc : le tronc part incliné vers le BAS et
+           finit HORIZONTAL → le cosinus croît → maximum EN HAUT
+           (schéma 105 : 25,46 → 39,33).
+         frog pump au sol : le tronc part HORIZONTAL et finit
+           incliné vers le haut → le cosinus décroît → maximum EN
+           BAS (32,00 → 27,71, soit 0,87).
+       Voilà, en une ligne de trigonométrie, pourquoi le hip thrust
+       sur banc existe : il déplace le pic de charge vers la
+       position raccourcie, là où le fessier travaille le mieux.
+       Le frog pump, lui, est un exercice d'activation et de
+       volume — ce que dit la fiche.
+   ROM       : genou de 58,11° à 95,88° ; la hanche monte de 16,00.
+       « Amplitude trop courte » est l'erreur n°3.
+   >>> « CAMBRER LE BAS DU DOS » <<< Erreur n°1. Le pointillé
+       prolonge l'alignement épaule-hanche de la position haute.
+       Au-delà, la hanche n'a plus de réserve d'extension et c'est
+       le rachis lombaire qui monte — même mécanisme qu'au kickback
+       (schéma 102) et au hip thrust machine (105).
+   ERREUR NON MONTRABLE : « fermer les genoux pendant la montée »
+       est FRONTALE. Elle a toutefois une traduction chiffrée dans
+       ce schéma : refermer les genoux ferait passer le coefficient
+       de projection de 0,638 à 1,0, c'est-à-dire que les jambes
+       dessinées s'allongeraient de 57 %. Le schéma ne peut pas le
+       montrer, mais il peut le mesurer.
+   ÉCHANTILLONNAGE : chaîne fermée aux deux bouts, résolue sur six
+       intervalles ; deux keyframes auraient décollé les pieds de
+       3,29.
+   Agonistes : GRAND FESSIER, rotateurs externes de hanche.
+   Distinction : ≠ pont fessier (schéma 34, pieds à plat et
+               parallèles, pas de rotation externe) ; ≠ hip thrust
+               (appui sur un banc, pic de charge en haut).
+   GÉOMÉTRIE (calculée) — sol y=142 ; appui d'épaule FIXE (152,136) ;
+   pieds FIXES (104,134) ; tronc 32 ; fémur et tibia PROJETÉS à
+   16,60 ; hanche (120,136) → (124.29,120).
+   ========================================================= */
+EXERCISE_MOTIONS["frog-pumps"] = {
+  vb: "92 108 86 40",
+  dur: 3.2,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil, allongé au sol plantes de pieds jointes et genoux ouverts : le bassin monte de 16 vers le plafond en serrant les fessiers, puis redescend sans se reposer complètement.",
+  fixe: `
+    <line class="mo-ground" x1="94" y1="142" x2="176" y2="142"/>
+    <!-- PIEDS joints, vus par la tranche : semelles l'une contre
+         l'autre, donc le pied est de champ sur le sol -->
+    <line class="mo-limb" x1="108" y1="142" x2="104" y2="134"/>
+    <line class="mo-limb" x1="104" y1="134" x2="99" y2="140"/>
+    <circle class="mo-joint" cx="104" cy="134" r="2.8"/>
+    <!-- appui d'épaule : l'autre ancrage -->
+    <circle class="mo-joint" cx="152" cy="136" r="3"/>
+    <line class="mo-limb" x1="148" y1="138" x2="130" y2="140"/>
+    <!-- ALIGNEMENT épaule-hanche en position haute : au-delà, c'est
+         le rachis qui monte, pas la hanche -->
+    <line class="mo-rom" x1="157.2" y1="139" x2="117.36" y2="116"/>`,
+  parts: [
+    {
+      /* TRONC : rotation autour de l'APPUI D'ÉPAULE. +30°. */
+      o: "152px 136px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(5deg)"], [12, "rotate(10deg)"],
+          [18, "rotate(15deg)"], [24, "rotate(20deg)"], [30, "rotate(25deg)"],
+          [36, "rotate(30deg)"], [46, "rotate(30deg)"],
+          [53.33, "rotate(25deg)"], [60.67, "rotate(20deg)"], [68, "rotate(15deg)"],
+          [75.33, "rotate(10deg)"], [82.67, "rotate(5deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="152" y1="136" x2="120" y2="136"/>
+        <circle class="mo-joint" cx="120" cy="136" r="2.8"/>`,
+      children: [
+        {
+          /* TÊTE : contre-rotation exacte, elle reste au sol. */
+          o: "152px 136px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-5deg)"], [12, "rotate(-10deg)"],
+              [18, "rotate(-15deg)"], [24, "rotate(-20deg)"], [30, "rotate(-25deg)"],
+              [36, "rotate(-30deg)"], [46, "rotate(-30deg)"],
+              [53.33, "rotate(-25deg)"], [60.67, "rotate(-20deg)"], [68, "rotate(-15deg)"],
+              [75.33, "rotate(-10deg)"], [82.67, "rotate(-5deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `<circle class="mo-head" cx="165" cy="136" r="8"/>`
+        },
+        {
+          /* CUISSE (PROJETÉE à 16,60) : −90,62° relatif. */
+          o: "120px 136px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-14.96deg)"], [12, "rotate(-30.77deg)"],
+              [18, "rotate(-46.51deg)"], [24, "rotate(-61.7deg)"], [30, "rotate(-76.32deg)"],
+              [36, "rotate(-90.62deg)"], [46, "rotate(-90.62deg)"],
+              [53.33, "rotate(-76.32deg)"], [60.67, "rotate(-61.7deg)"], [68, "rotate(-46.51deg)"],
+              [75.33, "rotate(-30.77deg)"], [82.67, "rotate(-14.96deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Rotateurs externes"],
+          muscle: `
+            <circle cx="123" cy="140" r="4"/>
+            <circle cx="115" cy="131.5" r="2.6"/>`,
+          svg: `<line class="mo-limb" x1="120" y1="136" x2="113.8" y2="120.6"/>`,
+          children: [
+            {
+              /* TIBIA (PROJETÉ) : +37,77°. Son extrémité reste sur le
+                 pied fixe aux sept échantillons. */
+              o: "113.8px 120.6px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(0.07deg)"], [12, "rotate(2.95deg)"],
+                  [18, "rotate(8.41deg)"], [24, "rotate(16.13deg)"], [30, "rotate(25.91deg)"],
+                  [36, "rotate(37.77deg)"], [46, "rotate(37.77deg)"],
+                  [53.33, "rotate(25.91deg)"], [60.67, "rotate(16.13deg)"], [68, "rotate(8.41deg)"],
+                  [75.33, "rotate(2.95deg)"], [82.67, "rotate(0.07deg)"], [90, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="113.8" cy="120.6" r="2.8"/>
+                <line class="mo-limb" x1="113.8" y1="120.6" x2="104" y2="134"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M97 136 L97 116 M93 122 L97 116 L101 122"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M97 116 L97 136 M93 130 L97 136 L101 130"/>` }
+  ]
+};
