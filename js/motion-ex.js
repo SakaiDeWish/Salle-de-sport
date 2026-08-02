@@ -13199,3 +13199,172 @@ EXERCISE_MOTIONS["abduction-hanche-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M150 60 L122 60 M130 55 L122 60 L130 65"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   112. ADDUCTION DE HANCHE À LA POULIE
+        (adduction-hanche-poulie)              — VU DE FACE
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Debout sur la jambe d'appui, sangle à la
+   cheville INTÉRIEURE — celle du côté de la colonne. La jambe de
+   travail est déjà écartée de 35° vers la poulie : c'est la position
+   ÉTIRÉE, pas une position neutre. Bassin de face, tronc vertical.
+
+   MATÉRIEL ET EMPLACEMENT EXACT. Poulie BASSE en (44 146), colonne
+   en x=40, donc du MÊME côté que la jambe de travail. C'est là toute
+   la différence avec l'abduction à la poulie (schéma 111), où la
+   poulie était du côté OPPOSÉ et le câble croisait sous le corps.
+   Ici il part vers l'extérieur : la charge tire la jambe en abduction,
+   les adducteurs la ramènent.
+
+   ARTICULATIONS MOBILES : la hanche de travail, et elle seule.
+   ARTICULATIONS FIXES : genou et cheville de la jambe de travail
+   (jambe tendue, un seul segment rigide de 52), les deux hanches en
+   rotation, le rachis, la jambe d'appui. Le genou n'est qu'un repère.
+
+   DIRECTION ET PLAN. Plan frontal, rotation d'adduction autour d'un
+   axe antéro-postérieur passant par la hanche.
+
+   AMPLITUDE RÉELLE, EN DEGRÉS. 35° d'abduction au départ (sous la
+   limite passive de 45°) → 20° AU-DELÀ de la verticale à l'arrivée,
+   soit 55° de balayage. Les 20° ne sont pas un arrondi : le solveur
+   montre qu'à 12° la cheville reste 3,15 EN DEÇÀ de la jambe d'appui
+   — la jambe ne croise pas, alors que la fiche demande de « croiser
+   légèrement devant ». À 20° la cheville la dépasse de 4,56.
+
+   CE QUE LA VUE DE FACE COÛTE ICI. Croiser impose de passer DEVANT
+   la jambe d'appui, donc un peu de flexion de hanche, invisible de
+   face. Chiffré : 4 unités vers l'avant = 4,41° de flexion, et le
+   fémur projeté ne raccourcit que de 0,154 unité, soit 0,30 % — cinq
+   fois moins que l'épaisseur du trait. Sous la résolution du dessin :
+   on le DÉCLARE et on l'ignore. C'est l'application de la règle des
+   projections des schémas 99/101/107, et le pendant du schéma 111 :
+   debout, la hanche est étendue, le fémur est déjà DANS le plan
+   frontal, la vue de face est donc exacte — assis (schéma 110), la
+   cuisse pointe vers l'observateur et il faut la vue de dessus.
+
+   CE QUI NE PEUT PAS ÊTRE DESSINÉ À L'ÉCHELLE. La fiche dit « main
+   sur le montant ». À la distance qu'impose l'exercice — il faut que
+   la cheville étirée dégage la poulie — l'épaule est à 59,5 de la
+   colonne pour un bras de 36 : il manque 23,5, soit 41 cm. Atteindre
+   le montant exigerait exactement le buste penché que la fiche liste
+   comme erreur principale. La main de repos est donc dessinée là où
+   elle peut réellement être : le long du corps et sur la hanche.
+
+   PROFIL DE RÉSISTANCE, ET POURQUOI IL EST L'INVERSE DU 111. Bras de
+   levier de la hanche : 29,30 à l'étirement → 52,00 au milieu → 49,93
+   au croisement. La résistance MONTE de 70 % puis se stabilise ; elle
+   est minimale là où le muscle est le plus étiré. L'abduction à la
+   poulie faisait exactement l'inverse (51,92 → 42,54, −18 %). La
+   raison est la même que pour la longueur du câble : poulie du côté
+   proche, donc câble presque parallèle au fémur à l'étirement (petit
+   levier) et presque perpendiculaire à l'arrivée (grand levier). Le
+   câble s'allonge d'ailleurs ×2,4167 ici contre ×1,5061 au 111.
+   C'est ce qui explique « charge trop lourde (élan) » : le point dur
+   est à la FIN de la course, là où l'élan ne sert plus à rien.
+
+   MUSCLES AGONISTES. Adducteur long et pectiné, à l'insertion
+   pubienne, en haut et en dedans de la cuisse ; grand adducteur le
+   long du bord médial. Marqueurs posés du côté MÉDIAL du fémur —
+   perpendiculaire (0,8192 0,5736), calculée, pas estimée.
+
+   CE QUI LE DISTINGUE DES VARIANTES PROCHES. Du 110 (machine, assis) :
+   la vue, imposée par la géométrie et non par le confort de dessin.
+   Du 111 (abduction poulie) : côté de la poulie, sens du mouvement,
+   profil de résistance inversé, et le CROISEMENT, que l'abduction
+   n'a pas. La jambe de travail est une `part`, donc dessinée APRÈS
+   le `fixe` : elle passe visuellement DEVANT la jambe d'appui, ce
+   qui est précisément ce qu'on veut montrer.
+
+   TEMPO. Concentrique 38 %, excentrique 42 % : le retour est plus
+   long que l'aller, comme le demande « reviens lentement en retenant
+   la charge ». Le repère de verticale sur l'arc rend visible que la
+   cheville DÉPASSE le neutre au lieu de s'y arrêter.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["adduction-hanche-poulie"] = {
+  vb: "34 34 130 122",
+  dur: 4,
+  vue: "Vu de face",
+  phases: { con: [0, 38], ecc: [46, 88] },
+  alt: "Vu de face, debout la sangle à la cheville intérieure et la poulie basse du même côté : la jambe tendue part écartée de 35°, revient vers l'intérieur et croise devant la jambe d'appui, puis ressort lentement en retenant la charge.",
+  fixe: `
+    <line class="mo-ground" x1="36" y1="150" x2="160" y2="150"/>
+    <!-- colonne et poulie BASSE, du MÊME côté que la jambe de travail -->
+    <line class="mo-gear" x1="40" y1="60" x2="40" y2="150"/>
+    <circle class="mo-pulley" cx="44" cy="146" r="5"/>
+    <!-- APLOMB DU TRONC : le buste ne doit pas pencher pour compenser -->
+    <line class="mo-rom" x1="110" y1="58" x2="110" y2="96"/>
+    <!-- trajet réel de la cheville, 55° -->
+    <path class="mo-rom" fill="none" d="M74.17 134.6 A52 52 0 0 0 121.79 140.86"/>
+    <!-- repère de VERTICALE : la cheville doit le DÉPASSER, pas s'y arrêter -->
+    <line class="mo-rom" x1="104" y1="144" x2="104" y2="148.5"/>
+    <!-- CORPS vu de face, immobile -->
+    <circle class="mo-head" cx="110" cy="47" r="9"/>
+    <line class="mo-body" x1="110" y1="58" x2="110" y2="55"/>
+    <line class="mo-body" x1="96" y1="58" x2="124" y2="58"/>
+    <line class="mo-body" x1="96" y1="58" x2="104" y2="92"/>
+    <line class="mo-body" x1="124" y1="58" x2="116" y2="92"/>
+    <line class="mo-body" x1="104" y1="92" x2="116" y2="92"/>
+    <circle class="mo-joint" cx="104" cy="92" r="3"/>
+    <circle class="mo-joint" cx="116" cy="92" r="2.8"/>
+    <!-- bras : le montant est hors de portée (59,5 pour un bras de 36),
+         la main de repos est donc le long du corps et sur la hanche -->
+    <line class="mo-limb" x1="96" y1="58" x2="89" y2="75"/>
+    <line class="mo-limb" x1="89" y1="75" x2="84" y2="92"/>
+    <circle class="mo-hand" cx="84" cy="92" r="3"/>
+    <line class="mo-limb" x1="124" y1="58" x2="130" y2="76"/>
+    <line class="mo-limb" x1="130" y1="76" x2="120" y2="90"/>
+    <circle class="mo-hand" cx="120" cy="90" r="3"/>
+    <!-- JAMBE D'APPUI -->
+    <line class="mo-body" x1="116" y1="92" x2="117" y2="118"/>
+    <line class="mo-body" x1="117" y1="118" x2="118" y2="144"/>
+    <line class="mo-body" x1="110" y1="150" x2="126" y2="150"/>
+    <line class="mo-body" x1="118" y1="144" x2="124" y2="150"/>`,
+  parts: [
+    {
+      /* CÂBLE : poulie du côté PROCHE, donc il s'allonge énormément —
+         ×2,4167 contre ×1,5061 à l'abduction. Sa rotation n'est PAS
+         monotone : +18,82° au milieu puis redescend à +16,93°, la
+         cheville remontant avant de replonger. Deux keyframes
+         rateraient ce retour. */
+      o: "44px 146px",
+      k: [[0, "rotate(0deg) scale(1)"], [6.33, "rotate(9.795deg) scale(1.1789)"],
+          [12.67, "rotate(15.401deg) scale(1.4037)"], [19, "rotate(18.073deg) scale(1.6514)"],
+          [25.33, "rotate(18.821deg) scale(1.908)"], [31.67, "rotate(18.302deg) scale(2.1649)"],
+          [38, "rotate(16.926deg) scale(2.4167)"], [46, "rotate(16.926deg) scale(2.4167)"],
+          [53, "rotate(18.302deg) scale(2.1649)"], [60, "rotate(18.821deg) scale(1.908)"],
+          [67, "rotate(18.073deg) scale(1.6514)"], [74, "rotate(15.401deg) scale(1.4037)"],
+          [81, "rotate(9.795deg) scale(1.1789)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="44" y1="146" x2="74.17" y2="134.6"/>`
+    },
+    {
+      /* JAMBE DE TRAVAIL : segment rigide de 52, rotation −55°.
+         Dessinée après le `fixe`, elle passe DEVANT la jambe d'appui. */
+      o: "104px 92px",
+      k: [[0, "rotate(0deg)"], [6.33, "rotate(-9.167deg)"], [12.67, "rotate(-18.333deg)"],
+          [19, "rotate(-27.5deg)"], [25.33, "rotate(-36.667deg)"], [31.67, "rotate(-45.833deg)"],
+          [38, "rotate(-55deg)"], [46, "rotate(-55deg)"],
+          [53, "rotate(-45.833deg)"], [60, "rotate(-36.667deg)"], [67, "rotate(-27.5deg)"],
+          [74, "rotate(-18.333deg)"], [81, "rotate(-9.167deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Adducteur long", "Grand adducteur"],
+      muscle: `
+        <circle cx="102.28" cy="100.56" r="4.5"/>
+        <circle cx="95.32" cy="107.9" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="104" y1="92" x2="74.17" y2="134.6"/>
+        <circle class="mo-joint" cx="89.09" cy="113.3" r="2.6"/>
+        <!-- pied vu EN BOUT : pointe vers l'avant -->
+        <line class="mo-limb" x1="68.45" y1="137.06" x2="76.45" y2="137.06"/>
+        <!-- SANGLE : centrée EXACTEMENT sur la cheville, perpendiculaire
+             au segment — perpendiculaire médiale (0,8192 0,5736) -->
+        <line class="mo-bar3" x1="71.31" y1="132.59" x2="77.04" y2="136.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M52 70 L80 70 M72 65 L80 70 L72 75"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M80 70 L52 70 M60 65 L52 70 L60 75"/>` }
+  ]
+};
