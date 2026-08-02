@@ -12163,3 +12163,158 @@ EXERCISE_MOTIONS["fentes-arriere"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M158 126 L158 90 M153 98 L158 90 L163 98"/>` }
   ]
 };
+
+/* =========================================================
+   105. HIP THRUST À LA MACHINE  (hip-thrust-machine)
+   -----------------------------------------------------------
+   Position  : dos calé sur le dossier, appui SOUS LES OMOPLATES,
+               coussin sur les hanches, pieds à plat.
+   Mobiles   : le TRONC (autour du point d'appui dorsal), la
+               CUISSE, le TIBIA. CHAÎNE FERMÉE : l'appui dorsal et
+               le pied sont tous deux fixes.
+   Fixes     : le point d'appui dorsal, le PIED, et la TÊTE — qui
+               contre-tourne exactement pour garder le menton
+               rentré au lieu de partir en arrière.
+   >>> LA POSITION DES PIEDS EST DÉDUITE, PAS RÉGLÉE À L'ŒIL <<<
+       La fiche donne le critère : « tibias verticaux en haut du
+       mouvement ». Combiné à « alignement épaules-hanches-genoux »,
+       cela ferme complètement la géométrie. Épaule d'appui en
+       (149,106), tronc 40, fémur 26 : les trois points alignés
+       imposent une distance épaule→genou de 66, donc le genou en
+       (84,10 ; 118) — et tibia vertical impose la cheville juste
+       en dessous, en (84,10 ; 144). Le talon est donc à 64,9 de
+       l'appui dorsal, ni plus ni moins. Trop près, le tibia penche
+       vers l'arrière en haut ; trop loin, il penche vers l'avant et
+       l'on finit sur les pointes — c'est l'erreur n°2.
+   >>> LA RÉSISTANCE EST MAXIMALE EN HAUT, ET C'EST L'INVERSE D'UN
+       SQUAT <<< Le moment que les fessiers doivent produire est
+       proportionnel à la distance HORIZONTALE entre la hanche et
+       l'appui dorsal — c'est par là que passe la réaction du
+       dossier. Elle vaut 25,46 en bas et 39,33 en haut :
+       RAPPORT 1,55, et le maximum tombe exactement à la fin du
+       mouvement. Voilà pourquoi « amplitude écourtée en haut »
+       (erreur n°3) est ici plus grave qu'ailleurs : on supprime
+       précisément le sixième le plus chargé. Dans un squat, à
+       l'inverse, le plus dur est en bas et écourter épargne le
+       plus dur.
+   >>> L'ANGLE DU GENOU N'EST PAS MONOTONE, ET DEUX KEYFRAMES
+       L'AURAIENT MASQUÉ <<< La chaîne étant fermée aux deux bouts,
+       le genou ne se contente pas de s'ouvrir : il se FERME de
+       15,6° à mi-course avant de revenir. Aux deux extrêmes il
+       vaut 100,87° et 100,49° — presque identiques. Une animation
+       à deux keyframes aurait donc montré un genou immobile, ce
+       qui est faux. Et l'interpolation linéaire aurait en prime
+       enfoncé la cheville de 4,83 dans le sol à mi-course. Les
+       trois segments sont donc résolus sur six intervalles.
+   >>> « HYPER-EXTENSION DU BAS DU DOS » <<< Erreur n°1. Le
+       pointillé qui prolonge l'alignement épaules-hanches-genoux
+       est la position haute exacte. Au-delà, la hanche ne peut
+       plus s'étendre — sa réserve au-delà du neutre est de l'ordre
+       de 20°, comme au kickback (schéma 102) — et tout ce qui
+       monte encore vient du RACHIS.
+   ROM       : tronc 40° ; la hanche monte de 23,58 en vertical et
+               avance de 13,87.
+   CE QUE CE SCHÉMA NE MODÉLISE PAS : la timonerie de la machine.
+       Selon le modèle, le coussin est porté par un levier dont la
+       géométrie modifie le profil de charge. Je dessine la charge
+       solidaire de la hanche et je ne prétends pas connaître le
+       bras de levier du constructeur : la cinématique est juste,
+       le profil dépend de la machine.
+   Agonistes : GRAND FESSIER, ischio-jambiers.
+   Distinction : ≠ hip thrust à la barre (schéma 32, appui sur un
+               banc, charge purement verticale) ; ≠ pont fessier
+               (au sol, amplitude réduite) ; ≠ soulevé roumain.
+   GÉOMÉTRIE (calculée) — sol y=150 ; appui dorsal FIXE (149,106) ;
+   cheville FIXE (84.1,144) ; tronc 40 ; fémur 26 ; tibia 26 ;
+   hanche (123.54,136.85) → (109.67,113.27).
+   ========================================================= */
+EXERCISE_MOTIONS["hip-thrust-machine"] = {
+  vb: "70 86 104 70",
+  dur: 4.0,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil dans la machine, dos calé sous les omoplates et coussin sur les hanches : le bassin monte jusqu'à l'alignement épaules-hanches-genoux avec les tibias verticaux, puis redescend en contrôlant.",
+  fixe: `
+    <line class="mo-ground" x1="72" y1="150" x2="170" y2="150"/>
+    <!-- dossier et bâti -->
+    <line class="mo-pad" x1="150" y1="92" x2="156" y2="116"/>
+    <line class="mo-gear" x1="156" y1="116" x2="156" y2="150"/>
+    <circle class="mo-joint" cx="149" cy="106" r="3"/>
+    <!-- PIED à plat : sa position est DÉDUITE, voir l'analyse -->
+    <line class="mo-limb" x1="76" y1="150" x2="94" y2="150"/>
+    <line class="mo-limb" x1="84.1" y1="144" x2="78" y2="150"/>
+    <circle class="mo-joint" cx="84.1" cy="144" r="2.8"/>
+    <!-- APLOMB DU TIBIA en position haute : pousser dans le talon -->
+    <line class="mo-rom" x1="84.1" y1="110" x2="84.1" y2="150"/>
+    <!-- ALIGNEMENT épaules-hanches-genoux : la position haute exacte,
+         et la limite au-delà de laquelle c'est le rachis qui monte -->
+    <line class="mo-rom" x1="154.9" y1="104.91" x2="78.2" y2="119.09"/>`,
+  parts: [
+    {
+      /* TRONC : rotation autour de l'APPUI DORSAL. +40°. */
+      o: "149px 106px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(6.67deg)"], [12, "rotate(13.33deg)"],
+          [18, "rotate(20deg)"], [24, "rotate(26.67deg)"], [30, "rotate(33.33deg)"],
+          [36, "rotate(40deg)"], [46, "rotate(40deg)"],
+          [53.33, "rotate(33.33deg)"], [60.67, "rotate(26.67deg)"], [68, "rotate(20deg)"],
+          [75.33, "rotate(13.33deg)"], [82.67, "rotate(6.67deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="149" y1="106" x2="123.54" y2="136.85"/>
+        <!-- coussin de hanche et charge, solidaires du bassin -->
+        <line class="mo-pad" x1="118.8" y1="132.9" x2="128.3" y2="140.8"/>
+        <rect class="mo-mass" x="119" y="143" width="10" height="5" rx="1.5"/>
+        <circle class="mo-joint" cx="123.54" cy="136.85" r="2.8"/>`,
+      children: [
+        {
+          /* TÊTE : contre-rotation exacte, elle ne bouge pas. Menton
+             rentré — elle ne part pas en arrière avec le tronc. */
+          o: "149px 106px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-6.67deg)"], [12, "rotate(-13.33deg)"],
+              [18, "rotate(-20deg)"], [24, "rotate(-26.67deg)"], [30, "rotate(-33.33deg)"],
+              [36, "rotate(-40deg)"], [46, "rotate(-40deg)"],
+              [53.33, "rotate(-33.33deg)"], [60.67, "rotate(-26.67deg)"], [68, "rotate(-20deg)"],
+              [75.33, "rotate(-13.33deg)"], [82.67, "rotate(-6.67deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `<circle class="mo-head" cx="157.91" cy="95.2" r="8"/>`
+        },
+        {
+          /* CUISSE : −79,77° relatif, rotation autour de la HANCHE qui
+             voyage avec le bassin. */
+          o: "123.54px 136.85px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-8.05deg)"], [12, "rotate(-18.9deg)"],
+              [18, "rotate(-32.12deg)"], [24, "rotate(-47.08deg)"], [30, "rotate(-63.11deg)"],
+              [36, "rotate(-79.77deg)"], [46, "rotate(-79.77deg)"],
+              [53.33, "rotate(-63.11deg)"], [60.67, "rotate(-47.08deg)"], [68, "rotate(-32.12deg)"],
+              [75.33, "rotate(-18.9deg)"], [82.67, "rotate(-8.05deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="121.1" cy="141.2" r="4.5"/>
+            <ellipse cx="110.25" cy="133.98" rx="3.4" ry="9" transform="rotate(-60.7 110.25 133.98)"/>`,
+          svg: `<line class="mo-limb" x1="123.54" y1="136.85" x2="100.87" y2="124.13"/>`,
+          children: [
+            {
+              /* TIBIA : −0,38° au total mais −15,63° à mi-course. Son
+                 extrémité retombe sur la cheville fixe aux sept
+                 échantillons — c'est la contrainte de fermeture. */
+              o: "100.87px 124.13px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(-8.63deg)"], [12, "rotate(-13.84deg)"],
+                  [18, "rotate(-15.63deg)"], [24, "rotate(-13.97deg)"], [30, "rotate(-8.88deg)"],
+                  [36, "rotate(-0.38deg)"], [46, "rotate(-0.38deg)"],
+                  [53.33, "rotate(-8.88deg)"], [60.67, "rotate(-13.97deg)"], [68, "rotate(-15.63deg)"],
+                  [75.33, "rotate(-13.84deg)"], [82.67, "rotate(-8.63deg)"], [90, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="100.87" cy="124.13" r="2.8"/>
+                <line class="mo-limb" x1="100.87" y1="124.13" x2="84.1" y2="144"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M76 136 L76 104 M71 112 L76 104 L81 112"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M76 104 L76 136 M71 128 L76 136 L81 128"/>` }
+  ]
+};
