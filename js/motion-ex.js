@@ -9752,3 +9752,198 @@ EXERCISE_MOTIONS["hack-squat"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M66 98 L90 74 M87.93 81.73 L90 74 L82.27 76.07"/>` }
   ]
 };
+
+/* =========================================================
+   89. SQUAT SUMO  (squat-sumo)   — VU DE FACE
+   -----------------------------------------------------------
+   >>> POURQUOI CE SCHÉMA EST LE PREMIER SQUAT VU DE FACE <<<
+       Les trois erreurs de la fiche sont « genoux qui rentrent »,
+       « buste qui plonge », « pointes de pieds pas alignées avec
+       les genoux ». La première et la troisième se produisent
+       ENTIÈREMENT dans le plan frontal : de profil, un genou qui
+       rentre et un genou qui sort se projettent exactement au
+       même endroit. Et ce que la fiche annonce — pieds très
+       écartés, pointes à 45° — est strictement invisible de
+       profil. Un schéma sagittal aurait donc été un quasi-doublon
+       du squat barre montrant zéro information propre au sumo.
+       D'où la vue de FACE, et le badge qui le signale.
+   Position  : DEBOUT, barre sur les trapèzes, pieds bien plus
+               larges que les épaules (68 unités d'écart entre
+               chevilles contre 16 entre hanches), pointes à 45°.
+   Mobiles   : le TRONC (translation verticale pure) et les DEUX
+               jambes. CHAÎNE FERMÉE DOUBLE : les deux chevilles
+               sont fixes au sol et le bassin est rigide.
+   Fixes     : les PIEDS ; le bassin ne peut pas dériver
+               latéralement — par symétrie il n'y a aucune raison
+               qu'il le fasse, et le tronc descend donc à la
+               verticale stricte.
+   >>> À QUOI RESSEMBLE UN PIED À 45° VU DE FACE <<< Ce n'est pas
+       un détail de dessin. Un pied dont l'axe pointe à 45° vers
+       l'extérieur ET vers l'avant se projette sur le plan frontal
+       en gardant sa composante latérale seule : longueur apparente
+       = cos(45°) × longueur réelle, soit 0,707. Sur un pied de 22,
+       la cheville étant à 30 % du talon, cela donne 4,67 en dedans
+       et 10,89 en dehors. Le pied est donc dessiné COURT et
+       purement latéral — c'est exactement ce qu'on voit de face,
+       et c'est ce qui rend lisible la consigne « pointes à 45° ».
+   >>> CE QUE MESURE VRAIMENT « POUSSER LES GENOUX VERS
+       L'EXTÉRIEUR » <<< Sur la descente, le fémur passe de 48,79°
+       sous l'horizontale à 0° : 48,79° d'ABDUCTION dans le plan
+       frontal, et le genou se déplace de 8,87 unités vers le
+       dehors. Voilà pourquoi les ADDUCTEURS figurent dans la liste
+       des muscles alors qu'ils n'étendent rien : ils sont les
+       ANTAGONISTES de ces 48,79°. « Genoux qui rentrent »,
+       l'erreur n°1, c'est littéralement les adducteurs qui
+       gagnent. Aucun autre squat de la bibliothèque n'a cette
+       excursion frontale.
+   >>> UN MUSCLE VOLONTAIREMENT NON MARQUÉ <<< La fiche cite aussi
+       les fessiers. Le grand fessier est POSTÉRIEUR : de face il
+       est derrière le bassin, invisible. Le marquer quelque part
+       sur cette vue reviendrait à le placer là où il n'est pas.
+       Il est donc absent du schéma, et c'est délibéré — mieux
+       vaut un muscle manquant qu'un muscle mal placé.
+   ROM       : genou de 158,74° à 90,00° EXACTEMENT ; en bas le
+               fémur est exactement horizontal (parallèle) et le
+               tibia exactement vertical, donc le genou pile à
+               l'aplomb de la cheville. Le bassin descend de 18.
+   >>> LA FLEXION N'EST PAS LINÉAIRE DANS LE TEMPS, ET C'EST VRAI
+       <<< Le bassin descend à vitesse constante — c'est ce que
+       fait une barre. Il en résulte que le genou ne fléchit PAS
+       régulièrement : 20,72° sur le premier sixième contre 7,01°
+       sur le dernier. Près de l'extension, quelques unités de
+       hauteur coûtent beaucoup d'angle. L'animation le montre :
+       les genoux s'écartent vite au départ puis se stabilisent.
+   >>> CHAÎNE FERMÉE DOUBLE : RÉSOLUE, PAS INTERPOLÉE <<< Genou
+       par intersection de cercles à chaque échantillon, angles
+       déroulés, six intervalles. Les deux positions extrêmes
+       seules décollaient chaque cheville du sol de 2,56.
+   LIMITE ASSUMÉE DE LA PROJECTION : la cuisse dessinée est la
+       PROJECTION frontale du fémur. Si la hanche est 6 unités en
+       arrière du genou, le fémur réel est 2,5 % plus long que le
+       segment dessiné. Sous 3 %, et sans effet sur les angles
+       frontaux qui sont justement ce que ce schéma mesure.
+   Agonistes : QUADRICEPS, ADDUCTEURS (et fessiers, non marqués).
+   Distinction : ≠ squat barre (stance étroite, vue de profil,
+               aucune abduction) ; ≠ front squat (position de barre) ;
+               ≠ squat gobelet (charge devant, légère).
+   GÉOMÉTRIE (calculée) — sol y=150 ; chevilles (66,150) et
+   (134,150) ; hanches (92,106) et (108,106) ; cuisse 26 ;
+   tibia 26 ; descente du bassin 18.
+   ========================================================= */
+EXERCISE_MOTIONS["squat-sumo"] = {
+  vb: "48 42 102 114",
+  dur: 4.4,
+  vue: "Vu de face",
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "Vu de face, barre sur les trapèzes et pieds très écartés pointes ouvertes : le bassin descend à la verticale pendant que les genoux s'écartent vers l'extérieur jusqu'à la cuisse parallèle au sol, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="50" y1="150" x2="150" y2="150"/>
+    <!-- PIEDS à 45° vus de face : projection latérale seule,
+         4,67 en dedans de la cheville et 10,89 en dehors. -->
+    <line class="mo-limb" x1="129.33" y1="150" x2="144.89" y2="150"/>
+    <line class="mo-limb" x1="70.67" y1="150" x2="55.11" y2="150"/>
+    <circle class="mo-joint" cx="134" cy="150" r="2.8"/>
+    <circle class="mo-joint" cx="66" cy="150" r="2.8"/>
+    <!-- AXE PIED-GENOU : en bas le genou tombe exactement dessus.
+         « Pointes pas alignées avec les genoux » est l'erreur n°3. -->
+    <line class="mo-rom" x1="134" y1="104" x2="134" y2="150"/>
+    <line class="mo-rom" x1="66" y1="104" x2="66" y2="150"/>`,
+  parts: [
+    {
+      /* TRONC + BASSIN + BARRE : translation VERTICALE pure de 18.
+         Par symétrie le bassin n'a aucune raison de dériver
+         latéralement, et « buste droit » (erreur n°2) est ce qui rend
+         la projection frontale honnête : un buste qui plonge se
+         raccourcirait de face et le schéma mentirait. */
+      k: [[0, "translate(0px,0px)"], [7, "translate(0px,3px)"], [14, "translate(0px,6px)"],
+          [21, "translate(0px,9px)"], [28, "translate(0px,12px)"], [35, "translate(0px,15px)"],
+          [42, "translate(0px,18px)"], [50, "translate(0px,18px)"],
+          [55.33, "translate(0px,15px)"], [60.67, "translate(0px,12px)"], [66, "translate(0px,9px)"],
+          [71.33, "translate(0px,6px)"], [76.67, "translate(0px,3px)"], [82, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-body" x1="92" y1="106" x2="108" y2="106"/>
+        <line class="mo-body" x1="86" y1="66" x2="92" y2="106"/>
+        <line class="mo-body" x1="114" y1="66" x2="108" y2="106"/>
+        <line class="mo-body" x1="86" y1="66" x2="114" y2="66"/>
+        <line class="mo-body" x1="100" y1="66" x2="100" y2="61"/>
+        <circle class="mo-head" cx="100" cy="54" r="9"/>
+        <line class="mo-limb" x1="86" y1="66" x2="80" y2="80"/>
+        <line class="mo-limb" x1="80" y1="80" x2="78" y2="67"/>
+        <line class="mo-limb" x1="114" y1="66" x2="120" y2="80"/>
+        <line class="mo-limb" x1="120" y1="80" x2="122" y2="67"/>
+        <!-- barre vue de face : les disques sont vus par la tranche -->
+        <line class="mo-bar3" x1="68" y1="66" x2="132" y2="66"/>
+        <rect class="mo-mass" x="68" y="56" width="4" height="20" rx="1.5"/>
+        <rect class="mo-mass" x="128" y="56" width="4" height="20" rx="1.5"/>
+        <circle class="mo-joint" cx="108" cy="106" r="2.8"/>
+        <circle class="mo-joint" cx="92" cy="106" r="2.8"/>`,
+      children: [
+        {
+          /* CUISSE DROITE : rotation autour de la hanche, qui descend
+             avec le bassin. −48,79° = l'abduction frontale complète. */
+          o: "108px 106px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(-12.16deg)"], [14, "rotate(-20.86deg)"],
+              [21, "rotate(-28.42deg)"], [28, "rotate(-35.43deg)"], [35, "rotate(-42.16deg)"],
+              [42, "rotate(-48.79deg)"], [50, "rotate(-48.79deg)"],
+              [55.33, "rotate(-42.16deg)"], [60.67, "rotate(-35.43deg)"], [66, "rotate(-28.42deg)"],
+              [71.33, "rotate(-20.86deg)"], [76.67, "rotate(-12.16deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Adducteurs"],
+          muscle: `
+            <ellipse cx="116.57" cy="115.78" rx="4" ry="10" transform="rotate(-41.21 116.57 115.78)"/>
+            <ellipse cx="109.38" cy="115.16" rx="2.6" ry="7" transform="rotate(-41.21 109.38 115.16)"/>`,
+          svg: `<line class="mo-limb" x1="108" y1="106" x2="125.13" y2="125.56"/>`,
+          children: [
+            {
+              /* TIBIA DROIT : +68,74° relatif. Il retombe exactement sur
+                 la cheville fixe (134,150) aux sept échantillons. */
+              o: "125.13px 125.56px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(20.72deg)"], [14, "rotate(34.13deg)"],
+                  [21, "rotate(44.78deg)"], [28, "rotate(53.83deg)"], [35, "rotate(61.73deg)"],
+                  [42, "rotate(68.74deg)"], [50, "rotate(68.74deg)"],
+                  [55.33, "rotate(61.73deg)"], [60.67, "rotate(53.83deg)"], [66, "rotate(44.78deg)"],
+                  [71.33, "rotate(34.13deg)"], [76.67, "rotate(20.72deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="125.13" cy="125.56" r="2.8"/>
+                <line class="mo-limb" x1="125.13" y1="125.56" x2="134" y2="150"/>`
+            }
+          ]
+        },
+        {
+          /* CUISSE GAUCHE : miroir exact. */
+          o: "92px 106px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(12.16deg)"], [14, "rotate(20.86deg)"],
+              [21, "rotate(28.42deg)"], [28, "rotate(35.43deg)"], [35, "rotate(42.16deg)"],
+              [42, "rotate(48.79deg)"], [50, "rotate(48.79deg)"],
+              [55.33, "rotate(42.16deg)"], [60.67, "rotate(35.43deg)"], [66, "rotate(28.42deg)"],
+              [71.33, "rotate(20.86deg)"], [76.67, "rotate(12.16deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscle: `
+            <ellipse cx="83.43" cy="115.78" rx="4" ry="10" transform="rotate(41.21 83.43 115.78)"/>
+            <ellipse cx="90.62" cy="115.16" rx="2.6" ry="7" transform="rotate(41.21 90.62 115.16)"/>`,
+          svg: `<line class="mo-limb" x1="92" y1="106" x2="74.87" y2="125.56"/>`,
+          children: [
+            {
+              o: "74.87px 125.56px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-20.72deg)"], [14, "rotate(-34.13deg)"],
+                  [21, "rotate(-44.78deg)"], [28, "rotate(-53.83deg)"], [35, "rotate(-61.73deg)"],
+                  [42, "rotate(-68.74deg)"], [50, "rotate(-68.74deg)"],
+                  [55.33, "rotate(-61.73deg)"], [60.67, "rotate(-53.83deg)"], [66, "rotate(-44.78deg)"],
+                  [71.33, "rotate(-34.13deg)"], [76.67, "rotate(-20.72deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="74.87" cy="125.56" r="2.8"/>
+                <line class="mo-limb" x1="74.87" y1="125.56" x2="66" y2="150"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M56 60 L56 100 M51 92 L56 100 L61 92"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M56 100 L56 60 M51 68 L56 60 L61 68"/>` }
+  ]
+};
