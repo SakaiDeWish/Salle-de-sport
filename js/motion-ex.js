@@ -9427,3 +9427,166 @@ EXERCISE_MOTIONS["extension-corde-nuque-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M155 28 L155 62 M150 54 L155 62 L160 54"/>` }
   ]
 };
+
+/* =========================================================
+   87. FRONT SQUAT (SQUAT AVANT)  (front-squat)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre posée sur l'AVANT des épaules
+               (rack avant), coudes hauts, pieds largeur d'épaules.
+   Mobiles   : CHEVILLE, GENOU, HANCHE — chaîne ouverte enracinée
+               au pied, exactement comme le squat barre.
+   Fixes     : le PIED, ancré au sol ; le dos, segment RIGIDE qui
+               bascule sans s'arrondir (« dos qui s'arrondit » est
+               l'erreur n°3) ; le TALON, qui ne décolle pas
+               (erreur n°2) — c'est pour cela que le pied est
+               dessiné entier et que la cheville est placée à sa
+               vraie position dans le pied, à 6 unités du talon
+               sur 22 de longueur, soit 27 % : le milieu du pied
+               tombe donc 4,4 unités EN AVANT de la cheville, et
+               c'est là que passe l'aplomb.
+   >>> LA SEULE DIFFÉRENCE AVEC LE SQUAT BARRE, ET ELLE SE CALCULE
+       <<< Les deux exercices ont la même chaîne, le même sol, la
+       même contrainte : la barre reste à l'aplomb du milieu du
+       pied. Ce qui change, c'est UNIQUEMENT la position de la
+       barre par rapport au tronc :
+         - rack avant : 4 unités EN AVANT de l'articulation de
+           l'épaule (la barre repose sur les deltoïdes antérieurs) ;
+         - barre haute : 1 unité EN ARRIÈRE (elle repose sur les
+           trapèzes).
+       5 unités d'écart, sur un tronc de 32. Le système ne peut
+       les absorber que d'une seule façon : en tournant le tronc.
+       À PROFONDEUR ET DORSIFLEXION STRICTEMENT IDENTIQUES
+       (32° de dorsiflexion, cuisse 5° sous l'horizontale), le
+       calcul donne :
+         front squat   20,44° d'inclinaison du tronc
+         squat barre   31,09° d'inclinaison du tronc
+       soit 10,65° de moins. Voilà tout l'exercice : « le buste
+       reste vertical » n'est pas une consigne de style qu'on
+       pourrait appliquer au squat barre si on faisait attention,
+       c'est une CONSÉQUENCE géométrique de l'endroit où est posée
+       la barre. Et réciproquement, coudes qui tombent = barre qui
+       roule vers l'avant = la contrainte n'est plus tenable :
+       c'est bien l'erreur n°1 de la fiche.
+   >>> CE QUE LE CALCUL A RÉVÉLÉ SUR L'ANIMATION ELLE-MÊME <<<
+       Le tronc ne bascule PAS de façon monotone. Il s'incline
+       jusqu'à 23,41° aux cinq sixièmes de la descente, puis se
+       REDRESSE de 3° pour finir à 20,44°. En n'inscrivant que les
+       deux positions extrêmes, l'interpolation linéaire des trois
+       rotations aurait fait sortir la barre de l'aplomb de 5,83
+       unités à mi-descente (≈ 9 cm à l'échelle) :
+         f      1/6   2/6   3/6   4/6   5/6
+         écart +2,58 +4,69 +5,83 +5,61 +3,72
+       Sur un exercice dont TOUT le propos est la trajectoire de
+       barre, c'était inacceptable. Les trois segments sont donc
+       échantillonnés sur six intervalles, l'angle du tronc étant
+       à chaque instant RÉSOLU pour que la barre reste sur
+       l'aplomb — pas interpolé.
+   ROM       : dorsiflexion 0 → 32° ; genou jusqu'à la cuisse 5°
+               SOUS l'horizontale (le front squat se fait sous la
+               parallèle, l'inverse du « demi-squat ») ; hanche
+               de 86,0 à 118,5 en ordonnée, soit 32,5 de descente.
+   À NOTER    : l'épaule ne se déplace que de 1,70 unité à
+               l'horizontale sur toute la descente (119,00 →
+               120,70). La trajectoire d'un front squat correct
+               est une VERTICALE, et le schéma le montre.
+   Agonistes : QUADRICEPS (dominants), grand fessier, haut du dos
+               et érecteurs pour tenir le rack.
+   Distinction : ≠ squat barre (barre sur les trapèzes, 31,09° de
+               tronc contre 20,44°) ; ≠ squat gobelet (charge
+               légère tenue devant la poitrine, pas de rack) ;
+               ≠ presse à cuisses (dos appuyé, aucun gainage).
+   GÉOMÉTRIE (calculée) — sol y=150 ; pied 104→126 ; cheville
+   (120,138) ; tibia 26 ; cuisse 26 ; tronc 32 ; barre à 37,1 le
+   long du tronc et 4 en avant ; aplomb x=115.
+   ========================================================= */
+EXERCISE_MOTIONS["front-squat"] = {
+  vb: "94 24 54 130",
+  dur: 4.6,
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "Barre posée sur l'avant des épaules, coudes hauts : descente jusqu'à la cuisse sous l'horizontale en gardant le buste presque vertical, la barre suivant l'aplomb du milieu du pied, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="98" y1="150" x2="140" y2="150"/>
+    <!-- pied ancré au sol : racine de toute la chaîne.
+         Cheville à 6 du talon (126) et 16 des orteils (104) : le
+         milieu du pied, donc l'aplomb, tombe à x=115. -->
+    <line class="mo-limb" x1="104" y1="150" x2="126" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="106" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="125" y2="150"/>
+    <!-- APLOMB DU MILIEU DU PIED : la barre ne le quitte jamais -->
+    <line class="mo-rom" x1="115" y1="28" x2="115" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : rotation autour de la CHEVILLE (120,138). −32,00°
+         = 32° de dorsiflexion, bien plus qu'au squat barre : c'est
+         ce que coûte un buste vertical. */
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(-5.33deg)"], [14, "rotate(-10.67deg)"],
+          [21, "rotate(-16deg)"], [28, "rotate(-21.33deg)"], [35, "rotate(-26.67deg)"],
+          [42, "rotate(-32deg)"], [50, "rotate(-32deg)"],
+          [55.33, "rotate(-26.67deg)"], [60.67, "rotate(-21.33deg)"], [66, "rotate(-16deg)"],
+          [71.33, "rotate(-10.67deg)"], [76.67, "rotate(-5.33deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <circle class="mo-joint" cx="120" cy="138" r="2.8"/>
+        <line class="mo-limb" x1="120" y1="138" x2="119.5" y2="112"/>`,
+      children: [
+        {
+          /* CUISSE : +128,11° relatif. En bas elle est 5° SOUS
+             l'horizontale — la hanche passe sous le genou. */
+          o: "119.5px 112px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(21.35deg)"], [14, "rotate(42.7deg)"],
+              [21, "rotate(64.06deg)"], [28, "rotate(85.41deg)"], [35, "rotate(106.76deg)"],
+              [42, "rotate(128.11deg)"], [50, "rotate(128.11deg)"],
+              [55.33, "rotate(106.76deg)"], [60.67, "rotate(85.41deg)"], [66, "rotate(64.06deg)"],
+              [71.33, "rotate(42.7deg)"], [76.67, "rotate(21.35deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="116.4" cy="99" rx="3.6" ry="10" transform="rotate(1.1 116.4 99)"/>
+            <circle cx="122.5" cy="90" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="119.5" cy="112" r="2.8"/>
+            <line class="mo-limb" x1="119.5" y1="112" x2="119" y2="86"/>`,
+          children: [
+            {
+              /* TRONC + RACK AVANT : −116,55° relatif au total, mais
+                 RÉSOLU à chaque échantillon pour tenir l'aplomb, pas
+                 interpolé (voir l'analyse : 5,83 d'écart sinon). Le
+                 dos est un segment rigide, la barre lui est solidaire. */
+              o: "119px 86px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-23.47deg)"], [14, "rotate(-46.37deg)"],
+                  [21, "rotate(-67.9deg)"], [28, "rotate(-87.18deg)"], [35, "rotate(-103.5deg)"],
+                  [42, "rotate(-116.55deg)"], [50, "rotate(-116.55deg)"],
+                  [55.33, "rotate(-103.5deg)"], [60.67, "rotate(-87.18deg)"], [66, "rotate(-67.9deg)"],
+                  [71.33, "rotate(-46.37deg)"], [76.67, "rotate(-23.47deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Haut du dos et érecteurs (gainage)",
+              muscle: `<ellipse cx="121.6" cy="66" rx="2.8" ry="11"/>`,
+              svg: `
+                <circle class="mo-joint" cx="119" cy="86" r="2.8"/>
+                <line class="mo-body" x1="119" y1="86" x2="119" y2="54"/>
+                <!-- disque vu de profil : la barre est SUR l'avant des
+                     épaules, donc son disque recouvre en partie la tête ;
+                     la tête est dessinée après, pleine, pour rester lisible
+                     (même convention qu'au squat barre). -->
+                <circle class="mo-plate-o" cx="115" cy="48.91" r="10"/>
+                <circle class="mo-hub" cx="115" cy="48.91" r="2.6"/>
+                <!-- COUDES HAUTS : bras à l'horizontale vers l'avant,
+                     avant-bras replié sur la barre. C'est l'étagère qui
+                     tient la barre — s'il s'effondre, elle roule. -->
+                <line class="mo-limb" x1="119" y1="54" x2="100" y2="53"/>
+                <circle class="mo-joint" cx="100" cy="53" r="2.4"/>
+                <line class="mo-limb" x1="100" y1="53" x2="113.5" y2="47.8"/>
+                <line class="mo-body" x1="119" y1="54" x2="113" y2="44.5"/>
+                <circle class="mo-head mo-head-solid" cx="111" cy="36" r="9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M141 60 L141 100 M136 92 L141 100 L146 92"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M141 100 L141 60 M136 68 L141 60 L146 68"/>` }
+  ]
+};
