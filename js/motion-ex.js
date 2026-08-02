@@ -11910,3 +11910,107 @@ EXERCISE_MOTIONS["kickback-fessier-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M132 76 L114 76 M122 71 L114 76 L122 81"/>` }
   ]
 };
+
+/* =========================================================
+   103. NORDIC CURL  (nordic-curl)
+   -----------------------------------------------------------
+   Position  : À GENOUX, chevilles bloquées, corps aligné du genou
+               à la tête.
+   Mobile    : le GENOU seul. Tout le reste du corps est UN SEUL
+               segment rigide qui bascule autour de lui.
+   Fixes     : le TIBIA, plaqué au sol et bloqué à la cheville ;
+               la HANCHE, qui ne doit pas se plier — c'est le
+               cercle pointillé, et c'est l'erreur n°1.
+   >>> LA CHARGE N'EST PAS CONSTANTE, ELLE CROÎT COMME sin(θ) <<<
+       Le moment que les ischios doivent retenir au genou vaut
+       W · d · sin(θ), θ étant l'inclinaison du corps par rapport à
+       la verticale et d la distance genou → centre de masse
+       (41,60 ici, calculée en pondérant cuisse 23 % et
+       tronc+tête 77 %). Donc :
+         θ =  0°  moment NUL
+         θ = 30°  50 % du maximum
+         θ = 45°  71 %
+         θ = 60°  87 %
+         θ = 70°  94 %  (position basse du schéma)
+       Autrement dit l'exercice ne commence vraiment qu'à mi-course,
+       et la difficulté explose là où le bras de levier est le plus
+       grand. C'est exactement pour cela que « chute non contrôlée »
+       (erreur n°2) arrive toujours au même endroit.
+   >>> « CASSER AUX HANCHES » : 28 % DE MOINS, ET ÇA SE CALCULE <<<
+       Erreur n°1. Plier la hanche rapproche le centre de masse du
+       genou. Avec la cuisse à θ et la hanche pliée de φ, la
+       distance horizontale devient
+         23,05·sin(θ) + 18,55·sin(θ − φ)   au lieu de   41,60·sin(θ).
+       À mi-course (θ = 45°), casser de 30° donne 21,10 au lieu de
+       29,42 : 28 % du travail supprimé, sans que la descente
+       paraisse moins basse. C'est la même tricherie qu'au sissy
+       squat (schéma 92), transposée du droit fémoral aux ischios.
+   >>> ET LE MUSCLE S'ALLONGE PENDANT QUE LA CHARGE MONTE <<< Avec
+       le modèle du schéma 96 (longueur d'ischio ∝ flexion de hanche
+       − 0,58 × flexion de genou), hanche restant tendue, le genou
+       passe de 90° à 160° de flexion... c'est-à-dire de 90° à 20°
+       de FLEXION. La longueur des ischios augmente donc de
+       0,58 × 70 = 40,6° d'équivalent-hanche pendant la descente.
+       Allongement ET charge croissante en même temps : c'est la
+       définition d'un excentrique sous tension longue, et c'est ce
+       qui fait de ce mouvement la référence en prévention des
+       lésions d'ischios.
+   ROM       : genou de 90° à 160°, soit 70° ; l'arc pointillé est
+               le trajet réel du sommet du crâne, de rayon 71.
+   TEMPO     : la descente occupe 50 % du cycle et le retour 30 %.
+               Ce n'est pas décoratif : « le plus lentement
+               possible » est la consigne, et l'excentrique est ici
+               l'exercice lui-même, pas une phase de récupération.
+   PAS D'ÉCHANTILLONNAGE : un seul segment tourne autour d'un axe
+       fixe, sans contrainte de fermeture. L'interpolation linéaire
+       d'une rotation unique EST le mouvement exact.
+   Agonistes : ISCHIO-JAMBIERS, en excentrique.
+   Distinction : ≠ leg curl couché ou assis (concentrique, machine,
+               charge réglable) ; ≠ soulevé roumain (hanche mobile,
+               genou fixe : l'exact inverse) ; ≠ good morning.
+   GÉOMÉTRIE (calculée) — sol y=150 ; genou (100,146) ; cheville
+   bloquée (126,146) ; genou→hanche 26 ; hanche→épaule 34 ;
+   sommet du crâne à 71 du genou ; corps de 0° à 70°.
+   ========================================================= */
+EXERCISE_MOTIONS["nordic-curl"] = {
+  vb: "20 60 122 96",
+  dur: 5.0,
+  phases: { ecc: [0, 50], con: [58, 88] },
+  alt: "À genoux de profil, chevilles bloquées : le corps, resté rigoureusement aligné du genou à la tête, bascule lentement vers l'avant jusqu'à 70° en retenant la chute avec les ischios, puis revient.",
+  fixe: `
+    <line class="mo-ground" x1="24" y1="150" x2="140" y2="150"/>
+    <!-- tibia à plat, cheville bloquée sous un support -->
+    <line class="mo-limb" x1="100" y1="146" x2="126" y2="146"/>
+    <line class="mo-pad" x1="118" y1="140" x2="134" y2="140"/>
+    <line class="mo-gear" x1="134" y1="140" x2="134" y2="150"/>
+    <circle class="mo-joint" cx="126" cy="146" r="2.6"/>
+    <!-- trajet réel du sommet du crâne, rayon 71 -->
+    <path class="mo-rom" fill="none" d="M100 75 A71 71 0 0 0 33.28 121.72"/>`,
+  parts: [
+    {
+      /* CORPS ENTIER : un seul segment rigide, rotation autour du
+         GENOU. −70°. C'est toute la technique : si ce bloc cesse
+         d'être rigide, l'exercice disparaît (voir l'analyse). */
+      o: "100px 146px",
+      k: [[0, "rotate(0deg)"], [50, "rotate(-70deg)"], [58, "rotate(-70deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Ischio-jambiers (excentrique)",
+      muscle: `<ellipse cx="104" cy="133" rx="3.4" ry="9.5"/>`,
+      svg: `
+        <circle class="mo-joint" cx="100" cy="146" r="2.8"/>
+        <line class="mo-limb" x1="100" y1="146" x2="100" y2="120"/>
+        <line class="mo-body" x1="100" y1="120" x2="100" y2="86"/>
+        <line class="mo-body" x1="100" y1="86" x2="100" y2="84"/>
+        <circle class="mo-head" cx="100" cy="75" r="9"/>
+        <!-- la hanche ne doit PAS se plier : −28 % de travail sinon -->
+        <circle class="mo-rom" fill="none" cx="100" cy="120" r="7"/>
+        <!-- bras croisés sur la poitrine, solidaires du bloc -->
+        <line class="mo-limb" x1="100" y1="86" x2="110" y2="96"/>
+        <line class="mo-limb" x1="110" y1="96" x2="96" y2="100"/>`
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M80 80 L46 104 M49.35 96.74 L46 104 L53.97 103.27"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M46 104 L80 80 M76.65 87.26 L80 80 L72.03 80.73"/>` }
+  ]
+};
