@@ -11174,3 +11174,161 @@ EXERCISE_MOTIONS["good-morning"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M162 100 L162 60 M157 68 L162 60 L167 68"/>` }
   ]
 };
+
+/* =========================================================
+   98. SOULEVÉ DE TERRE JAMBES TENDUES
+       (souleve-terre-jambes-tendues)
+   -----------------------------------------------------------
+   Position  : DEBOUT, haltères devant les cuisses, jambes QUASI
+               tendues (genou 178°, pas verrouillé).
+   Mobiles   : la CHEVILLE (toute la jambe recule en bloc), la
+               HANCHE, et les BRAS qui contre-tournent pour rester
+               d'aplomb.
+   Fixes     : le PIED ; l'ANGLE DU GENOU ; le DOS, segment rigide.
+   >>> LA MÊME SIGNATURE DE HINGE QU'AU GOOD MORNING <<< La rotation
+       RELATIVE de la cuisse par rapport au tibia vaut 0,00° aux
+       sept échantillons. Ce qui change ici, c'est la VALEUR de
+       l'angle conservé : 178° au lieu de 155° au good morning et
+       165,7° au roumain. « Jambes tendues » n'est pas une nuance
+       de vocabulaire, c'est le seul paramètre du mouvement.
+   >>> POURQUOI C'EST BIEN L'ÉTIREMENT LE PLUS PROFOND, EN CHIFFRES
+       <<< Modèle du schéma 96 : la longueur des ischios suit
+       (flexion de hanche) − 0,58 × (flexion de genou). En reprenant
+       les angles réellement calculés dans les deux schémas :
+         roumain (31) : hanche 71,08° − 0,58×14,3° =  62,8°
+         jambes tendues : hanche 79,50° − 0,58×2,0° = 78,3°
+       soit +25 % d'allongement net. Et le gain se partage presque
+       à parts égales : +8,4° viennent du genou plus tendu, +8,4°
+       de la hanche qui va plus loin. La fiche a raison, et on peut
+       dire de combien.
+   >>> LE PIÈGE DE CET EXERCICE TIENT EN UN ÉCART DE 29,5° <<<
+       « Forcer l'amplitude au-delà de ta souplesse » est l'erreur
+       n°3, et elle est difficile à sentir pour une raison
+       géométrique précise : le buste s'incline de 50° alors que la
+       HANCHE, elle, tourne de 79,50°. L'écart, 29,5°, c'est la
+       jambe entière qui part en arrière autour de la cheville. On
+       juge sa profondeur au buste — donc on la sous-estime de
+       près de trente degrés. Or la limite passive de flexion de
+       hanche genou tendu est de l'ordre de 80° (c'est le test du
+       lever de jambe tendue) : à 79,50°, le schéma est déjà À la
+       limite. Un degré de plus ne vient plus de la hanche, il
+       vient du RACHIS — et c'est exactement l'erreur n°1. Les deux
+       erreurs de la fiche n'en font qu'une : arrondir le dos, c'est
+       ce à quoi ressemble « forcer l'amplitude ».
+   >>> « CHARGES ÉLOIGNÉES DES JAMBES » <<< Les bras pendent
+       verticalement, donc la main est toujours à l'aplomb de
+       l'épaule. Tenir la charge près des jambes revient donc
+       exactement à tenir l'ÉPAULE sur l'aplomb — et c'est cette
+       contrainte, imposée aux sept échantillons, qui détermine
+       l'inclinaison du buste à chaque instant. Les bras sont des
+       enfants du tronc avec la rotation opposée (+50° contre
+       −50°) : ils restent d'aplomb, c'est le buste qui tourne
+       autour d'eux.
+   ROM       : buste 0 → 50° ; jambe reculée de 29,50° ; hanche
+               79,50° de rotation ; la main descend de 16,9 en
+               restant rigoureusement sur l'aplomb.
+   ÉCHANTILLONNAGE : l'angle du tronc est résolu, pas interpolé.
+       L'écart avec deux keyframes seulement n'aurait été que de
+       1,04 ici — c'est peu, et je le dis : sur ce schéma-là le
+       calcul complet apporte surtout la certitude, pas une
+       correction spectaculaire.
+   Agonistes : ISCHIO-JAMBIERS en étirement maximal, grand fessier,
+               érecteurs du rachis.
+   Distinction : ≠ soulevé de terre roumain (genou 165,7°, 62,8°
+               d'allongement contre 78,3°) ; ≠ good morning (barre
+               sur le dos, genou 155°) ; ≠ soulevé de terre
+               classique (départ au sol, genou très fléchi).
+   GÉOMÉTRIE (calculée) — sol y=150 ; cheville (120,138) ; aplomb
+   x=116 ; genou CONSTANT à 178° ; cheville→hanche 51,99 ; tronc
+   34 ; bras 28 ; hanche (116,86.16) → (142.05,90.91).
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-terre-jambes-tendues"] = {
+  vb: "92 28 72 128",
+  dur: 4.4,
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "Debout, haltères devant les cuisses et jambes quasi tendues : les hanches reculent et le buste s'incline jusqu'à 50° avec le dos plat, les haltères descendant le long des jambes en restant à l'aplomb, puis extension de hanche pour se redresser.",
+  fixe: `
+    <line class="mo-ground" x1="98" y1="150" x2="160" y2="150"/>
+    <line class="mo-limb" x1="105" y1="150" x2="127" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="111" y2="150"/>
+    <circle class="mo-joint" cx="120" cy="138" r="2.8"/>
+    <!-- APLOMB : les bras pendant à la verticale, « charges près des
+         jambes » revient à tenir l'ÉPAULE sur cette ligne. -->
+    <line class="mo-rom" x1="116" y1="50" x2="116" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : +29,50°. La jambe entière recule en bloc autour de la
+         cheville — c'est ce recul que le buste ne montre pas. */
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(5.43deg)"], [14, "rotate(10.76deg)"],
+          [21, "rotate(15.92deg)"], [28, "rotate(20.82deg)"], [35, "rotate(25.38deg)"],
+          [42, "rotate(29.5deg)"], [50, "rotate(29.5deg)"],
+          [55.33, "rotate(25.38deg)"], [60.67, "rotate(20.82deg)"], [66, "rotate(15.92deg)"],
+          [71.33, "rotate(10.76deg)"], [76.67, "rotate(5.43deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="120" y1="138" x2="117.55" y2="112.12"/>`,
+      children: [
+        {
+          /* CUISSE : rotation relative NULLE aux sept échantillons, à
+             178° de genou. Même signature que le good morning, mais
+             l'angle conservé n'est pas le même — et c'est tout
+             l'exercice. */
+          o: "117.55px 112.12px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(0deg)"], [14, "rotate(0deg)"],
+              [21, "rotate(0deg)"], [28, "rotate(0deg)"], [35, "rotate(0deg)"],
+              [42, "rotate(0deg)"], [50, "rotate(0deg)"],
+              [55.33, "rotate(0deg)"], [60.67, "rotate(0deg)"], [66, "rotate(0deg)"],
+              [71.33, "rotate(0deg)"], [76.67, "rotate(0deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Ischio-jambiers", "Grand fessier"],
+          muscle: `
+            <ellipse cx="120.77" cy="98.9" rx="3.4" ry="10" transform="rotate(-3.41 120.77 98.9)"/>
+            <circle cx="121" cy="85.86" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="117.55" cy="112.12" r="2.8"/>
+            <line class="mo-limb" x1="117.55" y1="112.12" x2="116" y2="86.16"/>`,
+          children: [
+            {
+              /* TRONC : −79,50° relatif, 50° absolus, RÉSOLUS pour que
+                 l'épaule — donc la charge — reste sur l'aplomb. */
+              o: "116px 86.16px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-13.77deg)"], [14, "rotate(-27.43deg)"],
+                  [21, "rotate(-40.92deg)"], [28, "rotate(-54.15deg)"], [35, "rotate(-67.04deg)"],
+                  [42, "rotate(-79.5deg)"], [50, "rotate(-79.5deg)"],
+                  [55.33, "rotate(-67.04deg)"], [60.67, "rotate(-54.15deg)"], [66, "rotate(-40.92deg)"],
+                  [71.33, "rotate(-27.43deg)"], [76.67, "rotate(-13.77deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis",
+              muscle: `<ellipse cx="118.8" cy="68" rx="2.8" ry="11"/>`,
+              svg: `
+                <circle class="mo-joint" cx="116" cy="86.16" r="2.8"/>
+                <line class="mo-body" x1="116" y1="86.16" x2="116" y2="52.16"/>
+                <line class="mo-body" x1="116" y1="52.16" x2="112" y2="46"/>
+                <circle class="mo-head" cx="110" cy="40" r="8"/>`,
+              children: [
+                {
+                  /* BRAS + HALTÈRES : contre-rotation exacte du tronc,
+                     +50° contre −50°. Ils ne tirent pas, ils pendent. */
+                  o: "116px 52.16px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(8.33deg)"], [14, "rotate(16.67deg)"],
+                      [21, "rotate(25deg)"], [28, "rotate(33.33deg)"], [35, "rotate(41.67deg)"],
+                      [42, "rotate(50deg)"], [50, "rotate(50deg)"],
+                      [55.33, "rotate(41.67deg)"], [60.67, "rotate(33.33deg)"], [66, "rotate(25deg)"],
+                      [71.33, "rotate(16.67deg)"], [76.67, "rotate(8.33deg)"], [82, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="116" y1="58" x2="116" y2="80.16"/>
+                    <line class="mo-bar2" x1="108" y1="80.16" x2="124" y2="80.16"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M156 60 L156 100 M151 92 L156 100 L161 92"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M156 100 L156 60 M151 68 L156 60 L161 68"/>` }
+  ]
+};
