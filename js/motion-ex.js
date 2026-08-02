@@ -12014,3 +12014,152 @@ EXERCISE_MOTIONS["nordic-curl"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M46 104 L80 80 M76.65 87.26 L80 80 L72.03 80.73"/>` }
   ]
 };
+
+/* =========================================================
+   104. FENTES ARRIÈRE  (fentes-arriere)
+   -----------------------------------------------------------
+   Position  : DEBOUT, PIEDS JOINTS, haltères le long du corps.
+   Mobiles   : la jambe AVANT, qui reste plantée et encaisse ; la
+               jambe ARRIÈRE, qui fait le pas ; le TRONC ; les BRAS,
+               qui contre-tournent pour rester d'aplomb.
+   Fixes     : le PIED AVANT — il ne bouge JAMAIS, et c'est la
+               différence de fond avec une fente marchée.
+   >>> CE QUE CE SCHÉMA MONTRE QUE LE 27 NE MONTRE PAS <<< La fente
+       marchée (schéma 27) démarre en position déjà fendue et ne
+       montre que la descente : c'est correct, puisque le pas y est
+       un pas de marche, entre deux répétitions. Ici le PAS FAIT
+       PARTIE de la répétition — on part pieds joints, on recule,
+       on revient. Conséquence chiffrée sur le déplacement
+       horizontal de la hanche pendant la descente :
+         fente marchée : 2,16   (elle ne fait que descendre)
+         fente arrière : 23,63  (elle recule ET descend)
+       Le pied arrière, lui, parcourt 46 vers l'arrière en l'air
+       avant de se poser. C'est cela, « un grand pas en arrière »,
+       et c'est l'erreur n°1 quand il est trop court.
+   >>> POURQUOI PLUS DE FESSIERS : 15°, ET RIEN D'AUTRE <<< La fiche
+       annonce davantage de fessiers et d'ischios qu'en fente avant.
+       Le mécanisme est simple et je le chiffre sans le gonfler : le
+       buste s'incline ici de 15° vers l'avant, là où le schéma 27
+       le maintient rigoureusement vertical. Or l'angle de HANCHE
+       est l'angle entre le fémur et le TRONC : à flexion de genou
+       identique, ces 15° d'inclinaison ajoutent 15° de flexion de
+       hanche, soit +17,5 % de part pour les extenseurs de hanche.
+       Ce qu'il ne faut PAS conclure : que le rapport hanche/genou
+       des deux schémas se compare directement. Ils ne partent pas
+       de la même position (pieds joints contre position fendue),
+       donc les totaux ne sont pas comparables. Seule la
+       contribution du buste l'est, et elle vaut 15°.
+       Et « buste qui plonge » reste l'erreur n°2 : 15° est une
+       inclinaison, pas un plongeon.
+   >>> LE GENOU AVANT NE DÉPASSE PAS LES ORTEILS, ET ON PEUT LE
+       VÉRIFIER <<< Erreur n°3. Le tibia avant reste à 5° de la
+       verticale : en position basse le genou est en 93,73 pour une
+       pointe de pied en 88 — il reste 5,73 EN ARRIÈRE. Le trait
+       pointillé vertical qui monte de la pointe est ce repère, et
+       le genou ne le franchit à aucun instant du cycle.
+   ROM       : genou avant de 175,6° à 90,0° ; genou arrière à 86,9°
+               en position basse, à 8,2 du sol. Hanche 97,8° de
+               rotation.
+   Agonistes : GRAND FESSIER et QUADRICEPS de la jambe avant.
+   Distinction : ≠ fente marchée (pied avant qui change à chaque
+               rep, buste vertical) ; ≠ fente bulgare (pied arrière
+               surélevé, fixe) ; ≠ step-up (montée sur un banc).
+   GÉOMÉTRIE (calculée) — sol y=150 ; pied avant 88→106 FIXE ;
+   cheville avant (96,144) ; hanche (96,92) → (119.63,115.83) ;
+   pied arrière (100,144) → (144,142), pointe posée en (149.62,150.27) ;
+   segments 26/26/34.
+   ========================================================= */
+EXERCISE_MOTIONS["fentes-arriere"] = {
+  vb: "76 34 88 122",
+  dur: 4.4,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "De profil, debout pieds joints haltères en mains : un grand pas en arrière amène le genou arrière près du sol pendant que le genou avant se plie à 90°, le pied avant ne bougeant pas et le buste s'inclinant de 15°, puis retour debout.",
+  fixe: `
+    <line class="mo-ground" x1="80" y1="150" x2="160" y2="150"/>
+    <!-- PIED AVANT : il ne bouge jamais -->
+    <line class="mo-limb" x1="88" y1="150" x2="106" y2="150"/>
+    <line class="mo-limb" x1="96" y1="144" x2="91" y2="150"/>
+    <circle class="mo-joint" cx="96" cy="144" r="2.8"/>
+    <!-- APLOMB DE LA POINTE : le genou avant ne le franchit jamais -->
+    <line class="mo-rom" x1="88" y1="110" x2="88" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA AVANT : racine, rotation autour de la cheville plantée.
+         −2,80° seulement : il reste quasi vertical, c'est ce qui garde
+         le genou derrière la pointe. */
+      o: "96px 144px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-2.8deg)"], [52, "rotate(-2.8deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="96" y1="144" x2="95" y2="118"/>`,
+      children: [
+        {
+          /* CUISSE AVANT : +85,60°, le genou passe de 175,6° à 90,0°. */
+          o: "95px 118px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(85.6deg)"], [52, "rotate(85.6deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="91.5" cy="104.85" rx="3.4" ry="9.5" transform="rotate(2.2 91.5 104.85)"/>
+            <circle cx="100" cy="92.15" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="95" cy="118" r="2.8"/>
+            <line class="mo-limb" x1="95" y1="118" x2="96" y2="92"/>`,
+          children: [
+            {
+              /* TRONC : −97,80° relatif, soit 15° d'inclinaison absolue.
+                 Quinze degrés — c'est tout ce qui sépare cette fente de
+                 la fente marchée côté fessiers, et c'est mesurable. */
+              o: "96px 92px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-97.8deg)"], [52, "rotate(-97.8deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="96" cy="92" r="2.8"/>
+                <line class="mo-body" x1="96" y1="92" x2="96" y2="58"/>
+                <line class="mo-body" x1="96" y1="58" x2="96" y2="56"/>
+                <circle class="mo-head" cx="96" cy="47" r="9"/>`,
+              children: [
+                {
+                  /* BRAS + HALTÈRES : contre-rotation exacte, +15° contre
+                     −15°. Ils pendent d'aplomb quoi que fasse le buste. */
+                  o: "96px 58px",
+                  k: [[0, "rotate(0deg)"], [45, "rotate(15deg)"], [52, "rotate(15deg)"],
+                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="92" y1="59" x2="92" y2="87"/>
+                    <line class="mo-bar2" x1="84" y1="87" x2="100" y2="87"/>`
+                },
+                {
+                  /* CUISSE ARRIÈRE : +20,10°. La jambe arrière ne porte
+                     presque rien — elle sert de balancier et de repère de
+                     profondeur. Trait effacé. */
+                  o: "96px 92px",
+                  k: [[0, "rotate(0deg)"], [45, "rotate(25.2deg)"], [52, "rotate(25.2deg)"],
+                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `<line class="mo-body" x1="96" y1="92" x2="99" y2="118"/>`,
+                  children: [
+                    {
+                      /* TIBIA ARRIÈRE : −101,40°. C'est lui qui fait le pas :
+                         le pied parcourt 46 vers l'arrière, en l'air, avant
+                         de se poser sur la pointe. */
+                      o: "99px 118px",
+                      k: [[0, "rotate(0deg)"], [45, "rotate(-97.54deg)"], [52, "rotate(-97.54deg)"],
+                          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                      svg: `
+                        <circle class="mo-joint" cx="99" cy="118" r="2.6"/>
+                        <line class="mo-body" x1="99" y1="118" x2="100" y2="144"/>
+                        <line class="mo-body" x1="100" y1="144" x2="92" y2="150"/>`
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M158 90 L158 126 M153 118 L158 126 L163 118"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M158 126 L158 90 M153 98 L158 90 L163 98"/>` }
+  ]
+};
