@@ -10475,3 +10475,103 @@ EXERCISE_MOTIONS["sissy-squat"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M104 53 L90 38 M97.65 40.33 L90 38 L91.81 45.79"/>` }
   ]
 };
+
+/* =========================================================
+   93. CHAISE CONTRE LE MUR (WALL SIT)  (wall-sit)
+   -----------------------------------------------------------
+   RÉGIME    : ISOMÉTRIQUE. Rien ne bouge, donc aucune flèche de
+               sens et aucun segment animé : un anneau de MAINTIEN
+               sur le genou, l'articulation qui tient la position.
+   Position  : dos plaqué au mur, cuisses parallèles au sol,
+               genoux à 90° et à l'aplomb des chevilles, mains
+               libres.
+   >>> LES TROIS CONSIGNES DE LA FICHE N'EN FONT QU'UNE <<<
+       « Cuisses parallèles au sol », « genoux à 90° », « genoux
+       au-dessus des chevilles » : ce sont trois façons de dire la
+       même chose. Dos vertical contre le mur et tibia vertical, la
+       cuisse horizontale IMPLIQUE le genou à 90°, qui IMPLIQUE le
+       genou à l'aplomb de la cheville. Deux quelconques des trois
+       entraînent la troisième.
+   >>> ET CELA DÉTERMINE OÙ POSER LES PIEDS <<< Si la cuisse est
+       horizontale, le genou est à une longueur de FÉMUR du mur.
+       Si le tibia est vertical, la cheville est à la verticale du
+       genou. Donc : les talons doivent être exactement à UNE
+       LONGUEUR DE FÉMUR du mur — ce n'est pas une affaire de
+       ressenti, c'est une longueur. Le pointillé au sol, entre le
+       mur et la cheville, est cette mesure. Trop près, le genou
+       dépasse la pointe du pied ; trop loin, le tibia s'incline en
+       arrière : pieds 10 unités trop loin (≈ 15 cm), le tibia
+       penche de arctan(10/26) = 21° et la position n'est plus
+       celle qu'on croit tenir.
+   >>> CE QUE COÛTE « CUISSES PAS PARALLÈLES » <<< Le bras de
+       levier au genou, c'est la distance HORIZONTALE entre le
+       genou et le centre de masse du haut du corps. Le tronc étant
+       collé au mur, ce centre de masse reste près du mur (x ≈ 7,7
+       avec le mur en 0) pendant que le genou est à 26·cos(α) du
+       mur, α étant l'élévation de la cuisse au-dessus de
+       l'horizontale. Le levier vaut donc 26·cos(α) − 3,7 :
+         α = 0°  (parallèle)   levier 22,3   référence
+         α = 30° (trop haut)   levier 18,8   −16 %
+         α = 60° (à peine plié) levier  9,3   −58 %
+       Estimation au premier ordre — elle néglige la contribution
+       de la réaction du mur — mais elle donne l'ordre de grandeur :
+       s'arrêter 30° trop haut ne coûte que 16 %, s'arrêter 60°
+       trop haut coûte plus de la moitié de l'exercice. C'est
+       l'erreur n°1 de la fiche, et elle est progressive, pas
+       binaire.
+   >>> POURQUOI LES MAINS SUR LES GENOUX ANNULENT AUTANT <<<
+       Erreur n°2. Le poids du tronc agit normalement à 22,3 du
+       genou. Les mains qui poussent sur les cuisses PRÈS DU GENOU
+       font passer une part de cette charge par un point où le bras
+       de levier est NUL. Chaque kilo ainsi dérouté n'est pas
+       « un peu allégé » : il est retiré en totalité du moment au
+       genou. D'où les bras dessinés pendants, nettement au-dessus
+       de la ligne de cuisse.
+   ERREUR NON MONTRABLE : « retenir sa respiration » n'a pas de
+       traduction géométrique. Le schéma ne peut pas la montrer et
+       ne fait pas semblant.
+   Agonistes : QUADRICEPS, en isométrie.
+   Distinction : ≠ squat poids du corps (mouvement, pas maintien) ;
+               ≠ gainage/planche (isométrie du tronc, pas des
+               cuisses) ; ≠ chaise romaine.
+   GÉOMÉTRIE (calculée) — mur x=50 ; sol y=150 ; hanche (58,118) ;
+   genou (84,118) ; cheville (84,144) ; fémur 26 = distance
+   mur→talon ; tibia 26.
+   ========================================================= */
+EXERCISE_MOTIONS["wall-sit"] = {
+  vb: "42 58 68 100",
+  dur: 4.0,
+  isometrique: true,
+  maintien: "84 118",
+  alt: "Dos plaqué contre un mur, cuisses parallèles au sol et tibias verticaux, genoux à 90° au-dessus des chevilles, mains libres le long du corps : cette position se maintient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="150" x2="108" y2="150"/>
+    <line class="mo-gear" x1="50" y1="62" x2="50" y2="150"/>
+    <!-- LES TROIS REPÈRES, qui sont le même : cuisse horizontale,
+         genou à l'aplomb de la cheville, talon à une longueur de
+         fémur du mur. Ils dépassent des segments pour se lire. -->
+    <line class="mo-rom" x1="48" y1="118" x2="106" y2="118"/>
+    <line class="mo-rom" x1="84" y1="104" x2="84" y2="150"/>
+    <line class="mo-rom" x1="50" y1="147" x2="84" y2="147"/>
+    <!-- corps assis contre le mur -->
+    <circle class="mo-head" cx="60" cy="72" r="8"/>
+    <line class="mo-body" x1="59.5" y1="80" x2="58" y2="84"/>
+    <line class="mo-body" x1="58" y1="84" x2="58" y2="118"/>
+    <line class="mo-limb" x1="58" y1="118" x2="84" y2="118"/>
+    <line class="mo-limb" x1="84" y1="118" x2="84" y2="144"/>
+    <circle class="mo-joint" cx="58" cy="118" r="2.8"/>
+    <circle class="mo-joint" cx="84" cy="118" r="2.8"/>
+    <circle class="mo-joint" cx="84" cy="144" r="2.8"/>
+    <!-- pied à plat, cheville à 33 % depuis le talon -->
+    <line class="mo-limb" x1="78" y1="150" x2="96" y2="150"/>
+    <line class="mo-limb" x1="84" y1="144" x2="79" y2="150"/>
+    <line class="mo-limb" x1="84" y1="144" x2="88" y2="150"/>
+    <!-- BRAS PENDANTS : les mains ne touchent pas les cuisses -->
+    <line class="mo-limb" x1="58" y1="84" x2="64" y2="98"/>
+    <line class="mo-limb" x1="64" y1="98" x2="70" y2="108"/>`,
+  muscles: [
+    { nom: "Quadriceps (isométrie)",
+      svg: `<ellipse cx="71" cy="113.5" rx="10" ry="3.4"/>` }
+  ],
+  parts: []
+};
