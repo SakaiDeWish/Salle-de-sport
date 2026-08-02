@@ -14518,3 +14518,128 @@ EXERCISE_MOTIONS["mollets-presse"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M110 58 L96 72 M98.48 64.58 L96 72 L103.42 69.52"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   121. EXTENSIONS MOLLETS SUR UNE JAMBE
+        (mollets-unijambiste)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Avant du pied sur le bord d'une marche, talon
+   dans le vide et DESCENDU au maximum : 25° de flexion dorsale, sous
+   le niveau de la marche. Autre jambe croisée derrière, une main en
+   appui léger.
+
+   L'INVERSE MÉCANIQUE DU SCHÉMA 120. À la presse, le pied tournait
+   autour d'une cheville immobile. Ici c'est le contraire : l'avant-
+   pied est cloué sur le bord de la marche et c'est TOUT LE CORPS qui
+   pivote autour de lui. Même articulation, même muscle, pivot opposé
+   — d'où deux animations qui n'ont rien à voir.
+
+   ARTICULATION MOBILE : la cheville, 70° au total.
+   ARTICULATIONS FIXES : genou et hanche de la jambe porteuse, verrouillés.
+   L'avant-pied ne bouge pas : il est dessiné dans le décor, et seule
+   la partie arrière du pied — bille, talon, cheville — tourne.
+
+   CE QUE PERSONNE NE DIT ET QUE LA GÉOMÉTRIE MONTRE. Le corps ne
+   monte pas droit : il se déplace de (−6,23 −6,94), c'est-à-dire
+   qu'il AVANCE de 10,9 cm vers la pointe en même temps qu'il monte de
+   12,1 cm. C'est mécaniquement inévitable — le corps décrit un arc
+   autour de la bille du pied, pas une verticale. La main d'appui
+   n'est donc pas seulement un confort : sans elle, le centre de
+   gravité sort de sa base de 11 cm à chaque répétition. « S'aider de
+   la main d'appui » reste une erreur, mais elle vise le fait de TIRER
+   dessus, pas de la poser.
+
+   LE TALON PARCOURT 1,677 FOIS PLUS QUE LE CORPS. Il monte de 11,64
+   unités (20,4 cm) quand la cheville n'en monte que 6,94 (12,1 cm),
+   parce qu'il est plus loin du pivot. C'est ce rapport qui donne à
+   l'exercice sa sensation d'amplitude.
+
+   À QUOI SERT LA MARCHE, CHIFFRÉ. Au sol, la flexion dorsale est
+   bornée à 0° : le talon ne peut pas descendre plus bas que le sol.
+   La marche libère 25° de plus, soit 7,6 cm de course supplémentaire
+   au talon. C'est un tiers de l'amplitude totale, et c'est pour cela
+   que « amplitude réduite » et « rebonds » sont les erreurs listées :
+   elles suppriment exactement la partie que la marche a payée.
+
+   MUSCLE AGONISTE. Gastrocnémiens, deux marqueurs pour les deux chefs,
+   sur la face postérieure du tibia — la personne regarde vers −x,
+   pointes de pieds sur la marche, donc le mollet est du côté +x.
+
+   MONTAGE. Deux pièces : l'arrière du pied en rotation autour de la
+   bille, et le corps entier en translation le long de l'arc que
+   décrit la cheville. Aucune rotation du corps : le buste reste
+   vertical, c'est la marche qui bascule sous lui.
+
+   TEMPO. Montée 34 %, maintien 18 % (0,65 s, le « temps en haut »
+   demandé), descente 38 %.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["mollets-unijambiste"] = {
+  vb: "54 18 80 140",
+  dur: 3.6,
+  phases: { con: [0, 34], ecc: [52, 90] },
+  alt: "De profil sur le bord d'une marche, une seule jambe porteuse et l'autre croisée derrière : le talon part 25° sous le niveau de la marche et le corps pivote de 70° autour de l'avant-pied, montant de 12 cm tout en avançant de 11 cm vers la pointe.",
+  fixe: `
+    <line class="mo-ground" x1="56" y1="150" x2="132" y2="150"/>
+    <rect class="mo-gear" x="60" y="130" width="40" height="20" rx="2"/>
+    <!-- montant d'appui pour la main -->
+    <line class="mo-gear" x1="126" y1="44" x2="126" y2="150"/>
+    <!-- AVANT DU PIED : il ne bouge pas, il est le pivot -->
+    <line class="mo-limb" x1="94" y1="130" x2="100" y2="130"/>`,
+  parts: [
+    {
+      /* ARRIÈRE DU PIED : bille, talon, cheville. Rotation −70°
+         autour de la bille, qui est clouée au bord de la marche. */
+      o: "100px 130px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-11.667deg)"], [11.33, "rotate(-23.333deg)"],
+          [17, "rotate(-35deg)"], [22.67, "rotate(-46.667deg)"], [28.33, "rotate(-58.333deg)"],
+          [34, "rotate(-70deg)"], [52, "rotate(-70deg)"],
+          [58.33, "rotate(-58.333deg)"], [64.67, "rotate(-46.667deg)"], [71, "rotate(-35deg)"],
+          [77.33, "rotate(-23.333deg)"], [83.67, "rotate(-11.667deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="100" y1="130" x2="109.33" y2="134.35"/>
+        <line class="mo-limb" x1="109.33" y1="134.35" x2="108.07" y2="129.02"/>
+        <line class="mo-limb" x1="108.07" y1="129.02" x2="100" y2="130"/>`
+    },
+    {
+      /* CORPS : translation pure le long de l'arc décrit par la
+         cheville. Le buste ne tourne pas — c'est la marche qui
+         bascule sous lui. */
+      o: "108.07px 129.02px",
+      k: [[0, "translate(0px,0px)"], [5.67, "translate(-0.365px,-1.612px)"],
+          [11.33, "translate(-1.049px,-3.116px)"], [17, "translate(-2.022px,-4.452px)"],
+          [22.67, "translate(-3.246px,-5.563px)"], [28.33, "translate(-4.669px,-6.403px)"],
+          [34, "translate(-6.232px,-6.939px)"], [52, "translate(-6.232px,-6.939px)"],
+          [58.33, "translate(-4.669px,-6.403px)"], [64.67, "translate(-3.246px,-5.563px)"],
+          [71, "translate(-2.022px,-4.452px)"], [77.33, "translate(-1.049px,-3.116px)"],
+          [83.67, "translate(-0.365px,-1.612px)"], [90, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      muscleNom: "Gastrocnémiens",
+      muscle: `
+        <circle cx="110.5" cy="116" r="4"/>
+        <circle cx="110.5" cy="106" r="3"/>`,
+      svg: `
+        <circle class="mo-head" cx="108.07" cy="38" r="9"/>
+        <line class="mo-body" x1="108.07" y1="48.02" x2="108.07" y2="47"/>
+        <line class="mo-body" x1="108.07" y1="77.02" x2="108.07" y2="48.02"/>
+        <line class="mo-limb" x1="108.07" y1="48.02" x2="112" y2="66"/>
+        <line class="mo-limb" x1="112" y1="66" x2="122" y2="80"/>
+        <circle class="mo-hand" cx="122" cy="80" r="3"/>
+        <!-- JAMBE LIBRE, croisée derrière : dessinée AVANT la porteuse -->
+        <line class="mo-body" x1="108.07" y1="77.02" x2="120" y2="98"/>
+        <line class="mo-body" x1="120" y1="98" x2="113" y2="121"/>
+        <!-- JAMBE PORTEUSE : genou et hanche verrouillés -->
+        <circle class="mo-joint" cx="108.07" cy="77.02" r="3"/>
+        <line class="mo-limb" x1="108.07" y1="77.02" x2="108.07" y2="103.02"/>
+        <circle class="mo-joint" cx="108.07" cy="103.02" r="2.6"/>
+        <line class="mo-limb" x1="108.07" y1="103.02" x2="108.07" y2="129.02"/>
+        <circle class="mo-joint" cx="108.07" cy="129.02" r="2.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M75 104 L75 82 M70 89 L75 82 L80 89"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M75 82 L75 104 M70 97 L75 104 L80 97"/>` }
+  ]
+};
