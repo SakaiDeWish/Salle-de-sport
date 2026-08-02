@@ -13796,3 +13796,59 @@ EXERCISE_MOTIONS["fire-hydrant"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M148 128.5 L130 136 M135.11 130.07 L130 136 L137.81 136.53"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   116. CLAMSHELL (clamshell) — PAS DE SCHÉMA, ET VOICI POURQUOI
+
+   Premier exercice de la bibliothèque pour lequel je ne peux pas
+   produire d'animation fidèle. Ce n'est pas un renoncement : c'est
+   un résultat, et il est chiffré. Mieux vaut pas de schéma qu'un
+   schéma trompeur.
+
+   LE MOUVEMENT EST CONIQUE. Les pieds restant joints, l'axe de
+   rotation passe par la hanche ET la cheville : le fémur ne tourne
+   pas dans un plan, il balaie un cône de demi-angle exactement
+   45,00° — fémur = tibia = 26 et genou à 90° font un triangle
+   rectangle isocèle. Le genou décrit un cercle de rayon 18,3848.
+   Or toute la méthode de cette bibliothèque repose sur le choix de
+   la vue dont le plan d'image contient le plan du mouvement. Un
+   cône n'a pas de plan : il n'y a rien à choisir.
+
+   BALAYAGE EXHAUSTIF DES VUES. β = angle de la direction de vue
+   entre le plan frontal (0°) et le plan horizontal (90°) :
+
+     β     déform. fémur  déform. tibia  pli min  course du genou
+    −20°     ×1,3074        ×1,2493       6,25        10,40
+       0°    ×1,2247        ×1,2247       0,00        13,00
+     20°     ×1,0774        ×1,0963       0,04        14,06
+     60°     ×1,2135        ×1,3651       4,71        11,21
+     90°     ×1,1020        ×1,2176      13,00         5,57
+
+   Les critères de la bibliothèque sont : pas plus de 15 % de
+   variation de longueur projetée, un pli du genou toujours visible
+   (≥ 4,5) et une course lisible (≥ 10). AUCUN β ne les satisfait,
+   et l'échec est structurel, pas marginal :
+
+     · Les vues peu déformantes (β entre 0° et 40°) ont toutes un
+       pli qui passe par ZÉRO : le genou traverse la ligne
+       hanche-cheville et la jambe pliée se dessine DROITE l'espace
+       d'un instant. Le spectateur y lit une extension du genou
+       suivie d'une reflexion — un mouvement qui n'existe pas. C'est
+       exactement le défaut refusé au schéma 113.
+     · Les vues qui gardent le pli franc (β ≤ −20° ou β ≥ 60°)
+       déforment de 21 % à 37 % au moins un des deux segments.
+     · La vue de dessus (β = 90°) est la moins déformante pour le
+       fémur mais raccourcit le tibia de 18 %, et surtout le genou
+       n'y parcourt que 5,57 unités : l'animation serait quasi
+       immobile pour 45° de rotation réelle.
+     · Vu dans l'enfilade du corps, la rotation serait exacte, mais
+       hanche et cheville se projettent sur le même point : fémur et
+       tibia se superposent entièrement.
+
+   CE QU'IL FAUDRAIT. Soit deux vues complémentaires, soit un moteur
+   capable de projeter une chaîne 3D — les deux dépassent ce que
+   fait le moteur actuel, qui compose des transformations CSS 2D
+   autour d'origines fixes.
+
+   Le solveur complet est conservé : scratchpad/ik_clamshell.py.
+   ───────────────────────────────────────────────────────────── */
