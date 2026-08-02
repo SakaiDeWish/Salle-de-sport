@@ -9947,3 +9947,198 @@ EXERCISE_MOTIONS["squat-sumo"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M56 100 L56 60 M51 68 L56 60 L61 68"/>` }
   ]
 };
+
+/* =========================================================
+   90. STEP-UPS (MONTÉES SUR BANC)  (step-ups)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à un banc, haltères le long du corps.
+               Un pied ENTIER posé sur le banc, l'autre au sol.
+   Mobiles   : la jambe AVANT (chaîne fermée : le pied ne quitte
+               pas le banc), le TRONC, la jambe ARRIÈRE (chaîne
+               OUVERTE dès le début, voir plus bas), et les BRAS,
+               qui contre-tournent pour rester à la verticale.
+   Fixes     : le PIED AVANT sur le banc, le banc, le sol.
+   >>> LA HAUTEUR DE BANC N'EST PAS CHOISIE, ELLE EST DÉDUITE <<<
+       « Banc trop haut » est l'erreur n°2. Le critère est net :
+       la cuisse avant doit sortir HORIZONTALE quand le pied est
+       posé, pas au-dessus. Debout, jambe arrière quasi tendue, la
+       hanche est à 50,8 du sol ; le genou avant est à 26 au-dessus
+       du pied ; cuisse horizontale ⇔ hauteur de banc = 50,8 − 26 =
+       24,8. Rapporté à la jambe entière (52), cela fait 47,7 %.
+       Sur une jambe réelle de 90 cm : 43 cm. Un banc standard
+       (~45 cm) est donc PILE à la limite pour une taille moyenne —
+       et au-dessus pour toute personne un peu plus petite. La
+       fiche a raison de le signaler, et le schéma dessine
+       exactement cette hauteur-là, avec la ligne pointillée qui
+       matérialise l'horizontale cuisse/hanche.
+   >>> POURQUOI « S'ÉLANCER AVEC LA JAMBE AU SOL » EST
+       GÉOMÉTRIQUEMENT IMPOSSIBLE <<< C'est l'erreur n°1, et elle
+       se réfute par une longueur, pas par une opinion. Au départ,
+       la jambe arrière est déjà à 169,33° d'extension de genou :
+       il lui reste 0,67° avant d'être rigoureusement tendue. En
+       calculant à quel instant la distance hanche→pied arrière
+       dépasse 52 (jambe entièrement déployée), on trouve
+       t = 0,75 % de la montée. Autrement dit : au bout d'UN
+       CENTIÈME du mouvement, la jambe arrière n'atteint plus le
+       sol. Il n'y a rien à pousser — le pied arrière quitte le sol
+       presque immédiatement, et c'est pour cela que la jambe
+       arrière est modélisée en chaîne OUVERTE dès le premier
+       échantillon, et dessinée en trait effacé : elle accompagne,
+       elle ne produit pas.
+   >>> LES HALTÈRES RESTENT D'APLOMB, LE BUSTE TOURNE AUTOUR <<<
+       Le tronc se redresse de 12° pendant la montée (il est penché
+       en avant au départ pour amener le centre de gravité au-dessus
+       du pied avant). Un haltère, lui, pend selon la verticale
+       quoi qu'il arrive. Les bras sont donc des enfants du tronc
+       avec une rotation exactement OPPOSÉE, −12° : en composition
+       la somme est nulle et ils restent d'aplomb. C'est le même
+       procédé de contre-rotation que pour les chaînes fermées.
+   ROM       : genou avant de 90,00° (départ, cuisse horizontale) à
+               164,91° au sommet — non verrouillé. La hanche monte
+               de 25,55 ET avance de 26 : un step-up est autant une
+               translation vers l'avant qu'une montée, ce que la
+               vue de profil rend visible.
+   À NOTER    : le tibia avant ne se contente pas de pivoter dans un
+               sens. Il s'incline jusqu'à 21,03° vers l'avant à
+               mi-course puis revient à 7,54° au sommet — le genou
+               avance d'abord, puis recule quand la jambe se tend.
+               Deux keyframes ne l'auraient jamais montré.
+   VUE       : profil. Deux des trois erreurs (élan, hauteur de
+               banc) sont sagittales. La troisième, « genou qui
+               rentre », est frontale et n'est PAS montrable ici —
+               c'est le squat sumo (schéma 89) qui traite ce plan.
+               Mieux vaut le dire que le faire croire.
+   Agonistes : QUADRICEPS et grand fessier de la jambe avant.
+   Distinction : ≠ fentes marchées (les deux pieds au sol, pas de
+               marche) ; ≠ fentes bulgares (pied ARRIÈRE surélevé,
+               l'inverse) ; ≠ squat (bilatéral).
+   GÉOMÉTRIE (calculée) — sol y=150 ; banc 48→94, dessus y=125,2 ;
+   pied avant FIXE (78,125.2) ; hanche (104,99.2) → (78,73.65) ;
+   cuisse 26 ; tibia 26 ; tronc 34 ; pied arrière (114,150).
+   ========================================================= */
+EXERCISE_MOTIONS["step-ups"] = {
+  vb: "42 16 92 138",
+  dur: 4.6,
+  phases: { con: [0, 42], ecc: [50, 82] },
+  alt: "De profil devant un banc, haltères en mains : un pied entier posé sur le banc, la jambe avant se déplie et monte le corps sur le banc pendant que la jambe arrière quitte le sol et pend, puis descente contrôlée.",
+  fixe: `
+    <line class="mo-ground" x1="44" y1="150" x2="130" y2="150"/>
+    <!-- BANC : dessus à 24,8 du sol, hauteur DÉDUITE (voir analyse) -->
+    <line class="mo-pad" x1="48" y1="125.2" x2="94" y2="125.2"/>
+    <line class="mo-gear" x1="52" y1="125.2" x2="52" y2="150"/>
+    <line class="mo-gear" x1="90" y1="125.2" x2="90" y2="150"/>
+    <!-- PIED AVANT ENTIER sur le banc : il ne bouge jamais -->
+    <line class="mo-limb" x1="68" y1="125.2" x2="86" y2="125.2"/>
+    <circle class="mo-joint" cx="78" cy="125.2" r="2.8"/>
+    <!-- l'horizontale cuisse/hanche : le critère de hauteur de banc -->
+    <line class="mo-rom" x1="64" y1="99.2" x2="114" y2="99.2"/>`,
+  parts: [
+    {
+      /* TIBIA AVANT : racine de la chaîne, rotation autour du PIED
+         fixe sur le banc — la fermeture est donc garantie par
+         construction, pas par une résolution. Non monotone : −21,03°
+         à mi-course, −7,54° au sommet. */
+      o: "78px 125.2px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(-8.7deg)"], [14, "rotate(-15.37deg)"],
+          [21, "rotate(-19.61deg)"], [28, "rotate(-21.03deg)"], [35, "rotate(-18.8deg)"],
+          [42, "rotate(-7.54deg)"], [50, "rotate(-7.54deg)"],
+          [55.33, "rotate(-18.8deg)"], [60.67, "rotate(-21.03deg)"], [66, "rotate(-19.61deg)"],
+          [71.33, "rotate(-15.37deg)"], [76.67, "rotate(-8.7deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="78" y1="125.2" x2="78" y2="99.2"/>`,
+      children: [
+        {
+          /* CUISSE AVANT : −74,91° relatif. C'est elle qui monte le
+             corps ; le genou passe de 90,00° à 164,91°. Genou obtenu
+             par intersection de cercles à chaque échantillon. */
+          o: "78px 99.2px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(-1.4deg)"], [14, "rotate(-5.94deg)"],
+              [21, "rotate(-13.71deg)"], [28, "rotate(-25.17deg)"], [35, "rotate(-41.92deg)"],
+              [42, "rotate(-74.91deg)"], [50, "rotate(-74.91deg)"],
+              [55.33, "rotate(-41.92deg)"], [60.67, "rotate(-25.17deg)"], [66, "rotate(-13.71deg)"],
+              [71.33, "rotate(-5.94deg)"], [76.67, "rotate(-1.4deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="89" cy="98" rx="3.6" ry="10" transform="rotate(90 89 98)"/>
+            <circle cx="107.5" cy="96.5" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="78" cy="99.2" r="2.8"/>
+            <line class="mo-limb" x1="78" y1="99.2" x2="104" y2="99.2"/>`,
+          children: [
+            {
+              /* TRONC : +94,45° relatif, parce qu'il doit ANNULER la
+                 rotation de toute la chaîne sous lui pour n'avoir, au
+                 total, que 12° de redressement dans le monde. */
+              o: "104px 99.2px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(12.1deg)"], [14, "rotate(25.31deg)"],
+                  [21, "rotate(39.32deg)"], [28, "rotate(54.2deg)"], [35, "rotate(70.72deg)"],
+                  [42, "rotate(94.45deg)"], [50, "rotate(94.45deg)"],
+                  [55.33, "rotate(70.72deg)"], [60.67, "rotate(54.2deg)"], [66, "rotate(39.32deg)"],
+                  [71.33, "rotate(25.31deg)"], [76.67, "rotate(12.1deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="104" cy="99.2" r="2.8"/>
+                <line class="mo-body" x1="104" y1="99.2" x2="96.93" y2="65.94"/>
+                <line class="mo-body" x1="96.93" y1="65.94" x2="95.6" y2="60"/>
+                <circle class="mo-head" cx="94.64" cy="55.18" r="8"/>`,
+              children: [
+                {
+                  /* BRAS + HALTÈRE : contre-rotation exacte du tronc,
+                     −12° au total : l'haltère pend d'aplomb, c'est le
+                     buste qui tourne autour de lui. Le bras est décalé
+                     de 4 en avant du tronc pour ne pas se confondre
+                     avec lui au sommet, quand les deux sont verticaux. */
+                  o: "96.93px 65.94px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(-2deg)"], [14, "rotate(-4deg)"],
+                      [21, "rotate(-6deg)"], [28, "rotate(-8deg)"], [35, "rotate(-10deg)"],
+                      [42, "rotate(-12deg)"], [50, "rotate(-12deg)"],
+                      [55.33, "rotate(-10deg)"], [60.67, "rotate(-8deg)"], [66, "rotate(-6deg)"],
+                      [71.33, "rotate(-4deg)"], [76.67, "rotate(-2deg)"], [82, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="90.08" y1="67.39" x2="90.08" y2="91"/>
+                    <line class="mo-bar2" x1="82.08" y1="91" x2="98.08" y2="91"/>`
+                },
+                {
+                  /* CUISSE ARRIÈRE : chaîne OUVERTE dès le premier
+                     échantillon — le pied arrière ne peut plus toucher
+                     le sol après 0,75 % de la montée. Interpolation
+                     linéaire donc légitime ici, contrairement à la
+                     jambe avant. Trait effacé : elle ne pousse pas. */
+                  o: "104px 99.2px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(-11.03deg)"], [14, "rotate(-22.07deg)"],
+                      [21, "rotate(-33.1deg)"], [28, "rotate(-44.13deg)"], [35, "rotate(-55.17deg)"],
+                      [42, "rotate(-66.2deg)"], [50, "rotate(-66.2deg)"],
+                      [55.33, "rotate(-55.17deg)"], [60.67, "rotate(-44.13deg)"], [66, "rotate(-33.1deg)"],
+                      [71.33, "rotate(-22.07deg)"], [76.67, "rotate(-11.03deg)"], [82, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `<line class="mo-body" x1="104" y1="99.2" x2="106.63" y2="125.07"/>`,
+                  children: [
+                    {
+                      o: "106.63px 125.07px",
+                      k: [[0, "rotate(0deg)"], [7, "rotate(9.28deg)"], [14, "rotate(18.56deg)"],
+                          [21, "rotate(27.83deg)"], [28, "rotate(37.11deg)"], [35, "rotate(46.39deg)"],
+                          [42, "rotate(55.67deg)"], [50, "rotate(55.67deg)"],
+                          [55.33, "rotate(46.39deg)"], [60.67, "rotate(37.11deg)"], [66, "rotate(27.83deg)"],
+                          [71.33, "rotate(18.56deg)"], [76.67, "rotate(9.28deg)"], [82, "rotate(0deg)"],
+                          [100, "rotate(0deg)"]],
+                      svg: `
+                        <circle class="mo-joint" cx="106.63" cy="125.07" r="2.6"/>
+                        <line class="mo-body" x1="106.63" y1="125.07" x2="114" y2="150"/>
+                        <line class="mo-body" x1="108" y1="150" x2="124" y2="150"/>`
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M128 88 L108 68 M115.73 70.07 L108 68 L110.07 75.73"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M108 68 L128 88 M120.27 85.93 L128 88 L125.93 80.27"/>` }
+  ]
+};
