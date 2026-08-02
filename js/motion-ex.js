@@ -14381,3 +14381,140 @@ EXERCISE_MOTIONS["extension-hanche-banc"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M141 80 L141 112 M136 105 L141 112 L146 105"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   120. EXTENSIONS MOLLETS À LA PRESSE
+        (mollets-presse)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Assis à la presse inclinée à 45°, jambes
+   tendues, AVANT des pieds en bas du plateau, talons dans le vide.
+   Départ en position ÉTIRÉE : le plateau est redescendu, la cheville
+   en flexion dorsale de 27°.
+
+   CHAÎNE FERMÉE. L'avant-pied est prisonnier du plateau, le plateau
+   est prisonnier du rail. Hanche et genou étant fixes, la position de
+   la cheville n'est pas libre : elle est l'intersection du cercle de
+   rayon 26 autour du genou et du cercle de rayon 9 autour de
+   l'avant-pied. Résolue à chaque échantillon.
+
+   ARTICULATION MOBILE : la cheville, et elle seule — en principe.
+   ARTICULATIONS FIXES : hanche, genou, et le plateau contraint au rail.
+
+   CE QUE LE RAIL IMPOSE, ET QUE LA FICHE NE DIT PAS. Le genou NE PEUT
+   PAS rester parfaitement bloqué. L'avant-pied décrit une droite (le
+   rail) alors qu'il devrait décrire un arc autour de la cheville :
+   les deux sont incompatibles, et c'est le tibia qui absorbe l'écart.
+   Le solveur chiffre cette rotation forcée : +0,00° +1,49° +2,35°
+   +2,62° +2,35° +1,49° −0,07°. Deux choses en sortent.
+     · Elle plafonne à 2,62°, soit rien. « Plier les genoux » vise donc
+       une flexion VOLONTAIRE, pas ces 2,6° que la mécanique impose.
+     · Elle n'est PAS monotone : elle est maximale au MILIEU de la
+       course, à cheville neutre, et revient à zéro aux deux extrémités.
+       Le genou est donc le moins verrouillé là où on s'y attend le
+       moins. Deux keyframes montreraient une dérive régulière ; il n'y
+       en a pas.
+
+   AMPLITUDE RÉELLE. 60,08° à la cheville, de 27° de flexion dorsale à
+   33° de flexion plantaire. Le plateau parcourt 9,00 unités, soit
+   15,8 cm. Les 27° de flexion dorsale sont proches de la limite
+   passive genou tendu, ce qui est précisément l'étirement recherché —
+   d'où « rebonds sans étirement » et « amplitude réduite » en erreurs.
+
+   LA CHEVILLE NE BOUGE PRESQUE PAS. Son déplacement total est de
+   1,19 unité, soit 2 cm : le mouvement est une ROTATION du pied
+   autour d'un point quasi immobile, pas une translation. C'est
+   pourquoi le talon descend au lieu de monter — il s'éloigne du
+   plateau par rotation, sur un arc.
+
+   MUSCLES AGONISTES. Gastrocnémiens en haut du mollet, soléaires plus
+   bas et plus profonds. Les deux sont marqués sur le tibia, côté
+   postérieur calculé par la perpendiculaire (0,7388 0,6742).
+
+   MONTAGE. Trois pièces : le plateau en translation pure le long du
+   rail, le tibia en rotation autour du genou fixe, et le pied enfant
+   du tibia — il pivote autour de la cheville, qui se déplace elle-même
+   avec le tibia. Aucun scale, donc l'imbrication est sûre.
+
+   TEMPO. Poussée 36 %, retour 40 % : le retour est l'étirement, et
+   c'est lui qu'il ne faut pas bâcler.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["mollets-presse"] = {
+  vb: "18 50 96 104",
+  dur: 3.4,
+  phases: { con: [0, 36], ecc: [48, 88] },
+  alt: "De profil, assis à la presse inclinée à 45° jambes tendues, l'avant des pieds en bas du plateau : la cheville passe de 27° de flexion dorsale à 33° de flexion plantaire et pousse le plateau de 15,8 cm le long du rail, le talon s'écartant du plateau par rotation.",
+  fixe: `
+    <line class="mo-ground" x1="20" y1="150" x2="112" y2="150"/>
+    <!-- SIÈGE et DOSSIER inclinés -->
+    <line class="mo-pad" x1="30" y1="111.5" x2="57" y2="131.5"/>
+    <line class="mo-pad" x1="57" y1="131.5" x2="80" y2="133"/>
+    <line class="mo-gear" x1="57" y1="131.5" x2="57" y2="150"/>
+    <line class="mo-gear" x1="80" y1="133" x2="80" y2="150"/>
+    <!-- RAIL à 45°, passant par le centre du chariot -->
+    <line class="mo-gear" x1="63.3" y1="92.41" x2="91.58" y2="64.13"/>
+    <!-- CORPS : hanche et genou FIXES, le mouvement est à la cheville -->
+    <circle class="mo-head" cx="28" cy="102" r="8"/>
+    <line class="mo-body" x1="35" y1="109" x2="31" y2="105"/>
+    <line class="mo-body" x1="58" y1="126" x2="35" y2="109"/>
+    <line class="mo-limb" x1="35" y1="109" x2="38" y2="124"/>
+    <line class="mo-limb" x1="38" y1="124" x2="50" y2="132"/>
+    <circle class="mo-hand" cx="50" cy="132" r="3"/>
+    <circle class="mo-joint" cx="58" cy="126" r="3"/>
+    <line class="mo-body" x1="58" y1="126" x2="76.38" y2="107.62"/>
+    <circle class="mo-joint" cx="76.38" cy="107.62" r="2.8"/>`,
+  parts: [
+    {
+      /* PLATEAU : translation pure le long du rail, 9,00 unités. */
+      o: "85.22px 86.05px",
+      k: [[0, "translate(0px,0px)"], [6, "translate(1.061px,-1.061px)"],
+          [12, "translate(2.121px,-2.121px)"], [18, "translate(3.182px,-3.182px)"],
+          [24, "translate(4.243px,-4.243px)"], [30, "translate(5.303px,-5.303px)"],
+          [36, "translate(6.364px,-6.364px)"], [48, "translate(6.364px,-6.364px)"],
+          [54.67, "translate(5.303px,-5.303px)"], [61.33, "translate(4.243px,-4.243px)"],
+          [68, "translate(3.182px,-3.182px)"], [74.67, "translate(2.121px,-2.121px)"],
+          [81.33, "translate(1.061px,-1.061px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-plate-o" x1="87.5" y1="88.3" x2="69.66" y2="70.49"/>
+        <circle class="mo-mass" cx="85.93" cy="69.78" r="6"/>`
+    },
+    {
+      /* TIBIA : rotation NON monotone imposée par le rail, maximale au
+         milieu de la course (+2,62°) et nulle aux deux bouts. */
+      o: "76.38px 107.62px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(1.493deg)"], [12, "rotate(2.346deg)"],
+          [18, "rotate(2.624deg)"], [24, "rotate(2.346deg)"], [30, "rotate(1.485deg)"],
+          [36, "rotate(-0.071deg)"], [48, "rotate(-0.071deg)"],
+          [54.67, "rotate(1.485deg)"], [61.33, "rotate(2.346deg)"], [68, "rotate(2.624deg)"],
+          [74.67, "rotate(2.346deg)"], [81.33, "rotate(1.493deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Gastrocnémiens", "Soléaires"],
+      muscle: `
+        <circle cx="84.06" cy="105.14" r="4.5"/>
+        <circle cx="90.06" cy="97.08" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="76.38" y1="107.62" x2="93.91" y2="88.41"/>
+        <circle class="mo-joint" cx="93.91" cy="88.41" r="2.6"/>`,
+      children: [
+        {
+          /* PIED : 60,08° de rotation autour de la cheville, qui ne se
+             déplace elle-même que de 1,19 unité sur toute la course. */
+          o: "93.91px 88.41px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(8.87deg)"], [12, "rotate(17.862deg)"],
+              [18, "rotate(27.176deg)"], [24, "rotate(37.05deg)"], [30, "rotate(47.821deg)"],
+              [36, "rotate(60.083deg)"], [48, "rotate(60.083deg)"],
+              [54.67, "rotate(47.821deg)"], [61.33, "rotate(37.05deg)"], [68, "rotate(27.176deg)"],
+              [74.67, "rotate(17.862deg)"], [81.33, "rotate(8.87deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="85.22" y1="86.05" x2="98.74" y2="89.72"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M96 72 L110 58 M107.52 65.42 L110 58 L102.58 60.48"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M110 58 L96 72 M98.48 64.58 L96 72 L103.42 69.52"/>` }
+  ]
+};
