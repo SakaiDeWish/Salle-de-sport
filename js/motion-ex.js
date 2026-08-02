@@ -12318,3 +12318,162 @@ EXERCISE_MOTIONS["hip-thrust-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M76 104 L76 136 M71 128 L76 136 L81 128"/>` }
   ]
 };
+
+/* =========================================================
+   106. HIP THRUST UNILATÉRAL  (hip-thrust-unilateral)
+   -----------------------------------------------------------
+   Position  : haut du dos sur un banc, UNE jambe au sol, l'autre
+               tendue et tenue en l'air, haltère sur la hanche de
+               la jambe de travail.
+   Mobiles   : le TRONC (autour de l'appui dorsal), la CUISSE et le
+               TIBIA de la jambe de travail. CHAÎNE FERMÉE : appui
+               dorsal et pied tous deux fixes.
+   Fixes     : l'appui dorsal, le PIED. La TÊTE et la JAMBE LIBRE
+               contre-tournent exactement : la tête garde le menton
+               rentré, et la jambe libre garde son orientation dans
+               l'espace au lieu de suivre le bassin — sans quoi
+               elle traverserait le sol en position basse (je l'ai
+               vérifié : à −38° de tronc, une jambe solidaire du
+               bassin finissait 7,5 sous le niveau du sol).
+   >>> « JAMBE TENDUE OU GENOU VERS LA POITRINE » NE SONT PAS DEUX
+       VARIANTES DE CONFORT <<< La fiche laisse le choix. Ce choix
+       change la charge, et cela se chiffre. La jambe libre pèse
+       environ 16 % du poids de corps. Genou ramené vers la
+       poitrine, son centre de masse est à ~5 de la hanche ; tendue,
+       il est à ~22. La différence de moment à la hanche de travail
+       vaut donc 0,16 × 17 = 2,7 unités·poids-de-corps, ajoutées à
+       ce que le fessier doit déjà produire. Jambe tendue, c'est la
+       version DURE — et c'est celle qui est dessinée.
+   >>> LE PROFIL DE CHARGE, ET UN NOMBRE À NE PAS SURVENDRE <<<
+       Comme au hip thrust classique, le moment suit la distance
+       horizontale hanche → appui dorsal : 22,93 en bas, 33,53 en
+       haut, rapport 1,46 — maximum au verrouillage. En revanche je
+       ne prétends PAS que l'unilatéral double simplement la charge
+       par fessier : le poids de corps soulevé n'est pas le même
+       (une jambe est en l'air, l'autre ne pousse plus) et la
+       comparaison exacte demanderait un bilan de masses que ce
+       schéma ne fait pas.
+   >>> LE GENOU N'EST PAS MONOTONE, ENCORE <<< Comme au schéma 105,
+       la fermeture aux deux bouts fait passer le genou par un
+       minimum : 93,35° en bas, 85,57° à mi-course, 99,57° en haut.
+       Deux keyframes auraient en outre décollé la cheville de 3,48.
+       Résolu sur six intervalles.
+   ERREUR NON MONTRABLE : « bassin qui tourne d'un côté » est
+       l'erreur n°1 et elle est TRANSVERSE — avec un seul appui, le
+       bassin part en rotation autour de l'axe vertical. Une vue de
+       profil ne peut pas la montrer, et le schéma ne fait pas
+       semblant. C'est d'ailleurs la vraie difficulté de cette
+       variante, plus que la charge.
+   ROM       : tronc 38° ; la hanche monte de 19,44 et avance de
+               10,60 ; tibia vertical en haut, ce qui place le talon
+               à 59,16 de l'appui dorsal.
+   Agonistes : GRAND FESSIER d'un seul côté, ischio-jambiers.
+   Distinction : ≠ hip thrust barre (schéma 32) et machine (105),
+               tous deux bilatéraux ; ≠ pont fessier unilatéral
+               (au sol, sans banc, amplitude réduite).
+   GÉOMÉTRIE (calculée) — sol y=150 ; appui dorsal FIXE (150,108) ;
+   cheville FIXE (90.84,144) ; tronc 34 ; fémur 26 ; tibia 26 ;
+   jambe libre 52 à 195° constants ; hanche (127.07,133.11) →
+   (116.47,113.67).
+   ========================================================= */
+EXERCISE_MOTIONS["hip-thrust-unilateral"] = {
+  vb: "58 88 136 68",
+  dur: 4.2,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil, haut du dos sur un banc et une seule jambe au sol, l'autre tendue en l'air : le bassin monte jusqu'à l'alignement épaules-hanches-genou avec le tibia vertical, puis redescend lentement.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="150" x2="184" y2="150"/>
+    <!-- banc : seul le haut du dos y touche -->
+    <line class="mo-pad" x1="146" y1="110" x2="178" y2="110"/>
+    <line class="mo-gear" x1="152" y1="112" x2="152" y2="150"/>
+    <line class="mo-gear" x1="172" y1="112" x2="172" y2="150"/>
+    <circle class="mo-joint" cx="150" cy="108" r="3"/>
+    <!-- PIED de la jambe de travail, talon au sol -->
+    <line class="mo-limb" x1="82" y1="150" x2="100" y2="150"/>
+    <line class="mo-limb" x1="90.84" y1="144" x2="84" y2="150"/>
+    <circle class="mo-joint" cx="90.84" cy="144" r="2.8"/>
+    <!-- APLOMB DU TIBIA en haut : pousser dans le talon, pas le mollet -->
+    <line class="mo-rom" x1="90.84" y1="112" x2="90.84" y2="150"/>
+    <!-- ALIGNEMENT épaule-hanche-genou : la position haute exacte -->
+    <line class="mo-rom" x1="155.92" y1="107" x2="84.91" y2="119"/>`,
+  parts: [
+    {
+      /* TRONC : rotation autour de l'APPUI DORSAL. +38°. */
+      o: "150px 108px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(6.33deg)"], [12, "rotate(12.67deg)"],
+          [18, "rotate(19deg)"], [24, "rotate(25.33deg)"], [30, "rotate(31.67deg)"],
+          [36, "rotate(38deg)"], [46, "rotate(38deg)"],
+          [53.33, "rotate(31.67deg)"], [60.67, "rotate(25.33deg)"], [68, "rotate(19deg)"],
+          [75.33, "rotate(12.67deg)"], [82.67, "rotate(6.33deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="150" y1="108" x2="127.07" y2="133.11"/>
+        <rect class="mo-mass" x="117.6" y="126" width="10" height="6" rx="1.5" transform="rotate(-47.6 122.6 129)"/>
+        <circle class="mo-joint" cx="127.07" cy="133.11" r="2.8"/>`,
+      children: [
+        {
+          /* TÊTE : contre-rotation exacte, menton rentré. */
+          o: "150px 108px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-6.33deg)"], [12, "rotate(-12.67deg)"],
+              [18, "rotate(-19deg)"], [24, "rotate(-25.33deg)"], [30, "rotate(-31.67deg)"],
+              [36, "rotate(-38deg)"], [46, "rotate(-38deg)"],
+              [53.33, "rotate(-31.67deg)"], [60.67, "rotate(-25.33deg)"], [68, "rotate(-19deg)"],
+              [75.33, "rotate(-12.67deg)"], [82.67, "rotate(-6.33deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `<circle class="mo-head" cx="158.77" cy="98.4" r="8"/>`
+        },
+        {
+          /* JAMBE LIBRE : contre-rotation exacte AUTOUR DE LA HANCHE.
+             Elle garde son orientation dans l'espace — solidaire du
+             bassin, elle passerait sous le sol en position basse. */
+          o: "127.07px 133.11px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-6.33deg)"], [12, "rotate(-12.67deg)"],
+              [18, "rotate(-19deg)"], [24, "rotate(-25.33deg)"], [30, "rotate(-31.67deg)"],
+              [36, "rotate(-38deg)"], [46, "rotate(-38deg)"],
+              [53.33, "rotate(-31.67deg)"], [60.67, "rotate(-25.33deg)"], [68, "rotate(-19deg)"],
+              [75.33, "rotate(-12.67deg)"], [82.67, "rotate(-6.33deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-body" x1="127.07" y1="133.11" x2="101.96" y2="126.38"/>
+            <line class="mo-body" x1="101.96" y1="126.38" x2="76.84" y2="119.65"/>
+            <circle class="mo-joint" cx="101.96" cy="126.38" r="2.4"/>`
+        },
+        {
+          /* CUISSE : −74,18° relatif, autour de la HANCHE mobile. */
+          o: "127.07px 133.11px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-9.1deg)"], [12, "rotate(-19.98deg)"],
+              [18, "rotate(-32.32deg)"], [24, "rotate(-45.7deg)"], [30, "rotate(-59.74deg)"],
+              [36, "rotate(-74.18deg)"], [46, "rotate(-74.18deg)"],
+              [53.33, "rotate(-59.74deg)"], [60.67, "rotate(-45.7deg)"], [68, "rotate(-32.32deg)"],
+              [75.33, "rotate(-19.98deg)"], [82.67, "rotate(-9.1deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="125.28" cy="136.69" r="4.5"/>
+            <ellipse cx="113.66" cy="130.87" rx="3.4" ry="9" transform="rotate(-63.4 113.66 130.87)"/>`,
+          svg: `<line class="mo-limb" x1="127.07" y1="133.11" x2="103.82" y2="121.47"/>`,
+          children: [
+            {
+              /* TIBIA : +6,22° au total mais −7,78° à mi-course. Son
+                 extrémité reste sur la cheville fixe aux sept instants. */
+              o: "103.82px 121.47px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(-5deg)"], [12, "rotate(-7.61deg)"],
+                  [18, "rotate(-7.78deg)"], [24, "rotate(-5.51deg)"], [30, "rotate(-0.84deg)"],
+                  [36, "rotate(6.22deg)"], [46, "rotate(6.22deg)"],
+                  [53.33, "rotate(-0.84deg)"], [60.67, "rotate(-5.51deg)"], [68, "rotate(-7.78deg)"],
+                  [75.33, "rotate(-7.61deg)"], [82.67, "rotate(-5deg)"], [90, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="103.82" cy="121.47" r="2.8"/>
+                <line class="mo-limb" x1="103.82" y1="121.47" x2="90.84" y2="144"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M186 142 L186 114 M181 122 L186 114 L191 122"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M186 114 L186 142 M181 134 L186 142 L191 134"/>` }
+  ]
+};
