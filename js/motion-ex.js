@@ -11033,3 +11033,144 @@ EXERCISE_MOTIONS["leg-curl-assis"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M52 146 L52 124 M47 132 L52 124 L57 132"/>` }
   ]
 };
+
+/* =========================================================
+   97. GOOD MORNING  (good-morning)
+   -----------------------------------------------------------
+   Position  : DEBOUT, barre sur les trapèzes, pieds largeur de
+               hanches, genoux LÉGÈREMENT fléchis.
+   Mobiles   : la CHEVILLE (le genou recule), la HANCHE.
+   Fixes     : le PIED ; l'ANGLE DU GENOU, rigoureusement constant ;
+               le DOS, segment rigide — « dos qui s'arrondit » est
+               l'erreur n°1 et la fiche la qualifie de dangereuse.
+   >>> LA SIGNATURE MATHÉMATIQUE D'UN HINGE <<< Dans ce schéma, la
+               rotation RELATIVE de la cuisse par rapport au tibia
+               vaut exactement 0,00° à chacun des sept échantillons.
+               Ce n'est pas un arrondi : c'est la définition même du
+               mouvement. Un hinge, c'est une flexion de hanche à
+               angle de genou CONSTANT. Dès que ce nombre cesse
+               d'être nul, on fait un squat — et c'est très
+               exactement l'erreur n°3 de la fiche.
+   >>> CE QUI SÉPARE LE GOOD MORNING DU SOULEVÉ DE TERRE ROUMAIN,
+       EN CHIFFRES <<< Même chaîne, même contrainte d'aplomb du
+       milieu du pied, même angle de genou conservé. Une seule
+       chose change : où est la barre. Au roumain elle PEND au bout
+       des bras ; ici elle est POSÉE sur les trapèzes, donc
+       solidaire du tronc. Conséquence sur le bras de levier de la
+       hanche, qui est la distance horizontale hanche → aplomb :
+         roumain (schéma 31, tronc 43,79°) : 34·sin(43,79) = 23,5
+         good morning (tronc 66,72°)       : 38·sin(66,72) = 34,9
+       soit +49 % de moment de hanche à charge égale. Et la raison
+       pour laquelle le good morning va plus bas est mécanique, pas
+       une question de souplesse : au roumain la barre glisse le
+       long des cuisses et BUTE sur le genou ; ici rien ne l'arrête.
+   >>> LE MOMENT DE HANCHE PART DE ZÉRO <<< Debout, la barre est
+       exactement à l'aplomb de la hanche : bras de levier 0,00. Il
+       croît ensuite comme 38·sin(θ) :
+         t      0    1/6   2/6   3/6   4/6   5/6     1
+         levier 0,0  6,2  12,4  18,4  24,2  29,8  34,9
+       Il n'y a donc AUCUNE tension en haut et tout en bas. C'est
+       ce qui rend l'erreur n°2 (« charge trop lourde ») si
+       traître : la barre se laisse prendre sans rien dire, et la
+       charge n'apparaît qu'à la fin de la descente, là où le dos
+       est le plus long et le moins bien placé pour la refuser.
+   >>> CE QUE COÛTE « PLIER LES GENOUX COMME UN SQUAT » <<< En
+       reprenant le modèle du leg curl assis (schéma 96), 1° de
+       genou vaut 1/1,71 = 0,58° de hanche en longueur d'ischio.
+       Fléchir 35° de genou de plus retire donc l'équivalent de
+       20,5° de flexion de hanche à l'étirement des ischios — sur
+       un mouvement qui n'existe que pour eux.
+   ROM       : tronc de 0° à 66,72° ; le tibia recule de 42,02° ;
+               la barre descend de 33,3 en restant rigoureusement
+               sur l'aplomb.
+   CHAÎNE À CONTRAINTE : l'angle du tronc est RÉSOLU à chaque
+               échantillon pour tenir l'aplomb, pas interpolé. Avec
+               les deux seules positions extrêmes, la barre sortait
+               de l'aplomb de 2,48 à mi-descente.
+   Agonistes : ISCHIO-JAMBIERS, grand fessier, érecteurs du rachis.
+   Distinction : ≠ soulevé de terre roumain (barre aux mains,
+               levier 23,5 contre 34,9) ; ≠ squat (angle de genou
+               variable) ; ≠ hyperextension banc (tronc appuyé).
+   GÉOMÉTRIE (calculée) — sol y=150 ; cheville (120,138) ; aplomb
+   x=116 ; tibia 26 ; cuisse 26 ; genou CONSTANT à 155° ; tronc
+   hanche→barre 38 ; hanche (116,87.39) → (150.91,97.72).
+   ========================================================= */
+EXERCISE_MOTIONS["good-morning"] = {
+  vb: "92 28 76 128",
+  dur: 4.4,
+  phases: { ecc: [0, 42], con: [50, 82] },
+  alt: "Debout, barre sur les trapèzes : les hanches reculent et le buste s'incline jusqu'à 67° avec le dos parfaitement plat et l'angle du genou inchangé, la barre restant à l'aplomb du milieu du pied, puis extension de hanche pour se redresser.",
+  fixe: `
+    <line class="mo-ground" x1="100" y1="150" x2="164" y2="150"/>
+    <line class="mo-limb" x1="105" y1="150" x2="127" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="111" y2="150"/>
+    <circle class="mo-joint" cx="120" cy="138" r="2.8"/>
+    <!-- APLOMB DU MILIEU DU PIED : la barre ne le quitte jamais.
+         Debout, elle y est déjà — d'où un levier de hanche NUL en
+         haut, et c'est tout le piège de cet exercice. -->
+    <line class="mo-rom" x1="116" y1="32" x2="116" y2="150"/>`,
+  parts: [
+    {
+      /* TIBIA : +42,02°. Le genou RECULE, il ne se plie pas. */
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(7deg)"], [14, "rotate(14.01deg)"],
+          [21, "rotate(21.01deg)"], [28, "rotate(28.01deg)"], [35, "rotate(35.02deg)"],
+          [42, "rotate(42.02deg)"], [50, "rotate(42.02deg)"],
+          [55.33, "rotate(35.02deg)"], [60.67, "rotate(28.01deg)"], [66, "rotate(21.01deg)"],
+          [71.33, "rotate(14.01deg)"], [76.67, "rotate(7deg)"], [82, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="120" y1="138" x2="123.61" y2="112.25"/>`,
+      children: [
+        {
+          /* CUISSE : rotation relative RIGOUREUSEMENT NULLE aux sept
+             échantillons. C'est la définition du hinge, et le seul
+             chiffre qui sépare cet exercice d'un squat. */
+          o: "123.61px 112.25px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(0deg)"], [14, "rotate(0deg)"],
+              [21, "rotate(0deg)"], [28, "rotate(0deg)"], [35, "rotate(0deg)"],
+              [42, "rotate(0deg)"], [50, "rotate(0deg)"],
+              [55.33, "rotate(0deg)"], [60.67, "rotate(0deg)"], [66, "rotate(0deg)"],
+              [71.33, "rotate(0deg)"], [76.67, "rotate(0deg)"], [82, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Ischio-jambiers", "Grand fessier"],
+          muscle: `
+            <ellipse cx="123.63" cy="98.65" rx="3.4" ry="10" transform="rotate(-17 123.63 98.65)"/>
+            <circle cx="120.5" cy="86" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="123.61" cy="112.25" r="2.8"/>
+            <line class="mo-limb" x1="123.61" y1="112.25" x2="116" y2="87.39"/>`,
+          children: [
+            {
+              /* TRONC + BARRE : −108,74° relatif, soit 66,72° absolus,
+                 RÉSOLUS à chaque échantillon pour tenir l'aplomb. Le
+                 dos est un segment rigide, la barre lui est solidaire :
+                 c'est exactement ce qui change par rapport au roumain. */
+              o: "116px 87.39px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-16.39deg)"], [14, "rotate(-33deg)"],
+                  [21, "rotate(-49.99deg)"], [28, "rotate(-67.64deg)"], [35, "rotate(-86.58deg)"],
+                  [42, "rotate(-108.74deg)"], [50, "rotate(-108.74deg)"],
+                  [55.33, "rotate(-86.58deg)"], [60.67, "rotate(-67.64deg)"], [66, "rotate(-49.99deg)"],
+                  [71.33, "rotate(-33deg)"], [76.67, "rotate(-16.39deg)"], [82, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis",
+              muscle: `<ellipse cx="118.5" cy="70" rx="2.8" ry="11"/>`,
+              svg: `
+                <circle class="mo-joint" cx="116" cy="87.39" r="2.8"/>
+                <line class="mo-body" x1="116" y1="87.39" x2="116" y2="53.39"/>
+                <line class="mo-body" x1="116" y1="53.39" x2="110" y2="46"/>
+                <circle class="mo-plate-o" cx="116" cy="49.39" r="11"/>
+                <circle class="mo-hub" cx="116" cy="49.39" r="2.6"/>
+                <line class="mo-limb" x1="116" y1="53.39" x2="121" y2="63"/>
+                <line class="mo-limb" x1="121" y1="63" x2="118" y2="50"/>
+                <circle class="mo-head mo-head-solid" cx="105" cy="41" r="9"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M162 60 L162 100 M157 92 L162 100 L167 92"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M162 100 L162 60 M157 68 L162 60 L167 68"/>` }
+  ]
+};
