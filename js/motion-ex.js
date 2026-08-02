@@ -11506,3 +11506,160 @@ EXERCISE_MOTIONS["souleve-terre-sumo"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M140 78 L140 110 M135 102 L140 110 L145 102"/>` }
   ]
 };
+
+/* =========================================================
+   100. KETTLEBELL SWING  (kettlebell-swing)
+   -----------------------------------------------------------
+   Position  : DEBOUT, pieds largeur d'épaules, charge tenue à
+               deux mains, bras longs.
+   Mobiles   : la HANCHE surtout, le GENOU un peu, et le BRAS —
+               qui pivote à l'épaule sans jamais changer de
+               longueur.
+   Fixes     : le PIED ; le dos, segment rigide.
+   >>> « SQUATTER AU LIEU DE FAIRE UN HINGE » : LE RAPPORT EST 3,55
+       <<< Erreur n°1, et elle se mesure d'un seul nombre — le
+       rapport entre la flexion de HANCHE et la flexion de GENOU
+       sur le mouvement complet :
+         swing        hanche 86,58° / genou 24,38°  =  3,55
+         front squat  hanche 114,3° / genou 127,2°  =  0,90
+       Un facteur QUATRE. Voilà ce que veut dire « hinge, pas
+       squat », et voilà pourquoi le schéma vaut mieux qu'une
+       consigne : on peut vérifier le rapport à l'œil sur
+       l'animation.
+       À noter que ce rapport n'est PAS infini : contrairement au
+       good morning (schéma 97) et au roumain, où la rotation
+       relative de la cuisse est rigoureusement nulle, le swing
+       plie bel et bien le genou de 24,38°. C'est un mouvement à
+       DOMINANTE hinge, pas un hinge pur, et le schéma le montre
+       tel quel.
+   >>> LA HANCHE PART EN ARRIÈRE, PAS VERS LE BAS <<< Sur la
+       descente, la hanche parcourt 24,50 à l'horizontale pour
+       seulement 8,37 à la verticale : 2,9 fois plus de recul que
+       de descente. Le pointillé du schéma est cette trajectoire
+       exacte, tracée entre les deux positions de hanche. Dans un
+       squat le rapport s'inverse.
+   >>> « TIRER AVEC LES BRAS » : IL N'Y A RIEN À TIRER <<< Erreur
+       n°2. Au sommet, le bras est horizontal et la cloche est au
+       point haut de son arc, donc sa vitesse y est nulle. La
+       tension dans le bras vaut alors m·v²/L pour la part
+       centripète, et la gravité y est PERPENDICULAIRE au bras
+       puisqu'il est horizontal : les deux termes s'annulent ou
+       disparaissent, et la charge est momentanément SANS POIDS.
+       C'est le « float » bien connu, et il se déduit. Tirer à cet
+       instant, c'est tirer sur rien.
+       Attention à la nuance : le bras BOUGE quand même par rapport
+       au tronc, de 67,60°. Ce n'est pas contradictoire — cette
+       rotation est subie, la cloche emporte le bras. Le schéma
+       montre le mouvement, pas la force.
+   ROM       : hanche 86,58°, genou 24,38°, bras 112,60° dans le
+               monde (67,60° par rapport au tronc). La cloche
+               parcourt un arc de rayon 42 autour de l'épaule.
+   >>> CE QUE CE SCHÉMA N'ESSAIE PAS DE FAIRE <<< La position de la
+       cloche le long de son arc est interpolée LINÉAIREMENT dans
+       le temps. En réalité elle accélère en passant au point bas
+       et ralentit aux extrémités, comme tout pendule. Le modéliser
+       demanderait la dynamique d'un pendule à pivot mobile — la
+       hanche déplace l'épaule pendant le mouvement — et je ne l'ai
+       pas fait. La géométrie est juste à chaque instant clé ; c'est
+       le TEMPO le long de l'arc qui est approché, et c'est dit.
+   Agonistes : GRAND FESSIER, ischio-jambiers, érecteurs du rachis.
+   Distinction : ≠ soulevé roumain (lent, sans projection, genou
+               strictement fixe) ; ≠ squat (rapport 0,90 contre
+               3,55) ; ≠ épaulé (la charge monte à l'épaule).
+   GÉOMÉTRIE (calculée) — sol y=150 ; cheville (109,146) ; tibia
+   26 ; cuisse 26 ; tronc 29 ; épaule→cloche 42 ; hanche
+   (109,94.13) → (133.5,102.5) ; cloche (67,65.13) → (129.13,120.77).
+   ========================================================= */
+EXERCISE_MOTIONS["kettlebell-swing"] = {
+  vb: "58 40 86 116",
+  dur: 3.6,
+  phases: { ecc: [0, 40], con: [48, 84] },
+  alt: "De profil : la charge tenue à deux mains part en arrière entre les jambes pendant que les hanches reculent et que le buste s'incline, puis l'extension explosive des hanches projette la charge en arc jusqu'à hauteur de poitrine, bras horizontaux.",
+  fixe: `
+    <line class="mo-ground" x1="62" y1="150" x2="140" y2="150"/>
+    <line class="mo-limb" x1="96" y1="150" x2="122" y2="150"/>
+    <line class="mo-limb" x1="109" y1="146" x2="101" y2="150"/>
+    <circle class="mo-joint" cx="109" cy="146" r="2.8"/>
+    <!-- TRAJECTOIRE RÉELLE DE LA HANCHE : 24,50 en arrière pour
+         8,37 vers le bas. C'est ça, un hinge. -->
+    <line class="mo-rom" x1="109" y1="94.13" x2="133.5" y2="102.5"/>`,
+  parts: [
+    {
+      /* TIBIA : +17,20°. Le genou avance à peine — c'est justement
+         ce qui distingue le swing du squat. */
+      o: "109px 146px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(2.5deg)"], [14, "rotate(5.06deg)"],
+          [20, "rotate(7.75deg)"], [27, "rotate(10.62deg)"], [34, "rotate(13.73deg)"],
+          [40, "rotate(17.2deg)"], [48, "rotate(17.2deg)"],
+          [54, "rotate(13.73deg)"], [60, "rotate(10.62deg)"], [66, "rotate(7.75deg)"],
+          [72, "rotate(5.06deg)"], [78, "rotate(2.5deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="109" y1="146" x2="107.16" y2="120.06"/>`,
+      children: [
+        {
+          /* CUISSE : +24,38° relatif — c'est EXACTEMENT la flexion de
+             genou. Non nulle, contrairement au good morning : le swing
+             n'est pas un hinge pur. */
+          o: "107.16px 120.06px",
+          k: [[0, "rotate(0deg)"], [7, "rotate(4.06deg)"], [14, "rotate(8.13deg)"],
+              [20, "rotate(12.19deg)"], [27, "rotate(16.25deg)"], [34, "rotate(20.32deg)"],
+              [40, "rotate(24.38deg)"], [48, "rotate(24.38deg)"],
+              [54, "rotate(20.32deg)"], [60, "rotate(16.25deg)"], [66, "rotate(12.19deg)"],
+              [72, "rotate(8.13deg)"], [78, "rotate(4.06deg)"], [84, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: ["Grand fessier", "Ischio-jambiers"],
+          muscle: `
+            <circle cx="113.99" cy="94.48" r="4.5"/>
+            <ellipse cx="112.07" cy="107.38" rx="3.4" ry="9.5" transform="rotate(4.06 112.07 107.38)"/>`,
+          svg: `
+            <circle class="mo-joint" cx="107.16" cy="120.06" r="2.8"/>
+            <line class="mo-limb" x1="107.16" y1="120.06" x2="109" y2="94.13"/>`,
+          children: [
+            {
+              /* TRONC : −86,58° relatif, soit 45° d'inclinaison absolue
+                 au point bas. Segment RIGIDE — « dos arrondi » est
+                 l'erreur n°3. */
+              o: "109px 94.13px",
+              k: [[0, "rotate(0deg)"], [7, "rotate(-14.06deg)"], [14, "rotate(-28.19deg)"],
+                  [20, "rotate(-42.44deg)"], [27, "rotate(-56.87deg)"], [34, "rotate(-71.55deg)"],
+                  [40, "rotate(-86.58deg)"], [48, "rotate(-86.58deg)"],
+                  [54, "rotate(-71.55deg)"], [60, "rotate(-56.87deg)"], [66, "rotate(-42.44deg)"],
+                  [72, "rotate(-28.19deg)"], [78, "rotate(-14.06deg)"], [84, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscleNom: "Érecteurs du rachis",
+              muscle: `<ellipse cx="112" cy="80" rx="2.8" ry="11"/>`,
+              svg: `
+                <circle class="mo-joint" cx="109" cy="94.13" r="2.8"/>
+                <line class="mo-body" x1="109" y1="94.13" x2="109" y2="65.13"/>
+                <line class="mo-body" x1="109" y1="65.13" x2="109" y2="60"/>
+                <circle class="mo-head" cx="109" cy="53.13" r="9"/>`,
+              children: [
+                {
+                  /* BRAS + CLOCHE : −67,60° par rapport au tronc. Le bras
+                     ne change JAMAIS de longueur : la cloche décrit un arc
+                     de rayon 42 autour de l'épaule, et c'est l'épaule que
+                     la hanche déplace. */
+                  o: "109px 65.13px",
+                  k: [[0, "rotate(0deg)"], [7, "rotate(-11.27deg)"], [14, "rotate(-22.53deg)"],
+                      [20, "rotate(-33.8deg)"], [27, "rotate(-45.07deg)"], [34, "rotate(-56.33deg)"],
+                      [40, "rotate(-67.6deg)"], [48, "rotate(-67.6deg)"],
+                      [54, "rotate(-56.33deg)"], [60, "rotate(-45.07deg)"], [66, "rotate(-33.8deg)"],
+                      [72, "rotate(-22.53deg)"], [78, "rotate(-11.27deg)"], [84, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="109" y1="65.13" x2="75" y2="65.13"/>
+                    <line class="mo-bar3" x1="75" y1="61.13" x2="75" y2="69.13"/>
+                    <circle class="mo-mass" cx="67" cy="65.13" r="6"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M96 62 L70 50 M77.97 49.28 L70 50 L74.61 56.53"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M70 50 L96 62 M88.03 62.72 L96 62 L91.39 55.47"/>` }
+  ]
+};
