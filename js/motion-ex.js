@@ -13054,3 +13054,148 @@ EXERCISE_MOTIONS["adduction-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M110 146 L132 146 M124 141 L132 146 L124 151"/>` }
   ]
 };
+
+/* =========================================================
+   111. ABDUCTION DE HANCHE À LA POULIE
+        (abduction-hanche-poulie)              — VU DE FACE
+   -----------------------------------------------------------
+   >>> MÊME MUSCLE QUE LE SCHÉMA 101, VUE OPPOSÉE — ET LES DEUX
+       SONT DÉMONTRÉES <<< À l'abduction machine, assis, la hanche
+       est fléchie à 90° : le fémur pointe VERS le spectateur, sa
+       projection frontale vaut 26·sin(α) et varie de 2,3 à 18,4 en
+       cours de mouvement. La vue de face y était donc impossible,
+       et il fallait celle de dessus. DEBOUT, la hanche est
+       ÉTENDUE : le fémur est intégralement dans le plan frontal,
+       l'abduction y est une rotation PURE et la longueur dessinée
+       ne bouge pas d'un pouce. La vue de face est ici exacte. Même
+       moyen fessier, conclusions inverses, et chacune se calcule.
+   Position  : DEBOUT, sangle à la cheville EXTÉRIEURE, poulie
+               basse du côté OPPOSÉ — le câble passe donc sous le
+               corps, ce que le schéma montre ; main sur le montant.
+   Mobile    : la HANCHE de la jambe sanglée, jambe tendue.
+   Fixes     : le BASSIN et le TRONC — « élan du bassin » est
+               l'erreur n°3 ; l'aplomb pointillé matérialise le
+               tronc qui ne doit pas partir.
+   ROM       : 5° à 45° d'abduction, soit 40°. L'arc pointillé est
+               le trajet réel de la cheville ; le petit trait qui le
+               dépasse marque 55°, au-delà de la limite passive
+               d'abduction — la même limite de 45° que celle qui
+               fixe la position de départ de l'adduction machine
+               (schéma 110).
+   >>> « PENCHER LE BUSTE POUR MONTER PLUS HAUT » <<< Erreur n°1,
+       et c'est encore la même faute logique que la flexion de
+       hanche à la poulie (95) et le kickback (102) : l'angle qui
+       compte est celui de la cuisse par rapport au BASSIN, pas au
+       sol. S'incliner de 15° du côté opposé ajoute 15° d'élévation
+       apparente de jambe sans que la hanche ait abducté d'un
+       degré. Le moyen fessier n'a rien fait de plus ; seul le
+       décor a tourné.
+   >>> LA COURBE DE RÉSISTANCE, ET ELLE EST PLATE <<< Bras de
+       levier = distance de la HANCHE à la droite cheville→poulie :
+         t      0    1/6   2/6   3/6   4/6   5/6     1
+         levier 51,9 51,3  50,2  48,8  47,0  44,9  42,5
+       Variation totale : 18 %, et décroissance douce. C'est l'un
+       des profils les plus réguliers de la bibliothèque — bien
+       plus régulier que la flexion de hanche à la poulie (facteur
+       2,14, schéma 95). Le fait que la poulie soit du côté OPPOSÉ
+       y est pour beaucoup : le câble reste presque parallèle au
+       sol, donc son bras de levier ne dépend presque que de la
+       hauteur de la hanche, qui ne bouge pas.
+   ERREUR PARTIELLEMENT MONTRABLE : « ouvrir la pointe de pied vers
+       le plafond » est une rotation externe de hanche. De face,
+       elle se verrait — le pied cesserait de se projeter en bout
+       pour s'étaler latéralement. Le schéma dessine la position
+       CORRECTE (pied vu en bout, pointe vers l'avant) et n'illustre
+       pas la fausse ; il la nomme.
+   Agonistes : MOYEN FESSIER, tenseur du fascia lata.
+   Distinction : ≠ abduction machine (assis, vue de dessus,
+               résistance de machine) ; ≠ adduction poulie
+               (mouvement inverse) ; ≠ marche latérale élastique.
+   GÉOMÉTRIE (calculée) — sol y=150 ; poulie (44,146) ; hanche de
+   travail FIXE (106,92) ; jambe TENDUE 52 ; cheville
+   (110.53,143.80) → (142.77,128.77) ; câble ×1,5061 et −8,00°.
+   ========================================================= */
+EXERCISE_MOTIONS["abduction-hanche-poulie"] = {
+  vb: "34 34 126 122",
+  dur: 3.8,
+  vue: "Vu de face",
+  phases: { con: [0, 42], ecc: [52, 84] },
+  alt: "Vu de face, debout une sangle à la cheville et la poulie basse du côté opposé : la jambe tendue s'écarte latéralement jusqu'à 45° sans que le buste ne penche, puis revient lentement.",
+  fixe: `
+    <line class="mo-ground" x1="36" y1="150" x2="160" y2="150"/>
+    <!-- colonne et poulie BASSE, du côté OPPOSÉ à la jambe -->
+    <line class="mo-gear" x1="40" y1="60" x2="40" y2="150"/>
+    <circle class="mo-pulley" cx="44" cy="146" r="5"/>
+    <!-- APLOMB DU TRONC : il ne doit pas partir du côté opposé -->
+    <line class="mo-rom" x1="100" y1="58" x2="100" y2="96"/>
+    <!-- trajet réel de la cheville, 40° -->
+    <path class="mo-rom" fill="none" d="M110.53 143.8 A52 52 0 0 0 142.77 128.77"/>
+    <!-- 55° : au-delà de la limite passive d'abduction -->
+    <line class="mo-rom" x1="148.6" y1="121.83" x2="153.51" y2="125.27"/>
+    <!-- CORPS vu de face, immobile -->
+    <circle class="mo-head" cx="100" cy="47" r="9"/>
+    <line class="mo-body" x1="100" y1="58" x2="100" y2="55"/>
+    <line class="mo-body" x1="86" y1="58" x2="114" y2="58"/>
+    <line class="mo-body" x1="86" y1="58" x2="94" y2="92"/>
+    <line class="mo-body" x1="114" y1="58" x2="106" y2="92"/>
+    <line class="mo-body" x1="94" y1="92" x2="106" y2="92"/>
+    <circle class="mo-joint" cx="94" cy="92" r="2.8"/>
+    <circle class="mo-joint" cx="106" cy="92" r="3"/>
+    <!-- bras : une main sur le montant, l'autre le long du corps -->
+    <line class="mo-limb" x1="86" y1="58" x2="70" y2="70"/>
+    <line class="mo-limb" x1="70" y1="70" x2="48" y2="80"/>
+    <circle class="mo-hand" cx="48" cy="80" r="3"/>
+    <line class="mo-limb" x1="114" y1="58" x2="118" y2="80"/>
+    <line class="mo-limb" x1="118" y1="80" x2="120" y2="100"/>
+    <!-- JAMBE D'APPUI -->
+    <line class="mo-body" x1="94" y1="92" x2="95" y2="118"/>
+    <line class="mo-body" x1="95" y1="118" x2="96" y2="144"/>
+    <line class="mo-body" x1="88" y1="150" x2="104" y2="150"/>
+    <line class="mo-body" x1="96" y1="144" x2="90" y2="150"/>`,
+  parts: [
+    {
+      /* CÂBLE : il passe SOUS le corps puisque la poulie est du côté
+         opposé. Rotation −8,00° et allongement ×1,5061. */
+      o: "44px 146px",
+      k: [[0, "rotate(0deg) scale(1)"], [7, "rotate(-0.54deg) scale(1.0903)"],
+          [14, "rotate(-1.5deg) scale(1.1791)"], [21, "rotate(-2.79deg) scale(1.2657)"],
+          [28, "rotate(-4.33deg) scale(1.3494)"], [35, "rotate(-6.09deg) scale(1.4297)"],
+          [42, "rotate(-8deg) scale(1.5061)"], [52, "rotate(-8deg) scale(1.5061)"],
+          [57.33, "rotate(-6.09deg) scale(1.4297)"], [62.67, "rotate(-4.33deg) scale(1.3494)"],
+          [68, "rotate(-2.79deg) scale(1.2657)"], [73.33, "rotate(-1.5deg) scale(1.1791)"],
+          [78.67, "rotate(-0.54deg) scale(1.0903)"], [84, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="44" y1="146" x2="110.53" y2="143.8"/>`
+    },
+    {
+      /* JAMBE DE TRAVAIL : un seul segment rigide de 52 — elle est
+         TENDUE, le genou n'est qu'un repère. Rotation −40°. */
+      o: "106px 92px",
+      k: [[0, "rotate(0deg)"], [7, "rotate(-6.67deg)"], [14, "rotate(-13.33deg)"],
+          [21, "rotate(-20deg)"], [28, "rotate(-26.67deg)"], [35, "rotate(-33.33deg)"],
+          [42, "rotate(-40deg)"], [52, "rotate(-40deg)"],
+          [57.33, "rotate(-33.33deg)"], [62.67, "rotate(-26.67deg)"], [68, "rotate(-20deg)"],
+          [73.33, "rotate(-13.33deg)"], [78.67, "rotate(-6.67deg)"], [84, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Moyen fessier", "Tenseur du fascia lata"],
+      muscle: `
+        <circle cx="110.98" cy="91.56" r="4.5"/>
+        <circle cx="112.03" cy="103.51" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="106" y1="92" x2="110.53" y2="143.8"/>
+        <circle class="mo-joint" cx="108.27" cy="117.9" r="2.6"/>
+        <!-- pied vu EN BOUT : pointe vers l'avant, pas vers le plafond -->
+        <line class="mo-limb" x1="106.5" y1="146.5" x2="114.5" y2="146.5"/>
+        <!-- SANGLE : c'est elle qui reçoit le câble, elle doit donc être
+             centrée EXACTEMENT sur la cheville (110,53 143,80) et non
+             posée 2,8 plus haut sur le tibia. Tracée perpendiculairement
+             au segment : direction unitaire du membre (0,0871 0,9962),
+             perpendiculaire (0,9962 −0,0871), demi-largeur 3,5. -->
+        <line class="mo-bar3" x1="107.04" y1="144.1" x2="114.02" y2="143.5"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M122 60 L150 60 M142 55 L150 60 L142 65"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 60 L122 60 M130 55 L122 60 L130 65"/>` }
+  ]
+};
