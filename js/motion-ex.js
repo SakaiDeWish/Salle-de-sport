@@ -14021,3 +14021,250 @@ EXERCISE_MOTIONS["marche-laterale-elastique"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M118 50 L90 50 M98 45 L90 50 L98 55"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   118. FENTE CROISÉE (CURTSY LUNGE)
+        (fente-croisee)                         — VU DE FACE
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Debout, haltères le long du corps, pieds à
+   largeur de bassin. Hanches à 98, sol à 150.
+
+   LE CHOIX DE LA VUE, ET CE QU'IL COÛTE. Ce mouvement cumule deux
+   déplacements : un RECUL (26 en profondeur) et un CROISEMENT (20 sur
+   le côté). Aucune vue ne rend les deux sans les confondre — dans
+   toute vue oblique, l'écart des pieds dans l'image mélange les deux
+   et se lit comme une simple fente arrière. Seule la vue de face
+   isole la composante latérale : le pied arrière part de 94, franchit
+   l'aplomb du corps à 100 et finit à 114, soit 8 AU-DELÀ du pied
+   avant. C'est le croisement, et il est le seul à nommer l'exercice.
+
+   Le prix est un raccourcissement des segments : le fémur avant et
+   les deux tibias passent de 26,00 à 16,76 et 16,85 (rapport 0,645).
+   Il est ACCEPTÉ ici, contrairement au clamshell, parce qu'il ne crée
+   aucun mouvement fantôme : les longueurs décroissent de façon
+   monotone — 26,00 → 24,44 → 22,88 → 21,33 → 19,79 → 18,27 → 16,76 —
+   ce qui se lit comme une jambe qui plonge vers le fond, et l'écart
+   des genoux à la ligne hanche→pied ne change JAMAIS de signe (−5,35,
+   −8,25, −9,10) : les genoux restent visiblement pliés du même côté.
+   C'est exactement le critère qui avait fait rejeter le clamshell, et
+   ici il est satisfait.
+
+   ARTICULATIONS MOBILES : les deux hanches, les deux genoux, et le
+   bassin en descente verticale de 20.
+   ARTICULATION FIXE : le pied avant, qui ne bouge pas d'un centième.
+
+   AMPLITUDE RÉELLE. Le bassin descend de 20 unités (35 cm). Le genou
+   arrière passe de 26 à 7,20 au-dessus du sol, soit 12,6 cm : c'est
+   le « frôle le sol » de la fiche, chiffré. Le pas mesure
+   racine(20² + 26²) = 32,8 unités, soit 57 cm — « pas trop court »
+   est une erreur listée, et cette longueur est ce qui permet au genou
+   de descendre si bas.
+
+   CE QUE LE CALCUL RÉVÈLE ET QU'ON NE DEVINERAIT PAS. Le genou
+   arrière ne se déplace pas de façon monotone dans l'image : il part
+   à 94, sort d'abord vers l'extérieur jusqu'à 90,37, puis revient et
+   traverse jusqu'à 98,77. Il fait donc un aller-retour de 8,4 unités
+   pendant que le pied, lui, avance tout droit. Deux keyframes
+   donneraient une diagonale : un trajet qui n'existe pas.
+
+   Le fémur arrière, lui, reste à 25,25 minimum (rapport 0,971) : il
+   est quasiment dans le plan frontal du début à la fin, alors que
+   tout le reste plonge. C'est lui qui porte la lisibilité du schéma.
+
+   LES TROIS ERREURS DE LA FICHE. « Genou avant qui s'effondre vers
+   l'intérieur » : le genou avant est tracé sortant de 106 à 111,
+   c'est-à-dire EN DEHORS de l'aplomb hanche→pied ; toute dérive vers
+   l'intérieur se voit immédiatement. « Buste qui tourne avec la
+   jambe » : l'aplomb en pointillés à x=100 et la barre d'épaules à
+   largeur constante donnent la référence — une rotation du buste
+   rétrécirait les épaules dans cette vue. « Pas trop court » : voir
+   les 57 cm ci-dessus.
+
+   LA LIMITE DE CE SCHÉMA, DÉCLARÉE. En position basse les jambes sont
+   raccourcies à 0,645 et se tassent dans une bande de 32 unités, alors
+   que le tronc et les bras gardent leur longueur pleine. Un bonhomme
+   en bâton n'a aucun indice de volume : un raccourcissement s'y lit
+   comme un membre plus court, pas comme un membre qui s'enfonce. La
+   position basse est donc peu lisible sur une image figée — l'animation
+   la rattrape, l'œil suivant la descente continue et le pied qui
+   franchit l'aplomb. J'ai remis la jambe arrière DERRIÈRE la jambe
+   avant dans l'ordre de dessin, l'occlusion étant le seul indice de
+   profondeur dont dispose ce moteur.
+
+   Ce qui compléterait vraiment : une seconde vue de profil, où les
+   quatre segments se projettent à 0,86 au minimum. Cet exercice
+   rejoint donc les donkey kicks et le fire hydrant sur la courte liste
+   de ceux qui gagneraient à deux vues.
+
+   MUSCLES AGONISTES. Moyen fessier sur la hanche avant, qui retient
+   le bassin ; grand fessier et quadriceps sur la jambe avant.
+
+   MONTAGE. Quatre segments en pièces INDÉPENDANTES, aucune imbriquée,
+   parce que chacune porte un scale qu'un enfant hériterait. Chaque
+   pièce pivote autour d'un point qu'elle emmène avec elle par un
+   translate : les fémurs autour de leur hanche qui descend, le tibia
+   avant autour du pied fixe, le tibia arrière autour du pied qui
+   glisse. Les pieds sont des enfants contre-rotés pour rester à plat.
+
+   TEMPO. Descente 40 %, remontée 38 % : « repousse sur le talon
+   avant » est un mouvement franc, la descente est la partie contrôlée.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["fente-croisee"] = {
+  vb: "70 46 58 110",
+  dur: 4.2,
+  vue: "Vu de face",
+  phases: { con: [0, 40], ecc: [48, 86] },
+  alt: "Vu de face, haltères en mains : la jambe arrière recule en diagonale et croise derrière l'autre, son pied franchissant l'aplomb du corps, pendant que le bassin descend de 35 cm jusqu'à ce que le genou arrière frôle le sol.",
+  fixe: `
+    <line class="mo-ground" x1="76" y1="150" x2="124" y2="150"/>
+    <!-- APLOMB DU CORPS : le buste ne tourne pas, et le pied arrière
+         doit FRANCHIR ce trait — c'est là qu'on voit le croisement -->
+    <line class="mo-rom" x1="100" y1="56" x2="100" y2="150"/>`,
+  parts: [
+    {
+      /* CORPS : descente verticale de 20, sans dérive latérale. */
+      o: "100px 98px",
+      k: [[0, "translate(0px,0px)"], [6.67, "translate(0px,3.33px)"],
+          [13.33, "translate(0px,6.67px)"], [20, "translate(0px,10px)"],
+          [26.67, "translate(0px,13.33px)"], [33.33, "translate(0px,16.67px)"],
+          [40, "translate(0px,20px)"], [48, "translate(0px,20px)"],
+          [54.33, "translate(0px,16.67px)"], [60.67, "translate(0px,13.33px)"],
+          [67, "translate(0px,10px)"], [73.33, "translate(0px,6.67px)"],
+          [79.67, "translate(0px,3.33px)"], [86, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <circle class="mo-head" cx="100" cy="58" r="9"/>
+        <line class="mo-body" x1="100" y1="69" x2="100" y2="67"/>
+        <line class="mo-body" x1="86" y1="69" x2="114" y2="69"/>
+        <line class="mo-body" x1="100" y1="98" x2="100" y2="69"/>
+        <line class="mo-limb" x1="86" y1="69" x2="84" y2="87"/>
+        <line class="mo-limb" x1="84" y1="87" x2="83" y2="105"/>
+        <circle class="mo-hand" cx="83" cy="105" r="3"/>
+        <line class="mo-bar2" x1="78" y1="105" x2="88" y2="105"/>
+        <line class="mo-limb" x1="114" y1="69" x2="116" y2="87"/>
+        <line class="mo-limb" x1="116" y1="87" x2="117" y2="105"/>
+        <circle class="mo-hand" cx="117" cy="105" r="3"/>
+        <line class="mo-bar2" x1="112" y1="105" x2="122" y2="105"/>
+        <line class="mo-body" x1="94" y1="98" x2="106" y2="98"/>
+        <circle class="mo-joint" cx="94" cy="98" r="2.8"/>
+        <circle class="mo-joint" cx="106" cy="98" r="2.8"/>`
+    },
+    {
+      /* FÉMUR ARRIÈRE : il reste quasi dans le plan frontal (scale
+         0,9712 au pire) et sa rotation change de SENS en cours de
+         route, +8,16° puis −10,89°. */
+      o: "94px 98px",
+      k: [[0, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [6.67, "translate(0px,3.33px) rotate(8.162deg) scale(0.9834)"],
+          [13.33, "translate(0px,6.67px) rotate(7.823deg) scale(0.9847)"],
+          [20, "translate(0px,10px) rotate(5.235deg) scale(0.993)"],
+          [26.67, "translate(0px,13.33px) rotate(1.116deg) scale(0.9997)"],
+          [33.33, "translate(0px,16.67px) rotate(-4.246deg) scale(0.9954)"],
+          [40, "translate(0px,20px) rotate(-10.885deg) scale(0.9712)"],
+          [48, "translate(0px,20px) rotate(-10.885deg) scale(0.9712)"],
+          [54.33, "translate(0px,16.67px) rotate(-4.246deg) scale(0.9954)"],
+          [60.67, "translate(0px,13.33px) rotate(1.116deg) scale(0.9997)"],
+          [67, "translate(0px,10px) rotate(5.235deg) scale(0.993)"],
+          [73.33, "translate(0px,6.67px) rotate(7.823deg) scale(0.9847)"],
+          [79.67, "translate(0px,3.33px) rotate(8.162deg) scale(0.9834)"],
+          [86, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [100, "translate(0px,0px) rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-limb" x1="94" y1="98" x2="94" y2="124"/>`
+    },
+    {
+      /* TIBIA ARRIÈRE : son pied GLISSE de 20 vers le croisement,
+         d'où le translate, et il pivote de −64,69°. */
+      o: "94px 150px",
+      k: [[0, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [6.67, "translate(3.33px,0px) rotate(-16.6deg) scale(0.9374)"],
+          [13.33, "translate(6.67px,0px) rotate(-26.947deg) scale(0.8616)"],
+          [20, "translate(10px,0px) rotate(-37.182deg) scale(0.7863)"],
+          [26.67, "translate(13.33px,0px) rotate(-47.504deg) scale(0.7219)"],
+          [33.33, "translate(16.67px,0px) rotate(-57.151deg) scale(0.6753)"],
+          [40, "translate(20px,0px) rotate(-64.688deg) scale(0.6481)"],
+          [48, "translate(20px,0px) rotate(-64.688deg) scale(0.6481)"],
+          [54.33, "translate(16.67px,0px) rotate(-57.151deg) scale(0.6753)"],
+          [60.67, "translate(13.33px,0px) rotate(-47.504deg) scale(0.7219)"],
+          [67, "translate(10px,0px) rotate(-37.182deg) scale(0.7863)"],
+          [73.33, "translate(6.67px,0px) rotate(-26.947deg) scale(0.8616)"],
+          [79.67, "translate(3.33px,0px) rotate(-16.6deg) scale(0.9374)"],
+          [86, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [100, "translate(0px,0px) rotate(0deg) scale(1)"]],
+      svg: `
+        <line class="mo-limb" x1="94" y1="150" x2="94" y2="124"/>
+        <circle class="mo-joint" cx="94" cy="124" r="2.6"/>`,
+      children: [
+        {
+          /* PIED ARRIÈRE : contre-rotation, il reste à plat. */
+          o: "94px 150px",
+          k: [[0, "rotate(0deg)"], [6.67, "rotate(16.6deg)"], [13.33, "rotate(26.947deg)"],
+              [20, "rotate(37.182deg)"], [26.67, "rotate(47.504deg)"], [33.33, "rotate(57.151deg)"],
+              [40, "rotate(64.688deg)"], [48, "rotate(64.688deg)"],
+              [54.33, "rotate(57.151deg)"], [60.67, "rotate(47.504deg)"], [67, "rotate(37.182deg)"],
+              [73.33, "rotate(26.947deg)"], [79.67, "rotate(16.6deg)"], [86, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="89" y1="150" x2="99" y2="150"/>`
+        }
+      ]
+    },
+    {
+      /* FÉMUR AVANT : descend avec la hanche et plonge vers le fond,
+         d'où le scale 0,6447. Le genou sort de 106 à 111. */
+      o: "106px 98px",
+      k: [[0, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [6.67, "translate(0px,3.33px) rotate(-5.247deg) scale(0.9398)"],
+          [13.33, "translate(0px,6.67px) rotate(-7.807deg) scale(0.88)"],
+          [20, "translate(0px,10px) rotate(-10.099deg) scale(0.8204)"],
+          [26.67, "translate(0px,13.33px) rotate(-12.375deg) scale(0.7613)"],
+          [33.33, "translate(0px,16.67px) rotate(-14.76deg) scale(0.7027)"],
+          [40, "translate(0px,20px) rotate(-17.356deg) scale(0.6447)"],
+          [48, "translate(0px,20px) rotate(-17.356deg) scale(0.6447)"],
+          [54.33, "translate(0px,16.67px) rotate(-14.76deg) scale(0.7027)"],
+          [60.67, "translate(0px,13.33px) rotate(-12.375deg) scale(0.7613)"],
+          [67, "translate(0px,10px) rotate(-10.099deg) scale(0.8204)"],
+          [73.33, "translate(0px,6.67px) rotate(-7.807deg) scale(0.88)"],
+          [79.67, "translate(0px,3.33px) rotate(-5.247deg) scale(0.9398)"],
+          [86, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [100, "translate(0px,0px) rotate(0deg) scale(1)"]],
+      muscleNom: ["Moyen fessier", "Grand fessier", "Quadriceps"],
+      muscle: `
+        <circle cx="111.5" cy="96" r="4.5"/>
+        <circle cx="107.5" cy="112" r="3.2"/>`,
+      svg: `<line class="mo-limb" x1="106" y1="98" x2="106" y2="124"/>`
+    },
+    {
+      /* TIBIA AVANT : pivote autour du pied, qui est FIXE. */
+      o: "106px 150px",
+      k: [[0, "rotate(0deg) scale(1)"], [6.67, "rotate(5.247deg) scale(0.9398)"],
+          [13.33, "rotate(7.807deg) scale(0.88)"], [20, "rotate(10.099deg) scale(0.8204)"],
+          [26.67, "rotate(12.375deg) scale(0.7613)"], [33.33, "rotate(14.76deg) scale(0.7027)"],
+          [40, "rotate(17.356deg) scale(0.6447)"], [48, "rotate(17.356deg) scale(0.6447)"],
+          [54.33, "rotate(14.76deg) scale(0.7027)"], [60.67, "rotate(12.375deg) scale(0.7613)"],
+          [67, "rotate(10.099deg) scale(0.8204)"], [73.33, "rotate(7.807deg) scale(0.88)"],
+          [79.67, "rotate(5.247deg) scale(0.9398)"], [86, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `
+        <line class="mo-limb" x1="106" y1="150" x2="106" y2="124"/>
+        <circle class="mo-joint" cx="106" cy="124" r="2.6"/>`,
+      children: [
+        {
+          /* PIED AVANT : contre-rotation, il reste à plat. */
+          o: "106px 150px",
+          k: [[0, "rotate(0deg)"], [6.67, "rotate(-5.247deg)"], [13.33, "rotate(-7.807deg)"],
+              [20, "rotate(-10.099deg)"], [26.67, "rotate(-12.375deg)"], [33.33, "rotate(-14.76deg)"],
+              [40, "rotate(-17.356deg)"], [48, "rotate(-17.356deg)"],
+              [54.33, "rotate(-14.76deg)"], [60.67, "rotate(-12.375deg)"], [67, "rotate(-10.099deg)"],
+              [73.33, "rotate(-7.807deg)"], [79.67, "rotate(-5.247deg)"], [86, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="101" y1="150" x2="111" y2="150"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M77 56 L77 76 M72 69 L77 76 L82 69"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M77 76 L77 56 M72 63 L77 56 L82 63"/>` }
+  ]
+};
