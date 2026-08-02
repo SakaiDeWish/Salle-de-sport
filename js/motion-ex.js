@@ -11663,3 +11663,117 @@ EXERCISE_MOTIONS["kettlebell-swing"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M70 50 L96 62 M88.03 62.72 L96 62 L91.39 55.47"/>` }
   ]
 };
+
+/* =========================================================
+   101. ABDUCTION À LA MACHINE  (abduction-machine)   — VU DE DESSUS
+   -----------------------------------------------------------
+   >>> POURQUOI VU DE DESSUS, ET POURQUOI C'EST LA SEULE VUE JUSTE
+       <<< Les deux autres vues échouent, et pour des raisons
+       géométriques exactes :
+         - DE PROFIL, les deux cuisses se superposent et aucune ne
+           bouge à l'écran. Zéro information.
+         - DE FACE, le problème est pire qu'il n'y paraît. Assis,
+           hanche fléchie à 90°, le fémur pointe VERS LE SPECTATEUR.
+           Sa projection frontale ne vaut donc pas 26 mais 26·sin(α),
+           α étant l'écartement : 2,3 au départ, 18,4 en fin de
+           course. La cuisse changerait de longueur sous les yeux du
+           lecteur — un dessin qui ment sur l'anatomie.
+         - DE DESSUS, le fémur est dans le plan de l'image sur toute
+           l'amplitude : longueur constante 26, rotation PURE, aucune
+           déformation. C'est la seule projection exacte, d'où le
+           badge.
+       Le tibia, lui, pend à la verticale : de dessus il se projette
+       en un point. Il n'est donc pas dessiné — et ce n'est pas une
+       omission, il ne bouge pas.
+   Position  : ASSIS, dos calé, cuisses contre les supports
+               extérieurs, genoux à 90°.
+   Mobile    : les deux HANCHES, en écartement symétrique.
+   Fixes     : le BASSIN et le tronc — « buste qui bascule » est
+               l'erreur n°3.
+   ROM       : 5° à 45° d'écartement par cuisse, soit 40° chacune et
+               80° d'ouverture totale. L'arc pointillé est le trajet
+               réel du genou. « Amplitude courte » est l'erreur n°2 :
+               l'amplitude d'abduction de hanche est d'environ 45°,
+               et le schéma la dessine en entier.
+   >>> CE QUE « BUSTE QUI BASCULE » CHANGE VRAIMENT <<< Sur cette
+       machine, l'inclinaison du tronc n'est pas un détail de
+       confort : elle fixe l'angle de FLEXION de hanche, et cet
+       angle décide de quel muscle travaille. Hanche peu fléchie
+       (buste droit), le moyen fessier domine ; hanche très fléchie
+       (buste penché en avant), les fibres hautes du grand fessier
+       prennent le relais parce qu'elles deviennent abductrices dans
+       cette position. Basculer le buste pendant la série ne « triche »
+       donc pas sur l'amplitude : cela change silencieusement de
+       cible. C'est une raison plus sérieuse que l'élan de garder le
+       dos calé — et c'est aussi pourquoi le bassin est dessiné dans
+       les éléments fixes.
+   LIMITE DE CETTE VUE : l'inclinaison du buste est justement ce
+       qu'une vue de dessus ne peut PAS montrer, puisqu'elle se
+       produit dans le plan sagittal. Le schéma montre le bassin
+       immobile ; il ne peut pas montrer le basculement lui-même.
+       C'est dit plutôt que suggéré.
+   PAS D'ÉCHANTILLONNAGE : une seule rotation par cuisse, autour
+       d'un axe fixe, sans contrainte de fermeture. L'interpolation
+       linéaire EST le mouvement exact.
+   Agonistes : MOYEN FESSIER.
+   Distinction : ≠ adduction machine (mouvement inverse, adducteurs) ;
+               ≠ abduction à la poulie (debout, hanche tendue, donc
+               moyen fessier seul) ; ≠ clamshell (allongé sur le côté).
+   GÉOMÉTRIE (calculée) — hanches (92,118) et (108,118) ; fémur 26
+   dans le plan de l'image ; genou droit (110.27,92.10) →
+   (126.38,99.62).
+   ========================================================= */
+EXERCISE_MOTIONS["abduction-machine"] = {
+  vb: "68 82 70 66",
+  dur: 3.6,
+  vue: "Vu de dessus",
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "Vu de dessus, assis dans la machine : les deux cuisses s'écartent symétriquement de 5° à 45° contre les supports extérieurs, le bassin restant immobile, puis reviennent lentement.",
+  fixe: `
+    <!-- dossier, tronc et tête vus de dessus -->
+    <line class="mo-pad" x1="84" y1="138" x2="116" y2="138"/>
+    <circle class="mo-head" cx="100" cy="128" r="7"/>
+    <line class="mo-body" x1="84" y1="124" x2="116" y2="124"/>
+    <line class="mo-limb" x1="84" y1="124" x2="76" y2="118"/>
+    <line class="mo-limb" x1="116" y1="124" x2="124" y2="118"/>
+    <line class="mo-bar3" x1="72" y1="114" x2="80" y2="122"/>
+    <line class="mo-bar3" x1="128" y1="114" x2="120" y2="122"/>
+    <!-- BASSIN : il ne bouge pas, c'est toute la consigne -->
+    <line class="mo-body" x1="92" y1="118" x2="108" y2="118"/>
+    <circle class="mo-joint" cx="92" cy="118" r="2.8"/>
+    <circle class="mo-joint" cx="108" cy="118" r="2.8"/>
+    <!-- trajet réel des genoux, 40° chacun -->
+    <path class="mo-rom" fill="none" d="M110.27 92.10 A26 26 0 0 1 126.38 99.62"/>
+    <path class="mo-rom" fill="none" d="M89.73 92.10 A26 26 0 0 0 73.62 99.62"/>`,
+  parts: [
+    {
+      /* CUISSE DROITE : rotation autour de la hanche, +40°. */
+      o: "108px 118px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(40deg)"], [46, "rotate(40deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Moyen fessier",
+      muscle: `<circle cx="112.5" cy="115" r="4.5"/>`,
+      svg: `
+        <line class="mo-limb" x1="108" y1="118" x2="110.27" y2="92.1"/>
+        <circle class="mo-joint" cx="110.27" cy="92.1" r="2.6"/>
+        <line class="mo-gear" x1="108" y1="118" x2="115.25" y2="94.54"/>
+        <line class="mo-pad" x1="114.73" y1="100.52" x2="115.77" y2="88.56"/>`
+    },
+    {
+      /* CUISSE GAUCHE : miroir exact. */
+      o: "92px 118px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(-40deg)"], [46, "rotate(-40deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscle: `<circle cx="87.5" cy="115" r="4.5"/>`,
+      svg: `
+        <line class="mo-limb" x1="92" y1="118" x2="89.73" y2="92.1"/>
+        <circle class="mo-joint" cx="89.73" cy="92.1" r="2.6"/>
+        <line class="mo-gear" x1="92" y1="118" x2="84.75" y2="94.54"/>
+        <line class="mo-pad" x1="85.27" y1="100.52" x2="84.23" y2="88.56"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M110 143 L132 143 M124 138 L132 143 L124 148"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M132 143 L110 143 M118 138 L110 143 L118 148"/>` }
+  ]
+};
