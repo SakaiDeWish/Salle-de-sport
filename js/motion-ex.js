@@ -10907,3 +10907,129 @@ EXERCISE_MOTIONS["flexion-hanche-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M56 123 L68 134 M60.19 132.27 L68 134 L65.6 126.37"/>` }
   ]
 };
+
+/* =========================================================
+   96. LEG CURL ASSIS  (leg-curl-assis)
+   -----------------------------------------------------------
+   Position  : ASSIS, dos calé, cuisses bloquées sous un coussin,
+               chevilles sur le boudin, jambes tendues.
+   Mobile    : le GENOU seul.
+   Fixes     : la CUISSE, bloquée par le coussin ; la HANCHE, qui
+               doit rester fléchie — « se soulever du siège » est
+               l'erreur n°1 et c'est le cercle pointillé.
+   >>> POURQUOI ASSIS N'EST PAS « ALLONGÉ EN PLUS CONFORTABLE » <<<
+       Les ischio-jambiers franchissent DEUX articulations : ils
+       s'allongent quand la hanche fléchit et se raccourcissent
+       quand le genou fléchit. Leurs bras de levier ne sont pas
+       égaux — environ 6 cm à la hanche contre 3,5 cm au genou,
+       soit un rapport de presque 2. Conséquence chiffrée :
+         hanche fléchie à 90° (assis) : +6 cm × 1,571 rad = +9,4 cm
+         genou fléchi sur 146°         : −3,5 cm × 2,548 rad = −8,9 cm
+       Autrement dit, LE SEUL FAIT DE S'ASSEOIR allonge les ischios
+       de plus que tout le parcours du genou ne les raccourcit.
+       Le leg curl couché (schéma 33) travaille donc dans une plage
+       de longueurs courtes, celui-ci dans une plage longue — et
+       c'est le même muscle. C'est le miroir exact de l'argument du
+       sissy squat (schéma 92) sur le droit fémoral, avec cette
+       différence que les bras de levier y étaient égaux et qu'ici
+       ils ne le sont pas.
+   >>> ET C'EST AUSSI POURQUOI L'AMPLITUDE EST PLUS GRANDE <<< La
+       fiche dit que les ischios « travaillent sur une plus grande
+       amplitude qu'allongé ». La raison est l'insuffisance active :
+       couché, hanche tendue, les ischios sont déjà courts au départ
+       et arrivent en fin de course à une longueur où ils ne
+       produisent plus de force (c'est la crampe classique du leg
+       curl couché). Assis, les 9,4 cm de pré-allongement repoussent
+       ce plafond : 146° de flexion de genou sont exploitables, au
+       lieu des 135° du schéma couché.
+   >>> CE QUE COÛTE EXACTEMENT « SE SOULEVER DU SIÈGE » <<<
+       Décoller le bassin, c'est étendre la hanche. Or 1° de hanche
+       vaut, en longueur d'ischio, 6/3,5 = 1,71° de genou. Se
+       soulever de 20° annule donc l'équivalent de 34° d'amplitude
+       de genou — plus d'un cinquième du mouvement, sans qu'aucun
+       repère visible ne change au niveau du boudin. D'où les mains
+       dessinées sur les poignées : elles ne tirent pas, elles
+       empêchent la hanche de s'ouvrir.
+   ROM       : genou de 178° à 32°, soit 146° ; l'arc pointillé est
+               le trajet réel de la cheville, il passe SOUS le siège
+               — « ramène les talons sous le siège » est une
+               position, pas une image.
+   PAS D'ÉCHANTILLONNAGE ICI, ET C'EST VOULU : un seul segment
+       tourne, autour d'un axe fixe, sans contrainte de fermeture.
+       L'interpolation linéaire d'une rotation unique EST le
+       mouvement exact. Échantillonner n'aurait rien ajouté.
+       (La colonne de charge est modélisée en translation linéaire :
+       la came réelle n'est pas connue, c'est dit plutôt que deviné.)
+   Agonistes : ISCHIO-JAMBIERS, en position longue.
+   Distinction : ≠ leg curl couché (hanche tendue, ischios courts,
+               amplitude plafonnée par l'insuffisance active) ;
+               ≠ soulevé de terre roumain (hanche mobile, genou
+               fixe : l'exact inverse) ; ≠ nordic curl.
+   GÉOMÉTRIE (calculée) — sol y=150 ; pivot = GENOU (84,112) ;
+   hanche (110,112) ; tibia 26 ; cheville (58.02,111.09) →
+   (106.05,125.78) ; rotation −150°.
+   ========================================================= */
+EXERCISE_MOTIONS["leg-curl-assis"] = {
+  vb: "46 60 118 96",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 90] },
+  alt: "Assis à la machine, cuisses bloquées sous un coussin et chevilles sur le boudin : les genoux se plient jusqu'à ramener les talons sous le siège, puis reviennent lentement jambes tendues.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="150" x2="162" y2="150"/>
+    <!-- siège, dossier, coussin de cuisses et bâti -->
+    <line class="mo-pad" x1="100" y1="119" x2="122" y2="119"/>
+    <line class="mo-pad" x1="120" y1="116" x2="128" y2="84"/>
+    <line class="mo-pad" x1="88" y1="106" x2="106" y2="106"/>
+    <line class="mo-gear" x1="102" y1="119" x2="102" y2="150"/>
+    <line class="mo-gear" x1="124" y1="119" x2="124" y2="150"/>
+    <line class="mo-gear" x1="141" y1="112" x2="141" y2="150"/>
+    <!-- CORPS : tout est immobile, cuisse comprise -->
+    <circle class="mo-head" cx="122" cy="70" r="8"/>
+    <line class="mo-body" x1="118" y1="82" x2="120" y2="76"/>
+    <line class="mo-body" x1="110" y1="112" x2="118" y2="82"/>
+    <line class="mo-limb" x1="118" y1="82" x2="114" y2="93"/>
+    <line class="mo-limb" x1="114" y1="93" x2="112" y2="104"/>
+    <line class="mo-bar3" x1="108" y1="104" x2="116" y2="104"/>
+    <line class="mo-limb" x1="110" y1="112" x2="84" y2="112"/>
+    <!-- la hanche ne doit PAS s'ouvrir : décoller le bassin coûte
+         1,71° de genou par degré de hanche (voir analyse) -->
+    <circle class="mo-rom" fill="none" cx="110" cy="112" r="8"/>
+    <circle class="mo-joint" cx="110" cy="112" r="2.8"/>
+    <!-- AXE DE LA MACHINE CONFONDU AVEC L'AXE DU GENOU -->
+    <circle class="mo-pulley" cx="84" cy="112" r="4.5"/>
+    <!-- trajet réel de la cheville : il passe sous le siège -->
+    <path class="mo-rom" fill="none" d="M58.02 111.09 A26 26 0 0 0 106.05 125.78"/>`,
+  muscles: [
+    { nom: "Ischio-jambiers (position longue)",
+      svg: `<ellipse cx="96" cy="115.5" rx="11" ry="3"/>` }
+  ],
+  parts: [
+    {
+      /* COLONNE DE CHARGES : translation verticale. Linéaire faute de
+         connaître la came réelle de la machine — c'est une hypothèse,
+         pas une mesure. */
+      k: [[0, "translate(0px,0px)"], [34, "translate(0px,-14px)"],
+          [42, "translate(0px,-14px)"], [90, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <rect class="mo-mass" x="134" y="118" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="126" width="14" height="6" rx="1.5"/>
+        <rect class="mo-mass" x="134" y="134" width="14" height="6" rx="1.5"/>`
+    },
+    {
+      /* TIBIA + BOUDIN : rotation autour du PIVOT, qui est aussi le
+         genou. −150° referment le genou de 178° à 32°. */
+      o: "84px 112px",
+      k: [[0, "rotate(0deg)"], [34, "rotate(-150deg)"], [42, "rotate(-150deg)"],
+          [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-gear" x1="84" y1="112" x2="58.02" y2="111.09"/>
+        <line class="mo-limb" x1="84" y1="112" x2="58.02" y2="111.09"/>
+        <circle class="mo-mass" cx="58.02" cy="111.09" r="6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M52 124 L52 146 M47 138 L52 146 L57 138"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M52 146 L52 124 M47 132 L52 124 L57 132"/>` }
+  ]
+};
