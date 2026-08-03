@@ -15136,3 +15136,82 @@ EXERCISE_MOTIONS["crunch-poulie"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M66 84.5 L78 72 M75.66 79.47 L78 72 L70.62 74.61"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   125. HOLLOW HOLD
+        (hollow-hold)                          — MAINTIEN
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION. Allongé sur le dos, lombaires PLAQUÉES au sol, épaules et
+   jambes tendues décollées, bras tendus au-delà de la tête. Rien ne
+   bouge : c'est un maintien, et le moteur a un régime dédié pour cela.
+
+   UN SEUL POINT DE CONTACT, ET C'EST TOUT LE SUJET. Les épaules sont à
+   7,2 du sol, les pieds à 19,8, les mains à 22,4. Le corps ne touche
+   qu'entre les deux, sur la zone lombaire — un appui d'environ 8
+   unités, soit 14 cm. Les repères verticaux tracés sous les épaules et
+   sous les pieds mesurent ces écarts : ils rendent visible que tout le
+   reste est en l'air.
+
+   LA POSITION EST PRESQUE SYMÉTRIQUE, ET C'EST POURQUOI ELLE EST DURE.
+   Depuis l'appui lombaire, le bras de levier vaut 56,86 côté jambes et
+   52,36 côté bras : 7,9 % d'écart seulement. Les deux extrémités
+   tirent donc le bassin en bascule antérieure avec des moments
+   comparables, et les abdominaux doivent résister aux DEUX à la fois.
+   Ce n'est pas un gainage à une charge, c'est une balance en équilibre
+   sur 14 cm de dos.
+
+   D'OÙ LA RÉGRESSION, CHIFFRÉE. « Lombaires qui décollent : raccourcis
+   la position » — plier les genoux à 90° ramène le levier des jambes
+   de 56,86 à 32,43, soit −43 %. Ramener les bras le long du corps
+   annule les 52,36 de l'autre côté. La consigne n'est donc pas un
+   pis-aller : c'est le seul réglage disponible, et il est violent.
+
+   MUSCLES. Grand droit sur la face antérieure du tronc, transverse
+   plus profond au niveau de l'appui. Côté antérieur = vers le HAUT,
+   la personne étant sur le dos : perpendiculaire (0,342 −0,940) au
+   segment thoracique.
+
+   CE QUI N'EST PAS DESSINÉ, ET POURQUOI. « Respiration bloquée » est
+   une erreur listée mais n'a aucune traduction géométrique : rien
+   dans la posture ne la distingue. Elle est signalée dans la fiche,
+   pas dans le schéma.
+
+   L'ANNEAU DE MAINTIEN est posé sur la sangle abdominale, là où
+   l'effort se fait — pas au point de contact, qui est un appui passif.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["hollow-hold"] = {
+  vb: "36 106 134 46",
+  dur: 4,
+  isometrique: true,
+  maintien: "96 134",
+  alt: "Allongé sur le dos en position creuse : seules les lombaires touchent le sol, les épaules étant 7,2 au-dessus et les pieds 19,8, bras et jambes tendus dans le prolongement. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="140" x2="164" y2="140"/>
+    <!-- ÉCARTS AU SOL : tout est en l'air sauf les lombaires -->
+    <line class="mo-rom" x1="80.27" y1="132.82" x2="80.27" y2="140"/>
+    <line class="mo-rom" x1="156.86" y1="120.21" x2="156.86" y2="140"/>
+    <!-- APPUI LOMBAIRE : l'unique contact, environ 12 unités -->
+    <line class="mo-bar3" x1="94" y1="140" x2="106" y2="140"/>
+    <!-- CORPS. Tête dessinée avant les bras : ils passent devant.
+         Le dos est une COURBE, pas un angle : les lombaires se
+         plaquent, elles ne se plient pas. -->
+    <circle class="mo-head" cx="71.2" cy="128.59" r="8"/>
+    <path class="mo-body" fill="none" d="M80.27 132.82 Q92 138.6 100 140 Q105.5 139.4 108 138"/>
+    <circle class="mo-joint" cx="108" cy="138" r="3"/>
+    <line class="mo-body" x1="108" y1="138" x2="156.86" y2="120.21"/>
+    <circle class="mo-joint" cx="132.43" cy="129.11" r="2.6"/>
+    <line class="mo-body" x1="156.86" y1="120.21" x2="162" y2="115"/>
+    <line class="mo-limb" x1="80.27" y1="132.82" x2="63.95" y2="125.21"/>
+    <circle class="mo-joint" cx="63.95" cy="125.21" r="2.6"/>
+    <line class="mo-limb" x1="63.95" y1="125.21" x2="47.64" y2="117.6"/>
+    <circle class="mo-hand" cx="47.64" cy="117.6" r="3"/>`,
+  muscles: [
+    { nom: "Grand droit de l'abdomen",
+      svg: `<circle cx="84" cy="132" r="4"/>` },
+    { nom: "Transverse",
+      svg: `<circle cx="108" cy="133" r="3"/>` }
+  ],
+  parts: []
+};
