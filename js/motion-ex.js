@@ -15931,3 +15931,104 @@ EXERCISE_MOTIONS["pallof-press"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M134 120 L112 120 M120 115 L112 120 L120 125"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   132. DRAGON FLAG
+        (dragon-flag)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Allongé sur un banc, mains agrippées derrière la
+   tête, corps à l'horizontale. Le pivot est l'ÉPAULE, en (100 116).
+
+   LE PIVOT EST À L'ÉPAULE, ET C'EST L'INVERSE DE TOUS LES AUTRES
+   ABDOS. Le crunch pivote au rachis, le relevé de jambes à la hanche,
+   le sit-up aux deux. Ici le tronc ET les jambes forment UN SEUL corps
+   rigide de 81 qui tourne autour du point d'appui des épaules. C'est
+   modélisé comme tel : une seule pièce, donc « casser aux hanches »
+   est structurellement impossible à représenter — le schéma ne peut
+   montrer que la forme correcte.
+
+   ARTICULATION MOBILE : l'épaule, et elle seule.
+   ARTICULATIONS FIXES : hanche et genoux, verrouillés par le gainage.
+
+   POURQUOI C'EST RÉSERVÉ AUX TRONCS SOLIDES, CHIFFRÉ. Le centre de
+   masse du bloc tronc+jambes se calcule à partir des masses
+   segmentaires : tronc 0,50 de la masse corporelle avec son centre à
+   13,05 de l'épaule, jambes 0,32 avec le leur à 51,88. Le centre
+   commun tombe à 28,20 de l'épaule, et le moment à l'horizontale vaut
+   0,82 × 28,20 = 23,13 unités-poids. Le relevé de jambes au sol
+   (schéma 126) en demandait 7,32 : le dragon flag impose ×3,16.
+
+   POURQUOI ON CASSE AUX HANCHES, CHIFFRÉ AUSSI. Plier à 90° remonte
+   le centre de masse à 19,27 et fait tomber le moment à 15,80, soit
+   −31,7 %. Casser retire donc près d'un tiers de la charge d'un seul
+   coup : ce n'est pas un relâchement, c'est la triche la plus
+   rentable de la bibliothèque.
+
+   LE PROFIL DE RÉSISTANCE. Moment proportionnel au cosinus de l'angle
+   au-dessus de l'horizontale : 1,000 → 0,966 → 0,866 → 0,707 → 0,500
+   → 0,259 → 0,000. Tout est en bas et rien en haut, comme au schéma
+   126 — mais avec trois fois la charge. D'où « descendre en chute
+   libre » : c'est précisément en approchant de l'horizontale que le
+   moment devient maximal, donc là où l'on lâche.
+
+   AMPLITUDE RÉELLE. 90°, de la verticale à l'horizontale. Le pied
+   parcourt un arc de rayon 81.
+
+   MUSCLES. Grand droit sur la face antérieure du tronc — vers le
+   HAUT, la personne étant sur le dos. Le « gainage complet » que cite
+   la fiche est la rigidité du bloc entier, qui est justement ce que
+   la modélisation en une pièce représente.
+
+   TEMPO. Montée 28 %, descente 56 % — deux fois plus longue, soit
+   2,6 s sur un cycle de 4,6 s : c'est la descente qui est l'exercice.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["dragon-flag"] = {
+  vb: "34 28 168 140",
+  dur: 4.6,
+  phases: { con: [0, 28], ecc: [36, 92] },
+  alt: "De profil sur un banc, mains agrippées derrière la tête : le corps entier, tronc et jambes alignés en un seul bloc rigide, pivote de 90° autour des épaules jusqu'à la verticale puis redescend très lentement jusqu'à l'horizontale.",
+  fixe: `
+    <line class="mo-ground" x1="36" y1="160" x2="196" y2="160"/>
+    <rect class="mo-gear" x="40" y="120" width="66" height="10" rx="2"/>
+    <line class="mo-gear" x1="46" y1="130" x2="46" y2="160"/>
+    <line class="mo-gear" x1="98" y1="130" x2="98" y2="160"/>
+    <!-- trajet du pied : arc exact de rayon 81 -->
+    <path class="mo-rom" fill="none" d="M181 116 A81 81 0 0 0 100 35"/>
+    <!-- TÊTE ET BRAS : l'ancrage, il ne bouge pas -->
+    <circle class="mo-head" cx="88" cy="116" r="8"/>
+    <line class="mo-limb" x1="100" y1="116" x2="84" y2="124"/>
+    <circle class="mo-joint" cx="84" cy="124" r="2.6"/>
+    <line class="mo-limb" x1="84" y1="124" x2="70" y2="120"/>
+    <circle class="mo-hand" cx="70" cy="120" r="3"/>
+    <circle class="mo-joint" cx="100" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CORPS ENTIER : UNE seule pièce rigide de 81, tronc et jambes
+         confondus. Casser aux hanches est donc impossible à
+         représenter — le schéma ne peut montrer que la forme juste. */
+      o: "100px 116px",
+      k: [[0, "rotate(0deg)"], [4.67, "rotate(-15deg)"], [9.33, "rotate(-30deg)"],
+          [14, "rotate(-45deg)"], [18.67, "rotate(-60deg)"], [23.33, "rotate(-75deg)"],
+          [28, "rotate(-90deg)"], [36, "rotate(-90deg)"],
+          [45.33, "rotate(-75deg)"], [54.67, "rotate(-60deg)"], [64, "rotate(-45deg)"],
+          [73.33, "rotate(-30deg)"], [82.67, "rotate(-15deg)"], [92, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Grand droit de l'abdomen",
+      muscle: `
+        <circle cx="112" cy="110" r="4.5"/>
+        <circle cx="124" cy="111" r="3.5"/>`,
+      svg: `
+        <line class="mo-body" x1="100" y1="116" x2="129" y2="116"/>
+        <circle class="mo-joint" cx="129" cy="116" r="3"/>
+        <line class="mo-body" x1="129" y1="116" x2="181" y2="116"/>
+        <circle class="mo-joint" cx="155" cy="116" r="2.6"/>
+        <line class="mo-body" x1="181" y1="116" x2="186" y2="112"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M175 60 L161 46 M168.42 48.48 L161 46 L163.48 53.42"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M161 46 L175 60 M167.58 57.52 L175 60 L172.52 52.58"/>` }
+  ]
+};
