@@ -15799,3 +15799,135 @@ EXERCISE_MOTIONS["gainage-lateral"] = {
   ],
   parts: []
 };
+
+/* ─────────────────────────────────────────────────────────────
+   131. PALLOF PRESS
+        (pallof-press)                       — VU DE DESSUS
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Debout de profil par rapport à la poulie réglée
+   à hauteur de poitrine, poignée tenue à deux mains contre le sternum,
+   coudes fléchis sous les épaules.
+
+   POURQUOI LA VUE DE DESSUS, ET ELLE SEULE. L'exercice est un
+   ANTI-ROTATION : la rotation qu'il faut empêcher se fait autour de
+   l'axe vertical du rachis, et le câble tire horizontalement. Vue de
+   dessus, cette rotation est dans le plan de l'image et le câble
+   aussi — ligne d'épaules, bras et câble s'y projettent tous en vraie
+   grandeur. De face, la rotation serait invisible ; de profil, le
+   câble pointerait vers l'observateur et se réduirait à un point.
+
+   CE QUE LA POUSSÉE COÛTE, CHIFFRÉ. Le couple que le tronc doit
+   annuler vaut tension × distance du rachis à la LIGNE du câble.
+   Cette distance passe de 11,04 à 27,96 quand les bras se tendent,
+   soit ×2,53. Tendre les bras multiplie donc par deux et demi la
+   rotation à laquelle il faut résister, à charge identique. C'est
+   tout l'exercice, et c'est aussi pourquoi « trop de charge » est une
+   erreur listée : la difficulté ne se règle pas au poids mais à la
+   distance des mains, qui passe elle de 11,30 à 33,17 (×2,94).
+
+   ARTICULATIONS MOBILES : les épaules et les coudes.
+   ARTICULATIONS FIXES : tout le tronc, qui ne doit pas tourner d'un
+   degré, et le bassin.
+
+   LES DEUX ERREURS DE ROTATION SONT VISIBLES DANS CETTE VUE, ET C'EST
+   RARE. « Se laisser tourner » : la barre d'épaules doit rester
+   perpendiculaire à l'axe de poussée. « Compensation du bassin » :
+   les pieds, vus de dessus, donnent la référence du bassin. Le
+   pointillé tracé vers l'avant est la ligne que les mains doivent
+   suivre — dès que le tronc pivote, elles la quittent.
+
+   CE QUI EST DÉCLARÉ. Vue de dessus, le coude est SOUS l'épaule au
+   départ : le bras y projetterait un segment quasi nul suivi d'un
+   segment plein, ce qui ferait apparaître puis disparaître une pièce.
+   Le bras est donc dessiné d'un seul trait épaule→main, dont la
+   longueur projetée passe de 17,99 à 36,00. Ce doublement est un
+   DÉPLOIEMENT, pas une déformation : rien ne s'évanouit, rien ne
+   change de signe, et la position du coude en hauteur ne dit rien de
+   l'anti-rotation, qui est le sujet.
+
+   MUSCLES. Obliques de part et d'autre du tronc, qui produisent le
+   contre-couple. Le transverse que cite la fiche est une ceinture
+   profonde sans point localisable de dessus : décrit, pas marqué.
+
+   TEMPO. Poussée 30 %, MAINTIEN 40 % — soit 2,0 s sur un cycle de 5 s,
+   les « 2-3 secondes bras tendus » de la fiche — puis retour 24 %.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["pallof-press"] = {
+  vb: "82 30 68 100",
+  dur: 5,
+  vue: "Vu de dessus",
+  phases: { con: [0, 30], ecc: [70, 94] },
+  alt: "Vu de dessus, debout de profil par rapport à une poulie latérale : les deux mains poussent la poignée droit devant, la ligne d'épaules restant perpendiculaire à l'axe de poussée, ce qui multiplie par 2,53 la rotation à laquelle le tronc doit résister.",
+  fixe: `
+    <!-- COLONNE DE POULIE vue de dessus -->
+    <rect class="mo-gear" x="93" y="34" width="14" height="12" rx="2"/>
+    <circle class="mo-pulley" cx="100" cy="48" r="4"/>
+    <!-- AXE DE POUSSÉE : les mains doivent rester dessus -->
+    <line class="mo-rom" x1="100" y1="100" x2="142" y2="100"/>
+    <!-- CORPS vu de dessus : la barre d'épaules ne doit pas pivoter -->
+    <line class="mo-body" x1="100" y1="86" x2="100" y2="114"/>
+    <circle class="mo-joint" cx="100" cy="86" r="2.8"/>
+    <circle class="mo-joint" cx="100" cy="114" r="2.8"/>
+    <circle class="mo-head" cx="100" cy="100" r="6"/>
+    <!-- PIEDS vus de dessus : la référence du bassin. Appui LARGE,
+         au-delà de la ligne d'épaules, sinon les bras les masquent
+         entièrement et la référence ne sert plus à rien. -->
+    <line class="mo-body" x1="96" y1="82" x2="108" y2="82"/>
+    <line class="mo-body" x1="96" y1="118" x2="108" y2="118"/>`,
+  muscles: [
+    { nom: "Obliques",
+      svg: `<circle cx="93" cy="90" r="4"/><circle cx="93" cy="110" r="4"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : il s'allonge de 15,9 % seulement, mais son LEVIER sur
+         le rachis est multiplié par 2,53 — c'est l'angle qui change,
+         pas la longueur. */
+      o: "100px 48px",
+      k: [[0, "rotate(0deg) scale(1)"], [5, "rotate(-3.77deg) scale(1.0168)"],
+          [10, "rotate(-7.41deg) scale(1.0378)"], [15, "rotate(-10.89deg) scale(1.0628)"],
+          [20, "rotate(-14.2deg) scale(1.0915)"], [25, "rotate(-17.33deg) scale(1.1237)"],
+          [30, "rotate(-20.27deg) scale(1.1591)"], [70, "rotate(-20.27deg) scale(1.1591)"],
+          [74, "rotate(-17.33deg) scale(1.1237)"], [78, "rotate(-14.2deg) scale(1.0915)"],
+          [82, "rotate(-10.89deg) scale(1.0628)"], [86, "rotate(-7.41deg) scale(1.0378)"],
+          [90, "rotate(-3.77deg) scale(1.0168)"], [94, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="100" y1="48" x2="111.3" y2="100"/>`
+    },
+    {
+      /* BRAS GAUCHE : un seul trait épaule→main, le coude étant sous
+         l'épaule et donc non projetable. Déploiement ×2,00. */
+      o: "100px 86px",
+      k: [[0, "rotate(0deg) scale(1)"], [5, "rotate(-7.96deg) scale(1.1382)"],
+          [10, "rotate(-14.11deg) scale(1.2935)"], [15, "rotate(-18.9deg) scale(1.4604)"],
+          [20, "rotate(-22.68deg) scale(1.6355)"], [25, "rotate(-25.72deg) scale(1.8162)"],
+          [30, "rotate(-28.21deg) scale(2.0011)"], [70, "rotate(-28.21deg) scale(2.0011)"],
+          [74, "rotate(-25.72deg) scale(1.8162)"], [78, "rotate(-22.68deg) scale(1.6355)"],
+          [82, "rotate(-18.9deg) scale(1.4604)"], [86, "rotate(-14.11deg) scale(1.2935)"],
+          [90, "rotate(-7.96deg) scale(1.1382)"], [94, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-limb" x1="100" y1="86" x2="111.3" y2="100"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact. */
+      o: "100px 114px",
+      k: [[0, "rotate(0deg) scale(1)"], [5, "rotate(7.96deg) scale(1.1382)"],
+          [10, "rotate(14.11deg) scale(1.2935)"], [15, "rotate(18.9deg) scale(1.4604)"],
+          [20, "rotate(22.68deg) scale(1.6355)"], [25, "rotate(25.72deg) scale(1.8162)"],
+          [30, "rotate(28.21deg) scale(2.0011)"], [70, "rotate(28.21deg) scale(2.0011)"],
+          [74, "rotate(25.72deg) scale(1.8162)"], [78, "rotate(22.68deg) scale(1.6355)"],
+          [82, "rotate(18.9deg) scale(1.4604)"], [86, "rotate(14.11deg) scale(1.2935)"],
+          [90, "rotate(7.96deg) scale(1.1382)"], [94, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `
+        <line class="mo-limb" x1="100" y1="114" x2="111.3" y2="100"/>
+        <circle class="mo-hand" cx="111.3" cy="100" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M112 120 L134 120 M126 115 L134 120 L126 125"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M134 120 L112 120 M120 115 L112 120 L120 125"/>` }
+  ]
+};
