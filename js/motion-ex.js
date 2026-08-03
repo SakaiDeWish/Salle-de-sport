@@ -14643,3 +14643,150 @@ EXERCISE_MOTIONS["mollets-unijambiste"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M75 82 L75 104 M70 97 L75 104 L80 97"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   122. OISEAU (ÉLÉVATIONS BUSTE PENCHÉ)
+        (oiseau-halteres)                   — VU DE DERRIÈRE
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Debout buste penché, dos plat, hanches en
+   charnière, genoux légèrement fléchis. Bras pendants, haltères sous
+   la poitrine, coudes légèrement fléchis.
+
+   POURQUOI CETTE VUE, ET LE PARALLÈLE AVEC LE SCHÉMA 100. C'est
+   exactement le mouvement du pec deck inversé : une abduction
+   HORIZONTALE d'épaule, dans le plan transversal du tronc. Or ce plan
+   suit le tronc. Assis buste droit, il est horizontal, d'où la vue de
+   DESSUS retenue pour le pec deck inversé. Buste penché à
+   l'horizontale, il devient VERTICAL, d'où la vue de derrière ici.
+   Même muscle, même action, deux vues opposées — et c'est la
+   géométrie qui décide, pas l'habitude.
+
+   CE QUE LA VUE COÛTE, ET C'EST CONSTANT. Le tronc pointe vers le
+   fond : incliné de 15°, ses 29 unités ne se projettent que sur 7,5.
+   Raccourcissement constant, donc déclaré. Il ne concerne aucun
+   segment mobile : la barre d'épaules et les bras sont perpendiculaires
+   à la vue et se projettent en vraie grandeur.
+
+   PAS DE TÊTE, ET C'EST VOULU. Le buste étant penché, les épaules sont
+   PLUS BASSES que les hanches ; la tête, qui prolonge le rachis
+   au-delà des épaules, se projette donc encore plus bas — au milieu du
+   tronc et entre les jambes. Dessinée, elle se lisait comme un trou
+   dans le corps. Elle est en réalité masquée par la masse du tronc à
+   cette incidence : je l'omets plutôt que d'en faire un artefact.
+
+   ARTICULATIONS MOBILES : les deux épaules en abduction horizontale,
+   plus les omoplates en rétraction.
+   ARTICULATIONS FIXES : les coudes, gardés légèrement fléchis — chaque
+   bras est donc un corps RIGIDE qui pivote autour de son épaule. Le
+   tronc et les jambes ne bougent pas : « se redresser pendant la
+   montée » est la première erreur listée, et c'est ce que le schéma
+   rend impossible à confondre.
+
+   AMPLITUDE RÉELLE. 90° par bras, du pendant à l'alignement de la
+   barre d'épaules. La main droite parcourt 35,5 unités.
+
+   LES OMOPLATES, PARCE QUE LA FICHE LE DEMANDE. « Serre les omoplates
+   en haut » n'est pas un ornement : la rétraction déplace chaque
+   acromion d'environ 1,5 unité vers la ligne médiane, soit 3 unités
+   sur une largeur d'épaules de 28 — 10,7 %, largement visible. La
+   barre d'épaules se rétrécit donc de 28 à 25 en fin de course, et
+   les pivots des bras suivent exactement. C'est modélisé, pas
+   suggéré.
+
+   MONTAGE. Trois pièces indépendantes : la barre d'épaules qui se
+   rétrécit, et les deux bras qui portent chacun une translation
+   médiale ET leur rotation. Les bras ne sont PAS enfants de la barre :
+   ils hériteraient de son scaleX et seraient écrasés.
+
+   MUSCLES AGONISTES. Deltoïdes postérieurs sur chaque bras ; trapèzes
+   moyens et rhomboïdes entre les omoplates, portés par la barre
+   d'épaules puisque c'est elle qui les raccourcit.
+
+   TEMPO. Montée 36 %, maintien 14 % (le serrage d'omoplates),
+   descente 38 % : « redescends lentement sans balancier ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["oiseau-halteres"] = {
+  vb: "44 90 120 66",
+  dur: 3.6,
+  vue: "Vu de derrière",
+  phases: { con: [0, 36], ecc: [50, 88] },
+  alt: "Vu de derrière, buste penché à l'horizontale : les deux bras, coudes légèrement fléchis, s'ouvrent de 90° jusqu'à l'alignement des épaules pendant que les omoplates se rapprochent, rétrécissant la largeur d'épaules de 28 à 25.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="150" x2="160" y2="150"/>
+    <!-- TRONC vu en raccourci : 29 unités projetées sur 7,5 -->
+    <line class="mo-body" x1="100" y1="100" x2="100" y2="107.5"/>
+    <!-- BASSIN et JAMBES, les plus proches -->
+    <line class="mo-body" x1="94" y1="100" x2="106" y2="100"/>
+    <circle class="mo-joint" cx="94" cy="100" r="2.6"/>
+    <circle class="mo-joint" cx="106" cy="100" r="2.6"/>
+    <line class="mo-body" x1="94" y1="100" x2="93" y2="124"/>
+    <line class="mo-body" x1="93" y1="124" x2="94" y2="148"/>
+    <line class="mo-body" x1="106" y1="100" x2="107" y2="124"/>
+    <line class="mo-body" x1="107" y1="124" x2="106" y2="148"/>
+    <line class="mo-body" x1="89" y1="150" x2="99" y2="150"/>
+    <line class="mo-body" x1="101" y1="150" x2="111" y2="150"/>`,
+  parts: [
+    {
+      /* BARRE D'ÉPAULES : elle se RÉTRÉCIT de 28 à 25 sous l'effet de
+         la rétraction des omoplates, 1,5 par acromion. */
+      o: "100px 107.5px",
+      k: [[0, "scaleX(1)"], [6, "scaleX(0.9821)"], [12, "scaleX(0.9643)"],
+          [18, "scaleX(0.9464)"], [24, "scaleX(0.9286)"], [30, "scaleX(0.9107)"],
+          [36, "scaleX(0.8929)"], [50, "scaleX(0.8929)"],
+          [56.33, "scaleX(0.9107)"], [62.67, "scaleX(0.9286)"], [69, "scaleX(0.9464)"],
+          [75.33, "scaleX(0.9643)"], [81.67, "scaleX(0.9821)"], [88, "scaleX(1)"],
+          [100, "scaleX(1)"]],
+      muscleNom: ["Trapèzes moyens", "Rhomboïdes"],
+      muscle: `
+        <circle cx="94" cy="107.5" r="3.6"/>
+        <circle cx="106" cy="107.5" r="3.6"/>`,
+      svg: `<line class="mo-body" x1="86" y1="107.5" x2="114" y2="107.5"/>`
+    },
+    {
+      /* BRAS DROIT : corps rigide, coude figé. Translation médiale de
+         1,5 (l'omoplate) PUIS rotation de −90°. */
+      o: "114px 107.5px",
+      k: [[0, "translate(0px,0px) rotate(0deg)"], [6, "translate(-0.25px,0px) rotate(-15deg)"],
+          [12, "translate(-0.5px,0px) rotate(-30deg)"], [18, "translate(-0.75px,0px) rotate(-45deg)"],
+          [24, "translate(-1px,0px) rotate(-60deg)"], [30, "translate(-1.25px,0px) rotate(-75deg)"],
+          [36, "translate(-1.5px,0px) rotate(-90deg)"], [50, "translate(-1.5px,0px) rotate(-90deg)"],
+          [56.33, "translate(-1.25px,0px) rotate(-75deg)"], [62.67, "translate(-1px,0px) rotate(-60deg)"],
+          [69, "translate(-0.75px,0px) rotate(-45deg)"], [75.33, "translate(-0.5px,0px) rotate(-30deg)"],
+          [81.67, "translate(-0.25px,0px) rotate(-15deg)"], [88, "translate(0px,0px) rotate(0deg)"],
+          [100, "translate(0px,0px) rotate(0deg)"]],
+      muscleNom: "Deltoïdes postérieurs",
+      muscle: `<circle cx="117" cy="110" r="4.5"/>`,
+      svg: `
+        <circle class="mo-joint" cx="114" cy="107.5" r="2.8"/>
+        <line class="mo-limb" x1="114" y1="107.5" x2="115" y2="125.4"/>
+        <line class="mo-limb" x1="115" y1="125.4" x2="113" y2="143"/>
+        <circle class="mo-hand" cx="113" cy="143" r="3"/>
+        <line class="mo-bar2" x1="117.97" y1="143.57" x2="108.03" y2="142.43"/>`
+    },
+    {
+      /* BRAS GAUCHE : miroir exact. */
+      o: "86px 107.5px",
+      k: [[0, "translate(0px,0px) rotate(0deg)"], [6, "translate(0.25px,0px) rotate(15deg)"],
+          [12, "translate(0.5px,0px) rotate(30deg)"], [18, "translate(0.75px,0px) rotate(45deg)"],
+          [24, "translate(1px,0px) rotate(60deg)"], [30, "translate(1.25px,0px) rotate(75deg)"],
+          [36, "translate(1.5px,0px) rotate(90deg)"], [50, "translate(1.5px,0px) rotate(90deg)"],
+          [56.33, "translate(1.25px,0px) rotate(75deg)"], [62.67, "translate(1px,0px) rotate(60deg)"],
+          [69, "translate(0.75px,0px) rotate(45deg)"], [75.33, "translate(0.5px,0px) rotate(30deg)"],
+          [81.67, "translate(0.25px,0px) rotate(15deg)"], [88, "translate(0px,0px) rotate(0deg)"],
+          [100, "translate(0px,0px) rotate(0deg)"]],
+      muscle: `<circle cx="83" cy="110" r="4.5"/>`,
+      svg: `
+        <circle class="mo-joint" cx="86" cy="107.5" r="2.8"/>
+        <line class="mo-limb" x1="86" y1="107.5" x2="85" y2="125.4"/>
+        <line class="mo-limb" x1="85" y1="125.4" x2="87" y2="143"/>
+        <circle class="mo-hand" cx="87" cy="143" r="3"/>
+        <line class="mo-bar2" x1="82.03" y1="143.57" x2="91.97" y2="142.43"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M112 95 L140 95 M132 90 L140 95 L132 100"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 95 L112 95 M120 90 L112 95 L120 100"/>` }
+  ]
+};
