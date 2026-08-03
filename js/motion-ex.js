@@ -15215,3 +15215,102 @@ EXERCISE_MOTIONS["hollow-hold"] = {
   ],
   parts: []
 };
+
+/* ─────────────────────────────────────────────────────────────
+   126. RELEVÉ DE JAMBES AU SOL
+        (releve-jambes-sol)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Allongé sur le dos, mains sous les fessiers,
+   jambes tendues à 8° au-dessus de l'horizontale — le pied est à
+   11,24 du sol et ne le touche pas, comme le demande la fiche.
+
+   ARTICULATION MOBILE : la hanche, et elle seule. Le genou reste
+   tendu, donc la jambe est UN segment rigide de 52 qui pivote de 82°.
+   ARTICULATIONS FIXES : le rachis, plaqué au sol.
+
+   LE PROFIL DE RÉSISTANCE EST L'INVERSE EXACT DU CRUNCH À LA POULIE.
+   Le moment résistant vaut CG·cos θ, avec le centre de masse de la
+   jambe à 22,88 de la hanche (44 % de 52) et θ mesuré au-dessus de
+   l'horizontale. Il vaut donc 22,66 en bas et ZÉRO au sommet : toute
+   la difficulté est concentrée en bas, et le haut du mouvement est
+   gratuit. Au schéma 124, le câble maintenait au contraire une
+   tension jusqu'au bout.
+
+   ET LA DÉCROISSANCE N'EST PAS LINÉAIRE. Relevé à chaque échantillon :
+   1,000 → 0,938 → 0,824 → 0,663 → 0,464 → 0,239 → 0,000. À mi-course,
+   soit 49°, le moment vaut encore 66,3 % du maximum. La moitié basse
+   de l'amplitude porte donc l'essentiel du travail — c'est la forme
+   du cosinus, pas une impression.
+
+   D'OÙ LES DEUX ERREURS DE LA FICHE, EXPLIQUÉES ENSEMBLE. « Cambrer en
+   bas » : c'est là que le moment est maximal, donc là que le bassin
+   bascule et que les lombaires décollent. « Descendre trop bas pour
+   ton niveau » : la fiche propose de régler l'amplitude PAR LE BAS, et
+   le calcul dit pourquoi — s'arrêter à 30° au lieu de 8° retire 12,6 %
+   du moment maximal, s'arrêter à 49° en retire 33,7 %. Le repère
+   vertical sous le pied bas matérialise ce réglage.
+
+   MUSCLES AGONISTES. Grand droit portion basse sur le tronc, près de
+   la hanche ; fléchisseurs de hanche sur la jambe, côté antérieur
+   calculé par la perpendiculaire (−0,139 −0,990) au segment de départ.
+
+   CE QUI LE DISTINGUE DU RELEVÉ SUSPENDU. Là, le corps pend à la
+   verticale et le tronc peut s'enrouler en fin de course ; ici le dos
+   est bloqué au sol, la hanche est le seul degré de liberté, et le
+   moment tombe à zéro au sommet au lieu de se déplacer sur le rachis.
+
+   TEMPO. Montée 34 %, descente 44 % : « redescends lentement », et
+   c'est la descente qui contient tout le travail.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["releve-jambes-sol"] = {
+  vb: "46 76 116 72",
+  dur: 3.6,
+  phases: { con: [0, 34], ecc: [44, 88] },
+  alt: "De profil allongé sur le dos, mains sous les fessiers : les jambes tendues montent de 8° au-dessus de l'horizontale jusqu'à la verticale, le dos restant plaqué au sol, puis redescendent sans toucher terre.",
+  fixe: `
+    <line class="mo-ground" x1="50" y1="140" x2="158" y2="140"/>
+    <!-- trajet du pied : arc exact de rayon 52 -->
+    <path class="mo-rom" fill="none" d="M150.49 128.76 A52 52 0 0 0 99 84"/>
+    <!-- LE PIED NE TOUCHE PAS : 11,24 de garde, et c'est par ce
+         repère que se règle l'amplitude selon le niveau -->
+    <line class="mo-rom" x1="150.49" y1="128.76" x2="150.49" y2="140"/>
+    <!-- APPUI LOMBAIRE : le dos reste plaqué -->
+    <line class="mo-bar3" x1="84" y1="140" x2="96" y2="140"/>
+    <!-- CORPS au sol, immobile -->
+    <circle class="mo-head" cx="60" cy="133" r="8"/>
+    <line class="mo-body" x1="70" y1="136" x2="65" y2="134.5"/>
+    <line class="mo-body" x1="70" y1="136" x2="99" y2="136"/>
+    <circle class="mo-joint" cx="99" cy="136" r="3"/>
+    <!-- bras le long du corps, mains SOUS les fessiers -->
+    <line class="mo-limb" x1="70" y1="136" x2="84" y2="141"/>
+    <line class="mo-limb" x1="84" y1="141" x2="97" y2="139.5"/>
+    <circle class="mo-hand" cx="97" cy="139.5" r="3"/>`,
+  parts: [
+    {
+      /* JAMBES : segment rigide de 52, genou tendu, rotation −82°. */
+      o: "99px 136px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-13.67deg)"], [11.33, "rotate(-27.33deg)"],
+          [17, "rotate(-41deg)"], [22.67, "rotate(-54.67deg)"], [28.33, "rotate(-68.33deg)"],
+          [34, "rotate(-82deg)"], [44, "rotate(-82deg)"],
+          [51.33, "rotate(-68.33deg)"], [58.67, "rotate(-54.67deg)"], [66, "rotate(-41deg)"],
+          [73.33, "rotate(-27.33deg)"], [80.67, "rotate(-13.67deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Grand droit (portion basse)", "Fléchisseurs de hanche"],
+      muscle: `
+        <circle cx="94" cy="131" r="4"/>
+        <circle cx="107.5" cy="131.78" r="3.5"/>`,
+      svg: `
+        <line class="mo-limb" x1="99" y1="136" x2="150.49" y2="128.76"/>
+        <circle class="mo-joint" cx="124.75" cy="132.38" r="2.6"/>
+        <line class="mo-limb" x1="150.49" y1="128.76" x2="155" y2="124"/>`
+    }
+  ],
+  arrows: [
+    /* Flèche à 64,7 de la hanche : le pied balaie un arc de rayon 52,
+       elle garde donc 12,7 de jeu. À 56,5 elle le percutait. */
+    { phase: "con", svg: `<path class="mo-arr" d="M152 96.4 L140 86 M147.59 87.95 L140 86 L142.99 93.23"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 86 L152 96.4 M144.41 94.45 L152 96.4 L149.01 89.17"/>` }
+  ]
+};
