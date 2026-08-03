@@ -14790,3 +14790,216 @@ EXERCISE_MOTIONS["oiseau-halteres"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M140 95 L112 95 M120 90 L112 95 L120 100"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   123. DÉVELOPPÉ ARNOLD
+        (developpe-arnold)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Assis dossier droit, haltères devant les
+   épaules, paumes tournées vers soi, coudes devant et légèrement
+   écartés.
+
+   POURQUOI « LÉGÈREMENT ÉCARTÉS » ET PAS « SERRÉS ». J'ai résolu les
+   deux. Coudes rentrés au maximum devant la poitrine, le bras sort
+   presque entièrement du plan frontal au départ et sa projection
+   tombe à 0,660 : 51,4 % de variation sur la course, le segment
+   s'écraserait puis regonflerait. Coudes devant mais à 4 unités en
+   dehors — ce que la fiche autorise, elle ne dit pas « serrés » —, la
+   variation retombe à 18,9 %. Le dessin retient donc la seconde, et
+   l'écart entre les deux est mesuré, pas supposé.
+
+   LE PROBLÈME PROPRE À CET EXERCICE. Sa signature est une rotation de
+   l'avant-bras AUTOUR DE SON PROPRE AXE — 180° de supination à
+   pronation. Or la rotation d'un segment autour de son axe long ne
+   change RIEN à sa projection, dans aucune vue : un trait qui tourne
+   sur lui-même reste le même trait. Aucune projection orthographique
+   d'un bonhomme en bâton ne peut donc montrer le mouvement qui donne
+   son nom à l'exercice.
+
+   CE QUI LE REND VISIBLE QUAND MÊME : L'HALTÈRE. La barre est
+   perpendiculaire à l'avant-bras, donc elle, elle tourne dans un plan
+   visible. Au départ paumes vers soi et à l'arrivée paumes en avant,
+   la barre est médio-latérale et se projette en vraie grandeur ; à
+   mi-rotation la paume regarde sur le côté, la barre devient
+   antéro-postérieure et se voit EN BOUT. Sa longueur dessinée suit
+   donc exactement le cosinus de la rotation : 1,000 → 0,866 → 0,500 →
+   0,000 → −0,500 → −0,866 → −1,000. La barre disparaît à mi-course et
+   renaît de l'autre côté : c'est la rotation, rendue par le seul
+   objet dont l'orientation la trahit.
+
+   POURQUOI LA VUE DE FACE PLUTÔT QUE DE PROFIL. De profil, le coude
+   part vers l'extérieur en cours de poussée : à mi-course le bras est
+   presque entièrement latéral et sa projection sagittale s'effondre
+   vers zéro — le segment disparaîtrait puis renaîtrait, un mouvement
+   qui n'existe pas. De face, l'essentiel de la course est DANS le
+   plan : le bras projeté ne varie que de 18,9 % (0,841 à 1,000) et
+   l'avant-bras de 22,5 %, sans changement de signe. Critère du
+   schéma 118, satisfait.
+
+   ARTICULATIONS MOBILES : épaules, coudes, et la rotation de
+   l'avant-bras.
+   ARTICULATIONS FIXES : tronc et jambes. « Cambrure lombaire » est une
+   erreur listée, et le tronc immobile la rend lisible.
+
+   AMPLITUDE RÉELLE. Bras −147,02°, avant-bras +21,01° seulement en
+   absolu : il reste quasi vertical pendant que le bras balaie. Le
+   coude parcourt (+2,01 −33,48) et la main monte de 36,5 unités.
+
+   CE QUI LE DISTINGUE DU DÉVELOPPÉ HALTÈRES ASSIS (schéma 42). Là, on
+   part en position « poteau de but », coudes déjà écartés. Ici on part
+   coudes SERRÉS EN AVANT, haltères devant les épaules : au départ la
+   main se projette presque sur l'épaule, et c'est tout le trajet des
+   coudes — de rapprochés à écartés — qui diffère.
+
+   MONTAGE. Six pièces, aucune imbriquée entre bras et avant-bras :
+   chacune porte un scale qu'un enfant hériterait. Chaque avant-bras
+   emmène son coude par une translation. L'haltère, lui, EST enfant de
+   son avant-bras, et son scale est divisé par celui du parent pour
+   que la longueur dessinée suive bien le cosinus de la rotation.
+
+   MUSCLES AGONISTES. Deltoïdes, les trois faisceaux étant sollicités
+   tour à tour par la rotation — c'est l'intérêt de l'exercice. Le
+   triceps que cite la fiche est sur la face postérieure du bras, donc
+   caché dans cette vue : il est décrit plutôt que faussement placé.
+
+   TEMPO. Poussée 38 %, descente 42 % : « rotation trop brutale » est
+   la première erreur listée.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["developpe-arnold"] = {
+  vb: "82 28 76 130",
+  dur: 4,
+  phases: { con: [0, 38], ecc: [48, 90] },
+  alt: "Vu de face, assis dossier droit : les haltères partent devant les épaules paumes vers soi, montent jusqu'aux bras tendus en s'écartant, et la barre se voit en bout à mi-course parce que les paumes pivotent de 180° vers l'avant.",
+  fixe: `
+    <line class="mo-ground" x1="92" y1="150" x2="148" y2="150"/>
+    <line class="mo-pad" x1="102" y1="114" x2="138" y2="114"/>
+    <line class="mo-gear" x1="106" y1="114" x2="106" y2="150"/>
+    <line class="mo-gear" x1="134" y1="114" x2="134" y2="150"/>
+    <circle class="mo-head" cx="120" cy="50" r="10"/>
+    <line class="mo-body" x1="120" y1="60" x2="120" y2="58"/>
+    <line class="mo-body" x1="104" y1="70" x2="136" y2="70"/>
+    <line class="mo-body" x1="120" y1="70" x2="120" y2="108"/>
+    <line class="mo-body" x1="114" y1="108" x2="126" y2="108"/>
+    <line class="mo-body" x1="114" y1="108" x2="112" y2="132"/>
+    <line class="mo-body" x1="112" y1="132" x2="113" y2="150"/>
+    <line class="mo-body" x1="126" y1="108" x2="128" y2="132"/>
+    <line class="mo-body" x1="128" y1="132" x2="127" y2="150"/>
+    <line class="mo-body" x1="107" y1="150" x2="119" y2="150"/>
+    <line class="mo-body" x1="121" y1="150" x2="133" y2="150"/>`,
+  parts: [
+    {
+      /* BRAS DROIT : rotation −147,02° autour de l'épaule, avec le
+         scale de la projection frontale (0,8918 au creux). */
+      o: "136px 70px",
+      k: [[0, "rotate(0deg) scale(1)"], [6.33, "rotate(-24.04deg) scale(0.932)"],
+          [12.67, "rotate(-51.22deg) scale(0.8918)"], [19, "rotate(-79.13deg) scale(0.9096)"],
+          [25.33, "rotate(-104.57deg) scale(0.9717)"], [31.67, "rotate(-126.76deg) scale(1.0344)"],
+          [38, "rotate(-147.02deg) scale(1.0599)"], [48, "rotate(-147.02deg) scale(1.0599)"],
+          [55, "rotate(-126.76deg) scale(1.0344)"], [62, "rotate(-104.57deg) scale(0.9717)"],
+          [69, "rotate(-79.13deg) scale(0.9096)"], [76, "rotate(-51.22deg) scale(0.8918)"],
+          [83, "rotate(-24.04deg) scale(0.932)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      muscleNom: "Deltoïdes (3 faisceaux)",
+      muscle: `<circle cx="139" cy="75" r="5"/>`,
+      svg: `
+        <circle class="mo-joint" cx="136" cy="70" r="2.8"/>
+        <line class="mo-limb" x1="136" y1="70" x2="139.98" y2="86.51"/>`
+    },
+    {
+      /* AVANT-BRAS DROIT : pièce indépendante, il emmène son coude par
+         une translation. Rotation absolue de +21,01° seulement : il
+         reste quasi vertical pendant que le bras balaie 147°. */
+      o: "139.98px 86.51px",
+      k: [[0, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [6.33, "translate(5.67px,-3.97px) rotate(4.28deg) scale(1.065)"],
+          [12.67, "translate(9.72px,-10.05px) rotate(8.09deg) scale(1.1207)"],
+          [19, "translate(11.45px,-17.23px) rotate(11.57deg) scale(1.1654)"],
+          [25.33, "translate(10.58px,-24.28px) rotate(14.83deg) scale(1.1981)"],
+          [31.67, "translate(7.24px,-30.03px) rotate(17.96deg) scale(1.218)"],
+          [38, "translate(2.01px,-33.48px) rotate(21.01deg) scale(1.2247)"],
+          [48, "translate(2.01px,-33.48px) rotate(21.01deg) scale(1.2247)"],
+          [55, "translate(7.24px,-30.03px) rotate(17.96deg) scale(1.218)"],
+          [62, "translate(10.58px,-24.28px) rotate(14.83deg) scale(1.1981)"],
+          [69, "translate(11.45px,-17.23px) rotate(11.57deg) scale(1.1654)"],
+          [76, "translate(9.72px,-10.05px) rotate(8.09deg) scale(1.1207)"],
+          [83, "translate(5.67px,-3.97px) rotate(4.28deg) scale(1.065)"],
+          [90, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [100, "translate(0px,0px) rotate(0deg) scale(1)"]],
+      svg: `
+        <circle class="mo-joint" cx="139.98" cy="86.51" r="2.6"/>
+        <line class="mo-limb" x1="139.98" y1="86.51" x2="137.9" y2="71.96"/>
+        <circle class="mo-hand" cx="137.9" cy="71.96" r="3"/>`,
+      children: [
+        {
+          /* HALTÈRE DROIT : sa longueur dessinée suit le cosinus de la
+             rotation des paumes — divisé par le scale du parent. */
+          o: "137.9px 71.96px",
+          k: [[0, "scale(1)"], [6.33, "scale(0.8132)"], [12.67, "scale(0.4462)"],
+              [19, "scale(0)"], [25.33, "scale(-0.4173)"], [31.67, "scale(-0.711)"],
+              [38, "scale(-0.8165)"], [48, "scale(-0.8165)"],
+              [55, "scale(-0.711)"], [62, "scale(-0.4173)"], [69, "scale(0)"],
+              [76, "scale(0.4462)"], [83, "scale(0.8132)"], [90, "scale(1)"],
+              [100, "scale(1)"]],
+          svg: `<line class="mo-bar2" x1="131.96" y1="72.81" x2="143.84" y2="71.11"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS GAUCHE : miroir exact. */
+      o: "104px 70px",
+      k: [[0, "rotate(0deg) scale(1)"], [6.33, "rotate(24.04deg) scale(0.932)"],
+          [12.67, "rotate(51.22deg) scale(0.8918)"], [19, "rotate(79.13deg) scale(0.9096)"],
+          [25.33, "rotate(104.57deg) scale(0.9717)"], [31.67, "rotate(126.76deg) scale(1.0344)"],
+          [38, "rotate(147.02deg) scale(1.0599)"], [48, "rotate(147.02deg) scale(1.0599)"],
+          [55, "rotate(126.76deg) scale(1.0344)"], [62, "rotate(104.57deg) scale(0.9717)"],
+          [69, "rotate(79.13deg) scale(0.9096)"], [76, "rotate(51.22deg) scale(0.8918)"],
+          [83, "rotate(24.04deg) scale(0.932)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      muscle: `<circle cx="101" cy="75" r="5"/>`,
+      svg: `
+        <circle class="mo-joint" cx="104" cy="70" r="2.8"/>
+        <line class="mo-limb" x1="104" y1="70" x2="100.02" y2="86.51"/>`
+    },
+    {
+      /* AVANT-BRAS GAUCHE : miroir exact. */
+      o: "100.02px 86.51px",
+      k: [[0, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [6.33, "translate(-5.67px,-3.97px) rotate(-4.28deg) scale(1.065)"],
+          [12.67, "translate(-9.72px,-10.05px) rotate(-8.09deg) scale(1.1207)"],
+          [19, "translate(-11.45px,-17.23px) rotate(-11.57deg) scale(1.1654)"],
+          [25.33, "translate(-10.58px,-24.28px) rotate(-14.83deg) scale(1.1981)"],
+          [31.67, "translate(-7.24px,-30.03px) rotate(-17.96deg) scale(1.218)"],
+          [38, "translate(-2.01px,-33.48px) rotate(-21.01deg) scale(1.2247)"],
+          [48, "translate(-2.01px,-33.48px) rotate(-21.01deg) scale(1.2247)"],
+          [55, "translate(-7.24px,-30.03px) rotate(-17.96deg) scale(1.218)"],
+          [62, "translate(-10.58px,-24.28px) rotate(-14.83deg) scale(1.1981)"],
+          [69, "translate(-11.45px,-17.23px) rotate(-11.57deg) scale(1.1654)"],
+          [76, "translate(-9.72px,-10.05px) rotate(-8.09deg) scale(1.1207)"],
+          [83, "translate(-5.67px,-3.97px) rotate(-4.28deg) scale(1.065)"],
+          [90, "translate(0px,0px) rotate(0deg) scale(1)"],
+          [100, "translate(0px,0px) rotate(0deg) scale(1)"]],
+      svg: `
+        <circle class="mo-joint" cx="100.02" cy="86.51" r="2.6"/>
+        <line class="mo-limb" x1="100.02" y1="86.51" x2="102.1" y2="71.96"/>
+        <circle class="mo-hand" cx="102.1" cy="71.96" r="3"/>`,
+      children: [
+        {
+          o: "102.1px 71.96px",
+          k: [[0, "scale(1)"], [6.33, "scale(0.8132)"], [12.67, "scale(0.4462)"],
+              [19, "scale(0)"], [25.33, "scale(-0.4173)"], [31.67, "scale(-0.711)"],
+              [38, "scale(-0.8165)"], [48, "scale(-0.8165)"],
+              [55, "scale(-0.711)"], [62, "scale(-0.4173)"], [69, "scale(0)"],
+              [76, "scale(0.4462)"], [83, "scale(0.8132)"], [90, "scale(1)"],
+              [100, "scale(1)"]],
+          svg: `<line class="mo-bar2" x1="108.04" y1="72.81" x2="96.16" y2="71.11"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M92 122 L92 100 M87 107 L92 100 L97 107"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M92 100 L92 122 M87 115 L92 122 L97 115"/>` }
+  ]
+};
