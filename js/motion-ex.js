@@ -15314,3 +15314,127 @@ EXERCISE_MOTIONS["releve-jambes-sol"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M140 86 L152 96.4 M144.41 94.45 L152 96.4 L149.01 89.17"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   127. V-UPS
+        (v-ups)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Allongé sur le dos, bras tendus derrière la
+   tête, jambes tendues. Tronc et jambes horizontaux.
+
+   LE V EST BEAUCOUP PLUS FERMÉ QU'ON NE CROIT, ET C'EST CALCULABLE.
+   La fiche demande de TOUCHER ses pieds : cela impose |pied − épaule|
+   = 36, la longueur du bras. Avec un tronc de 29 et des jambes de 52,
+   en posant tronc et jambes au même angle θ au-dessus de
+   l'horizontale, la contrainte s'écrit
+       (52+29)²cos²θ + (52−29)²sin²θ = 36²
+   et donne θ = 69,11°. Les deux branches sont donc à 69° de
+   l'horizontale et le V n'ouvre que de 41,78° — c'est presque un
+   pique, pas le grand V du dessin populaire. Vérifié : à cette
+   position, |pied − épaule| = 36,00 exactement.
+
+   ARTICULATIONS MOBILES : la hanche, qui ouvre les deux branches en
+   sens inverse, et les épaules.
+   ARTICULATION FIXE : le genou, tendu — c'est tout l'enjeu.
+
+   POURQUOI « JAMBES TRÈS FLÉCHIES » EST L'ERREUR CENTRALE, CHIFFRÉE.
+   Si l'on garde un V confortable à 45°, la distance main→pied vaut
+   59,54 pour un bras de 36 : il manque 23,54, soit 41 cm. Impossible
+   de toucher. Pour y arriver quand même à 45°, il faudrait des jambes
+   de 21,33 au lieu de 52 — 41 % de leur longueur. Plier les genoux
+   n'est donc pas un petit relâchement : c'est le seul moyen de faire
+   mentir la géométrie, et cela se voit.
+
+   LES BRAS BOUGENT NÉCESSAIREMENT, ET CE N'EST PAS L'ERREUR. Ils
+   pivotent de 74,24° RELATIVEMENT au tronc : au départ ils le
+   prolongent, à l'arrivée ils pointent vers les pieds. « Élan des
+   bras » ne vise donc pas cette rotation, qui est obligatoire, mais
+   le fait de s'en servir comme d'un balancier pour lancer le tronc.
+
+   AMPLITUDE RÉELLE. Tronc +69,11°, jambes −69,11°, bras +74,24°
+   relatifs. Le pied monte de 48,58 et la main parcourt 96,5.
+
+   « DOS QUI CLAQUE AU SOL » est la troisième erreur : le schéma part
+   du tronc à l'horizontale mais décollé de 4 du sol, et la fiche dit
+   « sans reposer complètement ». C'est la position de départ, pas une
+   position de repos.
+
+   MUSCLES AGONISTES. Grand droit sur toute la hauteur du tronc,
+   fléchisseurs de hanche sur la jambe près de la hanche. Face
+   antérieure = vers le HAUT, la personne étant sur le dos.
+
+   TEMPO. Fermeture 34 %, ouverture 44 % : « redescends en contrôlant ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["v-ups"] = {
+  vb: "28 78 140 70",
+  dur: 3.6,
+  phases: { con: [0, 34], ecc: [44, 88] },
+  alt: "De profil allongé sur le dos bras tendus derrière la tête : le tronc et les jambes tendues se lèvent ensemble de 69° chacun jusqu'à ce que les mains touchent les pieds, formant un V fermé à 41,78°.",
+  fixe: `
+    <line class="mo-ground" x1="30" y1="140" x2="166" y2="140"/>
+    <!-- trajet du pied : arc exact de rayon 52 -->
+    <path class="mo-rom" fill="none" d="M152 136 A52 52 0 0 0 118.54 87.42"/>
+    <circle class="mo-joint" cx="100" cy="136" r="3"/>`,
+  parts: [
+    {
+      /* JAMBES : segment rigide de 52, genou TENDU, rotation −69,11°.
+         C'est cette rigidité que l'erreur « jambes très fléchies »
+         vient contredire. */
+      o: "100px 136px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(-11.52deg)"], [11.33, "rotate(-23.03deg)"],
+          [17, "rotate(-34.55deg)"], [22.67, "rotate(-46.07deg)"], [28.33, "rotate(-57.58deg)"],
+          [34, "rotate(-69.11deg)"], [44, "rotate(-69.11deg)"],
+          [51.33, "rotate(-57.58deg)"], [58.67, "rotate(-46.07deg)"], [66, "rotate(-34.55deg)"],
+          [73.33, "rotate(-23.03deg)"], [80.67, "rotate(-11.52deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Fléchisseurs de hanche",
+      muscle: `<circle cx="110" cy="131" r="3.5"/>`,
+      svg: `
+        <line class="mo-limb" x1="100" y1="136" x2="152" y2="136"/>
+        <circle class="mo-joint" cx="126" cy="136" r="2.6"/>
+        <line class="mo-limb" x1="152" y1="136" x2="157" y2="132"/>`
+    },
+    {
+      /* TRONC : rotation +69,11°, exactement opposée aux jambes. */
+      o: "100px 136px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(11.52deg)"], [11.33, "rotate(23.03deg)"],
+          [17, "rotate(34.55deg)"], [22.67, "rotate(46.07deg)"], [28.33, "rotate(57.58deg)"],
+          [34, "rotate(69.11deg)"], [44, "rotate(69.11deg)"],
+          [51.33, "rotate(57.58deg)"], [58.67, "rotate(46.07deg)"], [66, "rotate(34.55deg)"],
+          [73.33, "rotate(23.03deg)"], [80.67, "rotate(11.52deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Grand droit de l'abdomen",
+      muscle: `
+        <circle cx="88" cy="131" r="4"/>
+        <circle cx="78" cy="131.5" r="3"/>`,
+      svg: `
+        <circle class="mo-head" cx="61" cy="136" r="7.5"/>
+        <line class="mo-body" x1="100" y1="136" x2="71" y2="136"/>`,
+      children: [
+        {
+          /* BRAS : +74,24° RELATIFS au tronc. Obligatoire pour que la
+             main atteigne le pied — ce n'est pas l'élan que la fiche
+             interdit. */
+          o: "71px 136px",
+          k: [[0, "rotate(0deg)"], [5.67, "rotate(12.37deg)"], [11.33, "rotate(24.75deg)"],
+              [17, "rotate(37.12deg)"], [22.67, "rotate(49.49deg)"], [28.33, "rotate(61.87deg)"],
+              [34, "rotate(74.24deg)"], [44, "rotate(74.24deg)"],
+              [51.33, "rotate(61.87deg)"], [58.67, "rotate(49.49deg)"], [66, "rotate(37.12deg)"],
+              [73.33, "rotate(24.75deg)"], [80.67, "rotate(12.37deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="71" y1="136" x2="53" y2="136"/>
+            <circle class="mo-joint" cx="53" cy="136" r="2.6"/>
+            <line class="mo-limb" x1="53" y1="136" x2="35" y2="136"/>
+            <circle class="mo-hand" cx="35" cy="136" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M155 110 L148 99.8 M154.84 103.59 L148 99.8 L149.08 107.55"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M148 99.8 L155 110 M148.16 106.21 L155 110 L153.92 102.25"/>` }
+  ]
+};
