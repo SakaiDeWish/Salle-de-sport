@@ -15707,3 +15707,95 @@ EXERCISE_MOTIONS["dead-bug"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M154 110 L140 100 M147.73 101.22 L140 100 L143.67 106.92"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   130. GAINAGE LATÉRAL (SIDE PLANK)
+        (gainage-lateral)                      — MAINTIEN
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION. Sur le côté, en appui sur l'avant-bras, coude SOUS
+   l'épaule, corps aligné des pieds à la tête. Rien ne bouge : régime
+   isométrique.
+
+   LA VUE EST CELLE DU PLAN FRONTAL DE LA PERSONNE. Couchée sur le
+   côté, son plan frontal est VERTICAL : l'axe du corps et le bras
+   d'appui y sont tous deux contenus et se projettent en vraie
+   grandeur. L'avant-bras est posé dans l'axe du corps, donc lui aussi
+   dans le plan — rien n'est raccourci.
+
+   LA GÉOMÉTRIE EST ENTIÈREMENT DÉTERMINÉE. Le coude est sous l'épaule,
+   donc le bras d'appui est vertical et mesure 18. Le corps est droit
+   de l'épaule au pied, soit 29 + 52 = 81. Le pied touchant le sol, la
+   portée horizontale vaut racine(81² − 18²) = 78,97 et le corps est
+   incliné de 12,84° — ce n'est pas un choix de dessin, c'est la seule
+   solution.
+
+   OÙ PASSE LE POIDS, CHIFFRÉ. Le centre de masse d'un corps aligné se
+   situe à 45 % de la distance tête→pied depuis la tête, soit
+   (119,10 128,63) : il tombe à 0,85 de la hanche, donc pratiquement
+   dessus. Les leviers horizontaux valent alors 29,10 côté coude et
+   49,87 côté pied pour une portée de 78,97, d'où
+       réaction au COUDE  63,1 % du poids
+       réaction au PIED   36,9 %
+   L'épaule d'appui porte donc près des deux tiers du corps, sur un
+   seul avant-bras — en planche frontale la même charge se répartit
+   sur deux avant-bras et deux pieds. Les repères tracés sous le sol
+   mesurent ces deux leviers.
+
+   CE QUE LES OBLIQUES DOIVENT PRODUIRE. « Hanche qui s'affaisse » est
+   la première erreur listée. Le moment à vaincre à la hanche vaut
+   réaction du pied × son bras de levier, soit 0,369 W × 50,70 =
+   18,68 unités-poids, à tenir en isométrie pendant toute la série.
+
+   « BASSIN QUI PART EN AVANT OU EN ARRIÈRE » est la deuxième erreur,
+   et elle est HORS DU PLAN de cette vue : un déplacement antéro-
+   postérieur se ferait vers l'observateur. Cette vue ne peut pas la
+   montrer, et je le signale plutôt que de laisser croire le contraire.
+
+   MUSCLES. Obliques à la taille, côté sol ; moyen fessier à la hanche
+   du dessus, qui empêche le bassin de rouler. Le transverse que cite
+   la fiche est une ceinture profonde sans point localisable : il est
+   décrit, pas marqué.
+
+   L'ANNEAU DE MAINTIEN est posé à la taille, entre les deux appuis,
+   là où le corps casserait s'il cassait.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["gainage-lateral"] = {
+  vb: "62 78 120 70",
+  dur: 4,
+  isometrique: true,
+  maintien: "112 128",
+  alt: "Vu du côté face à la personne couchée sur le flanc : le corps forme une ligne droite inclinée de 12,84°, du pied posé au sol jusqu'à la tête, en appui sur un seul avant-bras dont le coude est sous l'épaule. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="66" y1="140" x2="178" y2="140"/>
+    <!-- LES DEUX LEVIERS : 29,10 côté coude, 49,87 côté pied.
+         C'est cette répartition qui met 63 % du poids sur l'épaule. -->
+    <line class="mo-rom" x1="90" y1="144" x2="168.97" y2="144"/>
+    <line class="mo-rom" x1="90" y1="141" x2="90" y2="147"/>
+    <line class="mo-rom" x1="168.97" y1="141" x2="168.97" y2="147"/>
+    <line class="mo-rom" x1="119.1" y1="128.63" x2="119.1" y2="147"/>
+    <!-- CORPS aligné, incliné de 12,84° : géométrie forcée -->
+    <circle class="mo-head" cx="78.3" cy="119.33" r="8"/>
+    <line class="mo-body" x1="90" y1="122" x2="118.27" y2="128.44"/>
+    <circle class="mo-joint" cx="118.27" cy="128.44" r="3"/>
+    <line class="mo-body" x1="118.27" y1="128.44" x2="168.97" y2="140"/>
+    <circle class="mo-joint" cx="143.62" cy="134.22" r="2.6"/>
+    <line class="mo-body" x1="168.97" y1="140" x2="174" y2="137"/>
+    <!-- BRAS D'APPUI : coude SOUS l'épaule, donc bras vertical -->
+    <line class="mo-limb" x1="90" y1="122" x2="90" y2="140"/>
+    <circle class="mo-joint" cx="90" cy="122" r="2.8"/>
+    <circle class="mo-joint" cx="90" cy="140" r="2.8"/>
+    <line class="mo-limb" x1="90" y1="140" x2="72" y2="140"/>
+    <circle class="mo-hand" cx="72" cy="140" r="3"/>
+    <!-- BRAS LIBRE, tendu vers le plafond -->
+    <line class="mo-limb" x1="90" y1="122" x2="90" y2="104"/>
+    <circle class="mo-joint" cx="90" cy="104" r="2.6"/>
+    <line class="mo-limb" x1="90" y1="104" x2="90" y2="86"/>
+    <circle class="mo-hand" cx="90" cy="86" r="3"/>`,
+  muscles: [
+    { nom: "Obliques", svg: `<circle cx="98" cy="127" r="4"/>` },
+    { nom: "Moyen fessier", svg: `<circle cx="125" cy="123" r="3.5"/>` }
+  ],
+  parts: []
+};
