@@ -15575,3 +15575,135 @@ EXERCISE_MOTIONS["sit-ups"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M66 100 L54 112 M56.48 104.58 L54 112 L61.42 109.52"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   129. DEAD BUG
+        (dead-bug)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Sur le dos, bras vers le plafond, hanches ET
+   genoux à 90° : le fémur est vertical et le tibia horizontal.
+
+   CONTRALATÉRAL, ET C'EST DESSINÉ. Un bras descend derrière la tête
+   pendant que la jambe OPPOSÉE s'étend. De profil, les deux bras se
+   projettent au même endroit et les deux jambes aussi ; la
+   latéralité est donc rendue par la profondeur — membre proche en
+   trait clair, membre lointain en trait sombre, décalé de 3. Le bras
+   qui bouge est le PROCHE, la jambe qui bouge est la LOINTAINE :
+   c'est ainsi qu'on voit qu'ils sont opposés.
+
+   ARTICULATIONS MOBILES : une épaule, une hanche, un genou.
+   ARTICULATIONS FIXES : tout le reste, et surtout le rachis. Les deux
+   membres qui ne travaillent pas restent exactement en place.
+
+   CE QUE L'EXTENSION COÛTE, CHIFFRÉ. Le bras de levier horizontal du
+   centre de masse, mesuré depuis l'articulation :
+     · jambe pliée 5,20 → jambe tendue 22,66, soit ×4,36
+     · bras vertical 0,00 → bras arrière 15,78
+     · somme 5,20 → 38,44, soit ×7,39 sur la course
+   La difficulté est donc presque nulle au départ et maximale à
+   l'extension complète. « Lombaires qui décollent » n'arrive jamais
+   au début : c'est une erreur de FIN de course.
+
+   ET LES DEUX LEVIERS S'AJOUTENT. Le bras part vers −x, la jambe vers
+   +x : ils tirent en sens opposés dans l'espace. Mais sur le rachis
+   ils vont dans le MÊME sens — l'un tire la cage vers l'extension
+   thoracique, l'autre bascule le bassin en antéversion, et les deux
+   creusent les lombaires. C'est pour cela que la version
+   contralatérale est la dure, et pas un simple exercice de
+   coordination.
+
+   AMPLITUDE RÉELLE. Bras −85°, fémur +82°, tibia −90° relatifs. En
+   fin de course la main est à 7,14 du sol et la cheville à 11,24 :
+   ni l'une ni l'autre ne touche, comme le veut la fiche.
+
+   MUSCLE. Transverse, marqué au niveau de la taille. La fiche cite
+   aussi « coordination » et « protection lombaire » : ce ne sont pas
+   des muscles, ils ne sont donc pas marqués comme tels.
+
+   TEMPO. Extension 40 %, retour 42 %, sur un cycle de 4,4 s — le plus
+   lent de la bibliothèque avec les maintiens, « mouvement rapide »
+   étant une erreur listée.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["dead-bug"] = {
+  vb: "30 92 132 56",
+  dur: 4.4,
+  phases: { con: [0, 40], ecc: [50, 92] },
+  alt: "De profil sur le dos, hanches et genoux à 90° et bras au plafond : un bras descend derrière la tête pendant que la jambe opposée s'étend vers le sol, sans que les lombaires ne décollent, puis retour et alternance.",
+  /* Le transverse est sur le TRONC, qui ne bouge pas : il est donc
+     déclaré en muscle FIXE. Accroché au bras, il partait avec ses
+     −85° — la même faute qu'au schéma 128. */
+  muscles: [
+    { nom: "Transverse", svg: `<circle cx="92" cy="131" r="4"/>` }
+  ],
+  fixe: `
+    <line class="mo-ground" x1="50" y1="140" x2="160" y2="140"/>
+    <!-- APPUI LOMBAIRE : il ne doit jamais décoller -->
+    <line class="mo-bar3" x1="88" y1="140" x2="100" y2="140"/>
+    <!-- TRONC immobile -->
+    <circle class="mo-head" cx="61" cy="136" r="7.5"/>
+    <line class="mo-body" x1="100" y1="136" x2="71" y2="136"/>
+    <circle class="mo-joint" cx="71" cy="136" r="2.8"/>
+    <circle class="mo-joint" cx="100" cy="136" r="3"/>
+    <!-- BRAS QUI RESTE : lointain, donc sombre et décalé de 3 -->
+    <line class="mo-body" x1="74" y1="136" x2="74" y2="118"/>
+    <line class="mo-body" x1="74" y1="118" x2="74" y2="100"/>
+    <!-- JAMBE QUI RESTE : proche, donc claire, à 90/90 -->
+    <line class="mo-limb" x1="100" y1="136" x2="100" y2="110"/>
+    <circle class="mo-joint" cx="100" cy="110" r="2.6"/>
+    <line class="mo-limb" x1="100" y1="110" x2="126" y2="110"/>
+    <line class="mo-limb" x1="126" y1="110" x2="131" y2="113"/>`,
+  parts: [
+    {
+      /* JAMBE QUI TRAVAILLE : la LOINTAINE, donc sombre et décalée.
+         Fémur +82° : la hanche passe de 90° de flexion à 8°. */
+      o: "103px 136px",
+      k: [[0, "rotate(0deg)"], [6.67, "rotate(13.67deg)"], [13.33, "rotate(27.33deg)"],
+          [20, "rotate(41deg)"], [26.67, "rotate(54.67deg)"], [33.33, "rotate(68.33deg)"],
+          [40, "rotate(82deg)"], [50, "rotate(82deg)"],
+          [57, "rotate(68.33deg)"], [64, "rotate(54.67deg)"], [71, "rotate(41deg)"],
+          [78, "rotate(27.33deg)"], [85, "rotate(13.67deg)"], [92, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `<line class="mo-body" x1="103" y1="136" x2="103" y2="110"/>`,
+      children: [
+        {
+          /* TIBIA : −90° relatifs, le genou passe de 90° à tendu. */
+          o: "103px 110px",
+          k: [[0, "rotate(0deg)"], [6.67, "rotate(-15deg)"], [13.33, "rotate(-30deg)"],
+              [20, "rotate(-45deg)"], [26.67, "rotate(-60deg)"], [33.33, "rotate(-75deg)"],
+              [40, "rotate(-90deg)"], [50, "rotate(-90deg)"],
+              [57, "rotate(-75deg)"], [64, "rotate(-60deg)"], [71, "rotate(-45deg)"],
+              [78, "rotate(-30deg)"], [85, "rotate(-15deg)"], [92, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="103" cy="110" r="2.6"/>
+            <line class="mo-body" x1="103" y1="110" x2="129" y2="110"/>
+            <line class="mo-body" x1="129" y1="110" x2="134" y2="113"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS QUI TRAVAILLE : le PROCHE, donc clair. −85°, du plafond
+         jusqu'à 7,14 du sol derrière la tête. */
+      o: "71px 136px",
+      k: [[0, "rotate(0deg)"], [6.67, "rotate(-14.17deg)"], [13.33, "rotate(-28.33deg)"],
+          [20, "rotate(-42.5deg)"], [26.67, "rotate(-56.67deg)"], [33.33, "rotate(-70.83deg)"],
+          [40, "rotate(-85deg)"], [50, "rotate(-85deg)"],
+          [57, "rotate(-70.83deg)"], [64, "rotate(-56.67deg)"], [71, "rotate(-42.5deg)"],
+          [78, "rotate(-28.33deg)"], [85, "rotate(-14.17deg)"], [92, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="71" y1="136" x2="71" y2="118"/>
+        <circle class="mo-joint" cx="71" cy="118" r="2.6"/>
+        <line class="mo-limb" x1="71" y1="118" x2="71" y2="100"/>
+        <circle class="mo-hand" cx="71" cy="100" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M48 97 L38 106 M40.86 98.72 L38 106 L45.54 103.92"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M140 100 L154 110 M146.27 108.78 L154 110 L150.33 103.08"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M38 106 L48 97 M45.14 104.28 L48 97 L40.46 99.08"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M154 110 L140 100 M147.73 101.22 L140 100 L143.67 106.92"/>` }
+  ]
+};
