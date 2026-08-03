@@ -15003,3 +15003,136 @@ EXERCISE_MOTIONS["developpe-arnold"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M92 100 L92 122 M87 115 L92 122 L97 115"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   124. CRUNCH À LA POULIE HAUTE (À GENOUX)
+        (crunch-poulie)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. À genoux face à la poulie haute, cuisses
+   VERTICALES, corde tenue de chaque côté de la tête, rachis droit
+   penché de 10° vers l'avant.
+
+   CE QUI DÉFINIT L'EXERCICE : ENROULER, PAS PLIER. « Plier aux hanches
+   au lieu d'enrouler » est l'erreur centrale, et un schéma à segment
+   unique — comme le crunch au sol — ne peut pas la montrer : un tronc
+   rigide qui bascule EST une flexion de hanche. Le rachis est donc
+   modélisé en TROIS segments de 9,67 qui fléchissent chacun de leur
+   côté : lombaire 18°, thoracique 23°, haut du dos 24°, soit 65° de
+   flexion rachidienne totale. Le dos se courbe au lieu de basculer.
+
+   ARTICULATIONS MOBILES : les trois étages du rachis, et eux seuls.
+   ARTICULATION FIXE : la HANCHE. Elle est fixe par CONSTRUCTION et pas
+   par surveillance — le fémur est vertical et le bassin est le point
+   d'origine du premier segment. L'angle fémur/bassin ne peut donc pas
+   changer, quoi que fasse le rachis. C'est la garantie structurelle
+   que le schéma montre bien un enroulement.
+
+   AMPLITUDE RÉELLE. La main descend de 25,51 et AVANCE de 24,51 vers
+   les genoux : c'est le « coudes vers les genoux » de la fiche, et le
+   fait que les deux composantes soient du même ordre montre que la
+   trajectoire est une diagonale à 45°, pas une descente.
+
+   LE CÂBLE S'ALLONGE, ET C'EST NORMAL. De 57,69 à 73,89, soit +28,1 %.
+   On tire donc du câble HORS de la colonne de charge, ce qui fait
+   monter la charge — contre-intuitif quand on regarde les mains
+   descendre. Sa longueur n'est d'ailleurs pas monotone : elle
+   RACCOURCIT de 1,5 % au tout début, la main se rapprochant de la
+   poulie avant que la descente ne l'emporte. Deux keyframes
+   effaceraient ce creux.
+
+   LES BRAS NE TRAVAILLENT PAS. « Tirer avec les bras » est une erreur
+   listée : les bras sont donc dessinés SOLIDAIRES du haut du dos,
+   dans la même pièce que lui. Ils ne portent aucune animation propre,
+   ce qui rend le défaut impossible à représenter par accident.
+
+   MUSCLE AGONISTE. Grand droit de l'abdomen, marqué sur la face
+   ANTÉRIEURE des deux premiers étages — côté calculé par la
+   perpendiculaire (−0,985 0,174) au segment de départ.
+
+   TEMPO. Enroulement 36 %, retour 42 % : « remonte lentement ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["crunch-poulie"] = {
+  vb: "46 26 92 130",
+  dur: 3.6,
+  phases: { con: [0, 36], ecc: [46, 88] },
+  alt: "De profil à genoux face à une poulie haute, corde aux oreilles : le rachis s'enroule sur trois étages pour 65° de flexion totale, les mains descendant en diagonale vers les genoux, pendant que la hanche reste rigoureusement immobile.",
+  fixe: `
+    <line class="mo-ground" x1="50" y1="150" x2="136" y2="150"/>
+    <line class="mo-gear" x1="52" y1="30" x2="52" y2="150"/>
+    <circle class="mo-pulley" cx="56" cy="34" r="5"/>
+    <!-- JAMBES : à genoux, cuisses verticales. La hanche est le point
+         d'origine du rachis, donc son angle ne peut pas varier. -->
+    <line class="mo-body" x1="100" y1="150" x2="100" y2="124"/>
+    <line class="mo-body" x1="100" y1="150" x2="126" y2="150"/>
+    <line class="mo-body" x1="126" y1="150" x2="132" y2="147"/>
+    <circle class="mo-joint" cx="100" cy="150" r="2.8"/>
+    <circle class="mo-joint" cx="100" cy="124" r="3"/>`,
+  parts: [
+    {
+      /* CÂBLE : il s'ALLONGE de 22,1 % — donc la charge monte. Son
+         échelle n'est pas monotone : elle passe par 0,9894. */
+      o: "56px 34px",
+      k: [[0, "rotate(0deg) scale(1)"], [6, "rotate(6.2deg) scale(0.9849)"],
+          [12, "rotate(12.38deg) scale(0.9993)"], [18, "rotate(17.92deg) scale(1.0413)"],
+          [24, "rotate(22.42deg) scale(1.1061)"], [30, "rotate(25.72deg) scale(1.1879)"],
+          [36, "rotate(27.87deg) scale(1.2808)"], [46, "rotate(27.87deg) scale(1.2808)"],
+          [53, "rotate(25.72deg) scale(1.1879)"], [60, "rotate(22.42deg) scale(1.1061)"],
+          [67, "rotate(17.92deg) scale(1.0413)"], [74, "rotate(12.38deg) scale(0.9993)"],
+          [81, "rotate(6.2deg) scale(0.9849)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="56" y1="34" x2="88" y2="82"/>`
+    },
+    {
+      /* RACHIS, ÉTAGE LOMBAIRE : −18°, autour de la hanche. */
+      o: "100px 124px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(-3deg)"], [12, "rotate(-6deg)"],
+          [18, "rotate(-9deg)"], [24, "rotate(-12deg)"], [30, "rotate(-15deg)"],
+          [36, "rotate(-18deg)"], [46, "rotate(-18deg)"],
+          [53, "rotate(-15deg)"], [60, "rotate(-12deg)"], [67, "rotate(-9deg)"],
+          [74, "rotate(-6deg)"], [81, "rotate(-3deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Grand droit de l'abdomen",
+      muscle: `<circle cx="95.71" cy="119.85" r="3.6"/>`,
+      svg: `<line class="mo-body" x1="100" y1="124" x2="98.32" y2="114.48"/>`,
+      children: [
+        {
+          /* ÉTAGE THORACIQUE : −23° RELATIFS au lombaire. */
+          o: "98.32px 114.48px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-3.83deg)"], [12, "rotate(-7.67deg)"],
+              [18, "rotate(-11.5deg)"], [24, "rotate(-15.33deg)"], [30, "rotate(-19.17deg)"],
+              [36, "rotate(-23deg)"], [46, "rotate(-23deg)"],
+              [53, "rotate(-19.17deg)"], [60, "rotate(-15.33deg)"], [67, "rotate(-11.5deg)"],
+              [74, "rotate(-7.67deg)"], [81, "rotate(-3.83deg)"], [88, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscle: `<circle cx="94.03" cy="110.33" r="3.6"/>`,
+          svg: `<line class="mo-body" x1="98.32" y1="114.48" x2="96.64" y2="104.95"/>`,
+          children: [
+            {
+              /* HAUT DU DOS : −24° relatifs. Tête et bras sont dans
+                 cette pièce : ils ne peuvent pas tirer tout seuls. */
+              o: "96.64px 104.95px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(-4deg)"], [12, "rotate(-8deg)"],
+                  [18, "rotate(-12deg)"], [24, "rotate(-16deg)"], [30, "rotate(-20deg)"],
+                  [36, "rotate(-24deg)"], [46, "rotate(-24deg)"],
+                  [53, "rotate(-20deg)"], [60, "rotate(-16deg)"], [67, "rotate(-12deg)"],
+                  [74, "rotate(-8deg)"], [81, "rotate(-4deg)"], [88, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-body" x1="96.64" y1="104.95" x2="94.96" y2="95.43"/>
+                <circle class="mo-head" cx="93.57" cy="87.55" r="8"/>
+                <line class="mo-limb" x1="94.96" y1="95.43" x2="82" y2="102"/>
+                <line class="mo-limb" x1="82" y1="102" x2="88" y2="82"/>
+                <circle class="mo-hand" cx="88" cy="82" r="3"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M78 72 L66 84.5 M68.34 77.03 L66 84.5 L73.38 81.89"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M66 84.5 L78 72 M75.66 79.47 L78 72 L70.62 74.61"/>` }
+  ]
+};
