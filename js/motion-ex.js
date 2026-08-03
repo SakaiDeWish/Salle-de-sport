@@ -16143,3 +16143,137 @@ EXERCISE_MOTIONS["elevation-laterale-egyptienne"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M142 108 L130 120 M132.48 112.58 L130 120 L137.42 117.52"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   134. BIRD-DOG
+        (bird-dog)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. À quatre pattes, mains sous les épaules, genoux
+   sous les hanches — la même géométrie qu'aux schémas 114 et 115 :
+   genou au sol donc hanche à 26, main au sol bras tendu donc épaule à
+   32, et un dos qui monte de 11,94° vers l'avant.
+
+   CONTRALATÉRAL, RENDU PAR LA PROFONDEUR. Un bras devant, la jambe
+   OPPOSÉE derrière. De profil les deux bras se projettent au même
+   endroit et les deux jambes aussi : le membre proche est en trait
+   clair, le lointain en trait sombre décalé de 3. Le bras qui bouge
+   est le PROCHE, la jambe qui bouge est la LOINTAINE. Même convention
+   qu'au dead bug.
+
+   LA CIBLE N'EST PAS L'HORIZONTALE, C'EST L'AXE DU DOS. Le dos
+   montant de 11,94°, son prolongement descend de 11,94° derrière la
+   hanche. C'est là que la jambe doit s'arrêter, et le trait en
+   pointillés qui traverse tout le schéma est cet axe unique : bras
+   tendu, dos et jambe tendue s'alignent dessus. Monter la jambe à
+   l'horizontale du SOL, c'est passer 11,94° au-dessus de cet axe,
+   c'est-à-dire cambrer — la première erreur de la fiche.
+
+   POURQUOI C'EST LA JAMBE QUI FAIT CAMBRER, CHIFFRÉ. Moment du
+   segment tendu autour de son articulation :
+     bras   masse 0,05, centre à 14,08  →  0,704
+     jambe  masse 0,16, centre à 22,88  →  3,661
+   La jambe impose ×5,20 le moment du bras. L'erreur ne s'appelle donc
+   pas « cambrer en levant le bras » : le calcul explique le libellé.
+
+   ARTICULATIONS MOBILES : une épaule, une hanche, un genou.
+   ARTICULATIONS FIXES : le rachis, le bras d'appui, le genou d'appui.
+
+   LA BASE D'APPUI SE RÉDUIT À UNE DIAGONALE. À quatre pattes elle est
+   un rectangle — deux mains, deux genoux. Bras et jambe opposés
+   tendus, il ne reste qu'une main et un genou DIAGONALEMENT opposés :
+   la base devient une ligne. C'est ce qui rend « bassin qui pivote »
+   inévitable si l'on va vite, d'où « mouvement précipité » en
+   troisième erreur.
+
+   AMPLITUDE RÉELLE. Bras +101,94°, fémur −78,06°, tibia +90° relatifs
+   — le genou passe de 90° de flexion à tendu. La main frôle le sol à
+   4,29 au plus près, à mi-course : elle passe devant, elle ne monte
+   pas directement.
+
+   MUSCLES. Lombaires sur le tronc, qui est fixe — muscle déclaré FIXE
+   pour cette raison. Fessiers sur le fémur qui travaille, marqués à
+   5,7 du pivot seulement pour ne pas s'envoler avec les 78°.
+
+   TEMPO. Extension 28 %, MAINTIEN 40 % — soit 2,0 s sur 5 s, les
+   « 2-3 secondes » de la fiche — puis retour 24 %.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["bird-dog"] = {
+  vb: "42 100 132 54",
+  dur: 5,
+  phases: { con: [0, 28], ecc: [68, 92] },
+  alt: "De profil à quatre pattes : un bras se tend vers l'avant pendant que la jambe opposée se tend vers l'arrière, tous deux venant s'aligner sur l'axe du dos, puis la position se tient deux secondes.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="146" x2="170" y2="146"/>
+    <!-- AXE DU DOS, prolongé des deux côtés : bras tendu, dos et jambe
+         tendue s'alignent dessus. Au-dessus, c'est la cambrure. -->
+    <line class="mo-rom" x1="48" y1="106.9" x2="163" y2="131.4"/>
+    <!-- TRONC immobile -->
+    <circle class="mo-head" cx="70" cy="114" r="7"/>
+    <line class="mo-body" x1="110" y1="120" x2="81.63" y2="114"/>
+    <circle class="mo-joint" cx="110" cy="120" r="3"/>
+    <circle class="mo-joint" cx="81.63" cy="114" r="2.8"/>
+    <!-- BRAS D'APPUI : lointain, donc sombre et décalé de 3 -->
+    <line class="mo-body" x1="84.63" y1="114" x2="84.63" y2="146"/>
+    <!-- JAMBE D'APPUI : proche, donc claire -->
+    <line class="mo-limb" x1="110" y1="120" x2="110" y2="146"/>
+    <circle class="mo-joint" cx="110" cy="146" r="2.6"/>
+    <line class="mo-limb" x1="110" y1="146" x2="136" y2="146"/>
+    <line class="mo-limb" x1="136" y1="146" x2="140" y2="143"/>`,
+  muscles: [
+    { nom: "Lombaires", svg: `<circle cx="98" cy="115" r="4"/>` }
+  ],
+  parts: [
+    {
+      /* JAMBE QUI TRAVAILLE : la LOINTAINE. Fémur −78,06° pour venir
+         sur l'axe du dos, pas à l'horizontale du sol. */
+      o: "113px 120px",
+      k: [[0, "rotate(0deg)"], [4.67, "rotate(-13.01deg)"], [9.33, "rotate(-26.02deg)"],
+          [14, "rotate(-39.03deg)"], [18.67, "rotate(-52.04deg)"], [23.33, "rotate(-65.05deg)"],
+          [28, "rotate(-78.06deg)"], [68, "rotate(-78.06deg)"],
+          [72, "rotate(-65.05deg)"], [76, "rotate(-52.04deg)"], [80, "rotate(-39.03deg)"],
+          [84, "rotate(-26.02deg)"], [88, "rotate(-13.01deg)"], [92, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Fessiers",
+      muscle: `<circle cx="117" cy="124" r="3.5"/>`,
+      svg: `<line class="mo-body" x1="113" y1="120" x2="113" y2="146"/>`,
+      children: [
+        {
+          /* TIBIA : +90° relatifs, le genou passe de 90° à tendu. */
+          o: "113px 146px",
+          k: [[0, "rotate(0deg)"], [4.67, "rotate(15deg)"], [9.33, "rotate(30deg)"],
+              [14, "rotate(45deg)"], [18.67, "rotate(60deg)"], [23.33, "rotate(75deg)"],
+              [28, "rotate(90deg)"], [68, "rotate(90deg)"],
+              [72, "rotate(75deg)"], [76, "rotate(60deg)"], [80, "rotate(45deg)"],
+              [84, "rotate(30deg)"], [88, "rotate(15deg)"], [92, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="113" cy="146" r="2.6"/>
+            <line class="mo-body" x1="113" y1="146" x2="139" y2="146"/>
+            <line class="mo-body" x1="139" y1="146" x2="143" y2="143"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS QUI TRAVAILLE : le PROCHE. +101,94° pour venir sur l'axe
+         du dos. Il passe DEVANT en frôlant le sol à 4,29. */
+      o: "81.63px 114px",
+      k: [[0, "rotate(0deg)"], [4.67, "rotate(16.99deg)"], [9.33, "rotate(33.98deg)"],
+          [14, "rotate(50.97deg)"], [18.67, "rotate(67.96deg)"], [23.33, "rotate(84.95deg)"],
+          [28, "rotate(101.94deg)"], [68, "rotate(101.94deg)"],
+          [72, "rotate(84.95deg)"], [76, "rotate(67.96deg)"], [80, "rotate(50.97deg)"],
+          [84, "rotate(33.98deg)"], [88, "rotate(16.99deg)"], [92, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="81.63" y1="114" x2="81.63" y2="146"/>
+        <circle class="mo-hand" cx="81.63" cy="146" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M57 143 L47 131 M54.17 134.14 L47 131 L48.79 138.62"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M146 124 L162 117 M156.99 123.02 L162 117 L154.19 116.6"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M47 131 L57 143 M49.83 139.86 L57 143 L55.21 135.38"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M162 117 L146 124 M151.01 117.98 L146 124 L153.81 124.4"/>` }
+  ]
+};
