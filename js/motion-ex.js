@@ -15438,3 +15438,140 @@ EXERCISE_MOTIONS["v-ups"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M148 99.8 L155 110 M148.16 106.21 L155 110 L153.92 102.25"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   128. SIT-UPS
+        (sit-ups)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Allongé sur le dos, genoux fléchis, pieds au
+   sol, mains aux tempes. Rachis droit posé, hanche à (100 136).
+
+   UN SIT-UP EST DEUX MOUVEMENTS, ET C'EST TOUT LE SUJET. Le crunch du
+   schéma 33 s'arrête à la flexion rachidienne ; le sit-up y ajoute
+   une flexion de HANCHE pour finir assis. Les deux sont donc séparés
+   STRUCTURELLEMENT ici : une pièce « bassin » qui pivote autour de la
+   hanche de 82°, et à l'intérieur trois étages de rachis qui
+   fléchissent de 8°, 14° et 16°, soit 38° de flexion vertébrale.
+   L'un ne peut pas se substituer à l'autre dans le montage, ce qui
+   rend l'erreur « pieds bloqués qui font tout le travail des hanches »
+   lisible : si les 82° de bassin partent avant les 38° de rachis, le
+   dos monte d'un bloc.
+
+   L'ORDRE COMPTE, ET IL EST DANS LE CHRONOGRAMME. La flexion
+   rachidienne est terminée à 18 % du cycle, quand la hanche n'a
+   encore parcouru que 28,7° sur 82. Le rachis s'enroule d'abord, la
+   hanche finit le travail — et au retour, la fiche dit « vertèbre par
+   vertèbre », donc l'inverse exact, ce que l'animation rejoue en
+   sens contraire.
+
+   ARTICULATIONS MOBILES : la hanche et les trois étages du rachis.
+   ARTICULATIONS FIXES : genoux et chevilles, pieds posés.
+
+   POSITION FINALE VÉRIFIÉE. Après 82° de bassin puis 38° de rachis,
+   le segment haut pointe à 300°, c'est-à-dire vers le HAUT et vers
+   l'AVANT : l'épaule finit à (107,18 108,58), en avant de la hanche,
+   penchée vers les genoux. C'est bien un redressement complet et pas
+   un crunch prolongé.
+
+   « TIRER SUR LA NUQUE » est la première erreur listée. Les mains sont
+   dessinées aux tempes et SOLIDAIRES du segment haut : elles ne
+   portent aucune animation propre, donc elles ne peuvent pas tirer.
+   La main reste d'ailleurs sur le bord de la tête d'un bout à l'autre,
+   à 7,07 de son centre pour un rayon de 7,5.
+
+   MUSCLES AGONISTES. Grand droit sur les deux premiers étages, face
+   antérieure — vers le HAUT, la personne étant sur le dos.
+   Fléchisseurs de hanche sur le bassin, puisque c'est lui qu'ils font
+   pivoter, le fémur étant bloqué par les pieds.
+
+   TEMPO. Montée 36 %, descente 44 % : « redescends en contrôlant ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["sit-ups"] = {
+  vb: "50 88 100 60",
+  dur: 3.8,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil allongé genoux fléchis : le rachis s'enroule d'abord sur trois étages, puis la hanche fléchit de 82° pour finir en position assise penchée vers les genoux, les mains restant aux tempes.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="140" x2="146" y2="140"/>
+    <!-- JAMBES : genoux fléchis, pieds posés, rien ne bouge -->
+    <line class="mo-body" x1="100" y1="136" x2="121" y2="120"/>
+    <circle class="mo-joint" cx="121" cy="120" r="2.6"/>
+    <line class="mo-body" x1="121" y1="120" x2="137.6" y2="140"/>
+    <line class="mo-body" x1="132" y1="140" x2="144" y2="140"/>
+    <circle class="mo-joint" cx="100" cy="136" r="3"/>`,
+  parts: [
+    {
+      /* BASSIN : 82° de flexion de HANCHE, autour de la hanche. Pièce
+         distincte du rachis pour que les deux ne puissent pas se
+         confondre. */
+      o: "100px 136px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(0deg)"], [12, "rotate(8.2deg)"],
+          [18, "rotate(28.7deg)"], [24, "rotate(49.2deg)"], [30, "rotate(68.06deg)"],
+          [36, "rotate(82deg)"], [46, "rotate(82deg)"],
+          [53.33, "rotate(68.06deg)"], [60.67, "rotate(49.2deg)"], [68, "rotate(28.7deg)"],
+          [75.33, "rotate(8.2deg)"], [82.67, "rotate(0deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Fléchisseurs de hanche",
+      /* Marqueur volontairement PRÈS du pivot : porté par le bassin,
+         il subit les 82°, et posé plus loin il finissait sous le sol.
+         À 6,1 de la hanche il reste au bon endroit aux deux bouts. */
+      muscle: `<circle cx="101" cy="130" r="3"/>`,
+      svg: ``,
+      children: [
+        {
+          /* RACHIS, ÉTAGE LOMBAIRE : +8°, relatifs au bassin. */
+          o: "100px 136px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(3.36deg)"], [12, "rotate(6.64deg)"],
+              [18, "rotate(8deg)"], [24, "rotate(8deg)"], [30, "rotate(8deg)"],
+              [36, "rotate(8deg)"], [46, "rotate(8deg)"],
+              [53.33, "rotate(8deg)"], [60.67, "rotate(8deg)"], [68, "rotate(8deg)"],
+              [75.33, "rotate(6.64deg)"], [82.67, "rotate(3.36deg)"], [90, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+          muscleNom: "Grand droit de l'abdomen",
+          muscle: `<circle cx="93" cy="131.5" r="4"/>`,
+          svg: `<line class="mo-body" x1="100" y1="136" x2="90.33" y2="136"/>`,
+          children: [
+            {
+              /* ÉTAGE THORACIQUE : +14° relatifs. */
+              o: "90.33px 136px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(5.88deg)"], [12, "rotate(11.62deg)"],
+                  [18, "rotate(14deg)"], [24, "rotate(14deg)"], [30, "rotate(14deg)"],
+                  [36, "rotate(14deg)"], [46, "rotate(14deg)"],
+                  [53.33, "rotate(14deg)"], [60.67, "rotate(14deg)"], [68, "rotate(14deg)"],
+                  [75.33, "rotate(11.62deg)"], [82.67, "rotate(5.88deg)"], [90, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+              muscle: `<circle cx="85" cy="131.5" r="3"/>`,
+              svg: `<line class="mo-body" x1="90.33" y1="136" x2="80.67" y2="136"/>`,
+              children: [
+                {
+                  /* HAUT DU DOS : +16° relatifs. Tête et bras sont
+                     dedans : les mains ne peuvent pas tirer seules. */
+                  o: "80.67px 136px",
+                  k: [[0, "rotate(0deg)"], [6, "rotate(6.72deg)"], [12, "rotate(13.28deg)"],
+                      [18, "rotate(16deg)"], [24, "rotate(16deg)"], [30, "rotate(16deg)"],
+                      [36, "rotate(16deg)"], [46, "rotate(16deg)"],
+                      [53.33, "rotate(16deg)"], [60.67, "rotate(16deg)"], [68, "rotate(16deg)"],
+                      [75.33, "rotate(13.28deg)"], [82.67, "rotate(6.72deg)"], [90, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-body" x1="80.67" y1="136" x2="71" y2="136"/>
+                    <circle class="mo-head" cx="61" cy="136" r="7.5"/>
+                    <line class="mo-limb" x1="71" y1="136" x2="80" y2="124"/>
+                    <circle class="mo-joint" cx="80" cy="124" r="2.6"/>
+                    <line class="mo-limb" x1="80" y1="124" x2="62" y2="129"/>
+                    <circle class="mo-hand" cx="62" cy="129" r="3"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M54 112 L66 100 M63.52 107.42 L66 100 L58.58 102.48"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M66 100 L54 112 M56.48 104.58 L54 112 L61.42 109.52"/>` }
+  ]
+};
