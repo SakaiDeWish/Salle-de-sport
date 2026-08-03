@@ -16277,3 +16277,192 @@ EXERCISE_MOTIONS["bird-dog"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M162 117 L146 124 M151.01 117.98 L146 124 L153.81 124.4"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   135. HYPEREXTENSION INVERSÉE
+        (hyperextension-inversee)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. À plat ventre sur un banc HAUT, hanches
+   exactement au bord, jambes TENDUES pendantes à la verticale, mains
+   agrippées aux poignées. Le tronc, du bassin à la tête, repose tout
+   entier sur le banc.
+
+   MATÉRIEL ET SON EMPLACEMENT EXACT. Banc à 100 (surface), long de 62,
+   de x=44 à x=106 ; le bord arrière à 106 EST le pivot. Le corps
+   repose DESSUS : son axe est à 92, huit unités au-dessus de la
+   surface, sinon la tête traverserait le plateau — l'erreur corrigée
+   au schéma 119. Et ce n'est PAS l'épaisseur du tronc qui commande
+   cette hauteur, c'est le RAYON DE LA TÊTE : à 94, qui suffit
+   largement au tronc, la tête (rayon 7) descendait à 101 et plongeait
+   de 1 dans le plateau. Le premier rendu l'a montré, la cote a été
+   relevée à 92 et le bras entièrement recalculé derrière.
+   Deux pieds à x=48 et x=100 descendent au sol à 150 :
+   le banc est haut de 50 unités, soit 87 cm, ce qu'il faut pour que
+   les jambes pendent sans toucher (le pied s'arrête à 146, 7 cm du
+   sol). Poignées sous le bord avant, à (58 113), saisies par-dessous.
+   La fiche décrit la version AU POIDS DU CORPS : aucun pendule, aucun
+   disque, aucune mousse de cheville n'est mentionnée, donc rien de
+   tel n'est dessiné. Inventer une charge serait inventer l'exercice.
+
+   ARTICULATION MOBILE : la hanche, et elle seule.
+   ARTICULATIONS FIXES : le genou, verrouillé en extension — « jambes
+   tendues » — et tout le rachis, plaqué sur le banc. Fémur et tibia
+   forment donc un segment RIGIDE de 52, et la signature du corps
+   rigide est vérifiée : rotation relative du tibia sur le fémur
+   exactement 0,00° à chacun des sept échantillons. Même signature
+   qu'aux schémas 97, 98, 108, 109, 114, 115 et 119 — mais ici le
+   bloc rigide est DROIT, là où le schéma 119 en faisait un L.
+
+   DIRECTION ET PLAN. Extension de hanche pure, plan sagittal. Vue de
+   profil : le plan du mouvement est parallèle au plan de l'image,
+   donc AUCUN raccourcissement. Le segment se dessine à 52, sa vraie
+   longueur. C'est la différence de dessin la plus immédiate avec le
+   schéma 119, qui devait déclarer un facteur 0,7660 pour l'ouverture
+   des genoux : ici la jambe est serrée, β=0, rien à déclarer.
+
+   AMPLITUDE RÉELLE. 90° exactement, de la verticale à l'alignement du
+   tronc. La cheville décrit un arc de rayon 52 et monte de 52 unités,
+   soit 91 cm. L'orteil, lui, tourne sur un rayon de 54,148 et balaie
+   jusqu'à x=160,15 — c'est cette enveloppe, pas la cheville, qui fixe
+   la place de la flèche, posée à 168 avec 7,85 de marge.
+
+   ZÉRO HYPEREXTENSION, POUR LA CINQUIÈME FOIS DE CE GROUPE. « Monter
+   au-dessus de l'horizontale » est la première erreur listée. Le
+   tronc étant horizontal, l'alignement EST l'horizontale, et c'est le
+   trait plein qui prolonge le buste jusqu'à 162. La hanche va de 90°
+   de flexion à 0° et pas un degré au-delà. Comme aux schémas 113,
+   114, 115 et 119 : la position de départ DÉPLACE l'amplitude, elle
+   ne l'allonge pas.
+
+   CE QUI LE DISTINGUE DU SCHÉMA 119 (extension de hanche au banc,
+   version frog) — ET LE RÉSULTAT EST PLUS FIN QU'ATTENDU. Les deux
+   exercices font tourner la même hanche des mêmes 90°. Seule change
+   la forme de la charge : segment droit de 52 ici, L de 26+26 là-bas.
+   En pondérant cuisse, jambe et pied par leurs masses segmentaires
+   (0,100 / 0,0465 / 0,0145 du poids du corps, centres à 43,3 % et
+   50 %), le bras de levier horizontal donne, en fonction de l'angle
+   de hanche (90° = pendante, 0° = alignée) :
+
+        hanche      tendue      frog
+          90°        0,00       6,00
+          75°        5,91      10,15
+          60°       11,42      13,62
+          45°       16,15      16,15      <- ils se CROISENT
+          30°       19,78      17,59
+          15°       22,06      17,82
+           0°       22,84      16,84
+
+   Les deux courbes se croisent EXACTEMENT à 45°. En bas, le frog est
+   plus dur — sa jambe repliée à l'horizontale porte déjà du levier
+   quand la jambe tendue n'en a aucun. En haut, c'est l'inverse : à
+   l'alignement la version tendue impose 35,6 % de moment en plus
+   (22,84 contre 16,84), et le moment total des deux jambes vaut 7,355
+   contre 5,424 unités-poids. Ce ne sont donc pas deux versions d'un
+   même exercice classées facile/difficile : ce sont deux PROFILS de
+   résistance opposés, l'un chargé au départ, l'autre chargé à
+   l'arrivée. C'est ce qui justifie que les deux existent, et que les
+   deux aient une animation distincte.
+
+   « TRÈS PEU DE COMPRESSION VERTÉBRALE » : LA CLAUSE EST EXACTE, ET
+   ON PEUT LE PROUVER. Le rachis reste HORIZONTAL pendant toute la
+   course ; la gravité est VERTICALE. La composante du poids des
+   jambes projetée sur l'axe du rachis vaut donc |poids| × cos(90°) =
+   0, à tout instant. Tout passe en flexion, rien en compression. Ce
+   n'est pas « peu », c'est nul par construction géométrique — et
+   c'est précisément ce que le banc achète : il met le rachis
+   perpendiculaire à la charge.
+
+   MUSCLES AGONISTES. Grand fessier à la hanche et ischio-jambiers le
+   long de la cuisse sont moteurs : ils portent le marqueur sur la
+   PARTIE MOBILE, donc emportés par la rotation. Vérifié contre la
+   règle apprise au schéma 128 : le repère fessier (110 98) arrive en
+   (112 88) à 90°, le repère ischios (111 110) arrive en (124 87) —
+   tous deux restent du côté POSTÉRIEUR de la cuisse, qui regarde vers
+   les pieds en bas et vers le plafond en haut. Les lombaires, elles,
+   sont sur le TRONC IMMOBILE : leur marqueur va dans spec.muscles,
+   fixe, jamais emporté. Le repère ischios a par ailleurs été remonté
+   de 116 à 110 pour dégager le point du genou (9,43 d'écart pour des
+   rayons de 3 et 2,6, là où 116 n'en laissait que 5), PUIS écarté de
+   l'axe de 3 à 5 : le trait du membre étant large de 8, un marqueur de
+   rayon 3 posé à 3 de l'axe ne dépassait que de 2 et disparaissait en
+   cours de course. À 5 il dépasse de 4 et reste lisible partout.
+
+   TEMPO. Montée 30 %, maintien 24 % — soit 1,01 s à 4,2 s de cycle,
+   la « 1 seconde » de la fiche — puis descente 38 %, plus lente que
+   la montée : « redescends lentement ». « Élan des jambes » et
+   « rythme saccadé » étant les deux autres erreurs listées, la grille
+   est régulière de bout en bout, sans à-coup.
+
+   ÉTAPE 3 — VÉRIFICATION. Rotation relative tibia/fémur 0,00° aux
+   sept échantillons ; bras 18+18 = 36 exactement, coude résolu par
+   intersection cercle-cercle branche basse en (75,74 109,96) ;
+   approche minimale du bras à la tête 10,97 pour un rayon de 7 ;
+   bas de la tête à 99 contre plateau à 100 ; enveloppe de l'orteil
+   160,15 contre flèche à 168, soit 7,85 de marge.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["hyperextension-inversee"] = {
+  vb: "40 80 138 76",
+  dur: 4.2,
+  phases: { con: [0, 30], ecc: [54, 92] },
+  alt: "De profil, à plat ventre sur un banc haut, hanches au bord et mains aux poignées : les jambes tendues, pendantes à la verticale, remontent d'un bloc de 90° jusqu'à l'alignement du buste, marquent un temps d'arrêt, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="42" y1="150" x2="176" y2="150"/>
+    <!-- BANC HAUT : surface à 100, corps dessus donc axe à 92 — c'est
+         le RAYON DE LA TÊTE (7), et non l'épaisseur du tronc, qui fixe
+         cette hauteur : à 94 la tête plongeait de 1 dans le plateau.
+         Le bord arrière (106) est le pivot de la hanche. -->
+    <rect class="mo-gear" x="44" y="100" width="62" height="6"/>
+    <line class="mo-gear" x1="48" y1="106" x2="48" y2="150"/>
+    <line class="mo-gear" x1="100" y1="106" x2="100" y2="150"/>
+    <!-- POIGNÉE sous le bord avant, saisie par-dessous -->
+    <line class="mo-gear" x1="58" y1="106" x2="58" y2="113"/>
+    <line class="mo-bar3" x1="53" y1="113" x2="63" y2="113"/>
+    <!-- ALIGNEMENT DU BUSTE : la limite haute, à ne pas dépasser -->
+    <line class="mo-rom" x1="106" y1="92" x2="162" y2="92"/>
+    <!-- trajet de la cheville : arc exact de rayon 52 -->
+    <path class="mo-rom" fill="none" d="M106 144 A52 52 0 0 0 158 92"/>
+    <!-- CORPS à plat ventre, immobile du bassin à la tête -->
+    <circle class="mo-head" cx="66" cy="92" r="7"/>
+    <line class="mo-body" x1="77" y1="92" x2="73" y2="92"/>
+    <line class="mo-body" x1="106" y1="92" x2="77" y2="92"/>
+    <circle class="mo-joint" cx="106" cy="92" r="3"/>
+    <circle class="mo-joint" cx="77" cy="92" r="2.8"/>
+    <!-- BRAS 18+18 : il descend le long du banc et vient sous la
+         poignée. Coude résolu, pas estimé. -->
+    <line class="mo-limb" x1="77" y1="92" x2="75.74" y2="109.96"/>
+    <circle class="mo-joint" cx="75.74" cy="109.96" r="2.6"/>
+    <line class="mo-limb" x1="75.74" y1="109.96" x2="58" y2="113"/>
+    <circle class="mo-hand" cx="58" cy="113" r="3"/>`,
+  muscles: [
+    { nom: "Lombaires", svg: `<circle cx="96" cy="87" r="4"/>` }
+  ],
+  parts: [
+    {
+      /* JAMBE TENDUE : UN SEUL segment rigide de 52, hanche à
+         cheville. Pas de raccourcissement : le plan du mouvement est
+         parallèle au plan de l'image. Rotation −90°. */
+      o: "106px 92px",
+      k: [[0, "rotate(0deg)"], [5, "rotate(-15deg)"], [10, "rotate(-30deg)"],
+          [15, "rotate(-45deg)"], [20, "rotate(-60deg)"], [25, "rotate(-75deg)"],
+          [30, "rotate(-90deg)"], [54, "rotate(-90deg)"],
+          [60.33, "rotate(-75deg)"], [66.67, "rotate(-60deg)"], [73, "rotate(-45deg)"],
+          [79.33, "rotate(-30deg)"], [85.67, "rotate(-15deg)"], [92, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: ["Grand fessier", "Ischio-jambiers"],
+      muscle: `
+        <circle cx="110" cy="98" r="4"/>
+        <circle cx="111" cy="110" r="3"/>`,
+      svg: `
+        <line class="mo-limb" x1="106" y1="92" x2="106" y2="144"/>
+        <circle class="mo-joint" cx="106" cy="118" r="2.6"/>
+        <circle class="mo-joint" cx="106" cy="144" r="2.6"/>
+        <line class="mo-limb" x1="106" y1="144" x2="110" y2="146"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M168 138 L168 98 M163 105 L168 98 L173 105"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M168 98 L168 138 M163 131 L168 138 L173 131"/>` }
+  ]
+};
