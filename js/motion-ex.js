@@ -16032,3 +16032,114 @@ EXERCISE_MOTIONS["dragon-flag"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M161 46 L175 60 M167.58 57.52 L175 60 L172.52 52.58"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   133. ÉLÉVATION LATÉRALE ÉGYPTIENNE
+        (elevation-laterale-egyptienne)          — VU DE FACE
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   POSITION DE DÉPART. Une main agrippée à un montant, corps incliné de
+   25°, bras libre pendant à la verticale avec l'haltère.
+
+   CE QUE L'INCLINAISON CHANGE — ET CE QU'ELLE NE CHANGE PAS. On croit
+   souvent qu'elle « met de la tension en bas ». C'est faux, et le
+   calcul le dit : le moment sur le deltoïde vaut poids × distance
+   HORIZONTALE de l'épaule au centre de l'haltère, et la gravité est
+   verticale quoi que fasse le buste. Bras pendant, cette distance est
+   nulle, inclinaison ou pas. Le profil de résistance est donc
+   EXACTEMENT celui d'une élévation latérale debout : nul en bas,
+   maximal à l'horizontale.
+
+   CE QU'ELLE CHANGE VRAIMENT, C'EST LA LONGUEUR DU MUSCLE. Le corps
+   penché de 25°, le bras qui pend à la verticale se retrouve 25° en
+   ADDUCTION par rapport au tronc — au-delà du zéro anatomique. Le
+   pointillé tracé depuis l'épaule dans le prolongement du tronc
+   matérialise ce zéro : le bras part visiblement en deçà. Et comme la
+   montée va jusqu'à l'horizontale de l'ESPACE, soit 90° + 25° par
+   rapport au tronc, l'amplitude articulaire passe de 90° debout à
+   140° ici : +55,6 %. C'est l'étirement accru de la fiche, chiffré.
+
+   ARTICULATION MOBILE : l'épaule libre, 90° dans l'espace.
+   ARTICULATIONS FIXES : le tronc, tenu par la main sur le montant.
+   « Élan du buste » est la première erreur listée, et l'ancrage est
+   précisément ce qui la rend impossible — c'est le « triche
+   impossible » du champ muscles de la fiche.
+
+   LA LIMITE HAUTE EST TRACÉE. « Monter au-dessus de l'horizontale »
+   est une erreur : le trait horizontal partant de l'épaule est cette
+   limite, et le bras vient exactement dessus en fin de course.
+
+   COUDE SOUPLE, PAS VERROUILLÉ. La fiche l'interdit, mais un coude
+   légèrement fléchi ne se distingue pas d'un coude tendu à cette
+   échelle : le bras est dessiné d'un trait, le marqueur d'articulation
+   au coude rappelant qu'il n'est pas soudé.
+
+   MUSCLE. Deltoïde moyen, marqué près de l'épaule et porté par le
+   bras — donc à 6,2 du pivot, assez près pour ne pas s'envoler quand
+   le segment tourne de 90°.
+
+   TEMPO. Montée 32 %, descente 46 % : « redescends lentement en
+   résistant ».
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["elevation-laterale-egyptienne"] = {
+  vb: "46 36 108 132",
+  dur: 3.8,
+  vue: "Vu de face",
+  phases: { con: [0, 32], ecc: [42, 88] },
+  alt: "Vu de face, une main agrippée à un montant et le corps incliné de 25° : le bras libre part 25° en adduction sous le zéro anatomique et monte jusqu'à l'horizontale, soit 140° d'amplitude articulaire au lieu des 90° d'une élévation debout.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="160" x2="152" y2="160"/>
+    <line class="mo-gear" x1="54" y1="40" x2="54" y2="160"/>
+    <!-- ZÉRO ANATOMIQUE : prolongement du tronc sous l'épaule. Le bras
+         part EN DEÇÀ, c'est là tout l'intérêt de l'inclinaison. -->
+    <line class="mo-rom" x1="104.43" y1="77.79" x2="119.64" y2="110.42"/>
+    <!-- LIMITE HAUTE : l'horizontale, à ne pas dépasser -->
+    <line class="mo-rom" x1="104.43" y1="77.79" x2="146" y2="77.79"/>
+    <!-- trajet de la main : arc exact de rayon 36 -->
+    <path class="mo-rom" fill="none" d="M104.43 113.79 A36 36 0 0 0 140.43 77.79"/>
+    <!-- CORPS incliné de 25°, immobile -->
+    <circle class="mo-head" cx="87.09" cy="73.74" r="9"/>
+    <line class="mo-body" x1="79.05" y1="89.63" x2="104.43" y2="77.79"/>
+    <line class="mo-body" x1="104" y1="110" x2="91.74" y2="83.71"/>
+    <circle class="mo-joint" cx="104.43" cy="77.79" r="3"/>
+    <circle class="mo-joint" cx="79.05" cy="89.63" r="2.8"/>
+    <!-- BRAS D'ANCRAGE : c'est lui qui interdit l'élan du buste -->
+    <line class="mo-limb" x1="79.05" y1="89.63" x2="63.71" y2="80.24"/>
+    <circle class="mo-joint" cx="63.71" cy="80.24" r="2.6"/>
+    <line class="mo-limb" x1="63.71" y1="80.24" x2="56" y2="64"/>
+    <circle class="mo-hand" cx="56" cy="64" r="3"/>
+    <!-- BASSIN ET JAMBES -->
+    <line class="mo-body" x1="98.56" y1="112.54" x2="109.44" y2="107.46"/>
+    <line class="mo-body" x1="98.56" y1="112.54" x2="96" y2="136"/>
+    <line class="mo-body" x1="96" y1="136" x2="96" y2="158"/>
+    <line class="mo-body" x1="109.44" y1="107.46" x2="112" y2="134"/>
+    <line class="mo-body" x1="112" y1="134" x2="114" y2="158"/>
+    <line class="mo-body" x1="90" y1="160" x2="102" y2="160"/>
+    <line class="mo-body" x1="108" y1="160" x2="120" y2="160"/>`,
+  parts: [
+    {
+      /* BRAS LIBRE : 90° dans l'espace, de la verticale à
+         l'horizontale — soit 140° par rapport au tronc incliné. */
+      o: "104.43px 77.79px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(-15deg)"], [10.67, "rotate(-30deg)"],
+          [16, "rotate(-45deg)"], [21.33, "rotate(-60deg)"], [26.67, "rotate(-75deg)"],
+          [32, "rotate(-90deg)"], [42, "rotate(-90deg)"],
+          [49.67, "rotate(-75deg)"], [57.33, "rotate(-60deg)"], [65, "rotate(-45deg)"],
+          [72.67, "rotate(-30deg)"], [80.33, "rotate(-15deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      muscleNom: "Deltoïde moyen",
+      muscle: `<circle cx="109" cy="82" r="5"/>`,
+      svg: `
+        <line class="mo-limb" x1="104.43" y1="77.79" x2="104.43" y2="95.79"/>
+        <circle class="mo-joint" cx="104.43" cy="95.79" r="2.6"/>
+        <line class="mo-limb" x1="104.43" y1="95.79" x2="104.43" y2="113.79"/>
+        <circle class="mo-hand" cx="104.43" cy="113.79" r="3"/>
+        <line class="mo-bar2" x1="98.43" y1="113.79" x2="110.43" y2="113.79"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M130 120 L142 108 M139.52 115.42 L142 108 L134.58 110.48"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M142 108 L130 120 M132.48 112.58 L130 120 L137.42 117.52"/>` }
+  ]
+};
