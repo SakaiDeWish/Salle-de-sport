@@ -148,7 +148,8 @@ function renderDedicatedMotion(ex, spec) {
     .concat(collectPartMuscleNames(spec.parts || []))
     .filter(Boolean);
 
-  return `<figure class="motion-wrap motion-dedie" style="--mo-dur:${spec.dur}s;--mo-k:1"
+  return `<figure class="motion-wrap motion-dedie" style="--mo-dur:${spec.dur}s;--mo-k:1${
+      spec.hauteur ? `;--mo-h:${spec.hauteur}px` : ""}"
       role="img" aria-label="Schéma animé du mouvement : ${esc(ex.nom)}. ${esc(spec.alt || "")}">
     ${styleTag}
     <svg viewBox="${spec.vb}" preserveAspectRatio="xMidYMid meet">

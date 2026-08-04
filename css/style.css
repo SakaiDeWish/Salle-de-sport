@@ -2064,7 +2064,11 @@ body { max-width: 100%; }
 /* =========================================================
    V10 — Schémas animés dédiés (relecture exercice par exercice)
    ========================================================= */
-.motion-dedie svg { max-height: 190px; }
+/* 190 px de haut suffisent à tous les schémas dédiés sauf un : le burpee
+   est plus haut que large (116 × 146) là où les autres sont deux fois
+   plus larges que hauts. --mo-h lui laisse la place ; sans cette
+   variable la valeur reste 190 px, à l'identique, pour tous les autres. */
+.motion-dedie svg { max-height: var(--mo-h, 190px); }
 .motion-dedie .mo-anim {
   animation-duration: calc(var(--mo-dur) / var(--mo-k));
   animation-timing-function: ease-in-out;
