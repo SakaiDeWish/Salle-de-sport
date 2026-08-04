@@ -9092,7 +9092,10 @@ EXERCISE_MOTIONS["kickback-triceps"] = {
    105,7 -> 95,2 -> 86,5 -> 79,5. La main reste au sol partout.
    ========================================================= */
 EXERCISE_MOTIONS["pompes-diamant"] = {
-  vb: "42 96 158 62",
+  /* Cadre élargi de 5 à gauche : la tête sortait de 2,06 du viewBox au
+     bas de la pompe. Invisible tant que le schéma était rendu large,
+     visible dès la largeur réelle d'une fiche. */
+  vb: "37 96 163 62",
   dur: 3.4,
   phases: { ecc: [0, 44], con: [52, 84] },
   alt: "En planche, mains jointes sous la poitrine : le corps descend d'un bloc jusqu'à ce que la poitrine touche les mains, coudes le long du corps, puis repousse le sol.",
@@ -10644,7 +10647,10 @@ EXERCISE_MOTIONS["wall-sit"] = {
    (73.04,85.77).
    ========================================================= */
 EXERCISE_MOTIONS["squat-jump"] = {
-  vb: "50 10 60 146",
+  /* Cadre corrigé : le contenu allait de x 35,96 à 106 et de y 7,72 à
+     150, alors que le viewBox déclarait x 50..110 et y 10..156. La main
+     était rognée de 2,28 en haut, là où la hauteur contraint le rendu. */
+  vb: "33 5 76 148",
   dur: 5.0,
   phases: { con: [24, 36], ecc: [60, 72] },
   alt: "De profil : descente en squat, extension explosive jusqu'au décollage sur la pointe des pieds, phase aérienne en trajectoire parabolique, puis réception amortie jusqu'au squat avant de se relever.",
@@ -15368,7 +15374,9 @@ EXERCISE_MOTIONS["releve-jambes-sol"] = {
    TEMPO. Fermeture 34 %, ouverture 44 % : « redescends en contrôlant ».
    ───────────────────────────────────────────────────────────── */
 EXERCISE_MOTIONS["v-ups"] = {
-  vb: "28 78 140 70",
+  /* Cadre remonté de 5 : la main sortait de 2,80 au-dessus du viewBox
+     à la fermeture du V. */
+  vb: "28 73 140 75",
   dur: 3.6,
   phases: { con: [0, 34], ecc: [44, 88] },
   alt: "De profil allongé sur le dos bras tendus derrière la tête : le tronc et les jambes tendues se lèvent ensemble de 69° chacun jusqu'à ce que les mains touchent les pieds, formant un V fermé à 41,78°.",
