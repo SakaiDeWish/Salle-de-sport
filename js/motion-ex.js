@@ -16466,3 +16466,304 @@ EXERCISE_MOTIONS["hyperextension-inversee"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M168 98 L168 138 M163 131 L168 138 L173 131"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   136. BURPEES
+        (burpees)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   LE SEUL VRAI CYCLE DE LA BIBLIOTHÈQUE. Les 135 schémas précédents
+   sont des aller-retours : une phase concentrique, une excentrique, le
+   même chemin parcouru deux fois. Le burpee n'est pas ça. C'est une
+   SÉQUENCE de quatre actions distinctes qui se referme sur elle-même —
+   debout, mains au sol, pompe, saut, debout. Le retour n'est pas la
+   descente à l'envers : la pompe n'a pas de symétrique. C'est le seul
+   exercice dont l'animation boucle pour une raison physiologique et
+   non graphique.
+
+   POSITION DE DÉPART. Debout, pieds à plat, bras le long du corps.
+   Hanche à 94, épaule à 65, tête à 54 : 103 unités du sol au sommet du
+   crâne, soit 180 cm — l'échelle habituelle de la bibliothèque.
+
+   MATÉRIEL. Aucun. Le sol à 150 est le seul appui, et il change de rôle
+   trois fois : appui PIEDS (0 → 14 %), appui MAINS (14 → 58 %), appui
+   PIEDS de nouveau (58 → 100 %), avec deux instants sans aucun appui —
+   l'envol des pieds et le saut.
+
+   ARTICULATIONS MOBILES : toutes. Hanche, genou, cheville, épaule,
+   coude. C'est le seul schéma où aucune articulation n'est bloquée, et
+   c'est exactement ce que « corps entier » veut dire.
+
+   DIRECTION ET PLAN. Tout est sagittal, du début à la fin. La vue de
+   profil est donc EXACTE : aucun raccourcissement à déclarer, aucun
+   facteur de projection, contrairement aux schémas 117 ou 119. Tous les
+   segments se dessinent à leur vraie longueur à chaque instant.
+
+   DEUX CHAÎNES FERMÉES SUCCESSIVES, RÉSOLUES SÉPARÉMENT.
+   • Appui pieds : la cheville est clouée, on impose la hauteur de
+     hanche, le genou est l'intersection des cercles de rayon 26 —
+     branche AVANT, la seule anatomique.
+   • Appui mains : la main est clouée en (112 150), on impose la hauteur
+     d'épaule, le coude est l'intersection des cercles de rayon 18 —
+     branche ARRIÈRE, celle du coude qui recule le long des côtes.
+   Écart de la main à sa cible : 0,0000 aux QUINZE poses où elle doit
+   être plantée.
+
+   LA PLANCHE N'EST PAS HORIZONTALE, ET C'EST CALCULABLE. Mains au sol,
+   l'épaule est à une longueur de bras du sol, soit 114. Pointe de pied
+   au sol, la cheville est 8 au-dessus, soit 142. Le corps
+   épaule→cheville mesure 29+26+26 = 81. Il descend donc de 28 sur 81,
+   ce qui fait asin(28/81) = 20,22° sous l'horizontale. Un burpee ne met
+   jamais le dos à plat : il le met en pente.
+
+   L'ERREUR N°1 DE LA FICHE A DONC UN REPÈRE — ET J'AI D'ABORD TRACÉ LE
+   MAUVAIS. « Dos qui s'effondre lors du passage en planche » : le trait
+   pointillé matérialise l'axe que le corps doit doubler. Je l'ai tracé
+   de l'épaule à la POINTE DE PIED, et au rendu il passait nettement
+   sous le dos, comme une deuxième ligne parallèle. Normal : le corps
+   s'arrête à la CHEVILLE (36 142), pas à la pointe (31,87 150), qui est
+   8 plus bas. L'axe correct est épaule→cheville, et il se superpose
+   alors exactement au corps en position de planche. Il est en outre
+   tronqué à x = 84 pour ne pas traverser le bonhomme debout.
+
+   BAS DE POMPE : PIVOT, PAS TRANSLATION. À la descente le corps reste
+   rigide et tourne autour de la POINTE DE PIED, qui ne bouge pas.
+   L'épaule descend de 114 à 130 en décrivant un arc de rayon 87,83
+   centré sur la pointe : elle AVANCE donc de 5,41 en même temps qu'elle
+   descend de 16. C'est ce qui creuse l'écart au bras — la main reste en
+   112, l'épaule passe en 117,41, et le coude doit absorber 20,72 de
+   distance au lieu de 36, soit 70° de flexion.
+
+   POURQUOI LES TRANSITIONS SONT POSÉES À LA MAIN. Entre l'accroupi
+   (14 %) et la planche (26 %) le fémur passe de +29° à +168° : 139° en
+   6 % du cycle. J'ai d'abord laissé le moteur interpoler en plaçant une
+   pose intermédiaire aux angles moyens — et la pointe de pied s'est
+   retrouvée à y = 170,71, soit VINGT UNITÉS SOUS LE SOL. L'interpolation
+   angulaire d'une chaîne de trois segments ne connaît aucune contrainte
+   de sol. Les poses de vol sont donc définies par la TRAJECTOIRE DE LA
+   CHEVILLE, imposée à raser le sol, le genou étant résolu derrière.
+
+   CE QUE FAIT VRAIMENT UN PIED QUI QUITTE LE SOL. Deuxième version,
+   deuxième erreur : en faisant tourner le pied autour de la CHEVILLE au
+   décollage, l'orteil s'enfonçait de 5 dans le béton. Un pied ne quitte
+   pas le sol comme ça — il pivote sur la POINTE pendant que le talon
+   monte, et ne décolle qu'ensuite. Les poses 15,5 %, 16,2 % et 56 %
+   sont construites ainsi : pointe clouée, cheville relevée. Même chose
+   à l'atterrissage, en sens inverse.
+
+   LES DEUX ENVOLS NE SONT PAS SYMÉTRIQUES. À l'aller le genou n'est
+   fléchi que de 18° : on projette les jambes loin. Au retour il l'est de
+   28° : on ramène les pieds SOUS soi, ce qui demande de raccourcir le
+   levier. Les deux poses se ressemblent, elles ne sont pas identiques,
+   et c'est mesuré, pas décoré.
+
+   AMPLITUDES RÉELLES. Hanche : de 94 (debout) à 134,63 (bas de pompe),
+   40,63 unités de descente, soit 71 cm. Saut : 12 unités d'envol,
+   21 cm — la hauteur d'un burpee de conditionnement, pas d'un test de
+   détente. Pieds : la pointe voyage de 100,06 à 31,87, soit 68,19
+   unités = 119 cm de projection arrière.
+
+   DEUX CORRECTIONS DE LISIBILITÉ IMPOSÉES PAR LE RENDU.
+   • Bras au repos : dessiné pendant vertical, il recouvrait EXACTEMENT
+     le tronc — même x, même longueur — et le bonhomme debout n'avait
+     plus de bras visible. Il est désormais posé à 80°/85° et non
+     90°/90°, ce qui le place 3 à 5 unités en avant du tronc. Ce n'est
+     pas un décalage de dessin : c'est la pose, et c'est ainsi qu'un bras
+     pend réellement.
+   • Tête ANTÉRIEURE. Bras au ciel, le membre montait pile à travers la
+     tête. La bibliothèque a déjà réglé ce cas au développé militaire, où
+     la tête est posée 8 à 10 en avant de l'axe des épaules. Même
+     convention ici : centre à 8 en avant, si bien que le bras tendu
+     passe DERRIÈRE elle en la frôlant.
+
+   MUSCLES ET LA LIMITE DU MOTEUR, DÉCLARÉE. Le moteur n'offre qu'UNE
+   fenêtre de surlignage par cycle (moMuscleKeyframes ne lit que
+   phases.con). Or un burpee a DEUX bouffées concentriques séparées : les
+   pectoraux à la remontée de pompe, les quadriceps au saut. La fenêtre
+   retenue est la MOITIÉ MONTANTE (46 → 92 %), pendant laquelle les deux
+   se contractent successivement : l'affirmation « ces muscles tirent
+   pendant cette fenêtre » est vraie pour les deux. Ce qui est perdu, et
+   que je signale plutôt que de le maquiller, c'est la SÉPARATION des
+   deux bouffées — le schéma ne dit pas que le pectoral finit avant que
+   le quadriceps commence.
+
+   ÉCHELLE DE RENDU : LA SEULE MODIFICATION DU MOTEUR DE TOUTE LA REVUE.
+   L'enveloppe du mouvement fait 105 × 133 unités là où un schéma
+   ordinaire fait 138 × 76 : le burpee est le seul plus haut que large.
+   Sous le plafond commun de 190 px il se dessinait à 1,03 px par unité,
+   moitié moins que tous les autres, et devenait illisible. J'ai donc
+   ajouté une propriété OPTIONNELLE `hauteur`, rendue par la variable CSS
+   --mo-h. La règle devient max-height: var(--mo-h, 190px) : en l'absence
+   de la variable, la valeur reste 190 px au pixel près, et les 135 autres
+   schémas sont strictement inchangés. Réduire la boîte à la place aurait
+   été mentir sur l'amplitude.
+
+   TEMPO. 5 s de cycle. Descente 0 → 36 %, remontée 46 → 92 %, et les
+   deux jetés de pieds tiennent chacun dans 6 % = 0,3 s : c'est
+   balistique, et ça doit se voir. « Rythme irrégulier » étant une erreur
+   listée, la grille est régulière et la boucle se referme exactement sur
+   la pose de départ (100 % = 0 %).
+
+   ÉTAPE 3 — VÉRIFICATION, RÉSIDU COMPRIS. Main plantée : 0,0000 aux
+   quinze poses d'appui, et immobile à 0,1 près sur tout le palier
+   mesuré au rendu. Rien ne sort du cadre. Sous le sol : le pire point
+   est passé de 18,86 à 1,59 unité au fil de treize keyframes ajoutées.
+   Ce résidu de 1,59 — 2,7 px à l'échelle de rendu, moins d'une
+   demi-épaisseur de trait — est une oscillation peu profonde autour du
+   contact exact, inhérente à l'interpolation angulaire d'une chaîne de
+   quatre segments. Je le déclare au lieu de l'annoncer nul.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["burpees"] = {
+  vb: "28 10 116 146",
+  /* Le seul schéma de la bibliothèque qui demande plus de 150 px : son
+     enveloppe fait 116 × 146 là où un schéma ordinaire fait 138 × 76.
+     Au plafond commun il se dessinait à 1,03 px par unité, moitié moins
+     que les autres. --mo-h n'existe que pour lui ; tous les autres
+     gardent exactement l'ancienne valeur par défaut. */
+  hauteur: 250,
+  dur: 5,
+  phases: { ecc: [0, 36], con: [46, 92] },
+  alt: "De profil : debout, on descend mains au sol, on jette les pieds en arrière en position de planche, on fait une pompe, on ramène les pieds sous soi d'un saut et on saute verticalement bras au ciel, puis le cycle recommence.",
+  fixe: `
+    <line class="mo-ground" x1="26" y1="150" x2="140" y2="150"/>
+    <!-- AXE DE LA PLANCHE : épaule (112 114) -> CHEVILLE (36 142), soit
+         20,22° sous l'horizontale. C'est l'axe ÉPAULE-CHEVILLE, pas
+         épaule-pointe : le corps s'arrête à la cheville, et viser la
+         pointe décalait le trait sous le dos au lieu de le doubler.
+         Tronqué à x=84 pour ne pas traverser le bonhomme debout. -->
+    <line class="mo-rom" x1="36" y1="142" x2="84" y2="124.31"/>`,
+  parts: [
+    {
+      /* TRONC : seule pièce qui TRANSLATE — le bassin voyage de 94 à
+         134,63 et remonte à 82 au sommet du saut. Tout le reste est
+         accroché dessus. */
+      o: "92px 94px",
+      k: [[0, "translate(0px,0px) rotate(0deg)"], [3.5, "translate(-2px,4.5px) rotate(18deg)"], [7, "translate(-4px,8px) rotate(40deg)"],
+              [14, "translate(-8px,18px) rotate(100deg)"], [15.5, "translate(-7.75px,19px) rotate(96.5deg)"], [16.2, "translate(-7.65px,19.4px) rotate(95.3deg)"],
+              [17, "translate(-7.5px,20px) rotate(93deg)"], [20, "translate(-7px,22px) rotate(87deg)"], [23, "translate(-7.1px,26px) rotate(79deg)"],
+              [26, "translate(-7.21px,30.02px) rotate(69.78deg)"], [27, "translate(-6.58px,31.35px) rotate(71.2deg)"], [28.5, "translate(-5.99px,32.67px) rotate(72.61deg)"],
+              [31, "translate(-4.93px,35.32px) rotate(75.38deg)"], [33.5, "translate(-4px,37.97px) rotate(78.11deg)"], [36, "translate(-3.22px,40.63px) rotate(80.81deg)"],
+              [38.5, "translate(-4px,37.97px) rotate(78.11deg)"], [41, "translate(-4.93px,35.32px) rotate(75.38deg)"], [43.5, "translate(-5.99px,32.67px) rotate(72.61deg)"],
+              [45, "translate(-6.58px,31.35px) rotate(71.2deg)"], [46, "translate(-7.21px,30.02px) rotate(69.78deg)"], [49, "translate(-7.1px,26px) rotate(79deg)"],
+              [52, "translate(-7px,22px) rotate(87deg)"], [55, "translate(-7.5px,20px) rotate(93deg)"], [56, "translate(-7.6px,19.3px) rotate(95.8deg)"],
+              [56.5, "translate(-7.75px,19px) rotate(96.5deg)"], [58, "translate(-8px,18px) rotate(100deg)"], [68, "translate(-3px,10px) rotate(20deg)"],
+              [80, "translate(0px,-12px) rotate(0deg)"], [90, "translate(-4px,18px) rotate(30deg)"], [95, "translate(-2px,9px) rotate(15deg)"],
+              [97.5, "translate(-1px,4.5px) rotate(8deg)"], [100, "translate(0px,0px) rotate(0deg)"]],
+      muscleNom: ["Pectoraux", "Gainage"],
+      muscle: `
+        <circle cx="97" cy="70" r="4"/>
+        <circle cx="96" cy="82" r="3.5"/>`,
+      svg: `
+        <line class="mo-body" x1="92" y1="94" x2="92" y2="65"/>
+        <line class="mo-body" x1="92" y1="65" x2="96" y2="59.5"/>
+        <circle class="mo-head" cx="100" cy="54" r="7"/>
+        <circle class="mo-joint" cx="92" cy="94" r="3"/>
+        <circle class="mo-joint" cx="92" cy="65" r="2.8"/>`,
+      children: [
+        {
+          /* BRAS, relatif au tronc */
+          o: "92px 65px",
+          k: [[0, "rotate(0deg)"], [3.5, "rotate(-24deg)"], [7, "rotate(-65deg)"],
+              [14, "rotate(-65.35deg)"], [15.5, "rotate(-64.26deg)"], [16.2, "rotate(-63.77deg)"],
+              [17, "rotate(-64.05deg)"], [20, "rotate(-65deg)"], [23, "rotate(-57.83deg)"],
+              [26, "rotate(-59.78deg)"], [27, "rotate(-40.6deg)"], [28.5, "rotate(-32.49deg)"],
+              [31, "rotate(-20.5deg)"], [33.5, "rotate(-10.45deg)"], [36, "rotate(-0.81deg)"],
+              [38.5, "rotate(-10.45deg)"], [41, "rotate(-20.5deg)"], [43.5, "rotate(-32.49deg)"],
+              [45, "rotate(-40.6deg)"], [46, "rotate(-59.78deg)"], [49, "rotate(-57.83deg)"],
+              [52, "rotate(-65deg)"], [55, "rotate(-64.05deg)"], [56, "rotate(-63.51deg)"],
+              [56.5, "rotate(-64.26deg)"], [58, "rotate(-65.35deg)"], [68, "rotate(-125deg)"],
+              [80, "rotate(-170deg)"], [90, "rotate(-70deg)"], [95, "rotate(-30deg)"],
+              [97.5, "rotate(-10deg)"], [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="92" y1="65" x2="95.13" y2="82.73"/>`,
+          children: [
+            {
+              /* AVANT-BRAS, relatif au bras */
+              o: "95.13px 82.73px",
+              k: [[0, "rotate(0deg)"], [3.5, "rotate(3deg)"], [7, "rotate(10deg)"],
+              [14, "rotate(-52.36deg)"], [15.5, "rotate(-45.88deg)"], [16.2, "rotate(-43.92deg)"],
+              [17, "rotate(-38.05deg)"], [20, "rotate(-22.69deg)"], [23, "rotate(-22.94deg)"],
+              [26, "rotate(-5deg)"], [27, "rotate(-43.27deg)"], [28.5, "rotate(-59.23deg)"],
+              [31, "rotate(-82deg)"], [33.5, "rotate(-99.68deg)"], [36, "rotate(-114.73deg)"],
+              [38.5, "rotate(-99.68deg)"], [41, "rotate(-82deg)"], [43.5, "rotate(-59.23deg)"],
+              [45, "rotate(-43.27deg)"], [46, "rotate(-5deg)"], [49, "rotate(-22.94deg)"],
+              [52, "rotate(-22.69deg)"], [55, "rotate(-38.05deg)"], [56, "rotate(-45.34deg)"],
+              [56.5, "rotate(-45.88deg)"], [58, "rotate(-52.36deg)"], [68, "rotate(-15deg)"],
+              [80, "rotate(-5deg)"], [90, "rotate(15deg)"], [95, "rotate(5deg)"],
+              [97.5, "rotate(-1deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="95.13" cy="82.73" r="2.6"/>
+                <line class="mo-limb" x1="95.13" y1="82.73" x2="96.69" y2="100.66"/>
+                <circle class="mo-hand" cx="96.69" cy="100.66" r="3"/>`
+            }
+          ]
+        },
+        {
+          /* FÉMUR, relatif au tronc. Le saut de −161,04° à −7,00°
+             entre 14 % et 20 % EST le jeté de pieds : 139° absolus
+             en 0,3 s. */
+          o: "92px 94px",
+          k: [[0, "rotate(0deg)"], [3.5, "rotate(-44.31deg)"], [7, "rotate(-77.02deg)"],
+              [14, "rotate(-161.04deg)"], [15.5, "rotate(-168.68deg)"], [16.2, "rotate(-163.73deg)"],
+              [17, "rotate(-134.6deg)"], [20, "rotate(-98.08deg)"], [23, "rotate(-58.72deg)"],
+              [26, "rotate(-0deg)"], [27, "rotate(-0deg)"], [28.5, "rotate(-0deg)"],
+              [31, "rotate(-0deg)"], [33.5, "rotate(-0deg)"], [36, "rotate(-0deg)"],
+              [38.5, "rotate(-0deg)"], [41, "rotate(-0deg)"], [43.5, "rotate(-0deg)"],
+              [45, "rotate(-0deg)"], [46, "rotate(-0deg)"], [49, "rotate(-58.14deg)"],
+              [52, "rotate(-97.54deg)"], [55, "rotate(-137.94deg)"], [56, "rotate(-165.82deg)"],
+              [56.5, "rotate(-168.68deg)"], [58, "rotate(-161.04deg)"], [68, "rotate(-60.01deg)"],
+              [80, "rotate(0deg)"], [90, "rotate(-85.54deg)"], [95, "rotate(-51.79deg)"],
+              [97.5, "rotate(-33.19deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Quadriceps",
+          muscle: `<circle cx="97" cy="106" r="4"/>`,
+          svg: `<line class="mo-limb" x1="92" y1="94" x2="92" y2="120"/>`,
+          children: [
+            {
+              /* TIBIA, relatif au fémur */
+              o: "92px 120px",
+              k: [[0, "rotate(0deg)"], [3.5, "rotate(47.8deg)"], [7, "rotate(63.65deg)"],
+              [14, "rotate(95.6deg)"], [15.5, "rotate(105.35deg)"], [16.2, "rotate(113.88deg)"],
+              [17, "rotate(107.64deg)"], [20, "rotate(100.01deg)"], [23, "rotate(75deg)"],
+              [26, "rotate(0deg)"], [27, "rotate(0deg)"], [28.5, "rotate(0deg)"],
+              [31, "rotate(0deg)"], [33.5, "rotate(0deg)"], [36, "rotate(0deg)"],
+              [38.5, "rotate(0deg)"], [41, "rotate(0deg)"], [43.5, "rotate(0deg)"],
+              [45, "rotate(0deg)"], [46, "rotate(0deg)"], [49, "rotate(78.65deg)"],
+              [52, "rotate(108.41deg)"], [55, "rotate(117.95deg)"], [56, "rotate(110.37deg)"],
+              [56.5, "rotate(105.35deg)"], [58, "rotate(95.6deg)"], [68, "rotate(71.86deg)"],
+              [80, "rotate(0deg)"], [90, "rotate(97.65deg)"], [95, "rotate(68.25deg)"],
+              [97.5, "rotate(47.97deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="92" cy="120" r="2.6"/>
+                <line class="mo-limb" x1="92" y1="120" x2="92" y2="146"/>`,
+              children: [
+                {
+                  /* PIED, relatif au tibia. 160° en vol (l'orteil
+                     traîne), 117° à l'appui (l'orteil est pointé). */
+                  o: "92px 146px",
+                  k: [[0, "rotate(0deg)"], [3.5, "rotate(-21.49deg)"], [7, "rotate(-26.63deg)"],
+              [14, "rotate(-34.56deg)"], [15.5, "rotate(-5.41deg)"], [16.2, "rotate(13.16deg)"],
+              [17, "rotate(57.56deg)"], [20, "rotate(34.68deg)"], [23, "rotate(10.34deg)"],
+              [26, "rotate(21.1deg)"], [27, "rotate(21.1deg)"], [28.5, "rotate(21.1deg)"],
+              [31, "rotate(21.1deg)"], [33.5, "rotate(21.1deg)"], [36, "rotate(21.1deg)"],
+              [38.5, "rotate(21.1deg)"], [41, "rotate(21.1deg)"], [43.5, "rotate(21.1deg)"],
+              [45, "rotate(21.1deg)"], [46, "rotate(21.1deg)"], [49, "rotate(6.1deg)"],
+              [52, "rotate(25.74deg)"], [55, "rotate(50.6deg)"], [56, "rotate(8.26deg)"],
+              [56.5, "rotate(-5.41deg)"], [58, "rotate(-34.56deg)"], [68, "rotate(-31.84deg)"],
+              [80, "rotate(43.61deg)"], [90, "rotate(-42.12deg)"], [95, "rotate(-31.46deg)"],
+              [97.5, "rotate(-22.78deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <circle class="mo-joint" cx="92" cy="146" r="2.6"/>
+                    <line class="mo-limb" x1="92" y1="146" x2="100.06" y2="150"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M70 96 L52 124 M58.76 119.74 L52 124 L53.08 116.08"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M52 124 L70 96 M63.24 100.26 L70 96 L68.92 103.92"/>` }
+  ]
+};
