@@ -4112,9 +4112,22 @@ EXERCISE_MOTIONS["roulette-abdos"] = {
     <line class="mo-limb" x1="160" y1="140" x2="172" y2="140"/>`,
   parts: [
     {
-      /* CUISSE : rotation autour du GENOU. −67,60°. */
+      /* CUISSE : rotation autour du GENOU. −67,60°.
+         GRILLE DENSIFIÉE ET BRAS RÉSOLU. Avec les seules poses extrêmes,
+         l'interpolation linéaire des trois rotations faisait DESCENDRE le
+         centre de la roue de 130 à 132,3 en cours de déroulé : la roue
+         s'enfonçait de 2,3 dans le sol, et le rayon dessiné suivait
+         jusqu'à 2,09 sous le trait. Le centre d'une roue qui roule est à
+         hauteur de rayon, toujours. L'angle du BRAS est donc désormais
+         RÉSOLU à chaque échantillon pour tenir le centre à 130 pile.
+         La rotation propre de la roue suit la DISTANCE parcourue et non
+         le temps : −144,96° sur le premier quart contre −51,05° sur le
+         dernier, parce que la roue avance 25,3 puis 8,9. Un roulement
+         uniforme en temps aurait fait patiner la jante. */
       o: "140px 134px",
-      k: [[0, "rotate(0deg)"], [50, "rotate(-67.6deg)"], [58, "rotate(-67.6deg)"],
+      k: [[0, "rotate(0deg)"], [12.5, "rotate(-16.9deg)"], [25, "rotate(-33.8deg)"],
+          [37.5, "rotate(-50.7deg)"], [50, "rotate(-67.6deg)"], [58, "rotate(-67.6deg)"],
+          [66, "rotate(-50.7deg)"], [74, "rotate(-33.8deg)"], [82, "rotate(-16.9deg)"],
           [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
       svg: `<line class="mo-limb" x1="140" y1="134" x2="138" y2="108"/>`,
       children: [
@@ -4122,7 +4135,9 @@ EXERCISE_MOTIONS["roulette-abdos"] = {
           /* TRONC : segment RIGIDE. Il finit aligné avec la cuisse,
              jamais au-delà — c'est la limite de sécurité. */
           o: "138px 108px",
-          k: [[0, "rotate(0deg)"], [50, "rotate(51.42deg)"], [58, "rotate(51.42deg)"],
+          k: [[0, "rotate(0deg)"], [12.5, "rotate(12.86deg)"], [25, "rotate(25.71deg)"],
+              [37.5, "rotate(38.56deg)"], [50, "rotate(51.42deg)"], [58, "rotate(51.42deg)"],
+              [66, "rotate(38.56deg)"], [74, "rotate(25.71deg)"], [82, "rotate(12.86deg)"],
               [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
           muscleNom: ["Grand droit (anti-extension)", "Grand dorsal"],
           muscle: `
@@ -4137,7 +4152,9 @@ EXERCISE_MOTIONS["roulette-abdos"] = {
               /* BRAS TENDUS : +85,82° relatif. Ils restent droits,
                  le coude ne fléchit pas. */
               o: "111.5px 90px",
-              k: [[0, "rotate(0deg)"], [50, "rotate(85.82deg)"], [58, "rotate(85.82deg)"],
+              k: [[0, "rotate(0deg)"], [12.5, "rotate(28.6deg)"], [25, "rotate(48.22deg)"],
+                  [37.5, "rotate(67.13deg)"], [50, "rotate(85.75deg)"], [58, "rotate(85.75deg)"],
+                  [66, "rotate(67.13deg)"], [74, "rotate(48.22deg)"], [82, "rotate(28.6deg)"],
                   [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
               svg: `
                 <circle class="mo-joint" cx="111.5" cy="90" r="2.8"/>
@@ -4148,7 +4165,9 @@ EXERCISE_MOTIONS["roulette-abdos"] = {
                      distance parcourue. Le rayon dessiné rend le
                      roulement visible — sans lui, la roue glisserait. */
                   o: "111.5px 130px",
-                  k: [[0, "rotate(0deg)"], [50, "rotate(-367.6deg)"], [58, "rotate(-367.6deg)"],
+                  k: [[0, "rotate(0deg)"], [12.5, "rotate(-144.96deg)"], [25, "rotate(-241.64deg)"],
+                      [37.5, "rotate(-317.08deg)"], [50, "rotate(-368.13deg)"], [58, "rotate(-368.13deg)"],
+                      [66, "rotate(-317.08deg)"], [74, "rotate(-241.64deg)"], [82, "rotate(-144.96deg)"],
                       [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
                   svg: `
                     <circle class="mo-plate-o" cx="111.5" cy="130" r="10"/>
@@ -4780,25 +4799,53 @@ EXERCISE_MOTIONS["fentes-bulgares"] = {
                deux flèches indiquent les deux jambes plutôt qu'une
                montée et une descente. Les deux jambes portent donc
                des animations en OPPOSITION DE PHASE.
-   ROM       : hanche de 179,7° (jambe tendue) à 45,2° (genou sous la
-               poitrine) ; genou de 180,0° à 55,2°. Le genou fléchi
-               s'arrête 11 unités au-dessus du sol et le pied 2 : on
-               reste au ras du sol sans le toucher, ce qui est
-               l'exécution réelle.
    Agonistes : GAINAGE avant tout — grand droit, obliques, transverse
                — pour immobiliser le tronc, plus les FLÉCHISSEURS DE
                HANCHE qui ramènent le genou. Composante cardio forte.
    Distinction : PLANCHE DYNAMIQUE à jambes alternées, tronc
                immobile. ≠ planche (statique, rien ne bouge),
                ≠ burpee (le corps entier se déplace, aucun point fixe).
-   GÉOMÉTRIE (calculée) — main(66,140) et bras vertical de 32 ->
-   épaule(66,108) ; tronc 32,6 -> hanche(98,114). Cuisse et tibia 26,5.
-   Jambe tendue : genou(124,119), cheville(150,124).
-   Jambe fléchie : genou(76.2,129), pied(100,138).
-   -> cuisse +134,58°, tibia −124,75° relatif.
+
+   DEUX ERREURS CORRIGÉES APRÈS COUP, TOUTES DEUX RÉVÉLÉES PAR LE
+   BALAYAGE DU SOL APPLIQUÉ À TOUTE LA BIBLIOTHÈQUE.
+
+   1. LA JAMBE TENDUE FLOTTAIT. Elle finissait cheville(150,124), soit
+   SEIZE unités au-dessus d'un sol tracé à 140. En planche la pointe
+   de pied touche le sol : c'est elle qui porte. La jambe tendue est
+   donc recalculée droite depuis la hanche jusqu'à une cheville à 8 du
+   sol — (147,81 132) — prolongée d'un pied de 9 dont la pointe est
+   EN 140, sur le sol. Un pied a d'ailleurs été ajouté aux deux jambes :
+   sans lui la jambe s'arrêtait en l'air, ce qui est précisément ce qui
+   rendait le défaut invisible.
+
+   2. LE TRAJET TRAVERSAIT LE SOL DE 8,12. L'ancienne version ne
+   vérifiait que les deux poses extrêmes — genou à 11 du sol, pied à 2 —
+   et concluait « au ras du sol sans le toucher ». C'était vrai AUX
+   EXTRÊMES et faux entre les deux : à 26 % du cycle la jambe plongeait
+   de 8,12 sous le sol. Vérifier les bornes d'une amplitude ne dit rien
+   du chemin parcouru entre elles.
+
+   POURQUOI LE GENOU FRÔLE FORCÉMENT LE SOL. La hanche est à 26 du sol
+   et le fémur mesure 26,48 : quand le fémur passe la verticale, le
+   genou est nécessairement à 140,48, soit 0,48 sous le trait. C'est un
+   MINIMUM GÉOMÉTRIQUE, pas une négligence — et c'est aussi la réalité
+   du mouvement, où le genou balaie au ras du sol. Ce qui devait être
+   corrigé, c'est le TIBIA : il se replie désormais jusqu'à −138° au
+   passage bas (talon vers la fesse), ce qui tient la cheville à 19,8
+   au-dessus du sol au moment précis où elle plongeait avant.
+
+   GÉOMÉTRIE (calculée) — main(66,140), bras vertical de 32 ->
+   épaule(66,108) ; tronc 32,6 -> hanche(98,114). Cuisse et tibia 26,48,
+   pied 9. Jambe tendue : genou(122,90 123), cheville(147,81 132),
+   pointe(143,68 140). Genou armé : genou(73,55 124,18),
+   cheville(98 134,35), pointe(89,54 137,43).
+   Profil en cinq échantillons, marges au sol toutes positives sauf le
+   genou à −0,46 (le minimum géométrique ci-dessus).
    ========================================================= */
 EXERCISE_MOTIONS["mountain-climbers"] = {
-  vb: "48 86 130 66",
+  /* Cadre repris : la tête sortait de 1 à gauche, et le pied ajouté à
+     la jambe tendue porte désormais le contenu jusqu'à x=172. */
+  vb: "44 94 132 54",
   dur: 2.6,
   phases: { con: [0, 45], ecc: [55, 100] },
   alt: "En position de planche bras tendus : les genoux viennent alternativement sous la poitrine, au ras du sol, pendant que le tronc reste parfaitement immobile.",
@@ -4818,42 +4865,65 @@ EXERCISE_MOTIONS["mountain-climbers"] = {
   ],
   parts: [
     {
-      /* JAMBE A : tendue au départ, elle se replie à mi-cycle. */
+      /* JAMBE A : fémur, tibia et PIED. Le pied
+         était absent : la jambe s'arrêtait en l'air, ce qui masquait
+         que la pointe ne touchait pas le sol. */
       o: "98px 114px",
-      k: [[0, "rotate(0deg)"], [45, "rotate(134.58deg)"], [55, "rotate(134.58deg)"],
-          [100, "rotate(0deg)"]],
+      k: [[0, "rotate(0deg)"], [11.25, "rotate(34.13deg)"], [22.5, "rotate(68.13deg)"], [33.75, "rotate(105.13deg)"], [45, "rotate(137.53deg)"], [55, "rotate(137.53deg)"], [66.25, "rotate(105.13deg)"], [77.5, "rotate(68.13deg)"], [88.75, "rotate(34.13deg)"], [100, "rotate(0deg)"]],
       muscleNom: "Fléchisseurs de hanche",
       muscle: `<ellipse cx="104" cy="117" rx="6" ry="3"/>`,
-      svg: `<line class="mo-limb" x1="98" y1="114" x2="124" y2="119"/>`,
+      svg: `<line class="mo-limb" x1="98" y1="114" x2="122.9" y2="123"/>`,
       children: [
-        { o: "124px 119px",
-          k: [[0, "rotate(0deg)"], [45, "rotate(-124.75deg)"], [55, "rotate(-124.75deg)"],
-              [100, "rotate(0deg)"]],
+        {
+          o: "122.9px 123px",
+          k: [[0, "rotate(0deg)"], [11.25, "rotate(-69deg)"], [22.5, "rotate(-138deg)"], [33.75, "rotate(-140deg)"], [45, "rotate(-134.8deg)"], [55, "rotate(-134.8deg)"], [66.25, "rotate(-140deg)"], [77.5, "rotate(-138deg)"], [88.75, "rotate(-69deg)"], [100, "rotate(0deg)"]],
           svg: `
-            <circle class="mo-joint" cx="124" cy="119" r="2.6"/>
-            <line class="mo-limb" x1="124" y1="119" x2="150" y2="124"/>` }
+            <circle class="mo-joint" cx="122.9" cy="123" r="2.6"/>
+            <line class="mo-limb" x1="122.9" y1="123" x2="147.81" y2="132"/>`,
+          children: [
+            {
+              /* PIED : sans lui, le tibia replié pointait la cheville
+                 nue vers le sol. Il dorsifléchit de 40° au cours du
+                 trajet, ce qui garde la pointe au-dessus du sol. */
+              o: "147.81px 132px",
+              k: [[0, "rotate(0deg)"], [11.25, "rotate(10deg)"], [22.5, "rotate(20deg)"], [33.75, "rotate(30deg)"], [45, "rotate(40deg)"], [55, "rotate(40deg)"], [66.25, "rotate(30deg)"], [77.5, "rotate(20deg)"], [88.75, "rotate(10deg)"], [100, "rotate(0deg)"]],
+              svg: `<line class="mo-limb" x1="147.81" y1="132" x2="143.68" y2="140"/>`
+            }
+          ]
+        }
       ]
     },
     {
-      /* JAMBE B : EN OPPOSITION DE PHASE — repliée quand l'autre est
-         tendue. C'est l'alternance qui définit l'exercice. */
+      /* JAMBE B : fémur, tibia et PIED. Le pied
+         était absent : la jambe s'arrêtait en l'air, ce qui masquait
+         que la pointe ne touchait pas le sol. */
       o: "98px 114px",
-      k: [[0, "rotate(134.58deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"],
-          [100, "rotate(134.58deg)"]],
-      svg: `<line class="mo-body" x1="98" y1="114" x2="124" y2="119"/>`,
+      k: [[0, "rotate(137.53deg)"], [11.25, "rotate(105.13deg)"], [22.5, "rotate(68.13deg)"], [33.75, "rotate(34.13deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"], [66.25, "rotate(34.13deg)"], [77.5, "rotate(68.13deg)"], [88.75, "rotate(105.13deg)"], [100, "rotate(137.53deg)"]],
+      svg: `<line class="mo-body" x1="98" y1="114" x2="122.9" y2="123"/>`,
       children: [
-        { o: "124px 119px",
-          k: [[0, "rotate(-124.75deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"],
-              [100, "rotate(-124.75deg)"]],
+        {
+          o: "122.9px 123px",
+          k: [[0, "rotate(-134.8deg)"], [11.25, "rotate(-140deg)"], [22.5, "rotate(-138deg)"], [33.75, "rotate(-69deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"], [66.25, "rotate(-69deg)"], [77.5, "rotate(-138deg)"], [88.75, "rotate(-140deg)"], [100, "rotate(-134.8deg)"]],
           svg: `
-            <circle class="mo-joint" cx="124" cy="119" r="2.4"/>
-            <line class="mo-body" x1="124" y1="119" x2="150" y2="124"/>` }
+            <circle class="mo-joint" cx="122.9" cy="123" r="2.4"/>
+            <line class="mo-body" x1="122.9" y1="123" x2="147.81" y2="132"/>`,
+          children: [
+            {
+              /* PIED : sans lui, le tibia replié pointait la cheville
+                 nue vers le sol. Il dorsifléchit de 40° au cours du
+                 trajet, ce qui garde la pointe au-dessus du sol. */
+              o: "147.81px 132px",
+              k: [[0, "rotate(40deg)"], [11.25, "rotate(30deg)"], [22.5, "rotate(20deg)"], [33.75, "rotate(10deg)"], [45, "rotate(0deg)"], [55, "rotate(0deg)"], [66.25, "rotate(10deg)"], [77.5, "rotate(20deg)"], [88.75, "rotate(30deg)"], [100, "rotate(40deg)"]],
+              svg: `<line class="mo-body" x1="147.81" y1="132" x2="143.68" y2="140"/>`
+            }
+          ]
+        }
       ]
     }
   ],
   arrows: [
-    { phase: "con", svg: `<path class="mo-arr" d="M138 96 L112 96 M119 91 L112 96 L119 101"/>` },
-    { phase: "ecc", svg: `<path class="mo-arr" d="M112 96 L138 96 M131 91 L138 96 L131 101"/>` }
+    { phase: "con", svg: `<path class="mo-arr" d="M138 100 L112 100 M119 95 L112 100 L119 105"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M112 100 L138 100 M131 95 L138 100 L131 105"/>` }
   ]
 };
 
@@ -12094,15 +12164,13 @@ EXERCISE_MOTIONS["fentes-arriere"] = {
          −2,80° seulement : il reste quasi vertical, c'est ce qui garde
          le genou derrière la pointe. */
       o: "96px 144px",
-      k: [[0, "rotate(0deg)"], [45, "rotate(-2.8deg)"], [52, "rotate(-2.8deg)"],
-          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      k: [[0, "rotate(0deg)"], [22.5, "rotate(-1.4deg)"], [45, "rotate(-2.8deg)"], [52, "rotate(-2.8deg)"], [66, "rotate(-1.4deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
       svg: `<line class="mo-limb" x1="96" y1="144" x2="95" y2="118"/>`,
       children: [
         {
           /* CUISSE AVANT : +85,60°, le genou passe de 175,6° à 90,0°. */
           o: "95px 118px",
-          k: [[0, "rotate(0deg)"], [45, "rotate(85.6deg)"], [52, "rotate(85.6deg)"],
-              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          k: [[0, "rotate(0deg)"], [22.5, "rotate(42.8deg)"], [45, "rotate(85.6deg)"], [52, "rotate(85.6deg)"], [66, "rotate(42.8deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
           muscleNom: ["Quadriceps", "Grand fessier"],
           muscle: `
             <ellipse cx="91.5" cy="104.85" rx="3.4" ry="9.5" transform="rotate(2.2 91.5 104.85)"/>
@@ -12116,8 +12184,7 @@ EXERCISE_MOTIONS["fentes-arriere"] = {
                  Quinze degrés — c'est tout ce qui sépare cette fente de
                  la fente marchée côté fessiers, et c'est mesurable. */
               o: "96px 92px",
-              k: [[0, "rotate(0deg)"], [45, "rotate(-97.8deg)"], [52, "rotate(-97.8deg)"],
-                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              k: [[0, "rotate(0deg)"], [22.5, "rotate(-48.9deg)"], [45, "rotate(-97.8deg)"], [52, "rotate(-97.8deg)"], [66, "rotate(-48.9deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
               svg: `
                 <circle class="mo-joint" cx="96" cy="92" r="2.8"/>
                 <line class="mo-body" x1="96" y1="92" x2="96" y2="58"/>
@@ -12128,8 +12195,7 @@ EXERCISE_MOTIONS["fentes-arriere"] = {
                   /* BRAS + HALTÈRES : contre-rotation exacte, +15° contre
                      −15°. Ils pendent d'aplomb quoi que fasse le buste. */
                   o: "96px 58px",
-                  k: [[0, "rotate(0deg)"], [45, "rotate(15deg)"], [52, "rotate(15deg)"],
-                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  k: [[0, "rotate(0deg)"], [22.5, "rotate(7.5deg)"], [45, "rotate(15deg)"], [52, "rotate(15deg)"], [66, "rotate(7.5deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
                   svg: `
                     <line class="mo-limb" x1="92" y1="59" x2="92" y2="87"/>
                     <line class="mo-bar2" x1="84" y1="87" x2="100" y2="87"/>`
@@ -12139,8 +12205,7 @@ EXERCISE_MOTIONS["fentes-arriere"] = {
                      presque rien — elle sert de balancier et de repère de
                      profondeur. Trait effacé. */
                   o: "96px 92px",
-                  k: [[0, "rotate(0deg)"], [45, "rotate(25.2deg)"], [52, "rotate(25.2deg)"],
-                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  k: [[0, "rotate(0deg)"], [22.5, "rotate(12.6deg)"], [45, "rotate(25.2deg)"], [52, "rotate(25.2deg)"], [66, "rotate(12.6deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
                   svg: `<line class="mo-body" x1="96" y1="92" x2="99" y2="118"/>`,
                   children: [
                     {
@@ -12148,12 +12213,29 @@ EXERCISE_MOTIONS["fentes-arriere"] = {
                          le pied parcourt 46 vers l'arrière, en l'air, avant
                          de se poser sur la pointe. */
                       o: "99px 118px",
-                      k: [[0, "rotate(0deg)"], [45, "rotate(-97.54deg)"], [52, "rotate(-97.54deg)"],
-                          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                      k: [[0, "rotate(0deg)"], [22.5, "rotate(-48.77deg)"], [45, "rotate(-97.54deg)"], [52, "rotate(-97.54deg)"], [66, "rotate(-48.77deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
                       svg: `
                         <circle class="mo-joint" cx="99" cy="118" r="2.6"/>
-                        <line class="mo-body" x1="99" y1="118" x2="100" y2="144"/>
-                        <line class="mo-body" x1="100" y1="144" x2="92" y2="150"/>`
+                        <line class="mo-body" x1="99" y1="118" x2="100" y2="144"/>`,
+                      children: [
+                        {
+                          /* PIED ARRIÈRE — pièce ARTICULÉE, et elle ne
+                             l'était pas. Rigide avec le tibia, il
+                             traînait 3,33 sous le sol pendant tout le
+                             pas et finissait la POINTE EN ARRIÈRE de la
+                             cheville, alors qu'en fente arrière on est
+                             sur la plante, talon levé, orteils vers
+                             l'AVANT. +60,54° au passage aérien (le pied
+                             se relève, la pointe garde 3,2 de garde),
+                             +72,08° en bas (la pointe touche à 150 pile,
+                             orteils devant la cheville). */
+                          o: "100px 144px",
+                          k: [[0, "rotate(0deg)"], [22.5, "rotate(60.54deg)"], [45, "rotate(72.08deg)"],
+                              [52, "rotate(72.08deg)"], [66, "rotate(60.54deg)"], [80, "rotate(0deg)"],
+                              [100, "rotate(0deg)"]],
+                          svg: `<line class="mo-body" x1="100" y1="144" x2="92" y2="150"/>`
+                        }
+                      ]
                     }
                   ]
                 }
