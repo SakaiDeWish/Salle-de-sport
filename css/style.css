@@ -2157,3 +2157,184 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
 /* Buste vu EN COUPE (vue de face depuis les pieds) : contour épais,
    il représente une section du corps et non un segment osseux. */
 .mo-torse { fill: none; stroke: var(--text-soft); stroke-width: 3.4; }
+
+/* ====================================================================
+   ITÉRATION « ACCUEIL AU CENTRE »
+   ==================================================================== */
+
+/* ---------- 1 · Onglet central ----------
+   L'accueil est la 3e entrée sur 5. On l'appuie visuellement sans le
+   faire dépasser : pas de bouton flottant, qui masquerait du contenu. */
+.bottom-nav .bn-center .bn-icon { transform: scale(1.18); }
+.bottom-nav .bn-center .bn-label { font-weight: 800; }
+.bottom-nav .bn-center::before {
+  content: "";
+  position: absolute; top: 0;
+  width: 26px; height: 3px; border-radius: 0 0 3px 3px;
+  background: var(--accent);
+  opacity: 0; transition: opacity 0.18s ease;
+}
+.bottom-nav .bn-center.active::before { opacity: 1; }
+.bottom-nav .tab { position: relative; }
+
+/* ---------- 3 · La barre du haut disparaît sur mobile ----------
+   Elle ne portait que le logo et la bascule de thème : 145 px de haut
+   sur 844, soit 17 % de l'écran, pour zéro information utile en salle.
+   L'heure et la batterie restent affichées par la barre d'état native
+   du téléphone, juste au-dessus. Sur desktop elle est conservée telle
+   quelle : la place n'y manque pas et elle porte la nav complète. */
+@media (max-width: 760px) {
+  .topbar { display: none; }
+  .view { padding-top: calc(10px + env(safe-area-inset-top)); }
+}
+
+/* ---------- 3 · Bouton Réglages ----------
+   Ancré au-dessus de la barre d'onglets, côté pouce droit. Il s'efface
+   pendant une séance en cours : la mini-barre occupe déjà cette zone. */
+.settings-fab {
+  position: fixed;
+  right: 14px;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  z-index: 65;
+  width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  font-size: 1.05rem;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+}
+.settings-fab:hover { color: var(--text); transform: translateY(-1px); }
+body.live-on .settings-fab { opacity: 0; pointer-events: none; }
+@media (min-width: 761px) { .settings-fab { bottom: 20px; } }
+
+/* ---------- 2 · Panneau de vue (Nutrition / Bibliothèque / Réglages) ----
+   Réutilise la mécanique de feuille déjà en place. Il passe SOUS la
+   sous-fenêtre de détail d'exercice (z-index 90 contre 100) : depuis la
+   bibliothèque en panneau, ouvrir une fiche empile proprement. */
+/* 88 et non 90 : la sous-fenêtre de détail d'exercice reste à 90 et doit
+   passer AU-DESSUS du panneau — depuis la bibliothèque ouverte en panneau,
+   toucher un exercice empile sa fiche par-dessus, pas en dessous. */
+.panel-sheet { z-index: 88; }
+.panel-sheet .sheet-box { height: 88vh; }
+.panel-title {
+  margin: 0; padding: 2px 52px 10px 20px;
+  font-family: var(--font-display);
+  font-size: 1.15rem; letter-spacing: 0.02em;
+}
+#panel-host .view { display: none; }
+#panel-host .view.active { display: block; }
+/* Dans le panneau, la vue perd son décor de page : plus de hero
+   démesuré ni de marge basse pour la barre d'onglets. */
+#panel-host .as-panel { padding: 0 16px 24px; min-height: 0; }
+#panel-host .as-panel .hero { padding: 4px 0 14px; }
+/* Le panneau porte déjà son titre : le hero de la vue ne le répète pas.
+   Le sous-titre, lui, reste — c'est la seule ligne qui explique la vue. */
+#panel-host .as-panel .hero .kicker,
+#panel-host .as-panel .hero .display { display: none; }
+#panel-host .as-panel .hero-sub { font-size: 0.92rem; margin-top: 0; }
+.access-hint {
+  margin-left: auto;
+  align-self: center;
+  font-size: 0.64rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-soft); opacity: 0.6;
+}
+
+/* ---------- 3 · Contenu des réglages ---------- */
+.set-card { margin-bottom: 12px; }
+.set-h {
+  margin: 0 0 10px; font-family: var(--font-display);
+  font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text-soft);
+}
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; padding: 9px 0;
+}
+.set-check { cursor: pointer; }
+.set-lab { display: flex; flex-direction: column; gap: 2px; font-weight: 600; }
+.set-sub { font-size: 0.82rem; font-weight: 400; color: var(--text-soft); }
+.set-check input { width: 22px; height: 22px; accent-color: var(--accent); }
+.seg-mini { display: flex; gap: 6px; }
+.segm {
+  padding: 8px 12px; min-height: 40px;
+  border-radius: 999px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-soft);
+  font-family: var(--font-body); font-size: 0.85rem; font-weight: 600;
+  cursor: pointer; transition: background 0.16s ease, color 0.16s ease;
+}
+.segm.active { background: var(--accent-grad); color: var(--accent-contrast); border-color: transparent; }
+
+/* ---------- 6 · Retour rapide au chrono ----------
+   Complément du geste : une remontée franche rappelle déjà le chrono,
+   ce bouton sert quand on est loin en bas de page. */
+.to-chrono {
+  position: fixed;
+  left: 14px;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  z-index: 65;
+  width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-size: 1.1rem; line-height: 1;
+  cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+.to-chrono.show { opacity: 1; pointer-events: auto; transform: none; }
+@media (min-width: 761px) { .to-chrono { bottom: 20px; } }
+
+/* ---------- 7 · Super set ---------- */
+.ss-group {
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  margin-bottom: 12px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+/* En-tête du groupe : empilé, pas en trois colonnes. Sur 390 px de large,
+   badge + enchaînement + deux boutons sur une seule ligne coupaient le
+   badge en deux et chevauchaient les actions. */
+.ss-head {
+  display: flex; flex-direction: column; align-items: stretch;
+  gap: 6px; padding: 4px 6px 10px;
+}
+.ss-badge {
+  font-family: var(--font-display); font-size: 0.78rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+  white-space: nowrap;
+}
+.ss-flow { font-size: 0.8rem; line-height: 1.35; color: var(--text-soft); }
+.ss-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+@media (min-width: 620px) {
+  .ss-head { flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; }
+  .ss-flow { flex: 1; }
+}
+.ss-group .live-ex { margin-bottom: 8px; }
+.ss-group .live-ex:last-child { margin-bottom: 0; }
+.ss-link {
+  display: flex; align-items: center; gap: 6px;
+  padding: 2px 8px 6px;
+  font-size: 0.78rem; font-weight: 700; color: var(--accent);
+}
+.ss-picking .live-ex { outline: 2px dashed var(--border); outline-offset: 2px; cursor: pointer; }
+.ss-picking .live-ex.ss-sel { outline-color: var(--accent); }
+.ss-pick-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
+  margin-bottom: 10px; padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--accent);
+  font-size: 0.86rem;
+}

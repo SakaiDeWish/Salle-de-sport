@@ -9,6 +9,8 @@
 STORAGE_KEYS.live = "gymcoach.liveSession";
 STORAGE_KEYS.history = "gymcoach.history";
 STORAGE_KEYS.restDefault = "gymcoach.restDefault";
+STORAGE_KEYS.restSound = "gymcoach.restSound";
+STORAGE_KEYS.restVibrate = "gymcoach.restVibrate";
 STORAGE_KEYS.lastWeights = "gymcoach.lastWeights"; // { exId: [{poids, reps} par numéro de série] }
 
 let live = null;          // séance en cours
@@ -77,21 +79,47 @@ function smartRest(ex) {
   return s;
 }
 
-/* Bip de fin de repos (WebAudio, aucun fichier nécessaire) */
-function beep() {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.25].forEach(delay => {
+/* Signal de fin de repos (WebAudio, aucun fichier à charger).
+
+   UN SEUL coup, puis silence. La version précédente envoyait DEUX
+   impulsions de 880 Hz espacées de 250 ms et une vibration en trois
+   temps (200-100-200) : en salle, entre deux séries, c'était une
+   alarme. Ici : une sinusoïde de 1000 Hz pendant 260 ms, avec une
+   attaque de 15 ms et une extinction exponentielle — assez net pour
+   percer le bruit ambiant, assez court pour ne pas déranger le voisin.
+
+   L'attaque douce n'est pas cosmétique : un oscillateur démarré à plein
+   volume produit un claquement (discontinuité du signal) bien plus
+   agressif que le son lui-même.
+
+   Les deux canaux sont indépendamment désactivables dans les Réglages.
+   `force` sert au bouton « Tester le signal », qui doit sonner même
+   quand le son est coupé. */
+const REST_BEEP_HZ = 1000;
+const REST_BEEP_MS = 260;
+
+function beep(force) {
+  const sonOn = force || localStorage.getItem(STORAGE_KEYS.restSound) !== "0";
+  const vibOn = force || localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0";
+  if (sonOn) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const t0 = ctx.currentTime, d = REST_BEEP_MS / 1000;
       const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(REST_BEEP_HZ, t0);
       osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.25, ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.2);
-      osc.start(ctx.currentTime + delay);
-      osc.stop(ctx.currentTime + delay + 0.2);
-    });
-  } catch { /* audio indisponible : silencieux */ }
-  try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch { /* non supporté */ }
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.015);   // attaque 15 ms
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + d);     // extinction
+      osc.start(t0);
+      osc.stop(t0 + d + 0.02);
+      osc.onended = () => { try { ctx.close(); } catch { /* déjà fermé */ } };
+    } catch { /* audio indisponible : silencieux, jamais bloquant */ }
+  }
+  if (vibOn) {
+    try { navigator.vibrate && navigator.vibrate(180); } catch { /* non supporté */ }
+  }
 }
 
 /* ---------- Éléments ---------- */
@@ -132,6 +160,7 @@ function startSession(nom, exercises) {
     exercises,
     currentIndex: exercises.length ? 0 : -1
   };
+  ssApplyRemembered();
   saveLive();
   showLive();
 }
@@ -316,6 +345,17 @@ let hdrRef = 0, hdrLastY = 0, hdrTicking = false, hdrManualUntil = 0, hdrLockUnt
 
 function headerMinimized() { return elLive.classList.contains("hdr-min"); }
 
+/* Vrai pendant qu'une bascule est en cours ou vient d'avoir lieu.
+   Réduire l'en-tête change la HAUTEUR DE LA PAGE, ce que le navigateur
+   compense en déplaçant le scroll : la frame suivante ressemble alors à
+   un geste très rapide. Tout code qui réagit à la vitesse de défilement
+   doit donc s'abstenir pendant ce verrou, sous peine de se déclencher
+   sur son propre effet. */
+function hdrBusy() {
+  const t = Date.now();
+  return t < hdrManualUntil || t < hdrLockUntil;
+}
+
 function applyHeaderMin(on) {
   localStorage.setItem(STORAGE_KEYS.liveHeaderMin, on ? "1" : "0");
   elLive.classList.toggle("hdr-min", on);
@@ -449,6 +489,40 @@ document.getElementById("live-minibar").addEventListener("click", () => {
   }
 });
 
+/* Assemble les cartes en enveloppant les membres d'un même super set
+   dans un bloc unique. Les membres sont adjacents par construction
+   (ssCreate les rapproche), donc un simple parcours suffit. */
+function ssAssemble(cartes) {
+  const out = [];
+  for (let i = 0; i < cartes.length; i++) {
+    const gid = live.exercises[i].ss;
+    if (!gid) { out.push(cartes[i]); continue; }
+    const membres = ssMembers(gid);
+    if (membres[0] !== i) continue;                  // déjà émis avec son groupe
+    const noms = membres.map(k => esc(live.exercises[k].nom));
+    const series = membres.map(k => {
+      const p = exerciseProgress(live.exercises[k]);
+      return p.target ? p.done + "/" + p.target : String(p.done);
+    });
+    const memo = ssIsRemembered(gid);
+    out.push(`<div class="ss-group" data-ss="${gid}">
+      <div class="ss-head">
+        <span class="ss-badge">⚡ Super set</span>
+        <span class="ss-flow">${noms.map((n, k) => n + " (" + series[k] + ")").join(" → ")}
+          · repos ${ssRest(gid)} s après la paire</span>
+        <span class="ss-actions">
+          <button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
+            memo ? "★ Mémorisé" : "☆ Mémoriser"}</button>
+          <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>
+        </span>
+      </div>
+      ${membres.map((k, r) => cartes[k] + (r < membres.length - 1
+        ? '<div class="ss-link">↓ enchaîne sans repos</div>' : "")).join("")}
+    </div>`);
+  }
+  return out.join("");
+}
+
 function renderLiveExercises() {
   if (live.exercises.length === 0) {
     elLiveExercises.innerHTML = `<div class="card empty-live">
@@ -462,7 +536,7 @@ function renderLiveExercises() {
   if (expandedIndex == null || expandedIndex >= live.exercises.length)
     expandedIndex = live.currentIndex;
 
-  elLiveExercises.innerHTML = live.exercises.map((ex, i) => {
+  const cartes = live.exercises.map((ex, i) => {
     const isCurrent = i === live.currentIndex;
     const open = i === expandedIndex;
     const p = exerciseProgress(ex);
@@ -546,7 +620,8 @@ function renderLiveExercises() {
       </div>
       </div></div><!-- /live-ex-body -->
     </div>`;
-  }).join("");
+  });
+  elLiveExercises.innerHTML = ssAssemble(cartes);
 
   /* Accordéon : ouvrir un exercice replie les autres (point 3) */
   elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
@@ -569,6 +644,27 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => swapExercise(parseInt(btn.dataset.i, 10))));
   elLiveExercises.querySelectorAll(".ex-fiche").forEach(btn =>
     btn.addEventListener("click", () => openExercise(btn.dataset.exid)));
+  elLiveExercises.querySelectorAll(".ss-break").forEach(btn =>
+    btn.addEventListener("click", () => ssBreak(btn.dataset.ss)));
+  elLiveExercises.querySelectorAll(".ss-memo").forEach(btn =>
+    btn.addEventListener("click", () =>
+      ssIsRemembered(btn.dataset.ss) ? ssForget(btn.dataset.ss) : ssRemember(btn.dataset.ss)));
+
+  /* Mode appairage : les cartes deviennent des cibles de sélection.
+     On capture le clic AVANT l'accordéon pour ne pas déplier au passage. */
+  if (ssPicking) {
+    elLiveExercises.classList.add("ss-picking");
+    elLiveExercises.querySelectorAll(".live-ex").forEach(carte => {
+      const i = parseInt(carte.dataset.i, 10);
+      if (ssPickFirst === i) carte.classList.add("ss-sel");
+      carte.addEventListener("click", e => {
+        e.preventDefault(); e.stopPropagation();
+        ssPickTap(i);
+      }, true);
+    });
+  } else {
+    elLiveExercises.classList.remove("ss-picking");
+  }
 
   /* Série validée : un tap l'ouvre en édition (B2) */
   elLiveExercises.querySelectorAll(".set-row").forEach(tr => {
@@ -650,6 +746,7 @@ function removeExercise(i) {
   live.exercises.splice(i, 1);
   if (live.currentIndex >= live.exercises.length) live.currentIndex = live.exercises.length - 1;
   expandedIndex = live.currentIndex;
+  ssCleanup();
   saveLive();
   renderLiveExercises();
 }
@@ -672,6 +769,101 @@ function swapExercise(i) {
   }
   saveLive();
   renderLiveExercises();
+}
+
+/* ---------- Point 7 · SUPER SETS ----------
+   Deux exercices exécutés en paire, sans repos entre eux : A série 1 →
+   B série 1 → repos → A série 2 → B série 2 → repos…
+
+   L'appartenance est portée par l'exercice lui-même (`ex.ss`, un
+   identifiant de groupe) et NON par une liste d'indices. C'est
+   volontaire : retirer, remplacer ou réordonner un exercice décale tous
+   les indices, et une liste d'indices deviendrait fausse en silence.
+   Une propriété portée par l'objet suit l'objet.
+
+   Le repos du groupe est le PLUS LONG des deux : un super set ne se
+   récupère pas plus vite que son exercice le plus exigeant. */
+STORAGE_KEYS.supersets = "gymcoach.supersets";
+
+function ssMembers(gid) {
+  const out = [];
+  if (!gid || !live) return out;
+  live.exercises.forEach((e, i) => { if (e.ss === gid) out.push(i); });
+  return out;
+}
+
+/* Repos partagé : le plus long des membres, pas leur moyenne. */
+function ssRest(gid) {
+  return ssMembers(gid).reduce((a, i) => Math.max(a, live.exercises[i].restSec || 0), 0);
+}
+
+/* Un groupe réduit à un seul membre n'est plus un super set. */
+function ssCleanup() {
+  const compte = {};
+  live.exercises.forEach(e => { if (e.ss) compte[e.ss] = (compte[e.ss] || 0) + 1; });
+  live.exercises.forEach(e => { if (e.ss && compte[e.ss] < 2) delete e.ss; });
+}
+
+/* Crée le groupe et rend les deux exercices ADJACENTS : « s'enchaînent
+   immédiatement » doit être vrai dans la liste comme dans l'exécution. */
+function ssCreate(i, j) {
+  if (i === j) return;
+  const gid = "ss" + Date.now().toString(36);
+  const a = live.exercises[i], b = live.exercises[j];
+  a.ss = b.ss = gid;
+  if (j !== i + 1) {
+    live.exercises.splice(j, 1);
+    const pos = live.exercises.indexOf(a);
+    live.exercises.splice(pos + 1, 0, b);
+  }
+  live.currentIndex = live.exercises.indexOf(a);
+  expandedIndex = live.currentIndex;
+  ssCleanup(); saveLive(); renderLiveExercises();
+}
+
+function ssBreak(gid) {
+  live.exercises.forEach(e => { if (e.ss === gid) delete e.ss; });
+  saveLive(); renderLiveExercises();
+}
+
+/* Mémorisation : la paire est retenue par identifiants d'exercice et
+   réappliquée automatiquement aux séances suivantes. */
+function ssRemembered() { return loadJSON(STORAGE_KEYS.supersets, []); }
+function ssRemember(gid) {
+  const ids = ssMembers(gid).map(i => live.exercises[i].exId);
+  if (ids.length < 2) return;
+  const all = ssRemembered().filter(p => !(p[0] === ids[0] && p[1] === ids[1]));
+  all.push(ids);
+  saveJSON(STORAGE_KEYS.supersets, all);
+  renderLiveExercises();
+}
+function ssForget(gid) {
+  const ids = ssMembers(gid).map(i => live.exercises[i].exId);
+  saveJSON(STORAGE_KEYS.supersets, ssRemembered()
+    .filter(p => !(p[0] === ids[0] && p[1] === ids[1])));
+  renderLiveExercises();
+}
+function ssIsRemembered(gid) {
+  const ids = ssMembers(gid).map(i => live.exercises[i].exId);
+  return ids.length === 2 && ssRemembered().some(p => p[0] === ids[0] && p[1] === ids[1]);
+}
+
+/* Réapplique les paires mémorisées au démarrage d'une séance. */
+function ssApplyRemembered() {
+  if (!live) return;
+  for (const [a, b] of ssRemembered()) {
+    const i = live.exercises.findIndex(e => e.exId === a && !e.ss);
+    if (i < 0) continue;
+    const j = live.exercises.findIndex((e, k) => k !== i && e.exId === b && !e.ss);
+    if (j < 0) continue;
+    const gid = "ss" + Math.random().toString(36).slice(2, 8);
+    live.exercises[i].ss = live.exercises[j].ss = gid;
+    if (j !== i + 1) {
+      const bx = live.exercises.splice(j, 1)[0];
+      live.exercises.splice(live.exercises.indexOf(live.exercises[i]) + 1, 0, bx);
+    }
+  }
+  ssCleanup();
 }
 
 /* ---------- Validation d'une série + repos ---------- */
@@ -701,11 +893,35 @@ function validateSet(i) {
   saveLive();
   renderLiveExercises();
 
+  /* SUPER SET : tant qu'on n'est pas sur le DERNIER exercice du groupe,
+     aucun repos — on bascule directement sur le partenaire. Le repos ne
+     s'ouvre qu'une fois la paire bouclée, et il dure le plus long des
+     deux repos, pas celui de l'exercice qu'on vient de finir. */
+  const membres = ex.ss ? ssMembers(ex.ss) : [];
+  const rang = membres.indexOf(i);
+  if (membres.length > 1 && rang > -1 && rang < membres.length - 1) {
+    const suivant = membres[rang + 1];
+    live.currentIndex = suivant;
+    expandedIndex = suivant;
+    const exSuiv = live.exercises[suivant];
+    if (!exSuiv.startedAt) exSuiv.startedAt = now;
+    exSuiv.endedAt = null;
+    saveLive();
+    renderLiveExercises();
+    tick();
+    return;                       // pas de minuteur : c'est tout l'intérêt
+  }
+
   // lance le minuteur de repos
-  rest = { setRef: { exIndex: i, setIndex: ex.sets.length - 1 }, exName: ex.nom, startAt: now, targetSec: ex.restSec, beeped: false };
+  const cible = ex.ss ? ssRest(ex.ss) : ex.restSec;
+  rest = { setRef: { exIndex: i, setIndex: ex.sets.length - 1 }, exName: ex.nom, startAt: now, targetSec: cible, beeped: false };
   restMinimized = false;
-  document.getElementById("rest-exercise-name").textContent = ex.nom + " — série " + ex.sets.length + " terminée";
+  document.getElementById("rest-exercise-name").textContent = ex.ss
+    ? "Super set bouclé — repos " + cible + " s"
+    : ex.nom + " — série " + ex.sets.length + " terminée";
   elRestOverlay.classList.remove("hidden");
+  /* Après un super set, la manche suivante repart sur le PREMIER membre. */
+  if (membres.length > 1) { live.currentIndex = membres[0]; expandedIndex = membres[0]; renderLiveExercises(); }
   tick();
 }
 
@@ -852,6 +1068,56 @@ document.getElementById("picker-search").addEventListener("input", e => renderPi
 document.getElementById("picker-close").addEventListener("click", closePicker);
 document.getElementById("picker-backdrop").addEventListener("click", closePicker);
 document.getElementById("live-add-ex").addEventListener("click", openPicker);
+
+/* ---------- Point 7 · appairage du super set ---------- */
+let ssPicking = false, ssPickFirst = null;
+
+function ssPickStart() {
+  if (!live || live.exercises.length < 2) {
+    alert("Ajoute au moins deux exercices à ta séance pour créer un super set.");
+    return;
+  }
+  ssPicking = true; ssPickFirst = null;
+  ssPickBar(true, "Touche le <strong>premier</strong> exercice du super set.");
+  renderLiveExercises();
+}
+
+function ssPickCancel() {
+  ssPicking = false; ssPickFirst = null;
+  ssPickBar(false);
+  renderLiveExercises();
+}
+
+function ssPickBar(on, msg) {
+  const bar = document.getElementById("ss-pick-bar");
+  if (!bar) return;
+  bar.classList.toggle("hidden", !on);
+  if (msg) document.getElementById("ss-pick-msg").innerHTML = msg;
+}
+
+function ssPickTap(i) {
+  if (!ssPicking) return;
+  if (live.exercises[i].ss) {          // déjà dans un groupe : on refuse
+    ssPickBar(true, "Cet exercice fait déjà partie d'un super set. Dissocie-le d'abord.");
+    return;
+  }
+  if (ssPickFirst == null) {
+    ssPickFirst = i;
+    ssPickBar(true, "Premier : <strong>" + esc(live.exercises[i].nom)
+      + "</strong>. Touche maintenant le <strong>second</strong>.");
+    renderLiveExercises();
+    return;
+  }
+  if (i === ssPickFirst) { ssPickFirst = null; ssPickStart(); return; }  // dé-sélection
+  const a = ssPickFirst;
+  ssPicking = false; ssPickFirst = null;
+  ssPickBar(false);
+  ssCreate(a, i);
+}
+
+document.getElementById("live-superset").addEventListener("click", () =>
+  ssPicking ? ssPickCancel() : ssPickStart());
+document.getElementById("ss-pick-cancel").addEventListener("click", ssPickCancel);
 
 /* ---------- Fin de séance ---------- */
 document.getElementById("live-pause").addEventListener("click", pauseSession);

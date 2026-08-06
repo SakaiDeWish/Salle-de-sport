@@ -1,0 +1,252 @@
+/* ====================================================================
+   shell.js — coquille de navigation (itération « accueil au centre »)
+
+   Ce fichier ne réécrit aucune vue existante : il déplace des nœuds,
+   ajoute un panneau et deux réglages. Tout ce qui marchait avant marche
+   toujours, y compris les écouteurs déjà posés par les autres fichiers.
+   ==================================================================== */
+
+STORAGE_KEYS.restSound = "gymcoach.restSound";
+STORAGE_KEYS.restVibrate = "gymcoach.restVibrate";
+
+/* ==================== PANNEAU DE VUE ==================== */
+/* Nutrition et Bibliothèque n'ont plus d'onglet (points 1 et 2). Plutôt
+   que de recopier leur HTML — ce qui dupliquerait des dizaines
+   d'identifiants et casserait les écouteurs posés au chargement — on
+   DÉPLACE le <main> dans le panneau, puis on le remet exactement où il
+   était. Le DOM reste unique, le code de rendu n'est pas touché. */
+let panelRetour = null;   // { noeud, parent, suivant }
+
+function panelEl() { return document.getElementById("panel"); }
+
+function openViewPanel(view, titre) {
+  const noeud = document.getElementById("view-" + view);
+  const host = document.getElementById("panel-host");
+  if (!noeud || !host) return;
+  if (panelRetour) closeViewPanel(true);
+
+  panelRetour = { noeud, parent: noeud.parentNode, suivant: noeud.nextSibling };
+  host.appendChild(noeud);
+  noeud.classList.add("active", "as-panel");
+  document.getElementById("panel-title").textContent = titre || "";
+
+  const el = panelEl();
+  el.classList.remove("hidden");
+  requestAnimationFrame(() => el.classList.add("sheet-in"));
+  const scroll = el.querySelector(".sheet-scroll");
+  if (scroll) scroll.scrollTop = 0;
+
+  /* Chaque vue a son rendu ; on le relance à l'ouverture pour que le
+     panneau montre l'état courant et non celui du chargement. */
+  try {
+    if (view === "bibliotheque" && typeof renderLibrary === "function") renderLibrary();
+    if (view === "nutrition" && typeof renderNutrition === "function") renderNutrition();
+  } catch (e) { /* une vue non initialisée ne doit pas bloquer l'ouverture */ }
+}
+
+function closeViewPanel(immediat) {
+  const el = panelEl();
+  if (!el) return;
+  el.classList.remove("sheet-in");
+  const rendre = () => {
+    if (!panelRetour) { el.classList.add("hidden"); return; }
+    const { noeud, parent, suivant } = panelRetour;
+    noeud.classList.remove("active", "as-panel");
+    parent.insertBefore(noeud, suivant);      // remis à sa place exacte
+    panelRetour = null;
+    el.classList.add("hidden");
+    const host = document.getElementById("panel-host");
+    if (host) host.innerHTML = "";            // vide le contenu généré (réglages)
+  };
+  if (immediat) rendre();
+  else setTimeout(() => { if (!el.classList.contains("sheet-in")) rendre(); }, 240);
+}
+
+/* Panneau à contenu généré (réglages) : même feuille, sans déplacement */
+function openHtmlPanel(titre, html) {
+  if (panelRetour) closeViewPanel(true);
+  const host = document.getElementById("panel-host");
+  if (!host) return;
+  host.innerHTML = html;
+  document.getElementById("panel-title").textContent = titre;
+  const el = panelEl();
+  el.classList.remove("hidden");
+  requestAnimationFrame(() => el.classList.add("sheet-in"));
+  const scroll = el.querySelector(".sheet-scroll");
+  if (scroll) scroll.scrollTop = 0;
+}
+
+document.getElementById("panel-close").addEventListener("click", () => closeViewPanel());
+panelEl().addEventListener("click", e => { if (e.target === panelEl()) closeViewPanel(); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !panelEl().classList.contains("hidden")) closeViewPanel();
+});
+
+/* Changer d'onglet referme le panneau : sans ça, activateView retirerait
+   la classe .active de la vue déplacée et laisserait un panneau vide. */
+if (typeof activateView === "function") {
+  const _activate = activateView;
+  window.activateView = function (view) {
+    /* Les deux vues sans onglet s'ouvrent en panneau, d'où qu'on les appelle
+       (tuiles d'accueil, liens de programme, mini-barre…). L'onglet visible
+       ne change pas : on reste sur l'accueil, comme demandé. */
+    if (view === "nutrition") return openViewPanel("nutrition", "Nutrition");
+    if (view === "bibliotheque") return openViewPanel("bibliotheque", "Bibliothèque d'exercices");
+    if (panelRetour || !panelEl().classList.contains("hidden")) closeViewPanel(true);
+    return _activate(view);
+  };
+  activateView = window.activateView;
+}
+
+/* ==================== RÉGLAGES ==================== */
+function restSoundOn() { return localStorage.getItem(STORAGE_KEYS.restSound) !== "0"; }
+function restVibrateOn() { return localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0"; }
+function currentTheme() { return localStorage.getItem("gymcoach.theme") || "gamifie"; }
+
+function applyTheme(theme) {
+  document.documentElement.className = "theme-" + theme;
+  localStorage.setItem("gymcoach.theme", theme);
+  const lab = document.getElementById("theme-toggle-label");
+  if (lab) lab.textContent = theme === "gamifie" ? "Épuré" : "Gamifié";
+  const ico = document.getElementById("settings-fab-ico");
+  if (ico) ico.textContent = theme === "gamifie" ? "☾" : "☀";
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", theme === "gamifie" ? "#0a0a0b" : "#f6f1e7");
+}
+
+function settingsHtml() {
+  const t = currentTheme();
+  return `
+    <div class="card set-card">
+      <h3 class="set-h">Apparence</h3>
+      <div class="set-row">
+        <span class="set-lab">Thème</span>
+        <div class="seg-mini" role="group" aria-label="Choix du thème">
+          <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">☾ Sombre</button>
+          <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">☀ Clair</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card set-card">
+      <h3 class="set-h">Fin du temps de repos</h3>
+      <label class="set-row set-check">
+        <span class="set-lab">Bip sonore
+          <span class="set-sub">Un seul bip court de 260 ms, à 1000 Hz.</span></span>
+        <input type="checkbox" id="set-sound" ${restSoundOn() ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Vibration
+          <span class="set-sub">Une impulsion brève, si l'appareil le permet.</span></span>
+        <input type="checkbox" id="set-vibrate" ${restVibrateOn() ? "checked" : ""}>
+      </label>
+      <button class="btn btn-ghost btn-sm" id="set-test-son">Tester le signal</button>
+    </div>
+
+    <div class="card set-card">
+      <h3 class="set-h">À propos</h3>
+      <p class="set-sub">GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute,
+        consulte un professionnel de santé.</p>
+    </div>`;
+}
+
+function openSettings() {
+  openHtmlPanel("Réglages", settingsHtml());
+  const host = document.getElementById("panel-host");
+  host.querySelectorAll("[data-theme]").forEach(b =>
+    b.addEventListener("click", () => {
+      applyTheme(b.dataset.theme);
+      host.querySelectorAll("[data-theme]").forEach(x =>
+        x.classList.toggle("active", x.dataset.theme === b.dataset.theme));
+    }));
+  const s = document.getElementById("set-sound");
+  const v = document.getElementById("set-vibrate");
+  s.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restSound, s.checked ? "1" : "0"));
+  v.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restVibrate, v.checked ? "1" : "0"));
+  document.getElementById("set-test-son").addEventListener("click", () => {
+    if (typeof beep === "function") beep(true);
+  });
+}
+
+document.getElementById("settings-fab").addEventListener("click", openSettings);
+
+/* Le bouton Réglages s'efface quand la mini-barre de séance occupe le bas
+   de l'écran : deux pastilles superposées au même endroit, ce serait un
+   piège au pouce. On observe la classe de la mini-barre plutôt que de
+   sonder en boucle — aucun coût quand rien ne bouge. */
+(function () {
+  const barre = document.getElementById("live-minibar");
+  if (!barre) return;
+  const sync = () => document.body.classList.toggle("live-on", !barre.classList.contains("hidden"));
+  new MutationObserver(sync).observe(barre, { attributes: true, attributeFilter: ["class"] });
+  sync();
+})();
+
+/* L'ancienne bascule de la barre du haut reste fonctionnelle sur desktop :
+   elle passe simplement par le même chemin que le panneau. */
+(function () {
+  const vieux = document.getElementById("theme-toggle");
+  if (!vieux) return;
+  const clone = vieux.cloneNode(true);      // retire l'écouteur d'origine
+  vieux.parentNode.replaceChild(clone, vieux);
+  clone.addEventListener("click", () =>
+    applyTheme(currentTheme() === "gamifie" ? "epure" : "gamifie"));
+})();
+
+applyTheme(currentTheme());
+
+/* ==================== RETOUR RAPIDE AU CHRONO (point 6) ==================== */
+/* Le chrono se réduit déjà en descendant. Ce qui manquait, c'est le retour :
+   il fallait remonter lentement de 26 px pour le rappeler. On ajoute deux
+   choses, sans toucher à la logique existante :
+   1. un GESTE — une remontée franche (vitesse > 0,55 px/ms) le rappelle
+      immédiatement, quelle que soit la distance parcourue ;
+   2. un BOUTON flottant, qui ramène en haut de page en douceur. */
+(function () {
+  let dernierY = window.scrollY, dernierT = performance.now(), tick2 = false;
+  const FLICK = 0.55;   // px par ms
+  const FLICK_MIN = 24; // px minimum, pour ignorer les sauts de mise en page
+
+  function surScroll() {
+    const y = window.scrollY, t = performance.now();
+    const dt = t - dernierT;
+    const montee = dernierY - y;                        // positif = vers le haut
+    /* hdrBusy() protège du piège suivant : réduire l'en-tête raccourcit la
+       page, le navigateur recale le scroll, et la frame d'après ressemble à
+       une remontée fulgurante. Sans ce garde-fou, le chrono se réduisait
+       puis se ré-agrandissait aussitôt — il ne restait jamais compact. */
+    if (dt > 0 && montee >= FLICK_MIN && (montee / dt) > FLICK
+        && typeof headerMinimized === "function" && headerMinimized()
+        && typeof hdrBusy === "function" && !hdrBusy()
+        && typeof toggleHeaderManual === "function") {
+      toggleHeaderManual(false);                        // rappel immédiat
+    }
+    dernierY = y; dernierT = t;
+    const btn = document.getElementById("to-chrono");
+    if (btn) {
+      const live = document.getElementById("seance-live");
+      const visible = live && !live.classList.contains("hidden")
+        && document.getElementById("view-seance").classList.contains("active")
+        && y > 260;
+      btn.classList.toggle("show", !!visible);
+    }
+  }
+
+  window.addEventListener("scroll", () => {
+    if (tick2) return;
+    tick2 = true;
+    requestAnimationFrame(() => { tick2 = false; surScroll(); });
+  }, { passive: true });
+
+  const btn = document.createElement("button");
+  btn.id = "to-chrono";
+  btn.className = "to-chrono";
+  btn.type = "button";
+  btn.setAttribute("aria-label", "Revenir au chronomètre");
+  btn.innerHTML = '<span aria-hidden="true">⌃</span>';
+  btn.addEventListener("click", () => {
+    if (typeof toggleHeaderManual === "function") toggleHeaderManual(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  document.body.appendChild(btn);
+})();
