@@ -90,6 +90,16 @@ function homeAccessTiles() {
           ? kcal.toLocaleString("fr-FR") + " kcal/jour · macros calculées"
           : "Calcule tes besoins"}</span>
       </span>
+      <span class="access-hint" aria-hidden="true">Panneau</span>
+    </button>
+    <button class="card access-tile" data-go="bibliotheque">
+      <span class="access-ico">${icon("book")}</span>
+      <span class="access-txt">
+        <span class="access-nom">Bibliothèque d'exercices</span>
+        <span class="access-val">${(typeof allExercisesForUI === "function"
+          ? allExercisesForUI().length : 0)} exercices · schémas animés</span>
+      </span>
+      <span class="access-hint" aria-hidden="true">Panneau</span>
     </button>
   </div>`;
 }

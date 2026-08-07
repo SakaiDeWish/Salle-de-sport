@@ -38,14 +38,19 @@
     </button>
   </header>
 
-  <!-- Barre d'onglets mobile, fixée en bas (usage téléphone en salle) -->
+  <!-- Barre d'onglets mobile, fixée en bas (usage téléphone en salle).
+       ACCUEIL EST AU CENTRE (3e sur 5) : c'est le point de retour, pas une
+       entrée de liste — le pouce y tombe naturellement. Nutrition et
+       Bibliothèque n'ont plus d'onglet : ils s'ouvrent en panneau DEPUIS
+       l'accueil, qui reste affiché derrière. « Ajouter » gagne au passage
+       un accès mobile qu'il n'avait pas (il n'existait que sur la nav
+       desktop, donc inatteignable au téléphone). -->
   <nav class="bottom-nav" aria-label="Navigation principale">
-    <button class="tab active" data-view="accueil"><svg class="icon bn-icon"><use href="#ic-home"/></svg><span class="bn-label">Accueil</span></button>
-    <button class="tab" data-view="bibliotheque"><svg class="icon bn-icon"><use href="#ic-book"/></svg><span class="bn-label">Exos</span></button>
-    <button class="tab" data-view="programme"><svg class="icon bn-icon"><use href="#ic-target"/></svg><span class="bn-label">Prog.</span></button>
-    <button class="tab" data-view="seance"><svg class="icon bn-icon"><use href="#ic-timer"/></svg><span class="bn-label">Séance</span></button>
     <button class="tab" data-view="suivi"><svg class="icon bn-icon"><use href="#ic-chart"/></svg><span class="bn-label">Suivi</span></button>
-    <button class="tab" data-view="nutrition"><svg class="icon bn-icon"><use href="#ic-apple"/></svg><span class="bn-label">Nutri.</span></button>
+    <button class="tab" data-view="programme"><svg class="icon bn-icon"><use href="#ic-target"/></svg><span class="bn-label">Prog.</span></button>
+    <button class="tab bn-center active" data-view="accueil"><svg class="icon bn-icon"><use href="#ic-home"/></svg><span class="bn-label">Accueil</span></button>
+    <button class="tab" data-view="seance"><svg class="icon bn-icon"><use href="#ic-timer"/></svg><span class="bn-label">Séance</span></button>
+    <button class="tab" data-view="ajouter"><svg class="icon bn-icon"><use href="#ic-plus"/></svg><span class="bn-label">Ajouter</span></button>
   </nav>
 
   <!-- ==================== VUE ACCUEIL ==================== -->
@@ -363,11 +368,19 @@
 
         <div class="program-actions">
           <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
+          <button class="btn btn-ghost" id="live-superset">⚡ Super set</button>
           <button class="btn btn-primary" id="live-finish">Terminer</button>
           <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
         </div>
         </div></div><!-- /live-hdr-full -->
       </div>
+      <!-- Barre de sélection du super set : n'apparaît que pendant
+           l'appairage, et se retire d'elle-même une fois la paire faite. -->
+      <div id="ss-pick-bar" class="ss-pick-bar hidden">
+        <span id="ss-pick-msg">Touche le <strong>premier</strong> exercice du super set.</span>
+        <button class="btn btn-ghost btn-sm" id="ss-pick-cancel">Annuler</button>
+      </div>
+
       <div id="live-exercises"></div>
     </section>
 
@@ -530,6 +543,24 @@
     </div>
   </div>
 
+  <!-- ============ PANNEAU DE VUE (Nutrition / Bibliothèque / Réglages) ======
+       Nutrition et Bibliothèque n'ont plus d'onglet. Leur <main> est DÉPLACÉ
+       ici à l'ouverture et remis exactement à sa place à la fermeture.
+       Déplacer le nœud plutôt que le recopier garde intacts tous les
+       identifiants, tous les écouteurs déjà posés et tout le code de rendu :
+       aucune vue n'est dupliquée, donc aucun identifiant en double. -->
+  <div id="panel" class="sheet panel-sheet hidden" role="dialog" aria-modal="false" aria-labelledby="panel-title">
+    <div class="sheet-box" id="panel-box">
+      <div class="sheet-grip" id="panel-grip" role="button" tabindex="0"
+           aria-label="Glisser pour agrandir ou réduire le panneau">
+        <span class="sheet-grip-bar"></span>
+      </div>
+      <h2 class="panel-title" id="panel-title">Panneau</h2>
+      <button class="modal-close" id="panel-close" aria-label="Fermer le panneau">✕</button>
+      <div class="sheet-scroll"><div id="panel-host"></div></div>
+    </div>
+  </div>
+
   <!-- ============ SOUS-FENÊTRE DÉTAIL EXERCICE ============
        Bottom sheet sur mobile (≈70 % de l'écran, glissable), panneau
        latéral sur desktop. Jamais bloquante : la séance reste visible,
@@ -545,6 +576,14 @@
     </div>
   </div>
 
+  <!-- Bouton RÉGLAGES : remplace la bascule de thème de la barre du haut,
+       qui disparaît sur mobile (point 3). Discret, ancré en bas à droite
+       au-dessus de la barre d'onglets, il ne recouvre aucun contenu et
+       s'efface dès qu'une séance est en cours (la mini-barre prend la place). -->
+  <button id="settings-fab" class="settings-fab" aria-label="Réglages : thème, son de repos">
+    <span class="sf-ico" id="settings-fab-ico" aria-hidden="true">◐</span>
+  </button>
+
   <!-- Mini-barre : la séance en cours te suit dans toute l'app -->
   <button id="live-minibar" class="live-minibar hidden" aria-label="Revenir à la séance en cours">
     <span class="mb-dot">●</span>
@@ -553,9 +592,10 @@
     <span class="mb-cta">Reprendre</span>
   </button>
 
-  <footer class="footer">
-    <p>GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute, consulte un professionnel de santé.</p>
-  </footer>
+  <!-- Le pied de page a été retiré : c'était le bloc de texte qui
+       apparaissait en bas de CHAQUE défilement. L'avertissement santé n'est
+       pas supprimé pour autant — il est repris dans le panneau Réglages,
+       consultable à tout moment. -->
 
   <script src="js/data.js"></script>
   <script src="js/data-extra.js"></script>
@@ -569,5 +609,6 @@
   <script src="js/tracking.js"></script>
   <script src="js/home.js"></script>
   <script src="js/programs.js"></script>
+  <script src="js/shell.js"></script>
 </body>
 </html>
