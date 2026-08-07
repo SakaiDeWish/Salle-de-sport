@@ -98,23 +98,66 @@ function smartRest(ex) {
 const REST_BEEP_HZ = 1000;
 const REST_BEEP_MS = 260;
 
+/* UN SEUL contexte audio, débloqué au premier geste de l'utilisateur.
+
+   Deux raisons, et la seconde est la vraie.
+   1. Créer un AudioContext par bip fuit : les navigateurs en limitent le
+      nombre (souvent 6) et refusent les suivants — après quelques séries,
+      plus de son du tout.
+   2. Surtout : iOS/Safari démarre tout contexte à l'état « suspended » et
+      ne le débloque QUE pendant un geste utilisateur. Or le bip de fin de
+      repos survient précisément quand personne ne touche l'écran. Un
+      contexte créé à ce moment-là reste muet, définitivement. On le crée
+      donc au premier contact avec l'app — n'importe lequel — et on l'y
+      réveille avec un souffle à volume nul, inaudible mais suffisant pour
+      que le système considère l'audio comme autorisé. */
+let audioCtx = null;
+
+function audioContext() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!audioCtx) { try { audioCtx = new AC(); } catch { return null; } }
+  if (audioCtx.state === "suspended") { try { audioCtx.resume(); } catch { /* ignoré */ } }
+  return audioCtx;
+}
+
+(function debloqueAudio() {
+  const ouvrir = () => {
+    const ctx = audioContext();
+    if (!ctx) return;
+    try {                       // souffle à volume nul : inaudible, mais il « arme » iOS
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      g.gain.value = 0;
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + 0.01);
+    } catch { /* sans importance */ }
+    document.removeEventListener("pointerdown", ouvrir);
+    document.removeEventListener("keydown", ouvrir);
+  };
+  document.addEventListener("pointerdown", ouvrir, { once: false });
+  document.addEventListener("keydown", ouvrir, { once: false });
+})();
+
 function beep(force) {
   const sonOn = force || localStorage.getItem(STORAGE_KEYS.restSound) !== "0";
   const vibOn = force || localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0";
   if (sonOn) {
     try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const t0 = ctx.currentTime, d = REST_BEEP_MS / 1000;
-      const osc = ctx.createOscillator(), gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(REST_BEEP_HZ, t0);
-      osc.connect(gain); gain.connect(ctx.destination);
-      gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.015);   // attaque 15 ms
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + d);     // extinction
-      osc.start(t0);
-      osc.stop(t0 + d + 0.02);
-      osc.onended = () => { try { ctx.close(); } catch { /* déjà fermé */ } };
+      const ctx = audioContext();
+      if (ctx) {
+        const t0 = ctx.currentTime, d = REST_BEEP_MS / 1000;
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(REST_BEEP_HZ, t0);
+        osc.connect(gain); gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.015);   // attaque 15 ms
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + d);     // extinction
+        osc.start(t0);
+        osc.stop(t0 + d + 0.02);
+        /* on ne ferme PAS le contexte : il resservira au bip suivant, et
+           le refermer redemanderait un geste utilisateur sur iOS. */
+      }
     } catch { /* audio indisponible : silencieux, jamais bloquant */ }
   }
   if (vibOn) {
@@ -848,22 +891,31 @@ function ssIsRemembered(gid) {
   return ids.length === 2 && ssRemembered().some(p => p[0] === ids[0] && p[1] === ids[1]);
 }
 
-/* Réapplique les paires mémorisées au démarrage d'une séance. */
+/* Réapplique les paires mémorisées au démarrage d'une séance.
+
+   TOUT SE FAIT SUR DES RÉFÉRENCES D'OBJET, jamais sur des indices. Une
+   première version manipulait i et j : après avoir retiré B de la liste,
+   `live.exercises[i]` ne désignait plus A dès que B se trouvait AVANT lui
+   — les indices avaient glissé d'un cran. Résultat, les deux membres
+   étaient bien marqués du même groupe mais séparés par un exercice tiers,
+   et le super set ne s'enchaînait pas. C'est exactement la raison pour
+   laquelle l'appartenance elle-même est portée par l'objet (`ex.ss`) : un
+   indice cesse d'être vrai dès qu'on touche à la liste. */
 function ssApplyRemembered() {
   if (!live) return;
-  for (const [a, b] of ssRemembered()) {
-    const i = live.exercises.findIndex(e => e.exId === a && !e.ss);
-    if (i < 0) continue;
-    const j = live.exercises.findIndex((e, k) => k !== i && e.exId === b && !e.ss);
-    if (j < 0) continue;
+  for (const [idA, idB] of ssRemembered()) {
+    const exA = live.exercises.find(e => e.exId === idA && !e.ss);
+    if (!exA) continue;
+    const exB = live.exercises.find(e => e !== exA && e.exId === idB && !e.ss);
+    if (!exB) continue;
     const gid = "ss" + Math.random().toString(36).slice(2, 8);
-    live.exercises[i].ss = live.exercises[j].ss = gid;
-    if (j !== i + 1) {
-      const bx = live.exercises.splice(j, 1)[0];
-      live.exercises.splice(live.exercises.indexOf(live.exercises[i]) + 1, 0, bx);
-    }
+    exA.ss = exB.ss = gid;
+    live.exercises.splice(live.exercises.indexOf(exB), 1);            // on retire B
+    live.exercises.splice(live.exercises.indexOf(exA) + 1, 0, exB);   // juste après A
   }
   ssCleanup();
+  if (live.currentIndex < 0 || live.currentIndex >= live.exercises.length)
+    live.currentIndex = live.exercises.length ? 0 : -1;
 }
 
 /* ---------- Validation d'une série + repos ---------- */
