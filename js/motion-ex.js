@@ -17163,3 +17163,344 @@ EXERCISE_MOTIONS["clamshell"] = {
       <text class="mo-cote mo-cote-ok" font-size="3.8" x="98" y="97">45°</text>`
   }
 };
+
+/* ─────────────────────────────────────────────────────────────
+   138. CURL MARTEAU EN TRICHE
+        (curl-marteau-triche)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   CE QUI LE SÉPARE DU CURL MARTEAU STRICT, ET C'EST TOUT LE SUJET. Au
+   schéma 20, le tronc est ENTIÈREMENT dans les éléments fixes : rien
+   au-dessus du coude ne bouge, c'est la définition du curl strict. Ici
+   le tronc DEVIENT une pièce mobile. Ce n'est pas une nuance de dessin,
+   c'est la différence entre les deux exercices, et c'est la seule façon
+   pour que les deux animations soient réellement distinctes.
+
+   POSITION DE DÉPART. Debout, haltères en prise NEUTRE le long du corps
+   — pouces vers le haut, haltère dans l'axe de l'avant-bras. Hanche à
+   112, épaule à 62, coude à 92 : la géométrie du schéma 20, reprise
+   telle quelle pour que la comparaison soit immédiate.
+
+   ARTICULATIONS MOBILES : le coude, et la HANCHE, brièvement.
+   Le tronc pivote de 13° vers l'arrière autour de la hanche (128 112),
+   ce qui emporte l'épaule de (124 62) à (135,35 62,38) et la tête de
+   (116 52) à (129,80 50,84). Treize degrés : assez pour lancer, trop peu
+   pour devenir le balancement listé en erreur.
+
+   LA CHRONOLOGIE EST L'EXERCICE. Quatre temps, et leur ordre compte plus
+   que leurs valeurs :
+     0 → 8 %   l'impulsion. Le tronc part en arrière de 13° et
+               l'avant-bras bondit à 55° — la charge franchit le point
+               de blocage sans que le biceps ait à le faire seul.
+     8 → 22 %  le tronc REVIENT à la verticale pendant que l'avant-bras
+               finit sa course à 133°. La triche s'arrête là.
+     22 → 34 % tenue haute, brève.
+     34 → 92 % la descente. Cinquante-huit pour cent du cycle, contre
+               vingt-deux pour la montée : un rapport de 2,6 pour 1. Le
+               tronc y est RIGOUREUSEMENT IMMOBILE.
+
+   C'est cette asymétrie qui justifie l'exercice : on triche pour
+   soulever plus lourd que ce qu'on peut curler, et on encaisse ce
+   surplus en excentrique. Si la descente est lâchée, il ne reste qu'un
+   balancement — d'où la troisième erreur de la fiche.
+
+   ROTATION RELATIVE, PARCE QUE L'AVANT-BRAS EST PORTÉ PAR LE TRONC.
+   L'avant-bras est un ENFANT du tronc : sa rotation déclarée est donc
+   l'angle absolu MOINS celui du tronc. À 8 % : 55 − 13 = 42. Aux autres
+   échantillons le tronc est à zéro, et les deux coïncident. Oublier
+   cette soustraction aurait ajouté 13° d'ouverture de coude qui
+   n'existent pas.
+
+   REPÈRE DE VERTICALITÉ. Un trait pointillé prolonge l'axe du tronc
+   debout depuis la hanche. L'écart entre le buste et ce trait EST la
+   triche : visible, borné, et il doit revenir à zéro avant la descente.
+
+   MUSCLES. Brachial antérieur sur le bras, brachio-radial sur
+   l'avant-bras — les deux moteurs du marteau, le biceps travaillant en
+   prise neutre sans être le premier servi.
+
+   ÉTAPE 3 — VÉRIFICATION. Grille commune aux deux pièces (0, 8, 22, 34,
+   92, 100). Le marqueur du brachial, emporté par les 13°, passe de
+   (114 79) à (121,78 76,70) : il reste sur le bras. Rien ne descend sous
+   le sol, rien ne sort du cadre.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["curl-marteau-triche"] = {
+  vb: "56 36 132 120",
+  dur: 5,
+  phases: { con: [0, 22], ecc: [34, 92] },
+  alt: "Debout, haltères en prise neutre : une brève impulsion incline le buste de 13° vers l'arrière pour lancer la charge, le buste revient à la verticale pendant que le coude finit sa flexion, puis la descente se fait lente et le buste totalement immobile.",
+  fixe: `
+    <line class="mo-ground" x1="92" y1="152" x2="152" y2="152"/>
+    <!-- AXE VERTICAL DU BUSTE : l'écart à ce trait est la triche, et il
+         doit être revenu à zéro avant que la descente commence. -->
+    <line class="mo-rom" x1="128" y1="112" x2="123.2" y2="52"/>
+    <!-- JAMBES : la hanche ne bouge pas, seul le buste pivote dessus. -->
+    <line class="mo-body" x1="128" y1="112" x2="124" y2="152"/>
+    <line class="mo-body" x1="128" y1="112" x2="134" y2="152"/>
+    <circle class="mo-joint" cx="128" cy="112" r="3"/>`,
+  parts: [
+    {
+      /* TRONC : la pièce que le curl strict n'a pas. Pivot sur la
+         hanche, +13° puis retour, et plus rien ensuite. */
+      o: "128px 112px",
+      k: [[0, "rotate(0deg)"], [8, "rotate(13deg)"], [22, "rotate(0deg)"],
+          [34, "rotate(0deg)"], [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Brachial antérieur",
+      muscle: `<ellipse cx="114" cy="79" rx="3.4" ry="9"/>`,
+      svg: `
+        <circle class="mo-head" cx="116" cy="52" r="9"/>
+        <line class="mo-body" x1="124" y1="62" x2="128" y2="112"/>
+        <line class="mo-limb" x1="125" y1="65" x2="114" y2="68"/>
+        <line class="mo-limb" x1="114" y1="68" x2="114" y2="92"/>
+        <circle class="mo-joint" cx="114" cy="92" r="2.8"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + HALTÈRE, RELATIF au tronc. À 8 % : 42 et non
+             55, parce que le tronc en apporte déjà 13. */
+          o: "114px 92px",
+          k: [[0, "rotate(0deg)"], [8, "rotate(42deg)"], [22, "rotate(133deg)"],
+              [34, "rotate(133deg)"], [92, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Brachio-radial",
+          muscle: `<ellipse cx="114" cy="104" rx="3.4" ry="9"/>`,
+          svg: `
+            <line class="mo-limb" x1="114" y1="92" x2="114" y2="114"/>
+            <line class="mo-bar2" x1="114" y1="106" x2="114" y2="128"/>
+            <rect class="mo-mass" x="107" y="103" width="14" height="7" rx="2"/>
+            <rect class="mo-mass" x="107" y="124" width="14" height="7" rx="2"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M158 126 L158 88 M153 96 L158 88 L163 96"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M158 88 L158 126 M153 118 L158 126 L163 118"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   139. EXTENSION LOMBAIRE MAINS DERRIÈRE LA TÊTE
+        (extension-lombaire-prisonnier)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   MÊME MOUVEMENT QUE LE SCHÉMA 43, MÊME BANC, MÊME AMPLITUDE. Seule
+   change la position des bras — et c'est mesurable, ce qui est la seule
+   raison valable d'en faire un exercice distinct.
+
+   CE QUE LES BRAS DERRIÈRE LA TÊTE CHANGENT, CALCULÉ. Le haut du corps
+   mobilisé pèse 0,678 du poids total (tronc 0,497 + tête et cou 0,081 +
+   deux bras à 0,050). Son centre de masse se situe :
+
+        bras croisés sur la poitrine   18,49 de la hanche
+        mains derrière la tête         20,87 de la hanche
+        ------------------------------------------------
+        soit +12,9 % de bras de levier, moment ×1,129
+
+   À l'horizontale, le moment passe de 12,53 à 14,15 unités poids ×
+   longueur. Pour un corps de 75 kg, le supplément équivaut à porter
+   4,2 kg à l'épaule. Sans le moindre disque : c'est toute la valeur de
+   la position prisonnier, et c'est aussi pourquoi elle mérite un cran
+   de niveau au-dessus de la version débutant.
+
+   POURQUOI LES COUDES DOIVENT RESTER LARGES. Refermer les coudes ramène
+   la masse des bras vers l'axe du corps et vers l'avant : le gain de
+   levier fond, et il ne reste qu'une position inconfortable pour la
+   nuque. C'est la deuxième erreur de la fiche, et elle est INVISIBLE de
+   profil — voir la seconde vue.
+
+   PROJECTION DES BRAS, DÉCLARÉE. Coudes ouverts, le bras part
+   latéralement : de profil il est vu presque en bout. Le bras se dessine
+   sur 9,85 pour 16 réels (61,6 %) et l'avant-bras sur 4,12 pour 14
+   (29,5 %). Ces raccourcissements sont CONSTANTS — les bras ne bougent
+   jamais par rapport au tronc pendant tout l'exercice — donc on les
+   déclare, comme aux schémas 99, 101 et 107. La règle est respectée :
+   ce qui ment, c'est un raccourcissement qui varie.
+
+   ARTICULATION MOBILE : la hanche, et elle seule. Le tronc est un
+   segment RIGIDE de 32 pivotant autour de (120 96), de −135° à 0. Le
+   rachis ne s'enroule pas : aucune courbure n'est dessinée, exactement
+   comme au schéma 43.
+
+   ZÉRO HYPEREXTENSION. « Dépasser l'alignement » est listé : le trait
+   plein d'alignement marque la butée haute, et la rotation s'arrête
+   dessus.
+
+   TEMPO. Descente 45 %, remontée 28 % : la descente est la partie
+   contrôlée, la remontée est franche.
+
+   ÉTAPE 3 — VÉRIFICATION. Coude projeté en (93,83 64,18), nuque en
+   (91,72 67,72) : les deux restent contre la tête, jamais au travers.
+   Rien ne sort du cadre.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["extension-lombaire-prisonnier"] = {
+  vb: "70 52 124 116",
+  dur: 4.2,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Sur un banc à lombaires à 45°, mains croisées derrière la nuque et coudes ouverts : le buste descend par flexion de hanche dos droit, puis remonte jusqu'à l'alignement sans le dépasser.",
+  vue2: {
+    titre: "Vu de derrière",
+    alt: "Vue de derrière au point haut : coudes larges en trait plein, coudes refermés en rouge — la position qui annule le gain de levier.",
+    legende: "Mains derrière la tête, le bras de levier gagne 12,9 % — l'équivalent de 4,2 kg à l'épaule pour un corps de 75 kg. Refermer les coudes ramène cette masse vers l'axe et annule le gain. De profil, coudes larges et coudes fermés se dessinent au même endroit : cette vue est la seule qui les sépare.",
+    vb: "60 76 80 44",
+    svg: `
+      <!-- AXE du corps, vu de derrière -->
+      <line class="mo-rom" x1="100" y1="78" x2="100" y2="118"/>
+      <!-- FAUTE : coudes refermés, 16 d'envergure au lieu de 44 -->
+      <path class="mo-faute" d="M86 100 L92 88 L100 92 L108 88 L114 100"/>
+      <text class="mo-cote mo-cote-faute" font-size="3.8" x="90" y="82">28 cm</text>
+      <!-- CORRECT : coudes larges. Ligne d'épaules, puis bras jusqu'aux
+           coudes, puis avant-bras qui reviennent aux mains, à la nuque. -->
+      <line class="mo-body" x1="86" y1="100" x2="114" y2="100"/>
+      <line class="mo-limb" x1="86" y1="100" x2="78" y2="94"/>
+      <line class="mo-limb" x1="78" y1="94" x2="97" y2="97"/>
+      <line class="mo-limb" x1="114" y1="100" x2="122" y2="94"/>
+      <line class="mo-limb" x1="122" y1="94" x2="103" y2="97"/>
+      <circle class="mo-joint" cx="78" cy="94" r="2.6"/>
+      <circle class="mo-joint" cx="122" cy="94" r="2.6"/>
+      <circle class="mo-head" cx="100" cy="102" r="7"/>
+      <!-- tronc, vu de derrière : il descend sous la ligne d'épaules -->
+      <line class="mo-body" x1="94" y1="100" x2="94" y2="116"/>
+      <line class="mo-body" x1="106" y1="100" x2="106" y2="116"/>
+      <text class="mo-cote mo-cote-ok" font-size="3.8" x="66" y="90">77 cm</text>`
+  },
+  fixe: `
+    <line class="mo-ground" x1="94" y1="160" x2="188" y2="160"/>
+    <line class="mo-pad" x1="126" y1="102" x2="148" y2="124"/>
+    <line class="mo-gear" x1="136" y1="114" x2="136" y2="160"/>
+    <line class="mo-gear" x1="164" y1="136" x2="164" y2="160"/>
+    <circle class="mo-mass" cx="152" cy="139" r="5"/>
+    <circle class="mo-mass" cx="166" cy="128" r="5"/>
+    <line class="mo-limb" x1="120" y1="96" x2="138.38" y2="114.38"/>
+    <circle class="mo-joint" cx="138.38" cy="114.38" r="2.6"/>
+    <line class="mo-limb" x1="138.38" y1="114.38" x2="156.77" y2="132.77"/>
+    <circle class="mo-joint" cx="120" cy="96" r="3.2"/>
+    <!-- ALIGNEMENT : butée haute, jamais dépassée -->
+    <line class="mo-rom" x1="150" y1="126" x2="84" y2="60"/>`,
+  muscles: [
+    { nom: "Grand fessier", svg: `<circle cx="127" cy="101" r="5"/>` },
+    { nom: "Ischio-jambiers",
+      svg: `<ellipse cx="132" cy="102.4" rx="3" ry="10" transform="rotate(-45 132 102.4)"/>` }
+  ],
+  parts: [
+    {
+      /* TRONC RIGIDE + BRAS EN POSITION PRISONNIER, solidaires : les
+         bras ne bougent pas d'un degré par rapport au buste, d'où le
+         raccourcissement constant qu'on peut déclarer. */
+      o: "120px 96px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-135deg)"], [52, "rotate(-135deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Érecteurs du rachis (isométrique)",
+      muscle: `<ellipse cx="110" cy="86" rx="3" ry="11" transform="rotate(-45 110 86)"/>`,
+      svg: `
+        <line class="mo-body" x1="120" y1="96" x2="97.37" y2="73.37"/>
+        <circle class="mo-head" cx="88.18" cy="64.18" r="8"/>
+        <line class="mo-limb" x1="97.37" y1="73.37" x2="93.83" y2="64.18"/>
+        <line class="mo-limb" x1="93.83" y1="64.18" x2="91.72" y2="67.72"/>
+        <circle class="mo-hand" cx="91.72" cy="67.72" r="2.6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M180 122 L180 86 M175 94 L180 86 L185 94"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M180 86 L180 122 M175 114 L180 122 L185 114"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   140. L-SIT LESTÉ
+        (l-sit-leste)
+
+   ÉTAPE 1 — ANALYSE DU MOUVEMENT
+
+   RÉGIME ISOMÉTRIQUE. Rien ne bouge : c'est une position tenue, pas un
+   mouvement. Le schéma est donc construit comme la planche, le hollow
+   hold ou le wall sit — pas de flèches de sens, qui affirmeraient une
+   direction inexistante, mais l'anneau de maintien qui parle de TEMPS
+   sous tension.
+
+   POSITION. Assis entre deux barres parallèles à 26 du sol, bras
+   VERROUILLÉS et strictement verticaux, mains en (96 124), épaules en
+   (96 88) — exactement une longueur de bras au-dessus, 36. Bassin en
+   (92 117), soit quatre unités en arrière de l'aplomb des épaules et
+   33 au-dessus du sol : 58 cm de garde sous les fesses. Jambes tendues
+   à l'horizontale, genou en (118 117), cheville en (144 117), pointes
+   tendues.
+
+   TOUT EST SAGITTAL, DONC LA VUE DE PROFIL EST EXACTE. Aucun
+   raccourcissement à déclarer, aucun facteur de projection : chaque
+   segment se dessine à sa vraie longueur. C'est rare et ça vaut d'être
+   dit.
+
+   CE QUI TIENT LA POSITION, ET POURQUOI C'EST DUR. Les deux jambes
+   tendues à l'horizontale pèsent 0,322 du poids du corps, centre de
+   masse à 22,84 de la hanche : elles imposent 7,355 unités poids ×
+   longueur de moment fléchisseur, en permanence. Rien ne le compense
+   passivement — ni banc, ni appui, ni butée. Seule la co-contraction
+   grand droit + fléchisseurs de hanche s'y oppose, et c'est pour cela
+   que la position lâche d'un coup plutôt que progressivement.
+
+   LA DÉPRESSION SCAPULAIRE EST LA MOITIÉ DE L'EXERCICE. « Épaules qui
+   remontent vers les oreilles » est la première erreur listée. Le repère
+   dessiné est l'écart entre la ligne d'épaules et la tête : bras
+   verrouillés, l'épaule est à 88 et la tête centrée à 77, soit 11
+   d'écart. Si les épaules montent, cet écart se referme — c'est
+   directement lisible.
+
+   POURQUOI PAS DE FLÈCHES. Le L-sit n'a ni phase concentrique ni phase
+   excentrique : il n'a qu'une durée. Une flèche indiquerait un
+   déplacement à faire, et il n'y en a aucun. L'anneau se remplit une
+   fois par cycle, comme aux schémas isométriques précédents.
+
+   LE LEST. La fiche le place aux chevilles ou entre les pieds : il est
+   dessiné là, au bout du plus long bras de levier possible. Ajouter du
+   poids là plutôt qu'à la ceinture est un choix, pas un hasard — c'est
+   la seule position qui augmente le moment au lieu de le déplacer.
+
+   ÉTAPE 3 — VÉRIFICATION. Bras 36 exactement (96 124)→(96 88) ; tronc
+   29,27 pour 29 attendu, l'écart venant du recul de 4 du bassin, qui est
+   voulu ; fémur 26 et tibia 26 exacts. Le bassin garde 33 au-dessus du
+   sol, les talons 33 également : rien ne touche.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["l-sit-leste"] = {
+  vb: "78 66 84 92",
+  dur: 4,
+  isometrique: true,
+  maintien: "126 100",
+  alt: "Assis entre deux barres parallèles, bras tendus et verrouillés qui poussent le corps vers le haut, bassin décollé de 58 cm du sol et jambes tendues à l'horizontale, pointes tendues, un lest posé aux chevilles. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="82" y1="150" x2="158" y2="150"/>
+    <!-- BARRES PARALLÈLES : le point d'appui, à 26 du sol -->
+    <line class="mo-bar3" x1="86" y1="124" x2="112" y2="124"/>
+    <line class="mo-gear" x1="90" y1="124" x2="90" y2="150"/>
+    <line class="mo-gear" x1="108" y1="124" x2="108" y2="150"/>
+    <!-- GARDE SOUS LE BASSIN : 33 unités, soit 58 cm. C'est elle qui
+         distingue un vrai L-sit d'un appui traînant. -->
+    <line class="mo-rom" x1="92" y1="117" x2="92" y2="150"/>
+    <line class="mo-rom" x1="89" y1="150" x2="95" y2="150"/>
+    <!-- HORIZONTALE DES JAMBES : la cible, pas une ligne décorative -->
+    <line class="mo-rom" x1="92" y1="117" x2="156" y2="117"/>
+    <!-- BRAS VERROUILLÉ, strictement vertical : 36 exactement -->
+    <circle class="mo-hand" cx="96" cy="124" r="3.2"/>
+    <line class="mo-limb" x1="96" y1="124" x2="96" y2="88"/>
+    <circle class="mo-joint" cx="96" cy="88" r="3"/>
+    <!-- TÊTE : son écart à l'épaule (11) est le repère de la dépression
+         scapulaire. Épaules qui montent, écart qui se referme. -->
+    <circle class="mo-head" cx="93" cy="77" r="7"/>
+    <!-- TRONC puis JAMBES TENDUES à l'horizontale -->
+    <line class="mo-body" x1="96" y1="88" x2="92" y2="117"/>
+    <circle class="mo-joint" cx="92" cy="117" r="3"/>
+    <line class="mo-limb" x1="92" y1="117" x2="118" y2="117"/>
+    <circle class="mo-joint" cx="118" cy="117" r="2.6"/>
+    <line class="mo-limb" x1="118" y1="117" x2="144" y2="117"/>
+    <circle class="mo-joint" cx="144" cy="117" r="2.6"/>
+    <line class="mo-limb" x1="144" y1="117" x2="152.46" y2="120.08"/>
+    <!-- LEST aux chevilles : au bout du plus long levier possible -->
+    <rect class="mo-mass" x="139" y="121" width="12" height="6" rx="2"/>`,
+  muscles: [
+    { nom: "Grand droit", svg: `<ellipse cx="95" cy="103" rx="3.2" ry="10"/>` },
+    { nom: "Fléchisseurs de hanche", svg: `<circle cx="98" cy="114" r="4.5"/>` },
+    { nom: "Triceps + dépression scapulaire",
+      svg: `<ellipse cx="99" cy="98" rx="3" ry="8"/>` }
+  ],
+  parts: []
+};
