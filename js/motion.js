@@ -143,10 +143,41 @@ function renderDedicatedMotion(ex, spec) {
   }).join("");
 
   const styleTag = `<style>${css.join("")}</style>`;
+
+  /* SECONDE VUE STATIQUE (optionnelle).
+
+     Certains mouvements ont une composante HORS DU PLAN de l'animation :
+     une abduction, une rotation de bassin, un croisement. La vue animée
+     est choisie pour être exacte dans le plan du mouvement principal, et
+     ce choix même lui interdit d'en montrer une autre.
+
+     Pourquoi STATIQUE et non une seconde animation : la règle de
+     projection de cette bibliothèque — « un raccourcissement constant se
+     déclare, un raccourcissement variable ment » — porte sur la VARIATION
+     dans le temps. Une image FIGÉE n'a pas de variation : sa projection
+     est exacte à cet instant, un point c'est tout. C'est précisément ce
+     qui rend honnête une vue qu'on ne pourrait pas animer. */
+  const vue2 = spec.vue2 ? `
+    <figure class="motion-wrap motion-statique" role="img"
+        aria-label="Seconde vue, image fixe : ${esc(spec.vue2.titre || "")}. ${esc(spec.vue2.alt || "")}">
+      <svg viewBox="${spec.vue2.vb}" preserveAspectRatio="xMidYMid meet">${spec.vue2.svg}</svg>
+      <span class="motion-tag">Image fixe</span>
+      <span class="motion-vue">${esc(spec.vue2.titre || "")}</span>
+      <figcaption class="motion-cap motion-cap-statique">${esc(spec.vue2.legende || "")}</figcaption>
+    </figure>` : "";
   // légende : muscles fixes + muscles portés par un segment mobile
   const musclesNoms = (spec.muscles || []).map(m => m.nom)
     .concat(collectPartMuscleNames(spec.parts || []))
     .filter(Boolean);
+
+  /* RÉGIME STATIQUE : certains mouvements ne peuvent PAS être animés
+     honnêtement. Le clamshell est conique — le fémur tourne sur un cône,
+     aucun plan ne contient sa trajectoire — et toute projection fait
+     passer le genou par des angles qu'il n'a jamais. Deux positions
+     figées, elles, sont exactes chacune à son instant. Le schéma se
+     réduit alors à la seule image fixe, sans contrôles : il n'y a rien
+     à mettre en pause. */
+  if (spec.statique) return vue2;
 
   return `<figure class="motion-wrap motion-dedie" style="--mo-dur:${spec.dur}s;--mo-k:1${
       spec.hauteur ? `;--mo-h:${spec.hauteur}px` : ""}"
@@ -169,7 +200,7 @@ function renderDedicatedMotion(ex, spec) {
         <button type="button" class="mo-btn mo-speed" data-mo="speed" aria-label="Vitesse">1×</button>
       </span>
     </figcaption>
-  </figure>`;
+  </figure>${vue2}`;
 }
 
 /* Contrôles : un seul écouteur délégué, valable pour tous les schémas */
