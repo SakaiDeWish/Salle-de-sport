@@ -13703,6 +13703,72 @@ EXERCISE_MOTIONS["kickback-fessier-machine"] = {
    contre deux.
    ───────────────────────────────────────────────────────────── */
 EXERCISE_MOTIONS["donkey-kicks"] = {
+  /* SECONDE VUE — VUE DE DESSUS, IMAGE FIXE.
+
+     CE QUE LA VUE ANIMÉE NE PEUT PAS MONTRER. « Ouvrir la hanche sur le
+     côté » est la deuxième erreur listée, et elle est HORS DU PLAN de la
+     vue de profil. Mesuré : 15° de dérive raccourcissent le fémur projeté
+     de 26,00 à 25,15, soit 3,26 %. Sur un trait de 26 unités, cela fait
+     moins d'une unité d'écart — la faute est invisible, et aucune finesse
+     de dessin n'y changerait quoi que ce soit.
+
+     DE DESSUS, LA MÊME FAUTE VAUT 6,58 UNITÉS, soit 11,5 cm, et elle se
+     lit à son angle VRAI de 15°. L'écart à l'image est 7,8 fois plus
+     grand. Ce n'est pas un choix de goût : c'est le rapport entre un
+     cosinus et un sinus au voisinage de zéro.
+
+     POURQUOI UNE IMAGE FIXE ET NON UNE SECONDE ANIMATION. De dessus, le
+     fémur se projette sur 25,44 quelle que soit la dérive — un
+     raccourcissement CONSTANT, qu'on déclare. Mais le mouvement principal,
+     lui, ferait monter et descendre la cuisse, et sa projection de dessus
+     varierait alors de 25,44 à zéro : un segment qui disparaît. La règle
+     de la bibliothèque l'interdit. Une image FIXE échappe à la règle,
+     puisque la règle porte sur la variation dans le temps : à un instant
+     donné, la projection est exacte, point.
+
+     GÉOMÉTRIE. Fin de course, cuisse alignée sur l'axe du dos à 11,94°
+     sous l'horizontale. Tronc vu de dessus : 29 × cos 11,94° = 28,37,
+     raccourcissement constant déclaré. Épaules 28 de large, bassin 12.
+     Fémur correct (88,4 106) → (113,81 106) ; fémur fauté 15°
+     → (112,94 112,58). Le tibia, lui, pointe vers le plafond : il ne se
+     projette que sur 5,38 de dessus, donc il n'est PAS dessiné comme un
+     segment mais comme un point — le talon. */
+  vue2: {
+    titre: "Vu de dessus",
+    alt: "Vue de dessus en fin de course : la cuisse correcte reste dans l'axe du corps, la cuisse fautive s'ouvre de 15° sur le côté.",
+    legende: "De profil, ouvrir la hanche de 15° ne raccourcit la cuisse que de 3,3 % : invisible. De dessus, le genou s'écarte de 11,5 cm à son angle réel. C'est la seule vue où cette erreur se voit.",
+    vb: "38 80 92 42",
+    svg: `
+      <!-- AXE DU CORPS prolongé depuis la hanche : la direction que la
+           cuisse doit suivre. C'est la seule référence dont on a besoin. -->
+      <line class="mo-rom" x1="88.4" y1="106" x2="120" y2="106"/>
+      <!-- TÊTE et TRONC vus de dessus. 28,37 = 29 × cos 11,94° :
+           raccourcissement CONSTANT, donc déclaré. -->
+      <circle class="mo-head" cx="48" cy="100" r="6"/>
+      <line class="mo-body" x1="54" y1="100" x2="88.4" y2="100"/>
+      <!-- lignes des épaules et du bassin : les deux repères qui montrent
+           que le bassin ne balance pas (3e erreur de la fiche) -->
+      <line class="mo-body" x1="60" y1="88" x2="60" y2="112"/>
+      <line class="mo-body" x1="88.4" y1="94" x2="88.4" y2="106"/>
+      <circle class="mo-hand" cx="60" cy="88" r="2.6"/>
+      <circle class="mo-hand" cx="60" cy="112" r="2.6"/>
+      <!-- JAMBE D'APPUI, en retrait : genou au sol sous la hanche -->
+      <circle class="mo-joint" cx="88.4" cy="94" r="2.4"/>
+      <line class="mo-body" x1="88.4" y1="94" x2="112" y2="94"/>
+      <line class="mo-body" x1="112" y1="94" x2="115.5" y2="92"/>
+      <!-- FAUTE : la cuisse s'ouvre de 15°, le genou s'écarte de 6,58 -->
+      <path class="mo-faute" d="M88.4 106 L112.94 112.58"/>
+      <circle class="mo-faute-pt" cx="112.94" cy="112.58" r="3"/>
+      <!-- arc des 15°, rayon 15 depuis la hanche -->
+      <path class="mo-rom" fill="none" d="M103.4 106 A15 15 0 0 0 102.89 109.88"/>
+      <text class="mo-cote mo-cote-faute" font-size="3.46" x="94" y="119">15° · 11,5 cm</text>
+      <!-- CORRECT, dessiné EN DERNIER pour rester au-dessus. Le talon est
+           un POINT : le tibia pointe au plafond et ne se projette que
+           sur 5,38 de dessus, on ne le trace donc pas en segment. -->
+      <line class="mo-limb" x1="88.4" y1="106" x2="113.81" y2="106"/>
+      <circle class="mo-joint" cx="88.4" cy="106" r="2.8"/>
+      <circle class="mo-hand" cx="113.81" cy="106" r="3.4"/>`
+  },
   vb: "62 92 110 64",
   dur: 3.2,
   phases: { con: [0, 34], ecc: [50, 86] },
@@ -13825,6 +13891,70 @@ EXERCISE_MOTIONS["donkey-kicks"] = {
    longue, « aller trop vite » étant une erreur listée.
    ───────────────────────────────────────────────────────────── */
 EXERCISE_MOTIONS["fire-hydrant"] = {
+  /* SECONDE VUE — VUE DE DESSUS, IMAGE FIXE.
+
+     CE QUE LA VUE ANIMÉE NE PEUT PAS MONTRER, ET QU'ELLE DÉCLARE. Vue de
+     derrière, le tibia EST l'axe de rotation : il pointe droit vers le
+     fond et se projette sur ZÉRO. Le schéma animé le déclare et le dessine
+     en bout, faute de mieux. Le tronc subit le même sort : il s'enfonce
+     dans l'image, et il ne reste de lui que la ligne d'épaules et la ligne
+     de bassin.
+
+     DE DESSUS, CE QUI VALAIT ZÉRO VAUT 26. Le tibia retrouve sa vraie
+     longueur, le tronc aussi (29, en vraie grandeur), et la jambe de
+     travail dessine enfin son angle droit : 18,38 de fémur écarté, puis
+     26 de tibia vers l'arrière. C'est la forme même de l'exercice, et
+     elle est invisible dans l'autre vue.
+
+     CE QUE CETTE VUE PERD, DÉCLARÉ À SON TOUR. Le fémur, lui, s'enfonce :
+     à 45° il se projette sur 26 × sin 45° = 18,38, soit 29,3 % de
+     raccourcissement. À un INSTANT FIXE ce n'est pas une variation, donc
+     pas un mensonge — mais animée, cette vue ferait passer le fémur de 0
+     à 18,38, un segment qui naît de rien. D'où l'image figée.
+
+     LA PREMIÈRE ERREUR DE LA FICHE DEVIENT MESURABLE. « Basculer tout le
+     buste sur le côté » : l'épaule est à 32 du sol en quadrupédie, donc
+     15° d'inclinaison la déplacent de 32 × sin 15° = 8,28 unités, soit
+     14,5 cm. De dessus, l'axe du corps cesse d'être droit — c'est
+     directement lisible. De derrière, la même faute ne déplace la ligne
+     d'épaules que dans la profondeur : elle ne se voit pas. */
+  vue2: {
+    titre: "Vu de dessus",
+    alt: "Vue de dessus à l'ouverture maximale : le tibia et le tronc apparaissent en vraie grandeur, et l'axe du corps montre si le buste a basculé.",
+    legende: "Vu de derrière, le tibia pointe vers le fond : il vaut zéro. De dessus il vaut 26, le tronc aussi, et la jambe dessine son angle droit. L'axe rouge montre le buste qui bascule de 15° — 14,5 cm d'épaule, invisibles dans l'autre vue.",
+    vb: "38 74 90 58",
+    svg: `
+      <!-- AXE DU CORPS correct : parfaitement droit, épaules et bassin
+           perpendiculaires. C'est la référence du non-basculement. -->
+      <line class="mo-rom" x1="56" y1="100" x2="100" y2="100"/>
+      <!-- FAUTE : buste incliné de 15°, l'épaule part de 8,28 sur le côté.
+           On ne trace QUE l'axe dévié, pas une seconde ligne d'épaules :
+           deux barres verticales parallèles à 8 d'écart se lisaient comme
+           un doublon de dessin, pas comme une faute. -->
+      <path class="mo-faute" d="M93 100 L64 91.72"/>
+      <circle class="mo-faute-pt" cx="64" cy="91.72" r="3"/>
+      <text class="mo-cote mo-cote-faute" font-size="4.78" x="40" y="87">15° · 14,5 cm</text>
+      <!-- TÊTE, puis TRONC en VRAIE GRANDEUR (29) — dans la vue animée,
+           il s'enfonçait dans l'image et se réduisait à deux barres. -->
+      <circle class="mo-head" cx="52" cy="100" r="6"/>
+      <line class="mo-body" x1="58" y1="100" x2="93" y2="100"/>
+      <line class="mo-limb" x1="64" y1="86" x2="64" y2="114"/>
+      <line class="mo-limb" x1="93" y1="94" x2="93" y2="106"/>
+      <circle class="mo-hand" cx="64" cy="86" r="2.6"/>
+      <circle class="mo-hand" cx="64" cy="114" r="2.6"/>
+      <!-- JAMBE D'APPUI : genou sous la hanche, tibia vers l'arrière -->
+      <circle class="mo-joint" cx="93" cy="94" r="2.4"/>
+      <line class="mo-body" x1="93" y1="94" x2="119" y2="94"/>
+      <line class="mo-body" x1="119" y1="94" x2="122" y2="92"/>
+      <!-- JAMBE DE TRAVAIL, ouverture maximale : 18,38 de fémur écarté
+           (26 × sin 45°, raccourcissement déclaré) puis 26 de tibia en
+           VRAIE grandeur — l'angle droit que l'autre vue ne montre pas. -->
+      <circle class="mo-joint" cx="93" cy="106" r="2.8"/>
+      <line class="mo-limb" x1="93" y1="106" x2="93" y2="124.38"/>
+      <circle class="mo-joint" cx="93" cy="124.38" r="2.8"/>
+      <line class="mo-limb" x1="93" y1="124.38" x2="119" y2="124.38"/>
+      <line class="mo-limb" x1="119" y1="124.38" x2="122" y2="126.4"/>`
+  },
   vb: "80 94 76 60",
   dur: 3.6,
   vue: "Vu de derrière",
@@ -14200,6 +14330,79 @@ EXERCISE_MOTIONS["marche-laterale-elastique"] = {
    avant » est un mouvement franc, la descente est la partie contrôlée.
    ───────────────────────────────────────────────────────────── */
 EXERCISE_MOTIONS["fente-croisee"] = {
+  /* SECONDE VUE — VUE DE PROFIL, IMAGE FIXE.
+
+     Le commentaire du schéma animé annonçait déjà cette vue. Il annonçait
+     aussi « 0,86 au minimum » : la mesure refaite donne 0,810, pas 0,86.
+     Je corrige le chiffre plutôt que de le recopier. Position basse,
+     longueurs projetées sur 26 :
+
+        segment          de face   de profil
+        fémur avant       16,76      25,51
+        tibia avant       16,76      25,51
+        fémur arrière     25,25      25,56
+        tibia arrière     16,85      21,07
+        ------------------------------------
+        le pire           0,645      0,810
+
+     De face, trois segments sur quatre perdent plus du tiers de leur
+     longueur et se tassent dans une bande étroite. De profil, le pire
+     garde 81 %.
+
+     ET SURTOUT, LA TROISIÈME ERREUR DE LA FICHE DEVIENT VISIBLE. « Pas
+     trop court » est un défaut de PROFONDEUR, et la profondeur est
+     exactement l'axe de vue du schéma animé. Vérifié : à croisement égal,
+     un pied arrière reculé de 26, de 13 ou de 6 se projette de face au
+     MÊME point (14 0). Trois pas de longueurs très différentes donnent
+     une image de face rigoureusement identique. De profil ils sont à 26,
+     13 et 6. Cette erreur n'est pas mal montrée par la vue de face : elle
+     y est mathématiquement indétectable.
+
+     CE QUE CETTE VUE PERD, DÉCLARÉ. De profil, les deux hanches ne
+     diffèrent que latéralement — l'axe de vue — donc elles se
+     SUPERPOSENT en un seul point. Le croisement, lui, disparaît
+     complètement. C'est précisément pour cela que la vue de face reste
+     la vue animée : chacune montre ce que l'autre efface. */
+  vue2: {
+    titre: "Vu de profil",
+    alt: "Vue de profil en position basse : la profondeur du pas arrière, invisible de face, et les segments à 81 % de leur longueur au lieu de 64,5 %.",
+    legende: "De face, un pas reculé de 46 cm, de 23 cm ou de 10 cm donne exactement la même image : le recul est le long de l'axe de vue. De profil il se mesure. Les deux hanches, elles, se superposent ici — d'où la vue de face pour le croisement.",
+    vb: "70 64 90 114",
+    svg: `
+      <line class="mo-ground" x1="74" y1="150" x2="128" y2="150"/>
+      <!-- APLOMB DU PIED AVANT : l'origine de la mesure de recul -->
+      <line class="mo-rom" x1="96" y1="86" x2="96" y2="158"/>
+      <!-- TRONC droit : « buste qui tourne » est la 2e erreur, et de
+           profil un buste tourné se verrait rétrécir. -->
+      <circle class="mo-head" cx="96" cy="80" r="8"/>
+      <line class="mo-body" x1="96" y1="89" x2="96" y2="88"/>
+      <line class="mo-body" x1="96" y1="118" x2="96" y2="89"/>
+      <!-- LES DEUX HANCHES SONT CONFONDUES : elles ne diffèrent que
+           latéralement, et le latéral est l'axe de vue. Un seul point. -->
+      <circle class="mo-joint" cx="96" cy="118" r="3.2"/>
+      <!-- JAMBE ARRIÈRE (lointaine, donc sombre) : 25,56 puis 21,07 -->
+      <line class="mo-body" x1="96" y1="118" x2="102.2" y2="142.8"/>
+      <circle class="mo-joint" cx="102.2" cy="142.8" r="2.6"/>
+      <line class="mo-body" x1="102.2" y1="142.8" x2="122" y2="150"/>
+      <!-- JAMBE AVANT (proche, claire) : 25,51 puis 25,51 -->
+      <line class="mo-limb" x1="96" y1="118" x2="76.13" y2="134"/>
+      <circle class="mo-joint" cx="76.13" cy="134" r="2.8"/>
+      <line class="mo-limb" x1="76.13" y1="134" x2="96" y2="150"/>
+      <circle class="mo-hand" cx="96" cy="150" r="3"/>
+      <!-- DEUX COTES EMPILÉES, sans un mot : le bon recul et le trop
+           court. Les chiffres suffisent, et ils sont la seule chose que
+           la vue de face ne peut pas fournir. -->
+      <line class="mo-rom" x1="96" y1="156" x2="122" y2="156"/>
+      <line class="mo-rom" x1="96" y1="153" x2="96" y2="159"/>
+      <line class="mo-rom" x1="122" y1="153" x2="122" y2="159"/>
+      <text class="mo-cote mo-cote-ok" font-size="9.2" x="126" y="159">46 cm</text>
+      <!-- FAUTE « pas trop court » : même croisement, moitié de recul.
+           De face, ce pied se dessine AU MÊME ENDROIT que le bon. -->
+      <circle class="mo-faute-pt" cx="109" cy="150" r="3.4"/>
+      <line class="mo-faute" x1="96" y1="169" x2="109" y2="169"/>
+      <line class="mo-faute" x1="109" y1="166" x2="109" y2="172"/>
+      <text class="mo-cote mo-cote-faute" font-size="9.2" x="113" y="172">23 cm</text>`
+  },
   vb: "70 46 58 110",
   dur: 4.2,
   vue: "Vu de face",
@@ -16856,4 +17059,107 @@ EXERCISE_MOTIONS["burpees"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M70 96 L52 124 M58.76 119.74 L52 124 L53.08 116.08"/>` },
     { phase: "con", svg: `<path class="mo-arr" d="M52 124 L70 96 M63.24 100.26 L70 96 L68.92 103.92"/>` }
   ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   137. CLAMSHELL — SCHÉMA STATIQUE
+        (clamshell)
+
+   CET EXERCICE AVAIT ÉTÉ REFUSÉ, ET LE REFUS ÉTAIT JUSTE. Le clamshell
+   est le seul mouvement CONIQUE de la bibliothèque : pieds joints et
+   genoux à 90°, le fémur tourne sur un cône de demi-angle 45° autour de
+   l'axe hanche→cheville. Aucun plan ne contient sa trajectoire, donc
+   aucune vue orthographique ne peut l'animer sans mentir.
+
+   CE QUI A CHANGÉ : ON NE L'ANIME PLUS. La règle de projection porte sur
+   la VARIATION dans le temps. Une image FIXE n'a pas de variation : sa
+   projection est exacte à cet instant. Deux positions figées — fermée et
+   ouverte — sont donc chacune rigoureusement vraies. C'est l'animation
+   qui était impossible, pas le dessin.
+
+   LE MOUVEMENT FANTÔME, MESURÉ. Le genou est bloqué à 90° dans la
+   réalité, aux deux positions et entre les deux. Voici l'angle qu'on
+   CROIRAIT voir selon l'inclinaison de la vue :
+
+        vue       fermée    ouverte
+        β = 0°     180,0°    109,5°     <- jambe dessinée DROITE en bas
+        β = 25°    134,3°    141,9°     <- retenue
+        β = 45°    109,4°    179,7°     <- jambe droite en haut
+        β = 90°     89,7°    108,9°     <- mais le genou ne monte que 5,6
+
+   À β = 0 la position fermée dessine une jambe parfaitement TENDUE alors
+   que le genou est à 90°. C'est exactement le défaut qui avait fait
+   rejeter ce schéma. À β = 25° les deux positions gardent un genou
+   franchement plié, et c'est la seule plage qui le permette en conservant
+   une montée de genou lisible.
+
+   LA VUE RETENUE : β = 25°. Fémur projeté 20,64 fermé et 20,18 ouvert,
+   soit 79,4 % puis 77,6 % — 1,8 point d'écart entre les deux positions.
+   Tibia 19,22 puis 18,68, soit 73,9 % et 71,8 %. Le raccourcissement est
+   donc quasi CONSTANT d'une position à l'autre : on le déclare, comme
+   aux schémas 99, 101 et 107. Le genou parcourt 14,06 unités dans
+   l'image, et gagne 12,92 unités de HAUTEUR réelle, soit 22,6 cm.
+
+   AMPLITUDE. 45° d'ouverture. « Amplitude forcée » étant une erreur
+   listée, on ne va pas plus loin : au-delà, ce n'est plus la hanche qui
+   ouvre, c'est le bassin qui roule — la première erreur de la fiche.
+
+   LE BASSIN EMPILÉ. Les deux côtés du tronc sont tracés en parallèle,
+   12 d'écart constant. C'est le repère du « bassin reste empilé, sans
+   rouler vers l'arrière » : si le bassin roulait, ces deux traits
+   cesseraient d'être parallèles.
+
+   CE QUE CETTE VUE DÉFORME, DÉCLARÉ. Vue inclinée de 25°, ce qui est en
+   AVANT paraît plus BAS. Le genou de la jambe du dessous, qui pointe
+   vers le ventre, se dessine donc sous la ligne du sol alors qu'il y
+   repose. Le trait de sol est pour cette raison tracé UNIQUEMENT sous le
+   tronc, là où le corps touche effectivement à la hauteur dessinée.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["clamshell"] = {
+  statique: true,
+  vue2: {
+    titre: "Vu de trois quarts",
+    alt: "Couché sur le côté, genoux fléchis et pieds joints : le genou du dessus passe de la position fermée, en pointillé, à 45° d'ouverture.",
+    legende: "Ce mouvement est conique : le fémur tourne sur un cône, aucune vue ne peut l'animer sans faire passer le genou par des angles qu'il n'a jamais. Les deux positions figées, elles, sont exactes. Le genou gagne 22,6 cm de hauteur pour 45° d'ouverture.",
+    vb: "16 84 100 46",
+    svg: `
+      <!-- SOL, uniquement sous le tronc : vue inclinée de 25°, ce qui est
+           en avant paraît plus bas, et le genou du dessous descendrait
+           sous un trait qui irait jusqu'aux pieds. -->
+      <line class="mo-ground" x1="22" y1="112" x2="68" y2="112"/>
+      <!-- TRONC : ses deux côtés, 12 d'écart CONSTANT. Deux traits qui
+           cessent d'être parallèles, c'est le bassin qui roule. -->
+      <line class="mo-body" x1="37" y1="112" x2="66" y2="112"/>
+      <line class="mo-body" x1="37" y1="101.12" x2="66" y2="101.12"/>
+      <line class="mo-body" x1="37" y1="101.12" x2="37" y2="112"/>
+      <line class="mo-body" x1="66" y1="101.12" x2="66" y2="112"/>
+      <circle class="mo-head" cx="26" cy="106.56" r="7"/>
+      <!-- JAMBE DU DESSOUS : elle ne bouge pas, elle sert de socle. Elle
+           est volontairement ATTÉNUÉE : trois jambes se croisent dans une
+           bande de dix unités, et sans hiérarchie de contraste on ne
+           distingue plus la position de départ du membre d'appui.
+           Son genou est dessiné SOUS la ligne de sol — voir plus haut. -->
+      <g opacity="0.45">
+        <circle class="mo-joint" cx="66" cy="112" r="2.6"/>
+        <line class="mo-body" x1="66" y1="112" x2="84.39" y2="119.77"/>
+        <circle class="mo-joint" cx="84.39" cy="119.77" r="2.4"/>
+        <line class="mo-body" x1="84.39" y1="119.77" x2="102.77" y2="112"/>
+      </g>
+      <!-- PIEDS JOINTS : les deux chevilles restent empilées, 7,25
+           d'écart à l'image. C'est la contrainte de l'exercice. -->
+      <line class="mo-rom" x1="102.66" y1="112" x2="102.66" y2="104.75"/>
+      <!-- POSITION FERMÉE, en pointillé : le départ -->
+      <path class="mo-depart" d="M66 101.12 L84.28 110.71 L102.55 104.75"/>
+      <circle class="mo-depart-pt" cx="84.28" cy="110.71" r="2.6"/>
+      <!-- POSITION OUVERTE, pleine : 45° -->
+      <circle class="mo-joint" cx="66" cy="101.12" r="3"/>
+      <line class="mo-limb" x1="66" y1="101.12" x2="85.69" y2="96.72"/>
+      <circle class="mo-joint" cx="85.69" cy="96.72" r="2.8"/>
+      <line class="mo-limb" x1="85.69" y1="96.72" x2="102.55" y2="104.75"/>
+      <!-- MUSCLE moteur : moyen fessier, sur la hanche du dessus -->
+      <circle class="mo-muscle" cx="69.5" cy="98.4" r="3.4"/>
+      <!-- OUVERTURE : la flèche suit le déplacement réel du genou -->
+      <path class="mo-arr" d="M93.5 110.5 L95 99 M91.6 103 L95 99 L99.2 102"/>
+      <text class="mo-cote mo-cote-ok" font-size="3.8" x="98" y="97">45°</text>`
+  }
 };

@@ -2338,3 +2338,47 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   border: 1px dashed var(--accent);
   font-size: 0.86rem;
 }
+
+/* ---------- Seconde vue statique ----------
+   Même carte que le schéma animé, sans contrôles : rien ne bouge, donc
+   rien à mettre en pause. Sa légende est une phrase, pas une liste de
+   muscles — elle dit ce que la vue animée ne peut pas montrer. */
+.motion-statique { margin-top: -6px; }
+.motion-statique svg { width: 100%; max-height: 170px; display: block; }
+.motion-cap-statique {
+  display: block;
+  padding-top: 8px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+/* Tracé de FAUTE, réservé aux secondes vues : ce qu'il ne faut PAS faire.
+   Pointillé et rouge — deux signaux distincts, pour que la faute reste
+   lisible même sans percevoir la couleur. */
+.mo-faute {
+  stroke: var(--red); stroke-width: 3.2; fill: none;
+  stroke-linecap: round; stroke-dasharray: 7 5; opacity: 0.9;
+}
+.mo-faute-pt { fill: var(--red); opacity: 0.9; }
+/* Les cotes sont écrites en UNITÉS DE VIEWBOX, pas en pixels. Le facteur
+   d'échelle vaut 170 / hauteur-du-viewBox : une même valeur donne 17 px
+   sur un schéma large et plat, 7 px sur un schéma haut et étroit. Chaque
+   vue fixe donc SA taille par un attribut font-size, calculé pour viser
+   14 px à l'écran : font-size = 14 x hauteurVB / 170. La valeur ci-dessous
+   n'est qu'un repli. */
+.mo-cote {
+  fill: var(--text-soft); font-family: var(--font-body);
+  font-weight: 700; letter-spacing: 0.03em;
+}
+.mo-cote-faute { fill: var(--red); }
+.mo-cote-ok { fill: var(--accent-2); }
+
+/* Position de DÉPART dans une image fixe : le même membre, à l'autre bout
+   de sa course. Pointillé et atténué — c'est un repère, pas la cible. */
+/* Même teinte que le membre plein — c'est LE MÊME membre — mais en
+   pointillé et atténué. En gris neutre il se confondait avec les
+   segments lointains, qui sont gris eux aussi. */
+.mo-depart { stroke: var(--text); stroke-width: 3.4; fill: none;
+             stroke-linecap: round; stroke-dasharray: 5.5 4; opacity: 0.62; }
+.mo-depart-pt { fill: none; stroke: var(--text); stroke-width: 2; opacity: 0.62; }
