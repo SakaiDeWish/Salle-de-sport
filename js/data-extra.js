@@ -1221,11 +1221,82 @@ const EXERCISES_HIP = [
 EXERCISES.push(...EXERCISES_HIP);
 
 /* =========================================================
+   Ajouts issus d'un programme partagé (Legs 2 / Push 2).
+   Seuls figurent ici les mouvements qui n'existaient pas
+   déjà : les treize autres lignes de ce programme sont
+   des exercices de la bibliothèque, et « 21's » ou « drop
+   set » sont des schémas de séries, pas des exercices.
+   ========================================================= */
+const EXERCISES_PROG = [
+  {
+    id: "curl-marteau-triche",
+    nom: "Curl marteau en triche",
+    groupe: "biceps", materiel: "halteres", niveau: "avance", type: "iso",
+    muscles: "Biceps, brachial, long supinateur (brachio-radial)",
+    description: "Le curl marteau volontairement lancé : une impulsion de hanches fait passer la charge au-delà du point de blocage, puis la descente se fait lente et contrôlée. Sert à surcharger l'excentrique avec des haltères plus lourds que ce qu'on peut curler strictement.",
+    execution: [
+      "Debout, haltères en prise neutre le long du corps, gainage serré.",
+      "Donne une impulsion brève des hanches pour lancer la montée, sans reculer le buste.",
+      "Une fois le point de blocage passé, reprends le contrôle et monte jusqu'en haut.",
+      "Descends en trois à quatre secondes, sans élan : c'est là que se fait le travail."
+    ],
+    erreurs: [
+      "Transformer l'impulsion en balancement continu à chaque répétition.",
+      "Cambrer les lombaires pour lancer la charge.",
+      "Lâcher la descente : sans excentrique contrôlé, la triche ne sert plus à rien."
+    ],
+    videoQuery: "hammer cheat curl technique triche excentrique"
+  },
+  {
+    id: "extension-lombaire-prisonnier",
+    nom: "Extension lombaire mains derrière la tête",
+    groupe: "lombaires", materiel: "machine", niveau: "intermediaire", type: "iso",
+    muscles: "Lombaires, fessiers, ischios",
+    description: "L'extension au banc à 45°, mains croisées derrière la nuque : la position « prisonnier » éloigne le centre de masse de la hanche et alourdit nettement le mouvement, sans ajouter le moindre kilo.",
+    execution: [
+      "Cuisses calées sur le banc à 45°, chevilles bloquées, mains croisées derrière la tête.",
+      "Descends le buste dos neutre, coudes ouverts et immobiles.",
+      "Remonte jusqu'à l'alignement du corps, sans dépasser.",
+      "Garde les coudes larges : les ramener vers l'avant raccourcit le levier et annule l'intérêt."
+    ],
+    erreurs: [
+      "Tirer sur la nuque avec les mains.",
+      "Refermer les coudes pendant la montée.",
+      "Dépasser l'alignement en hyper-extension."
+    ],
+    videoQuery: "prisoner back extension mains derrière la tête technique"
+  },
+  {
+    id: "l-sit-leste",
+    nom: "L-sit lesté",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "avance", type: "iso",
+    muscles: "Grand droit, fléchisseurs de hanche, triceps, grand dorsal (dépression scapulaire)",
+    description: "Assis entre deux barres parallèles, bras tendus qui poussent le corps vers le haut, jambes tendues à l'horizontale : un gainage en compression totale. Le lest se pose sur les chevilles ou entre les pieds.",
+    execution: [
+      "Mains sur les barres, bras verrouillés, épaules basses et éloignées des oreilles.",
+      "Décolle le bassin en poussant fort vers le sol, jambes tendues devant.",
+      "Monte les jambes jusqu'à l'horizontale, pointes tendues, dos arrondi vers l'arrière.",
+      "Tiens sans respirer court : le temps sous tension est tout l'exercice."
+    ],
+    erreurs: [
+      "Épaules qui remontent vers les oreilles.",
+      "Genoux fléchis pour tricher sur la hauteur.",
+      "Bassin qui recule au lieu de rester sous les épaules."
+    ],
+    videoQuery: "weighted l-sit hold technique parallettes gainage"
+  }
+];
+EXERCISES.push(...EXERCISES_PROG);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
    ========================================================= */
 const EXERCISE_ALIASES = {
+  "curl-marteau-triche": ["hammer cheat curl", "cheat curl", "curl triché"],
+  "extension-lombaire-prisonnier": ["prisoner back extension", "back extension prisonnier", "hyperextension mains derrière la tête"],
+  "l-sit-leste": ["weighted l-sit hold", "l sit", "l-sit", "équerre lestée"],
   "developpe-couche-barre": ["bench press", "couché à la barre", "développé allongé", "barbell bench"],
   "developpe-couche-halteres": ["dumbbell bench press", "couché haltères"],
   "developpe-incline-halteres": ["incline dumbbell press", "incliné haltères"],
