@@ -1304,7 +1304,15 @@ const EXERCISE_ALIASES = {
   "pompes": ["push up", "push-ups", "pushup"],
   "pec-deck": ["butterfly", "pec butterfly", "machine fly", "papillon"],
   "ecarte-halteres": ["dumbbell fly", "flyes", "écartés couchés"],
-  "ecarte-poulie-vis-a-vis": ["cable crossover", "crossover"],
+  /* Les DEUX écartés à la poulie sont des crossovers : celui-ci part des
+     poulies HAUTES et descend, l'autre part des poulies BASSES et monte.
+     Seul celui-ci portait l'alias « crossover », si bien qu'une recherche
+     « crossover poulie basse » ne renvoyait RIEN alors que l'exercice
+     existe. Les deux le portent désormais, chacun avec sa hauteur. */
+  "ecarte-poulie-vis-a-vis": ["cable crossover", "crossover", "crossover poulie haute",
+    "high cable crossover", "crossover haut", "écarté poulie haute"],
+  "ecarte-poulie-basse": ["crossover poulie basse", "low cable crossover",
+    "low to high crossover", "crossover bas", "cable crossover basse"],
   "dips-pectoraux": ["chest dips", "répulsions"],
   "tractions": ["pull up", "pull-ups", "pullup", "barre fixe"],
   "tractions-supination": ["chin up", "chin-ups", "traction marteau"],
