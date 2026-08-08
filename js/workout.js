@@ -176,7 +176,30 @@ const defaultRestInput = document.getElementById("default-rest");
 
 /* ---------- Persistance de la séance en cours ---------- */
 function saveLive() { saveJSON(STORAGE_KEYS.live, live); }
-function clearLive() { localStorage.removeItem(STORAGE_KEYS.live); live = null; }
+/* Fin de séance : DÉMONTAGE COMPLET, en un seul endroit.
+
+   Le bug corrigé ici : clearLive() ne faisait que `live = null`, et
+   finishSession() arrêtait le minuteur juste avant. Or c'est tick() qui
+   appelle updateMinibar(). Le minuteur arrêté, plus rien ne repeignait
+   la mini-barre : elle restait affichée avec son DERNIER texte, par
+   exemple « Repos 01:30 », alors que la séance était finie et que rest
+   valait déjà null. L'état interne était propre, l'écran mentait.
+
+   La leçon : une fonction qui s'appelle clearLive doit rendre vrai ce
+   que son nom affirme — plus aucune séance, donc plus rien à l'écran
+   qui prétende le contraire. Elle ferme donc AUSSI le minuteur, le
+   repos, la surcouche de repos et la mini-barre. Les deux sorties
+   (terminer et abandonner) passent par là, ce qui les empêche de
+   diverger comme elles avaient commencé à le faire. */
+function clearLive() {
+  localStorage.removeItem(STORAGE_KEYS.live);
+  live = null;
+  rest = null;
+  restMinimized = false;
+  if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+  if (elRestOverlay) elRestOverlay.classList.add("hidden");
+  updateMinibar();          // sans ça, la barre garde son dernier texte
+}
 
 /* ---------- Démarrage ---------- */
 function newLiveExercise(ex, target, restSec) {
@@ -1188,9 +1211,7 @@ document.getElementById("hdr-pill-finish").addEventListener("click", () => finis
 document.getElementById("live-finish").addEventListener("click", finishSession);
 document.getElementById("live-abort").addEventListener("click", () => {
   if (!confirm("Abandonner la séance ? Rien ne sera enregistré.")) return;
-  if (rest) { rest = null; elRestOverlay.classList.add("hidden"); }
-  if (liveTimer) clearInterval(liveTimer);
-  clearLive();
+  clearLive();              // repos, minuteur, surcouche et mini-barre compris
   showSetup();
 });
 
