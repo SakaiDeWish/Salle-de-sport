@@ -389,7 +389,12 @@ function updateProgress() {
     d += Math.min(p.done, p.target ?? p.done);
     t += p.target ?? p.done;
   }
-  label.innerHTML = `<strong class="prog-strong">${esc(currentProgressText())}</strong>
+  /* Forme COURTE : « série 2/4 · Développé couché ». Le compteur passe
+     devant le nom parce que la ligne est tronquée sur une seule ligne en
+     mobile — c'est donc la fin qui disparaît, et il vaut mieux perdre le
+     nom de l'exercice, répété en entier sur sa carte juste en dessous,
+     que le numéro de série, qu'on ne lit nulle part ailleurs. */
+  label.innerHTML = `<strong class="prog-strong">${esc(currentProgressText(true))}</strong>
     <span class="prog-dim">Exercice ${current}/${total}</span>`;
   bar.style.width = (t ? Math.min(100, Math.round(d / t * 100)) : 0) + "%";
 
@@ -410,17 +415,6 @@ const HDR_MIN_SCROLL_Y = 90;       // en haut de page, jamais compact
 let hdrRef = 0, hdrLastY = 0, hdrTicking = false, hdrManualUntil = 0, hdrLockUntil = 0;
 
 function headerMinimized() { return elLive.classList.contains("hdr-min"); }
-
-/* Vrai pendant qu'une bascule est en cours ou vient d'avoir lieu.
-   Réduire l'en-tête change la HAUTEUR DE LA PAGE, ce que le navigateur
-   compense en déplaçant le scroll : la frame suivante ressemble alors à
-   un geste très rapide. Tout code qui réagit à la vitesse de défilement
-   doit donc s'abstenir pendant ce verrou, sous peine de se déclencher
-   sur son propre effet. */
-function hdrBusy() {
-  const t = Date.now();
-  return t < hdrManualUntil || t < hdrLockUntil;
-}
 
 function applyHeaderMin(on) {
   localStorage.setItem(STORAGE_KEYS.liveHeaderMin, on ? "1" : "0");
@@ -463,10 +457,21 @@ function onLiveScroll() {
   const delta = y - hdrRef;
   hdrLastY = y;
 
+  /* LE SCROLL NE PEUT QUE RÉDUIRE, JAMAIS RÉ-AGRANDIR.
+
+     La version précédente ré-ouvrait l'en-tête dès 26 px de remontée. À
+     l'usage c'est intenable : on relit une série au-dessus, on remonte de
+     trois centimètres, et la bande resurgit en plein milieu de l'écran
+     pile au moment où on regardait ailleurs. Un en-tête qui décide seul
+     de reprendre de la place est plus gênant qu'utile.
+
+     Désormais la remontée ne fait rien. L'en-tête se ré-ouvre par une
+     action VOULUE, et par trois chemins seulement : toucher la pilule,
+     toucher le bouton flottant de retour au chrono, ou arriver
+     réellement en haut de page (le cas traité plus haut, y <= 90) — et
+     là, c'est qu'on y allait exprès. */
   if (!min && delta > HDR_SCROLL_THRESHOLD) {          // descente franche
     applyHeaderMin(true); hdrRef = y; hdrLockUntil = now + 260;
-  } else if (min && delta < -HDR_SCROLL_THRESHOLD) {   // remontée franche
-    applyHeaderMin(false); hdrRef = y; hdrLockUntil = now + 260;
   }
 }
 

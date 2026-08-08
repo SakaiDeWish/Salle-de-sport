@@ -366,13 +366,21 @@
           <div class="progress-track"><div id="live-progress-bar" class="progress-bar"></div></div>
         </div>
 
-        <div class="program-actions">
-          <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
-          <button class="btn btn-ghost" id="live-superset">⚡ Super set</button>
-          <button class="btn btn-primary" id="live-finish">Terminer</button>
-          <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
-        </div>
         </div></div><!-- /live-hdr-full -->
+      </div>
+
+      <!-- ACTIONS : volontairement HORS de l'en-tête collant.
+           Elles y étaient, et pesaient à elles seules près de 110 px
+           d'un bloc qui reste vissé en haut de l'écran pendant toute la
+           séance. Or on les utilise une ou deux fois par séance, pas à
+           chaque série. Elles défilent donc maintenant avec le contenu.
+           « Terminer » ne devient pas moins accessible pour autant : le
+           ✓ de la pilule compacte le propose partout, à tout moment. -->
+      <div class="program-actions live-actions-flow">
+        <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
+        <button class="btn btn-ghost" id="live-superset">⚡ Super set</button>
+        <button class="btn btn-primary" id="live-finish">Terminer</button>
+        <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
       </div>
       <!-- Barre de sélection du super set : n'apparaît que pendant
            l'appairage, et se retire d'elle-même une fois la paire faite. -->
