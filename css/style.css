@@ -578,7 +578,15 @@ textarea { min-height: 90px; resize: vertical; }
 
 /* ---------- Séance : mode direct ---------- */
 .live-header { position: sticky; top: 70px; z-index: 40; box-shadow: var(--shadow); }
-@media (max-width: 760px) { .live-header { top: 62px; } }
+/* 62 px était la hauteur de la barre du haut. Elle est masquée sur mobile
+   depuis l'itération « accueil au centre » : l'en-tête collait donc 62 px
+   plus bas que sa place dans le flux, et sticky décale À L'ÉCRAN sans
+   décaler le FLUX. Tant que les boutons d'action étaient dans l'en-tête,
+   rien ne pouvait passer dessous et le décalage ne se voyait pas ; en les
+   sortant, ils se retrouvaient recouverts de 42 px. */
+@media (max-width: 760px) {
+  .live-header { top: calc(4px + env(safe-area-inset-top)); }
+}
 
 .live-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .live-dot {
@@ -2382,3 +2390,37 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .mo-depart { stroke: var(--text); stroke-width: 3.4; fill: none;
              stroke-linecap: round; stroke-dasharray: 5.5 4; opacity: 0.62; }
 .mo-depart-pt { fill: none; stroke: var(--text); stroke-width: 2; opacity: 0.62; }
+
+/* Actions de séance, désormais dans le flux et non dans l'en-tête collant. */
+.live-actions-flow { margin: 10px 0 14px; }
+
+/* ---------- En-tête de séance : compacter l'état DÉPLIÉ ----------
+   Même déplié, cet en-tête reste COLLANT : chaque pixel qu'il prend est
+   un pixel volé à la liste des exercices pendant toute la séance. Mesuré
+   sur un écran de 390 × 844, il pesait 405 px — 48 % de la hauteur utile.
+   Les actions en sont déjà sorties ; ici on récupère ce que faisaient
+   perdre deux retours à la ligne. */
+@media (max-width: 760px) {
+  /* Le titre et ses commandes tiennent sur UNE ligne : le titre se
+     tronque plutôt que de repousser les boutons à la ligne suivante. */
+  .live-title-row { flex-wrap: nowrap; gap: 8px; }
+  #live-title {
+    flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 1rem;
+  }
+  .live-title-actions { flex-wrap: nowrap; gap: 6px; flex-shrink: 0; }
+  /* « EN DIRECT » est déjà dit par le point rouge de la pilule et par le
+     bouton Pause juste à côté : sur mobile, le libellé ne sert qu'à
+     pousser le reste à la ligne. */
+  .live-title-actions .live-dot { display: none; }
+
+  /* Nom de l'exercice en cours : une ligne, tronquée. Il est répété en
+     entier sur la carte de l'exercice, juste en dessous. */
+  .live-progress { margin-top: 10px; }
+  .progress-label {
+    flex-wrap: nowrap; gap: 0 8px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .live-chronos { margin-top: 12px; gap: 14px; }
+}

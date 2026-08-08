@@ -195,41 +195,24 @@ document.getElementById("settings-fab").addEventListener("click", openSettings);
 
 applyTheme(currentTheme());
 
-/* ==================== RETOUR RAPIDE AU CHRONO (point 6) ==================== */
-/* Le chrono se réduit déjà en descendant. Ce qui manquait, c'est le retour :
-   il fallait remonter lentement de 26 px pour le rappeler. On ajoute deux
-   choses, sans toucher à la logique existante :
-   1. un GESTE — une remontée franche (vitesse > 0,55 px/ms) le rappelle
-      immédiatement, quelle que soit la distance parcourue ;
-   2. un BOUTON flottant, qui ramène en haut de page en douceur. */
+/* ==================== RETOUR AU CHRONO ==================== */
+/* Le chrono se réduit en descendant, et il RESTE réduit : la remontée ne
+   le ré-ouvre plus (voir onLiveScroll). Le geste de « flick » qui le
+   rappelait automatiquement a été retiré pour la même raison — il se
+   déclenchait sur des remontées que l'utilisateur ne destinait pas à ça.
+   Reste ce bouton flottant, discret, qui ramène en haut et ré-ouvre le
+   chrono : une action voulue, jamais une surprise. */
 (function () {
-  let dernierY = window.scrollY, dernierT = performance.now(), tick2 = false;
-  const FLICK = 0.55;   // px par ms
-  const FLICK_MIN = 24; // px minimum, pour ignorer les sauts de mise en page
+  let tick2 = false;
 
   function surScroll() {
-    const y = window.scrollY, t = performance.now();
-    const dt = t - dernierT;
-    const montee = dernierY - y;                        // positif = vers le haut
-    /* hdrBusy() protège du piège suivant : réduire l'en-tête raccourcit la
-       page, le navigateur recale le scroll, et la frame d'après ressemble à
-       une remontée fulgurante. Sans ce garde-fou, le chrono se réduisait
-       puis se ré-agrandissait aussitôt — il ne restait jamais compact. */
-    if (dt > 0 && montee >= FLICK_MIN && (montee / dt) > FLICK
-        && typeof headerMinimized === "function" && headerMinimized()
-        && typeof hdrBusy === "function" && !hdrBusy()
-        && typeof toggleHeaderManual === "function") {
-      toggleHeaderManual(false);                        // rappel immédiat
-    }
-    dernierY = y; dernierT = t;
     const btn = document.getElementById("to-chrono");
-    if (btn) {
-      const live = document.getElementById("seance-live");
-      const visible = live && !live.classList.contains("hidden")
-        && document.getElementById("view-seance").classList.contains("active")
-        && y > 260;
-      btn.classList.toggle("show", !!visible);
-    }
+    if (!btn) return;
+    const live = document.getElementById("seance-live");
+    const visible = live && !live.classList.contains("hidden")
+      && document.getElementById("view-seance").classList.contains("active")
+      && (window.scrollY || 0) > 140;   // dès que l'en-tête s'est réduit
+    btn.classList.toggle("show", !!visible);
   }
 
   window.addEventListener("scroll", () => {
