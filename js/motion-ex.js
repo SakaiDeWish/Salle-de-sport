@@ -5891,6 +5891,85 @@ EXERCISE_MOTIONS["pull-over"] = {
    mi-parcours. Allongement ×1 -> ×2,5868.
    ========================================================= */
 EXERCISE_MOTIONS["ecarte-poulie-basse"] = {
+  /* SECONDE VUE — VUE DE FACE, IMAGE FIXE.
+
+     LA VUE ANIMÉE DÉCLARAIT DÉJÀ CE TROU. Son commentaire dit, mot pour
+     mot : « Ce que le profil ne montre pas, en revanche : le
+     rapprochement des mains vers l'axe médian. » C'était honnête, mais
+     ça laissait le mouvement le plus caractéristique de l'exercice —
+     l'écartement puis la fermeture — entièrement hors du dessin. De
+     profil, un crossover ressemble à une élévation frontale.
+
+     MESURÉ, ET LE CHIFFRE EST SANS APPEL. Les deux mains sont séparées
+     de 66 unités en bas, et se CROISENT de 4 en haut : 70 unités de
+     fermeture, soit 122 cm. De profil, ces deux mains se superposent
+     exactement : l'écartement et la fermeture y valent ZÉRO, pas
+     « peu ». Aucun soin de dessin ne pouvait les y faire apparaître.
+
+     CE QUE LA VUE DE FACE PERD À SON TOUR, DÉCLARÉ. Les mains avancent
+     de 52,9 unités (93 cm) au cours du mouvement, et cette avancée est
+     l'axe de vue : elle raccourcit le bras projeté de 47,10 en bas
+     (97,4 % de 48,37) à 24,08 en haut (49,8 %). Un bras qui perd la
+     moitié de sa longueur, c'est exactement ce qu'une ANIMATION n'a pas
+     le droit de montrer — d'où l'image fixe, où chaque instant est
+     exact et où les deux longueurs sont déclarées ici.
+
+     Les deux vues sont donc complémentaires et aucune n'est de trop :
+     le profil montre la montée à sa vraie longueur, la face montre la
+     fermeture. Chacune efface ce que l'autre montre.
+
+     GÉOMÉTRIE. Épaule-main constante à 48,37 (coude bloqué à 161,6°),
+     demi-largeur d'épaules 14. Départ : main 19 en dehors, 11 en
+     arrière, 43,10 en bas. Arrivée : 16 en DEDANS (donc au-delà de
+     l'axe : c'est le croisement), 41,95 en avant, 18 au-dessus de
+     l'épaule — hauteur du visage, comme le dit la fiche. */
+  vue2: {
+    titre: "Vu de face",
+    alt: "Vue de face entre les deux poulies basses : en pointillé les bras écartés en bas, en trait plein les mains refermées et croisées à hauteur du visage.",
+    legende: "De profil, les deux mains se superposent : l'écartement et la fermeture y valent zéro. De face, elles passent de 66 unités d'écart à 4 de croisement — 122 cm de fermeture. En échange le bras y perd la moitié de sa longueur apparente, parce que les mains avancent de 93 cm droit vers l'œil.",
+    vb: "40 30 120 132",
+    svg: `
+      <line class="mo-ground" x1="44" y1="150" x2="156" y2="150"/>
+      <!-- LES DEUX COLONNES DE POULIE BASSE, de part et d'autre. Les
+           CÂBLES ne sont pas tracés ici : ils longeraient les bras de si
+           près qu'on ne distinguerait plus les deux positions, et leur
+           géométrie est déjà le travail de la vue de profil. Cette vue-ci
+           ne répond qu'à une question : où vont les mains. -->
+      <line class="mo-gear" x1="52" y1="40" x2="52" y2="150"/>
+      <line class="mo-gear" x1="148" y1="40" x2="148" y2="150"/>
+      <circle class="mo-pulley" cx="52" cy="138" r="5"/>
+      <circle class="mo-pulley" cx="148" cy="138" r="5"/>
+      <!-- AXE MÉDIAN : les mains doivent le FRANCHIR, c'est le croisement -->
+      <line class="mo-rom" x1="100" y1="34" x2="100" y2="112"/>
+      <!-- CORPS de face, immobile -->
+      <line class="mo-body" x1="100" y1="62" x2="100" y2="104"/>
+      <line class="mo-body" x1="86" y1="62" x2="114" y2="62"/>
+      <line class="mo-body" x1="100" y1="104" x2="93" y2="126"/>
+      <line class="mo-body" x1="93" y1="126" x2="91" y2="150"/>
+      <line class="mo-body" x1="100" y1="104" x2="107" y2="126"/>
+      <line class="mo-body" x1="107" y1="126" x2="109" y2="150"/>
+      <circle class="mo-joint" cx="86" cy="62" r="2.8"/>
+      <circle class="mo-joint" cx="114" cy="62" r="2.8"/>
+      <!-- DÉPART, en pointillé : bras écartés, mains basses -->
+      <path class="mo-depart" d="M86 62 L67 105.1"/>
+      <path class="mo-depart" d="M114 62 L133 105.1"/>
+      <circle class="mo-depart-pt" cx="67" cy="105.1" r="3.2"/>
+      <circle class="mo-depart-pt" cx="133" cy="105.1" r="3.2"/>
+      <!-- COTE DE L'ÉCARTEMENT : 66 unités entre les deux mains -->
+      <line class="mo-rom" x1="67" y1="116" x2="133" y2="116"/>
+      <line class="mo-rom" x1="67" y1="113" x2="67" y2="119"/>
+      <line class="mo-rom" x1="133" y1="113" x2="133" y2="119"/>
+      <text class="mo-cote" font-size="7" x="54" y="131">écart 66</text>
+      <!-- TÊTE avant les bras : les mains finissent DEVANT le visage -->
+      <circle class="mo-head" cx="100" cy="44" r="9"/>
+      <!-- ARRIVÉE, plein : mains croisées à hauteur du visage. Bras d'un
+           seul trait, le coude étant bloqué à 161,6°. -->
+      <line class="mo-limb" x1="86" y1="62" x2="102" y2="44"/>
+      <line class="mo-limb" x1="114" y1="62" x2="98" y2="44"/>
+      <circle class="mo-hand" cx="102" cy="44" r="3.4"/>
+      <circle class="mo-hand" cx="98" cy="44" r="3.4"/>
+      <text class="mo-cote mo-cote-ok" font-size="7" x="112" y="42">croisées</text>`
+  },
   vb: "46 32 120 122",
   dur: 4,
   phases: { con: [0, 38], ecc: [46, 90] },
