@@ -91,11 +91,17 @@ function globalStats() {
     tempsMs: h.reduce((s, r) => s + (r.dureeMs || 0), 0),
     volume: h.reduce((s, r) => s + (r.volume || 0), 0),
     series: h.reduce((s, r) => s + (r.nbSeries || 0), 0),
+    reps: 0,
     parGroupe: {}
   };
   for (const r of h)
-    for (const ex of r.exercises)
+    for (const ex of r.exercises) {
       stats.parGroupe[ex.groupe] = (stats.parGroupe[ex.groupe] || 0) + ex.sets.length;
+      /* Répétitions totales : elles n'étaient pas comptées. Le volume seul
+         ne les donne pas — 10 000 kg peuvent venir de 100 reps à 100 kg
+         comme de 400 reps à 25 kg. */
+      for (const st of ex.sets) stats.reps += (st.reps || 0);
+    }
   // régularité : moyenne de séances/semaine depuis la première séance
   if (h.length) {
     const first = Math.min(...h.map(r => r.date));
@@ -219,14 +225,10 @@ function renderDashboard() {
     <!-- Objectif de la semaine + streak : le seul bloc ouvert d'office -->
     <div class="card goal-card">
       ${disclosure("dash.goal", {
-        summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>
-          <span class="disc-meta">cette semaine · streak ${gs.streak} sem.
+        summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
+          <span class="disc-meta">cette semaine · streak ${gs.streak} sem.${statInfo("streak")}
           ${gs.achievedThisWeek ? '<span class="goal-ok">✓ atteint</span>' : ""}</span>`,
         label: "Régler",
-        what: `L'objectif hebdomadaire est <strong>vérifié</strong> : il compte les séances réellement
-          terminées entre lundi et dimanche, séances libres incluses. Le <strong>streak</strong> est
-          le nombre de semaines consécutives où tu l'as atteint — c'est l'indicateur qui prédit
-          le mieux les résultats à long terme, bien avant les charges.`,
         detail: `<label class="goal-adjust">Séances / semaine
             <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
           </label>
@@ -238,12 +240,8 @@ function renderDashboard() {
     <!-- Niveau / XP -->
     <div class="card xp-card">
       ${disclosure("dash.xp", {
-        summary: `<span class="xp-level">NIV. ${level.lvl}</span>
+        summary: `<span class="xp-level">NIV. ${level.lvl}${statInfo("xp")}</span>
           <span class="disc-meta">${xp} XP · ${level.need - level.into} avant le niveau ${level.lvl + 1}</span>`,
-        what: `L'XP n'est qu'un compteur d'assiduité : <strong>50 XP</strong> par séance terminée,
-          <strong>2 XP</strong> par série validée, <strong>5 XP</strong> si tu notes ton ressenti, et
-          <strong>100 XP</strong> par semaine où l'objectif est atteint. Ça ne mesure pas ta force —
-          ça mesure ta régularité, et c'est fait pour te faire revenir.`,
         detail: `<div class="badge-grid">
           ${badges.map(b => `
             <div class="badge-tile ${b.ok ? "badge-ok" : ""}">
@@ -261,20 +259,25 @@ function renderDashboard() {
 
     <!-- Statistiques : 4 chiffres, toujours visibles (c'est déjà l'essentiel) -->
     <div class="stat-tiles">
-      <div class="card stat-tile"><span class="chrono-value">${stats.total}</span><span class="chrono-label">Séances</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${fmtClock(stats.tempsMs)}</span><span class="chrono-label">Temps total</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${Math.round(stats.volume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${stats.regularite}</span><span class="chrono-label">Séances / sem.</span></div>
+      ${[["seances", stats.total, "Séances"],
+         ["temps", fmtClock(stats.tempsMs), "Temps total"],
+         ["volume", Math.round(stats.volume).toLocaleString("fr-FR") + " kg", "Volume"],
+         ["regularite", stats.regularite, "Séances / sem."],
+         ["reps", stats.reps.toLocaleString("fr-FR"), "Répétitions"],
+         ["series", stats.series.toLocaleString("fr-FR"), "Séries"]
+        ].map(([k, v, lab]) => `
+        <div class="card stat-tile">
+          <span class="chrono-value">${v}</span>
+          <span class="chrono-label">${lab}${statInfo(k)}</span>
+          ${statLigne(k)}
+        </div>`).join("")}
     </div>
 
     ${Object.keys(stats.parGroupe).length ? `
     <div class="card">
       ${disclosure("dash.muscles", {
-        summary: `<span class="disc-title">Répartition par muscle</span>
+        summary: `<span class="disc-title">Répartition par muscle${statInfo("muscles")}</span>
           <span class="disc-meta">${Object.keys(stats.parGroupe).length} groupes travaillés</span>`,
-        what: `Le nombre de séries par groupe musculaire depuis le début. Sert à repérer les
-          <strong>oubliés</strong> : si le dos est deux fois sous les pectoraux, ta posture et
-          tes épaules finiront par le sentir. Un ratio tirage/poussée proche de 1 est un bon repère.`,
         detail: `<div class="muscle-bars">
           ${Object.entries(stats.parGroupe).sort((a, b) => b[1] - a[1]).map(([g, n]) => `
             <div class="muscle-bar-row">
@@ -289,11 +292,8 @@ function renderDashboard() {
     ${prs.length ? `
     <div class="card">
       ${disclosure("dash.prs", {
-        summary: `<span class="disc-title">Records personnels</span>
+        summary: `<span class="disc-title">Records personnels${statInfo("pr")}</span>
           <span class="disc-meta">${prs.length} exercice${prs.length > 1 ? "s" : ""} · top ${prs[0].best.poids} kg</span>`,
-        what: `Ta série la plus lourde sur chaque exercice, avec la courbe de progression à droite.
-          Un record ne se bat pas à chaque séance : viser <strong>+2,5 kg ou +1 rep par mois</strong>
-          sur un mouvement de base est déjà une excellente progression.`,
         detail: `<div class="pr-list">
           ${prs.slice(0, 10).map(p => `
             <div class="pr-row">
@@ -310,12 +310,9 @@ function renderDashboard() {
     <!-- Poids de corps -->
     <div class="card">
       ${disclosure("dash.weight", {
-        summary: `<span class="disc-title">Poids de corps</span>
+        summary: `<span class="disc-title">Poids de corps${statInfo("poidsCorps")}</span>
           <span class="disc-meta">${lastW ? lastW.kg + " kg le " + new Date(lastW.date).toLocaleDateString("fr-FR") : "aucun relevé"}</span>`,
         label: "Relever",
-        what: `Pèse-toi toujours dans les mêmes conditions (le matin, à jeun) : c'est la
-          <strong>tendance sur 2-3 semaines</strong> qui compte, jamais le chiffre d'un jour —
-          l'eau et le contenu digestif font varier de 1 à 2 kg sans que rien n'ait changé.`,
         detail: `<div class="weight-row">
             <input type="number" id="weight-input" min="20" max="300" step="0.1" placeholder="Ex : 74.5">
             <button class="btn btn-ghost" id="weight-add">Enregistrer</button>
@@ -538,6 +535,10 @@ function openSessionModal(id, edit = false) {
         ${r.objectifLabel ? " · Programme : " + esc(r.objectifLabel) : ""}</p>
       ${r.rpe ? `<p class="program-meta">Ressenti : <strong>RPE ${r.rpe}/10</strong></p>` : ""}
       ${r.notes ? `<p class="session-notes">« ${esc(r.notes)} »</p>` : ""}
+      ${/* Le récap d'abord, les chiffres ensuite : on relit une séance
+            pour se rappeler comment elle s'est passée, pas pour
+            recompter les kilos. Non modifiable ici. */
+        typeof recapHtml === "function" ? recapHtml(r, false) : ""}
       ${renderSessionDetail(r)}
       <div class="program-actions">
         <button class="btn btn-ghost" id="sm-edit">Modifier</button>

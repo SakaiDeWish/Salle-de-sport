@@ -664,13 +664,37 @@ function renderLiveExercises() {
                   </div>
                 </td>
               </tr>`;
+            const noting = notingSet && notingSet.i === i && notingSet.j === j;
+            if (noting) return `
+              <tr class="set-editing">
+                <td colspan="4">
+                  <div class="set-note-row">
+                    <span class="set-edit-n">Série ${j + 1}</span>
+                    <input type="text" id="note-input" maxlength="100" class="set-note-input"
+                      placeholder="Ex : aidé sur les 2 dernières, bien contrôlé…"
+                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
+                    <button class="btn btn-primary btn-sm note-save" data-i="${i}" data-j="${j}">OK</button>
+                    <button class="btn btn-ghost btn-sm note-cancel">Annuler</button>
+                  </div>
+                  <div class="note-suggests">
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip">${esc(t)}</button>`).join("")}
+                  </div>
+                </td>
+              </tr>`;
             return `
-            <tr class="set-row" data-i="${i}" data-j="${j}" tabindex="0" role="button"
+            <tr class="set-row${s.note ? " set-noted" : ""}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
                 title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
               <td>✔ ${j + 1}</td>
               <td>${s.poids != null ? s.poids : "—"}</td>
               <td>${s.reps}</td>
               <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
+            </tr>
+            <tr class="set-note-line">
+              <td colspan="4">
+                <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
+                  aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
+                  s.note ? `💬 ${esc(s.note)}` : "＋ note"}</button>
+              </td>
             </tr>`;
           }).join("")}
         </tbody>
@@ -715,6 +739,32 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => swapExercise(parseInt(btn.dataset.i, 10))));
   elLiveExercises.querySelectorAll(".ex-fiche").forEach(btn =>
     btn.addEventListener("click", () => openExercise(btn.dataset.exid)));
+  /* NOTES DE SÉRIE. Le clic est capturé AVANT la ligne, qui ouvre sinon
+     l'édition poids/reps : les deux vivent dans la même cellule. */
+  elLiveExercises.querySelectorAll(".set-note-btn").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.preventDefault(); e.stopPropagation();
+      openSetNote(+btn.dataset.noteI, +btn.dataset.noteJ);
+    }, true));
+  elLiveExercises.querySelectorAll(".note-save").forEach(btn =>
+    btn.addEventListener("click", () => saveSetNote(+btn.dataset.i, +btn.dataset.j)));
+  elLiveExercises.querySelectorAll(".note-cancel").forEach(btn =>
+    btn.addEventListener("click", () => { notingSet = null; renderLiveExercises(); }));
+  elLiveExercises.querySelectorAll(".note-chip").forEach(chip =>
+    chip.addEventListener("click", () => {
+      const inp = document.getElementById("note-input");
+      if (!inp) return;
+      const t = chip.textContent.trim();
+      inp.value = (inp.value ? inp.value.replace(/\s*$/, "") + ", " : "") + t;
+      inp.value = inp.value.slice(0, NOTE_MAX);
+      inp.focus();
+    }));
+  const noteInp = document.getElementById("note-input");
+  if (noteInp) noteInp.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); saveSetNote(notingSet.i, notingSet.j); }
+    if (e.key === "Escape") { notingSet = null; renderLiveExercises(); }
+  });
+
   elLiveExercises.querySelectorAll(".ss-break").forEach(btn =>
     btn.addEventListener("click", () => ssBreak(btn.dataset.ss)));
   elLiveExercises.querySelectorAll(".ss-memo").forEach(btn =>
@@ -842,6 +892,135 @@ function swapExercise(i) {
   renderLiveExercises();
 }
 
+/* ---------- Point 2 · NOTES DE SÉRIE ----------
+   Une série ne dit que des chiffres. « 85 kg × 5 » ne distingue pas la
+   série propre de celle où le partenaire a tiré sur les deux dernières
+   répétitions — et c'est pourtant la différence qui compte quand on
+   relit sa séance trois semaines plus tard.
+
+   La note est COURTE par construction : 100 caractères, et six
+   suggestions d'un tap qui couvrent les cas fréquents. Une note qu'on
+   met dix secondes à écrire entre deux séries ne sera jamais écrite. */
+const NOTE_MAX = 100;
+const NOTE_RAPIDES = ["difficile", "très facile", "aidé sur la fin",
+                      "bien contrôlé", "technique compromise", "distrait"];
+let notingSet = null;   // { i, j } : la série dont on édite la note
+
+function openSetNote(i, j) {
+  notingSet = { i, j };
+  editingSet = null;                 // les deux éditions s'excluent
+  expandedIndex = i;
+  renderLiveExercises();
+  const inp = document.getElementById("note-input");
+  if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+}
+
+function saveSetNote(i, j) {
+  const inp = document.getElementById("note-input");
+  if (!inp) return;
+  const ex = live.exercises[i];
+  if (ex && ex.sets[j]) ex.sets[j].note = inp.value.trim().slice(0, NOTE_MAX);
+  notingSet = null;
+  saveLive();
+  renderLiveExercises();
+}
+
+/* ---------- Point 2B · RÉCAPITULATIF AUTOMATIQUE ----------
+   Le récap ne devine RIEN. Il ne lit que les notes réellement écrites,
+   les range par thème, et rend la synthèse en français. S'il n'y a pas
+   de note, il le dit au lieu d'inventer un ressenti.
+
+   La détection est volontairement faite sur des RACINES et sans
+   accents : « aidé », « aide », « aidée » tombent toutes sur « aid ».
+   Une négation simple est reconnue (« pas difficile ») parce qu'elle
+   inverserait complètement le sens. */
+const NOTE_THEMES = [
+  { cle: "aide",    sig: "~", racines: ["aid", "assist", "spot", "partenaire", "soutenu"],
+    un: "une série avec aide", pl: "séries avec aide" },
+  { cle: "dur",     sig: "~", racines: ["difficil", "dur", "galer", "galère", "lourd", "echec", "échec", "limite"],
+    un: "une série difficile", pl: "séries difficiles" },
+  { cle: "facile",  sig: "+", racines: ["facil", "leger", "léger", "aisé", "aise", "confort"],
+    un: "une série facile", pl: "séries faciles" },
+  { cle: "propre",  sig: "+", racines: ["control", "contrôl", "propre", "solide", "maitris", "maîtris", "bien"],
+    un: "une série bien contrôlée", pl: "séries bien contrôlées" },
+  { cle: "tech",    sig: "!", racines: ["technique", "compromis", "degrad", "dégrad", "triche", "triché", "cass", "dos rond"],
+    un: "une série à la technique dégradée", pl: "séries à la technique dégradée" },
+  { cle: "gene",    sig: "!", racines: ["distrait", "bruit", "interrompu", "derang", "dérang", "attente", "occupe", "occupé", "presse", "pressé"],
+    un: "une perturbation", pl: "perturbations" },
+  { cle: "douleur", sig: "!", racines: ["douleur", "mal ", "gene", "gêne", "tirail", "pincement", "blocage"],
+    un: "une gêne signalée", pl: "gênes signalées" }
+];
+
+function sansAccents(t) {
+  return String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/* Collecte les notes de la séance, avec l'exercice d'où elles viennent. */
+function collecteNotes(exercises) {
+  const out = [];
+  (exercises || []).forEach(ex => (ex.sets || []).forEach((st, j) => {
+    if (st.note && st.note.trim())
+      out.push({ ex: ex.nom, serie: j + 1, txt: st.note.trim() });
+  }));
+  return out;
+}
+
+function analyseNotes(exercises) {
+  const notes = collecteNotes(exercises);
+  const total = (exercises || []).reduce((n, ex) => n + (ex.sets || []).length, 0);
+  if (!notes.length) {
+    return { vide: true, nbNotes: 0, nbSeries: total, points: [],
+      texte: "Aucune note prise pendant cette séance. Ajoute une note sur une série "
+           + "(bouton ＋ à côté du repos) pour qu'un récapitulatif apparaisse ici." };
+  }
+  const compte = {}, exemples = {};
+  for (const n of notes) {
+    const t = sansAccents(n.txt);
+    for (const th of NOTE_THEMES) {
+      const trouve = th.racines.some(r => {
+        const i = t.indexOf(sansAccents(r));
+        if (i < 0) return false;
+        /* négation simple : « pas difficile », « sans aide » */
+        const avant = t.slice(Math.max(0, i - 12), i);
+        return !/\b(pas|sans|aucune?|jamais|plus)\s+\S*\s?$/.test(avant);
+      });
+      if (!trouve) continue;
+      compte[th.cle] = (compte[th.cle] || 0) + 1;
+      if (!exemples[th.cle]) exemples[th.cle] = n;
+    }
+  }
+  /* Chaque thème porte SES DEUX libellés, singulier et pluriel. Les
+     fabriquer par substitution donnait « 1 série difficiles ». */
+  const points = NOTE_THEMES.filter(th => compte[th.cle]).map(th => ({
+    sig: th.sig, n: compte[th.cle],
+    txt: compte[th.cle] > 1 ? compte[th.cle] + " " + th.pl : th.un,
+    ex: exemples[th.cle] ? exemples[th.cle].ex : ""
+  }));
+
+  /* Phrase de synthèse : le ton suit ce qui domine, sans surinterpréter. */
+  const n = c => compte[c] || 0;
+  const bon = n("propre") + n("facile");
+  const dur = n("aide") + n("dur");
+  const alerte = n("tech") + n("gene") + n("douleur");
+  let phrases = [];
+  if (bon > dur && bon) phrases.push("Séance bien contrôlée dans l'ensemble.");
+  else if (dur > bon && dur) phrases.push("Séance exigeante.");
+  else phrases.push("Séance contrastée.");
+  if (n("aide")) phrases.push(n("aide") > 1
+    ? "Plusieurs séries ont demandé de l'aide en fin de série."
+    : "Une série a demandé de l'aide en fin de série.");
+  if (n("dur") && !n("aide")) phrases.push("Des séries sont passées près de l'échec.");
+  if (n("facile")) phrases.push("Certaines charges sont devenues faciles — de quoi envisager d'augmenter.");
+  if (n("gene")) phrases.push(n("gene") > 1 ? "Séance interrompue à plusieurs reprises."
+                                            : "Une interruption en cours de séance.");
+  if (n("tech")) phrases.push("Attention à la technique sur la fin.");
+  if (n("douleur")) phrases.push("Une gêne a été signalée : à surveiller avant la prochaine séance.");
+  phrases.push(`${notes.length} note${notes.length > 1 ? "s" : ""} sur ${total} série${total > 1 ? "s" : ""}.`);
+
+  return { vide: false, nbNotes: notes.length, nbSeries: total, points,
+           texte: phrases.join(" "), notes };
+}
+
 /* ---------- Point 7 · SUPER SETS ----------
    Deux exercices exécutés en paire, sans repos entre eux : A série 1 →
    B série 1 → repos → A série 2 → B série 2 → repos…
@@ -967,7 +1146,7 @@ function validateSet(i) {
   if (!ex.startedAt) ex.startedAt = now;
   ex.endedAt = null;
 
-  const set = { poids: isNaN(poids) ? null : poids, reps, doneAt: now, restAfter: null };
+  const set = { poids: isNaN(poids) ? null : poids, reps, doneAt: now, restAfter: null, note: "" };
   ex.sets.push(set);
   rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps); // mémoire (exo, série N)
   saveLive();
@@ -1246,6 +1425,13 @@ function finishSession() {
     objectifLabel: program ? program.objectifLabel : null,
     rpe: null,   // renseigné depuis l'écran de résumé
     notes: "",
+    /* Récap automatique : calculé À LA FIN, une fois pour toutes, et
+       stocké tel quel. Le recalculer à l'affichage donnerait un texte
+       qui change quand l'analyseur évolue — un compte rendu daté ne
+       doit pas se réécrire tout seul. `recap` est la version que
+       l'utilisateur peut corriger ; `recapAuto` garde l'originale. */
+    recapAuto: null,
+    recap: "",
     exercises: live.exercises
       .filter(ex => ex.sets.length > 0)
       .map(ex => ({
@@ -1254,6 +1440,8 @@ function finishSession() {
         sets: ex.sets
       }))
   };
+  record.recapAuto = analyseNotes(record.exercises);
+  record.recap = record.recapAuto.vide ? "" : record.recapAuto.texte;
   record.nbSeries = record.exercises.reduce((n, e) => n + e.sets.length, 0);
   record.volume = record.exercises.reduce((v, e) =>
     v + e.sets.reduce((s, x) => s + (x.poids || 0) * x.reps, 0), 0);
@@ -1275,6 +1463,37 @@ function finishSession() {
   saveJSON(STORAGE_KEYS.history, history);
   clearLive();
   showSummary(record);
+}
+
+/* Bloc de récapitulatif, réutilisé par l'écran de bilan et l'historique.
+   `editable` n'est vrai qu'à la fin de la séance : dans l'historique on
+   relit, on ne réécrit pas. */
+function recapHtml(r, editable) {
+  const a = r.recapAuto;
+  if (!a) return "";                    // séance d'avant cette version
+  const puces = (a.points || []).map(p => `
+    <li class="recap-pt recap-${p.sig === "+" ? "ok" : p.sig === "!" ? "warn" : "mid"}">
+      <span class="recap-sig" aria-hidden="true">${p.sig === "+" ? "✓" : p.sig === "!" ? "⚠" : "~"}</span>
+      <span>${esc(p.txt)}${p.ex ? ` <span class="recap-ex">· ${esc(p.ex)}</span>` : ""}</span>
+    </li>`).join("");
+  return `
+    <div class="card recap-card">
+      <p class="chrono-label">Récapitulatif de la séance</p>
+      ${a.vide
+        ? `<p class="recap-vide">${esc(a.texte)}</p>`
+        : `${editable
+             ? `<textarea id="recap-edit" class="recap-edit" rows="5" maxlength="400"
+                  aria-label="Récapitulatif de la séance, modifiable">${esc(r.recap || a.texte)}</textarea>
+                <p class="video-hint">Généré à partir de tes notes de série. Tu peux le corriger.</p>`
+             : `<p class="recap-txt">${esc(r.recap || a.texte)}</p>`}
+           ${puces ? `<ul class="recap-list">${puces}</ul>` : ""}
+           ${disclosure("recap.notes." + r.id, {
+             summary: `<span class="disc-meta">${a.nbNotes} note${a.nbNotes > 1 ? "s" : ""} sur ${a.nbSeries} série${a.nbSeries > 1 ? "s" : ""}</span>`,
+             label: "Notes",
+             detail: `<ul class="recap-notes">${(a.notes || []).map(n =>
+               `<li><strong>${esc(n.ex)}</strong> · série ${n.serie} — ${esc(n.txt)}</li>`).join("")}</ul>`
+           })}`}
+    </div>`;
 }
 
 function showSummary(r) {
@@ -1299,6 +1518,8 @@ function showSummary(r) {
         <button class="btn btn-primary btn-sm" id="add-to-program">+ L'ajouter comme séance du programme</button>
         <p class="feedback" id="add-to-program-feedback"></p>
       </div>` : ""}
+
+      ${recapHtml(r, true)}
 
       <!-- Bilan : difficulté -> proposition d'ajustement du programme -->
       <div class="rpe-block">
@@ -1416,6 +1637,13 @@ function showSummary(r) {
       saveFeel();
       document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré ✓" : "";
     }));
+  const recapEdit = document.getElementById("recap-edit");
+  if (recapEdit) recapEdit.addEventListener("change", () => {
+    const h = loadJSON(STORAGE_KEYS.history, []);
+    const rec = h.find(x => x.id === r.id);
+    if (rec) { rec.recap = recapEdit.value.trim().slice(0, 400); saveJSON(STORAGE_KEYS.history, h); }
+  });
+
   document.getElementById("summary-notes").addEventListener("change", () => {
     saveFeel();
     document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées ✓";
@@ -1430,8 +1658,9 @@ function renderSessionDetail(r) {
       <table class="sets-table">
         <thead><tr><th>Série</th><th>Poids</th><th>Reps</th><th>Repos pris</th></tr></thead>
         <tbody>${ex.sets.map((s, j) => `
-          <tr><td>${j + 1}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td>
-          <td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>`).join("")}
+          <tr class="${s.note ? "set-noted" : ""}"><td>${j + 1}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td>
+          <td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
+          ${s.note ? `<tr class="set-note-line"><td colspan="4">💬 ${esc(s.note)}</td></tr>` : ""}`).join("")}
         </tbody>
       </table>
     </div>`).join("")}</div>`;
