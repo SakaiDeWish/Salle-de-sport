@@ -195,14 +195,20 @@ function renderHome() {
 
     mois: () => `
       <div class="stat-tiles">
-        <div class="card stat-tile"><span class="chrono-value">${thisMonth.length}</span><span class="chrono-label">Séances ce mois</span></div>
-        <div class="card stat-tile"><span class="chrono-value">${fmtClock(moisTemps)}</span><span class="chrono-label">Temps ce mois</span></div>
-        <div class="card stat-tile"><span class="chrono-value">${Math.round(moisVolume).toLocaleString("fr-FR")} kg</span><span class="chrono-label">Volume ce mois</span></div>
+        ${[["seancesMois", thisMonth.length, "Séances ce mois"],
+           ["tempsMois", fmtClock(moisTemps), "Temps ce mois"],
+           ["volumeMois", Math.round(moisVolume).toLocaleString("fr-FR") + " kg", "Volume ce mois"]
+          ].map(([k, v, lab]) => `
+          <div class="card stat-tile">
+            <span class="chrono-value">${v}</span>
+            <span class="chrono-label">${lab}${statInfo(k)}</span>
+            ${statLigne(k)}
+          </div>`).join("")}
       </div>`,
 
     poids: () => `
       <div class="card home-tile">
-        <p class="chrono-label">Poids de corps</p>
+        <p class="chrono-label">Poids de corps${statInfo("poidsCorps")}</p>
         ${weights.length
           ? `<p class="goal-big">${weights[weights.length - 1].kg} <span class="goal-left">kg</span></p>
              <p class="goal-left">Relevé du ${new Date(weights[weights.length - 1].date).toLocaleDateString("fr-FR")}${
@@ -466,8 +472,8 @@ function renderNutriResult(d) {
 
   document.getElementById("nutri-result").innerHTML = `
     <div class="stat-tiles nutri-tiles">
-      <div class="card stat-tile"><span class="chrono-value">${Math.round(tdee)}</span><span class="chrono-label">Maintenance (TDEE) kcal</span></div>
-      <div class="card stat-tile"><span class="chrono-value">${cible}</span><span class="chrono-label">Objectif kcal/jour ${delta ? (delta > 0 ? "(+" + delta + ")" : "(" + delta + ")") : ""}</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${Math.round(tdee)}</span><span class="chrono-label">Maintenance (TDEE) kcal${statInfo("tdee")}</span></div>
+      <div class="card stat-tile"><span class="chrono-value">${cible}</span><span class="chrono-label">${statInfo("kcalCible")}Objectif kcal/jour ${delta ? (delta > 0 ? "(+" + delta + ")" : "(" + delta + ")") : ""}</span></div>
       <div class="card stat-tile"><span class="chrono-value">${eau} L</span><span class="chrono-label">Eau par jour (repère)</span></div>
     </div>
 
@@ -522,7 +528,7 @@ function renderTools() {
       <h3 class="panel-title">Outils rapides</h3>
       <div class="tools-grid">
         <div class="tool">
-          <p class="chrono-label">Estimateur de 1RM (formule d'Epley)</p>
+          <p class="chrono-label">Estimateur de 1RM (formule d'Epley)${statInfo("rm1")}</p>
           <div class="weight-row">
             <input type="number" id="rm-poids" placeholder="Poids (kg)" min="1" step="0.5">
             <input type="number" id="rm-reps" placeholder="Reps" min="1" max="15" step="1">

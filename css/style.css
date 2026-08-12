@@ -2261,11 +2261,17 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase;
   color: var(--text-soft);
 }
-.set-row {
+/* ATTENTION : « set-row » désigne DÉJÀ une ligne du tableau des séries
+   (voir plus haut). Sans le préfixe .set-card, ce display:flex
+   transformait chaque <tr> de séance en boîte flex : les <td>
+   devenaient des blocs à largeur libre et ne s'alignaient plus sous
+   leurs en-têtes. Les réglages vivent tous dans une .set-card — on y
+   restreint la règle. */
+.set-card .set-row {
   display: flex; align-items: center; justify-content: space-between;
   gap: 14px; padding: 9px 0;
 }
-.set-check { cursor: pointer; }
+.set-card .set-check { cursor: pointer; }
 .set-lab { display: flex; flex-direction: column; gap: 2px; font-weight: 600; }
 .set-sub { font-size: 0.82rem; font-weight: 400; color: var(--text-soft); }
 .set-check input { width: 22px; height: 22px; accent-color: var(--accent); }
@@ -2423,4 +2429,138 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .live-chronos { margin-top: 12px; gap: 14px; }
+}
+
+/* ====================================================================
+   EXPLICATIONS DE STATS
+   ==================================================================== */
+
+/* Le ⓘ : présent partout, discret partout. Il ne doit jamais entrer en
+   concurrence avec le chiffre qu'il accompagne — c'est le chiffre qu'on
+   vient lire, l'explication n'est qu'un recours. */
+.stat-i {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 15px; height: 15px; margin-left: 5px;
+  vertical-align: middle;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  font-family: var(--font-body);
+  font-size: 0.6rem; font-weight: 800; font-style: italic;
+  line-height: 1; text-transform: none; letter-spacing: 0;
+  cursor: pointer; flex: 0 0 auto;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+.stat-i:hover, .stat-i:focus-visible {
+  color: var(--accent-contrast); background: var(--accent); border-color: transparent;
+}
+/* Cible tactile confortable sans agrandir le dessin (recommandation
+   d'accessibilité : 24 px minimum, même pour une icône de 15). */
+.stat-i::after {
+  content: ""; position: absolute;
+  width: 30px; height: 30px; margin: -7px;
+}
+.stat-i { position: relative; }
+
+/* Rappel d'une ligne, affiché seulement pour les stats déjà consultées. */
+.stat-rappel {
+  display: block; margin-top: 6px;
+  font-size: 0.72rem; line-height: 1.35;
+  font-weight: 400; letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-soft); opacity: 0.85;
+}
+
+/* Fiche d'explication, dans le panneau glissant déjà en place. */
+.si-card { margin-bottom: 10px; padding: 12px 14px; }
+.si-lab {
+  margin: 0 0 5px;
+  font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-soft);
+}
+.si-txt { margin: 0; font-size: 0.92rem; line-height: 1.5; }
+.si-formule {
+  margin: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.86rem; line-height: 1.5;
+  color: var(--accent-2);
+  overflow-wrap: anywhere;
+}
+.si-ex { border-style: dashed; }
+
+/* ====================================================================
+   NOTES DE SÉRIE ET RÉCAPITULATIF
+   ==================================================================== */
+
+/* Le ＋ / 💬 vit dans la cellule « repos », à côté du crayon d'édition.
+   Il doit rester distinct de la ligne cliquable qui l'entoure. */
+.set-note-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.set-note-input {
+  flex: 1; min-width: 150px;
+  padding: 9px 12px; min-height: 40px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--bg-soft); color: var(--text);
+  font-family: var(--font-body); font-size: 0.9rem;
+}
+/* Six suggestions d'un tap : une note qu'on met dix secondes à écrire
+   entre deux séries ne sera jamais écrite. */
+.note-suggests { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.note-suggests .chip { font-size: 0.76rem; padding: 5px 10px; min-height: 32px; }
+
+.recap-card { margin-bottom: 14px; }
+.recap-txt { margin: 6px 0 0; font-size: 0.95rem; line-height: 1.5; }
+.recap-vide { margin: 6px 0 0; font-size: 0.88rem; line-height: 1.5; color: var(--text-soft); }
+.recap-edit {
+  width: 100%; margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--bg-soft); color: var(--text);
+  font-family: var(--font-body); font-size: 0.95rem; line-height: 1.5;
+  resize: vertical;
+}
+.recap-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
+.recap-pt { display: flex; align-items: flex-start; gap: 8px; font-size: 0.88rem; line-height: 1.4; }
+.recap-sig { flex: 0 0 auto; width: 16px; font-weight: 800; text-align: center; }
+.recap-ok .recap-sig { color: var(--accent-2); }
+.recap-mid .recap-sig { color: var(--text-soft); }
+.recap-warn .recap-sig { color: var(--red); }
+.recap-ex { color: var(--text-soft); font-size: 0.82rem; }
+.recap-notes { margin: 6px 0 0; padding-left: 18px; font-size: 0.86rem; line-height: 1.55; color: var(--text-soft); }
+
+/* La note ne tient dans AUCUNE cellule : à quatre colonnes sur 324 px,
+   la plus large fait 97 px et le bouton en débordait, passant sous la
+   colonne voisine — donc intappable. Elle occupe désormais SA PROPRE
+   ligne, en colspan 4, où elle a toute la largeur et peut afficher son
+   texte en clair plutôt qu'une pastille à déchiffrer. */
+.set-note-line td { padding: 0 4px 8px; border-bottom: 1px solid var(--border); }
+.sets-table tr.set-noted td, .sets-table tr.set-row td { border-bottom: none; }
+.set-note-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  max-width: 100%; padding: 4px 9px; min-height: 30px;
+  border-radius: 999px; border: 1px dashed var(--border);
+  background: transparent; color: var(--text-soft);
+  font-family: var(--font-body); font-size: 0.78rem; line-height: 1.3;
+  text-align: left; cursor: pointer;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+.set-note-btn:hover { color: var(--text); border-color: var(--text-soft); }
+.set-note-btn.on { border-style: solid; border-color: var(--accent); color: var(--text); }
+
+/* La table des séries débordait de son conteneur — 403 px pour 324
+   disponibles sur un écran de 390. Le défaut est ANTÉRIEUR aux notes
+   (mesuré identique avec et sans note) : en table-layout auto, la somme
+   des largeurs minimales des cellules l'emportait sur le width:100%.
+   En layout FIXE, les colonnes se partagent la largeur disponible et
+   rien ne peut plus pousser la table au-delà. */
+@media (max-width: 760px) {
+  .sets-table { table-layout: fixed; width: 100%; }
+  .sets-table th, .sets-table td { padding: 8px 4px; }
+  .sets-table th { letter-spacing: 0.05em; word-break: break-word; }
+  .sets-table th:nth-child(1), .sets-table td:nth-child(1) { width: 30%; }
+  .sets-table th:nth-child(2), .sets-table td:nth-child(2) { width: 22%; }
+  .sets-table th:nth-child(3), .sets-table td:nth-child(3) { width: 18%; }
+  .sets-table th:nth-child(4), .sets-table td:nth-child(4) { width: 30%; }
+  .sets-table .set-note-line td { width: auto; }
 }
