@@ -8,6 +8,7 @@
 
 STORAGE_KEYS.restSound = "gymcoach.restSound";
 STORAGE_KEYS.restVibrate = "gymcoach.restVibrate";
+STORAGE_KEYS.restVolume = "gymcoach.restVolume";
 
 /* ==================== PANNEAU DE VUE ==================== */
 /* Nutrition et Bibliothèque n'ont plus d'onglet (points 1 et 2). Plutôt
@@ -100,6 +101,13 @@ if (typeof activateView === "function") {
 
 /* ==================== RÉGLAGES ==================== */
 function restSoundOn() { return localStorage.getItem(STORAGE_KEYS.restSound) !== "0"; }
+/* Le volume est défini dans workout.js — restVolume() — avec le bip
+   qu'il pilote. On l'appelle, on ne le redéclare PAS : deux fonctions du
+   même nom dans deux fichiers non modulaires, c'est la seconde qui
+   gagne, et laquelle dépend de l'ordre des <script>. */
+function volPct() {
+  return typeof restVolume === "function" ? restVolume() : 70;
+}
 function restVibrateOn() { return localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0"; }
 function currentTheme() { return localStorage.getItem("gymcoach.theme") || "gamifie"; }
 
@@ -135,6 +143,17 @@ function settingsHtml() {
           <span class="set-sub">Un seul bip court de 260 ms, à 1000 Hz.</span></span>
         <input type="checkbox" id="set-sound" ${restSoundOn() ? "checked" : ""}>
       </label>
+      <div class="set-vol${restSoundOn() ? "" : " off"}" id="set-vol-bloc">
+        <div class="set-vol-head">
+          <span class="set-lab">Volume du bip</span>
+          <span class="set-vol-val" id="set-vol-val">${volPct()} %</span>
+        </div>
+        <input type="range" class="vol-range" id="set-vol" min="0" max="100" step="5"
+          value="${volPct()}" aria-label="Volume du bip sonore"
+          aria-valuetext="${volPct()} pour cent">
+        <p class="set-sub">Le curseur se relâche sur un bip d'essai. À 0 %, le bip se tait
+          — la vibration, elle, continue si elle est active.</p>
+      </div>
       <label class="set-row set-check">
         <span class="set-lab">Vibration
           <span class="set-sub">Une impulsion brève, si l'appareil le permet.</span></span>
@@ -161,7 +180,33 @@ function openSettings() {
     }));
   const s = document.getElementById("set-sound");
   const v = document.getElementById("set-vibrate");
-  s.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restSound, s.checked ? "1" : "0"));
+  const vol = document.getElementById("set-vol");
+  const volVal = document.getElementById("set-vol-val");
+  const volBloc = document.getElementById("set-vol-bloc");
+  s.addEventListener("change", () => {
+    localStorage.setItem(STORAGE_KEYS.restSound, s.checked ? "1" : "0");
+    /* Un curseur de volume sous un son coupé ne veut rien dire : il
+       s'estompe et se verrouille plutôt que de mentir. */
+    volBloc.classList.toggle("off", !s.checked);
+    vol.disabled = !s.checked;
+  });
+  vol.disabled = !s.checked;
+  /* Pendant le glissement : on met à jour le chiffre et la portion
+     colorée de la piste, rien de plus — un bip à chaque pixel serait
+     une mitraillette. */
+  const peindre = () => vol.style.setProperty("--vol", vol.value);
+  peindre();
+  vol.addEventListener("input", () => {
+    volVal.textContent = vol.value + " %";
+    vol.setAttribute("aria-valuetext", vol.value + " pour cent");
+    peindre();
+  });
+  /* Au relâchement : on enregistre, et on fait ENTENDRE le résultat.
+     Régler un volume sans l'entendre revient à choisir à l'aveugle. */
+  vol.addEventListener("change", () => {
+    localStorage.setItem(STORAGE_KEYS.restVolume, vol.value);
+    if (typeof beep === "function") beep(true, +vol.value);
+  });
   v.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restVibrate, v.checked ? "1" : "0"));
   document.getElementById("set-test-son").addEventListener("click", () => {
     if (typeof beep === "function") beep(true);

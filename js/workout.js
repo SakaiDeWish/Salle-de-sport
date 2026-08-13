@@ -98,6 +98,31 @@ function smartRest(ex) {
 const REST_BEEP_HZ = 1000;
 const REST_BEEP_MS = 260;
 
+/* VOLUME DU BIP — réglable dans les Réglages, de 0 à 100 %.
+
+   Le curseur ne pilote pas l'amplitude directement. L'oreille perçoit le
+   volume à peu près comme la racine de l'amplitude : un curseur linéaire
+   sur l'amplitude paraît ne rien faire au début puis tout faire à la
+   fin. On élève donc la position au CARRÉ, ce qui rend la course du
+   doigt régulière à l'oreille.
+
+   Le maximum (0,45) vaut le double de l'ancien niveau fixe : dans une
+   salle bruyante, il fallait pouvoir monter, pas seulement descendre.
+   Par défaut le curseur est à 70 %, soit 0,45 × 0,70² = 0,22 — très
+   exactement le niveau d'avant. Personne ne verra son bip changer sans
+   l'avoir demandé. */
+const REST_BEEP_GAIN_MAX = 0.45;
+const REST_VOL_DEFAUT = 70;
+
+function restVolume() {
+  const v = parseInt(localStorage.getItem("gymcoach.restVolume"), 10);
+  return Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : REST_VOL_DEFAUT;
+}
+function beepGain(pct) {
+  const p = (pct != null ? pct : restVolume()) / 100;
+  return REST_BEEP_GAIN_MAX * p * p;
+}
+
 /* UN SEUL contexte audio, débloqué au premier geste de l'utilisateur.
 
    Deux raisons, et la seconde est la vraie.
@@ -138,10 +163,13 @@ function audioContext() {
   document.addEventListener("keydown", ouvrir, { once: false });
 })();
 
-function beep(force) {
+function beep(force, volume) {
   const sonOn = force || localStorage.getItem(STORAGE_KEYS.restSound) !== "0";
   const vibOn = force || localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0";
-  if (sonOn) {
+  const pic = beepGain(volume);
+  /* À 0 %, on ne fabrique aucun oscillateur : une rampe exponentielle
+     vers zéro n'existe pas, et un bip inaudible reste un bip payé. */
+  if (sonOn && pic > 0.0002) {
     try {
       const ctx = audioContext();
       if (ctx) {
@@ -151,7 +179,7 @@ function beep(force) {
         osc.frequency.setValueAtTime(REST_BEEP_HZ, t0);
         osc.connect(gain); gain.connect(ctx.destination);
         gain.gain.setValueAtTime(0.0001, t0);
-        gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.015);   // attaque 15 ms
+        gain.gain.exponentialRampToValueAtTime(pic, t0 + 0.015);    // attaque 15 ms
         gain.gain.exponentialRampToValueAtTime(0.0001, t0 + d);     // extinction
         osc.start(t0);
         osc.stop(t0 + d + 0.02);
