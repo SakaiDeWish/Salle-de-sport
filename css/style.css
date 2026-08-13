@@ -1565,7 +1565,16 @@ textarea { min-height: 90px; resize: vertical; }
 .live-compact .live-progress .progress-label { display: none; }
 .live-compact .live-header { padding: 14px 18px; }
 .live-compact .live-ex .live-ex-sub { display: none; }   /* le récap replié reste lisible */
-.live-compact .live-ex .sets-table tbody tr:not(:last-child) { display: none; }
+/* Affichage réduit : seule la dernière série reste à l'écran. La règle
+   disait « toutes sauf la dernière LIGNE » — vrai tant qu'une série
+   valait une ligne. Depuis les notes, chaque série en occupe deux, et
+   la dernière ligne du tableau était le bouton de note : plus AUCUNE
+   série n'était affichée, donc plus aucune à toucher pour la corriger.
+   On désigne maintenant la dernière SÉRIE, pas la dernière ligne, et la
+   fiche d'édition ouverte reste visible quoi qu'il arrive. */
+.live-compact .live-ex .sets-table tbody tr { display: none; }
+.live-compact .live-ex .sets-table tbody tr.set-last,
+.live-compact .live-ex .sets-table tbody tr.set-editing { display: table-row; }
 .live-compact .live-ex .sets-table thead { display: none; }
 .live-compact .live-ex { padding: 14px; }
 #live-compact-toggle { transition: transform 0.25s ease; }
@@ -2493,9 +2502,11 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
    NOTES DE SÉRIE ET RÉCAPITULATIF
    ==================================================================== */
 
-/* Le ＋ / 💬 vit dans la cellule « repos », à côté du crayon d'édition.
-   Il doit rester distinct de la ligne cliquable qui l'entoure. */
+/* Saisie rapide de la note, ouverte depuis la pastille ＋ / 💬. */
 .set-note-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+/* Même champ, mais dans la fiche d'une série qu'on rouvre : il prend
+   toute la largeur, sous le poids et les reps. */
+.set-edit-note { display: flex; margin-top: 8px; }
 .set-note-input {
   flex: 1; min-width: 150px;
   padding: 9px 12px; min-height: 40px;

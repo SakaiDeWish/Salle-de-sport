@@ -650,6 +650,11 @@ function renderLiveExercises() {
         <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>Repos</th></tr></thead>
         <tbody>
           ${ex.sets.map((s, j) => {
+            /* En affichage réduit, seule la DERNIÈRE série reste visible.
+               Ce marquage est explicite : la règle CSS s'appuyait avant
+               sur :last-child, ce qui a cessé d'être vrai le jour où
+               chaque série a gagné une ligne de note en dessous. */
+            const der = j === ex.sets.length - 1 ? " set-last" : "";
             const editing = editingSet && editingSet.i === i && editingSet.j === j;
             if (editing) return `
               <tr class="set-editing">
@@ -661,6 +666,18 @@ function renderLiveExercises() {
                     <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
                     <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
                     <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
+                  </div>
+                  <!-- La note vit ici aussi : on revient sur une série pour
+                       la corriger OU pour dire comment elle s'est passée,
+                       et rien n'oblige à deviner laquelle des deux avant
+                       d'ouvrir. -->
+                  <div class="set-edit-note">
+                    <input type="text" id="ed-note" maxlength="${NOTE_MAX}" class="set-note-input"
+                      placeholder="Note (facultatif) — ex : aidé sur les 2 dernières"
+                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
+                  </div>
+                  <div class="note-suggests">
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="ed-note">${esc(t)}</button>`).join("")}
                   </div>
                 </td>
               </tr>`;
@@ -677,19 +694,19 @@ function renderLiveExercises() {
                     <button class="btn btn-ghost btn-sm note-cancel">Annuler</button>
                   </div>
                   <div class="note-suggests">
-                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip">${esc(t)}</button>`).join("")}
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="note-input">${esc(t)}</button>`).join("")}
                   </div>
                 </td>
               </tr>`;
             return `
-            <tr class="set-row${s.note ? " set-noted" : ""}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
+            <tr class="set-row${s.note ? " set-noted" : ""}${der}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
                 title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
               <td>✔ ${j + 1}</td>
               <td>${s.poids != null ? s.poids : "—"}</td>
               <td>${s.reps}</td>
               <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
             </tr>
-            <tr class="set-note-line">
+            <tr class="set-note-line${der}">
               <td colspan="4">
                 <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
                   aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
@@ -752,7 +769,9 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => { notingSet = null; renderLiveExercises(); }));
   elLiveExercises.querySelectorAll(".note-chip").forEach(chip =>
     chip.addEventListener("click", () => {
-      const inp = document.getElementById("note-input");
+      /* Les mêmes puces servent au champ rapide et au champ de la fiche
+         d'édition ; chacune sait lequel elle remplit. */
+      const inp = document.getElementById(chip.dataset.cible || "note-input");
       if (!inp) return;
       const t = chip.textContent.trim();
       inp.value = (inp.value ? inp.value.replace(/\s*$/, "") + ", " : "") + t;
@@ -763,6 +782,11 @@ function renderLiveExercises() {
   if (noteInp) noteInp.addEventListener("keydown", e => {
     if (e.key === "Enter") { e.preventDefault(); saveSetNote(notingSet.i, notingSet.j); }
     if (e.key === "Escape") { notingSet = null; renderLiveExercises(); }
+  });
+  const edNote = document.getElementById("ed-note");
+  if (edNote) edNote.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); saveSetEdit(editingSet.i, editingSet.j); }
+    if (e.key === "Escape") { editingSet = null; renderLiveExercises(); }
   });
 
   elLiveExercises.querySelectorAll(".ss-break").forEach(btn =>
@@ -820,6 +844,8 @@ function saveSetEdit(i, j) {
   if (!reps || reps < 1) { document.getElementById("ed-reps").focus(); return; }
   set.reps = reps;
   set.poids = poidsRaw === "" ? null : parseFloat(poidsRaw);
+  const note = document.getElementById("ed-note");
+  if (note) set.note = note.value.trim().slice(0, NOTE_MAX);
   set.editedAt = Date.now();
   rememberSet(ex.exId, j, set.poids, set.reps);   // la mémoire des charges suit
   editingSet = null;
