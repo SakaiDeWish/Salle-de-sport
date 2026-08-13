@@ -2294,6 +2294,56 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 }
 .segm.active { background: var(--accent-grad); color: var(--accent-contrast); border-color: transparent; }
 
+/* ---------- Volume du bip ----------
+   Le curseur prend toute la largeur : on le règle au pouce, debout,
+   entre deux séries — pas à la souris. La piste fait 6 px pour rester
+   discrète, la poignée 26 px pour rester attrapable, et la zone
+   sensible 44 px de haut grâce au padding vertical de l'input. */
+.set-vol { padding: 4px 0 10px; transition: opacity 0.18s ease; }
+.set-vol.off { opacity: 0.4; }
+.set-vol-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.set-vol-val {
+  font-family: var(--font-display); font-size: 0.95rem; font-weight: 700;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+}
+.set-vol .set-sub { margin: 6px 0 0; }
+
+.vol-range {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; margin: 10px 0 0; padding: 9px 0;
+  /* La règle générale des <input> pose un cadre et un fond : sur un
+     curseur, ce cadre dessine une boîte autour de la piste. */
+  background: transparent; border: none; min-height: 0; border-radius: 0;
+  cursor: pointer;
+}
+.vol-range:focus { border: none; }
+.vol-range:disabled { cursor: not-allowed; }
+.vol-range:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
+
+.vol-range::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 999px;
+  /* WebKit ne sait pas colorer la portion parcourue : on la peint au
+     dégradé, à partir de la valeur que le JS reporte dans --vol. */
+  background: linear-gradient(to right,
+    var(--accent) calc(var(--vol, 70) * 1%), var(--border) 0);
+}
+.vol-range::-moz-range-track { height: 6px; border-radius: 999px; background: var(--border); }
+.vol-range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--accent); }
+
+.vol-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 26px; height: 26px; margin-top: -10px;
+  border-radius: 50%; border: 2px solid var(--bg);
+  background: var(--accent);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.vol-range::-moz-range-thumb {
+  width: 26px; height: 26px;
+  border-radius: 50%; border: 2px solid var(--bg);
+  background: var(--accent);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+
 /* ---------- 6 · Retour rapide au chrono ----------
    Complément du geste : une remontée franche rappelle déjà le chrono,
    ce bouton sert quand on est loin en bas de page. */
