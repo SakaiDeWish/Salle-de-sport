@@ -299,6 +299,9 @@
               de secours pour les séances libres sans suggestion.</p>
           </div>
         </div>
+        <!-- Chrono d'échauffement : il tourne AVANT la séance et son temps
+             est versé dans la séance au démarrage (voir workout.js). -->
+        <div class="warmup-card" id="warmup-block"></div>
         <div class="start-buttons">
           <button class="btn btn-primary btn-lg" id="start-free">Démarrer une séance libre</button>
         </div>
@@ -349,6 +352,10 @@
           <div class="chrono-block chrono-main">
             <span class="chrono-label">Durée</span>
             <span class="chrono-value" id="chrono-session">00:00</span>
+          </div>
+          <div class="chrono-block hidden" id="chrono-warmup-block">
+            <span class="chrono-label">dont échauff.</span>
+            <span class="chrono-value" id="chrono-warmup">00:00</span>
           </div>
           <div class="chrono-block">
             <span class="chrono-label">Repos cumulé</span>
