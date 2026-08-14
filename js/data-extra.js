@@ -1289,6 +1289,120 @@ const EXERCISES_PROG = [
 EXERCISES.push(...EXERCISES_PROG);
 
 /* =========================================================
+   Trous manifestes de la bibliothèque.
+
+   Repérés en cherchant chaque exercice sous le nom écrit sur la
+   machine plutôt que sous son nom de fiche. Cinq mouvements très
+   courants ne répondaient à AUCUNE recherche parce qu'ils
+   n'existaient pas — à ne pas confondre avec les mollets assis, qui
+   existaient et que seul un alias manquant rendait introuvables.
+
+   Chaque famille avait déjà ses variantes voisines : le développé
+   incliné n'existait qu'aux haltères, le leg curl qu'allongé et
+   assis, l'élévation latérale qu'aux haltères et à la poulie, le
+   crunch qu'au sol et à la poulie, l'extension triceps qu'à la
+   barre. Ce sont les cinq chaînons manquants.
+   ========================================================= */
+const EXERCISES_TROUS = [
+  {
+    id: "developpe-incline-barre",
+    nom: "Développé incliné à la barre",
+    groupe: "pectoraux", materiel: "barre", niveau: "intermediaire", type: "poly",
+    muscles: "Faisceau claviculaire des pectoraux, deltoïde antérieur, triceps",
+    description: "Le développé couché basculé à 30-45° : la barre permet de charger plus lourd qu'aux haltères et de progresser en charge sur le haut des pectoraux, la portion la plus souvent en retard.",
+    execution: [
+      "Banc réglé entre 30 et 45° : au-delà, ce sont les épaules qui prennent le travail.",
+      "Prise un peu plus large que les épaules, omoplates serrées et basses, pieds ancrés au sol.",
+      "Descends la barre vers le HAUT des pectoraux, sous les clavicules — pas au milieu du sternum.",
+      "Pousse en gardant les coudes à environ 45° du buste, sans verrouiller sèchement en haut."
+    ],
+    erreurs: [
+      "Banc trop redressé : l'exercice devient un développé épaules.",
+      "Barre qui descend trop bas sur le sternum, comme au couché à plat.",
+      "Décoller les fesses du banc pour lancer la charge."
+    ],
+    videoQuery: "développé incliné barre incline bench press technique"
+  },
+  {
+    id: "extension-corde-poulie-haute",
+    nom: "Extension triceps à la corde (poulie haute)",
+    groupe: "triceps", materiel: "poulie", niveau: "debutant", type: "iso",
+    muscles: "Triceps brachial, chef latéral surtout",
+    description: "Le pushdown à la corde plutôt qu'à la barre : en fin d'extension, les mains s'écartent et tournent vers l'extérieur, ce qui ajoute une contraction que la barre droite ne permet pas.",
+    execution: [
+      "Face à la poulie haute, corde en prise neutre, coudes collés au buste.",
+      "Buste très légèrement penché vers la machine, gainé, immobile.",
+      "Pousse vers le bas jusqu'aux bras tendus.",
+      "En bas, écarte les mains et tourne les paumes vers l'arrière : c'est tout l'intérêt de la corde."
+    ],
+    erreurs: [
+      "Coudes qui décollent du buste et transforment le geste en tirage.",
+      "Coup de buste pour lancer la charge.",
+      "Garder les mains serrées en bas : autant prendre la barre."
+    ],
+    videoQuery: "rope pushdown triceps corde poulie haute technique"
+  },
+  {
+    id: "leg-curl-debout",
+    nom: "Leg curl debout (une jambe)",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "debutant", type: "iso",
+    muscles: "Ischio-jambiers (unilatéral)",
+    description: "Le curl fémoral une jambe à la fois, hanche tendue : la position debout étire la longue portion du biceps fémoral autrement que la version assise, et révèle les déséquilibres entre les deux jambes.",
+    execution: [
+      "Debout face à la machine, buste contre le support, cuisse calée sous le coussinet.",
+      "Hanche tendue, bassin immobile : c'est le genou seul qui travaille.",
+      "Ramène le talon vers la fesse le plus loin possible.",
+      "Redescends lentement sans laisser la charge reposer en bas."
+    ],
+    erreurs: [
+      "Fléchir la hanche pour gagner de l'amplitude.",
+      "Cambrer les lombaires en fin de flexion.",
+      "Descendre en lâchant la charge d'un coup."
+    ],
+    videoQuery: "standing leg curl une jambe ischios technique"
+  },
+  {
+    id: "elevations-laterales-machine",
+    nom: "Élévations latérales à la machine",
+    groupe: "epaules", materiel: "machine", niveau: "debutant", type: "iso",
+    muscles: "Deltoïde moyen",
+    description: "L'élévation latérale guidée : les coussinets appuient sur le bras et non sur la main, ce qui supprime la triche et maintient la résistance sur toute l'amplitude, y compris en bas où les haltères ne pèsent presque rien.",
+    execution: [
+      "Assis, dos plaqué, épaules dans l'axe des pivots de la machine.",
+      "Bras contre les coussinets, coudes légèrement fléchis.",
+      "Monte jusqu'à l'horizontale des bras, pas plus haut.",
+      "Redescends en freinant, sans laisser les poids se reposer entre les répétitions."
+    ],
+    erreurs: [
+      "Monter au-dessus de l'horizontale : le trapèze prend le relais.",
+      "Pousser avec les mains au lieu de laisser le bras appuyer.",
+      "Décoller le dos du dossier pour lancer la charge."
+    ],
+    videoQuery: "machine lateral raise élévations latérales machine technique"
+  },
+  {
+    id: "crunch-machine",
+    nom: "Crunch à la machine",
+    groupe: "abdos", materiel: "machine", niveau: "debutant", type: "iso",
+    muscles: "Grand droit de l'abdomen",
+    description: "Le crunch chargé et guidé : la machine permet d'ajouter des kilos proprement là où le crunch au sol plafonne très vite, sans tirer sur la nuque.",
+    execution: [
+      "Assis, axe de la machine à hauteur du nombril, poignées ou coussinets pris aux épaules.",
+      "Enroule le buste vers l'avant en creusant le ventre, menton vers le sternum.",
+      "Va chercher la contraction courte, sans chercher à toucher les cuisses.",
+      "Reviens lentement, sans laisser la charge te redresser d'un coup."
+    ],
+    erreurs: [
+      "Tirer sur les poignées avec les bras au lieu d'enrouler le buste.",
+      "Basculer en arrière avec le dos rond pour lancer la machine.",
+      "Amplitude trop grande : le crunch est un mouvement court."
+    ],
+    videoQuery: "machine crunch abdominal machine technique"
+  }
+];
+EXERCISES.push(...EXERCISES_TROUS);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1368,8 +1482,72 @@ const EXERCISE_ALIASES = {
   "kettlebell-swing": ["russian swing", "swing"],
   "planche": ["plank", "gainage ventral"],
   "crunch": ["crunchs", "abdos au sol"],
-  "mollets-debout": ["standing calf raise", "calf raises"],
-  "hyperextension-inversee": ["reverse hyper"]
+  "mollets-debout": ["standing calf raise", "calf raises", "calf raise debout"],
+  "hyperextension-inversee": ["reverse hyper"],
+
+  /* Noms anglais manquants. Le défaut est toujours le même : l'exercice
+     EXISTE, mais on le cherche sous le nom écrit sur la machine, et la
+     recherche ne trouve rien. « Seated calf » ne ramenait aucun
+     résultat alors que les mollets assis sont dans la bibliothèque
+     depuis le premier jour. */
+  "mollets-assis": ["seated calf raise", "seated calf", "calf raise assis", "soléaire"],
+  "mollets-presse": ["calf press", "leg press calf raise", "calf raise presse"],
+  "mollets-unijambiste": ["single leg calf raise", "one leg calf raise", "calf raise une jambe"],
+  "crunch-poulie": ["cable crunch", "kneeling cable crunch", "crunch câble"],
+  "extension-un-bras-poulie": ["single arm pushdown", "one arm pushdown"],
+  "extension-corde-nuque-poulie": ["overhead rope extension", "extension corde au dessus de la tête"],
+  "kickback-triceps": ["triceps kickback", "extension triceps buste penché"],
+  "ecarte-halteres": ["chest fly", "dumbbell fly", "flye"],
+  "ecarte-incline-halteres": ["incline chest fly", "incline dumbbell fly"],
+  "ecarte-poulie-vis-a-vis": ["cable crossover", "crossover", "cable fly"],
+  "pec-deck": ["butterfly", "machine chest fly", "peck deck"],
+  "developpe-incline-halteres": ["incline dumbbell press", "développé incliné haltères"],
+  "developpe-couche-halteres": ["dumbbell bench press", "développé haltères"],
+  "developpe-decline-barre": ["decline bench press"],
+  "leg-extension": ["leg extensions", "knee extension"],
+  "leg-curl": ["lying leg curl", "curl fémoral", "leg curl couché"],
+  "leg-curl-assis": ["seated leg curl", "curl fémoral assis"],
+  "hack-squat": ["machine hack squat", "squat hack"],
+  "step-ups": ["step up", "montée sur banc", "box step up"],
+  "wall-sit": ["chaise", "mur", "isometric squat"],
+  "rowing-machine-assis": ["seated cable row", "seated row", "rowing assis"],
+  "tirage-horizontal-poulie": ["cable row", "low row", "tirage horizontal"],
+  "tirage-bras-tendus": ["straight arm pulldown", "pullover poulie"],
+  "tirage-vertical-prise-serree": ["close grip pulldown", "tirage triangle", "v-bar pulldown"],
+  "shrugs-halteres": ["dumbbell shrugs", "haussements d'épaules haltères"],
+  "shrugs-barre": ["barbell shrugs"],
+  "rack-pull": ["rack pulls", "soulevé partiel"],
+  "tractions-lestees": ["weighted pull up", "tractions lestées"],
+  "elevations-frontales": ["front raise", "élévation frontale"],
+  "elevations-laterales-poulie": ["cable lateral raise"],
+  "rowing-menton": ["upright row", "tirage menton"],
+  "developpe-epaules-machine": ["machine shoulder press", "développé épaules guidé"],
+  "pec-deck-inverse": ["reverse pec deck", "rear delt machine"],
+  "gainage-lateral": ["side plank"],
+  "hollow-hold": ["hollow body hold"],
+  "dead-bug": ["deadbug"],
+  "sit-ups": ["sit up", "redressement assis"],
+  "russian-twist": ["russian twists", "rotation russe"],
+  "roulette-abdos": ["ab wheel", "ab rollout", "roue abdominale"],
+  "releve-jambes-suspendu": ["hanging leg raise", "toes to bar"],
+  "curl-poulie-basse": ["cable curl", "low pulley curl"],
+  "curl-machine": ["machine curl"],
+  "curl-inverse": ["reverse curl"],
+  "curl-concentration": ["concentration curl"],
+  "curl-spider": ["spider curl"],
+  "good-morning": ["good mornings"],
+  "nordic-curl": ["nordic hamstring curl", "nordique"],
+  "souleve-terre-jambes-tendues": ["stiff leg deadlift", "SLDL"],
+  "souleve-terre-sumo": ["sumo deadlift"],
+  "extension-lombaire-banc": ["back extension", "hyperextension", "extension lombaire"],
+  "superman": ["superman hold"],
+  "bird-dog": ["birddog", "quadrupède"],
+
+  "developpe-incline-barre": ["incline bench press", "incline barbell press", "développé incliné"],
+  "extension-corde-poulie-haute": ["rope pushdown", "triceps rope pushdown", "extension corde", "pushdown corde"],
+  "leg-curl-debout": ["standing leg curl", "curl fémoral debout", "leg curl une jambe"],
+  "elevations-laterales-machine": ["machine lateral raise", "lateral raise machine", "élévation latérale guidée"],
+  "crunch-machine": ["machine crunch", "ab machine", "crunch guidé", "abdominal machine"]
 };
 
 /* Tous les noms connus d'un exercice (nom + alias intégrés + alias perso) */

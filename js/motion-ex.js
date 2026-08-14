@@ -17583,3 +17583,523 @@ EXERCISE_MOTIONS["l-sit-leste"] = {
   ],
   parts: []
 };
+
+/* =========================================================
+   141. DÉVELOPPÉ INCLINÉ À LA BARRE  (developpe-incline-barre)
+   -----------------------------------------------------------
+   Position  : assis-allongé sur un banc incliné à ~35°, dos et
+               tête plaqués, omoplates serrées, pieds au sol.
+   Matériel  : UNE barre chargée, prise un peu plus large que les
+               épaules.
+   Mobiles   : épaule (flexion), coude (extension).
+   Fixes     : rachis, bassin, hanches, genoux.
+   Sens/plan : la barre DESCEND vers le haut des pectoraux =
+               excentrique ; la poussée = concentrique. Le cycle
+               commence donc bras tendus.
+   ROM       : coude ~170° en haut → ~76° en bas (calculé, voir
+               plus bas). La barre s'arrête au contact du HAUT de
+               la poitrine, sous les clavicules.
+   Agonistes : faisceau claviculaire du grand pectoral, deltoïde
+               antérieur, triceps.
+
+   CE QUI LE DISTINGUE DU MÊME MOUVEMENT AUX HALTÈRES — et ce que
+   le schéma doit donc montrer :
+     les deux mains sont solidaires d'une SEULE barre. Elles ne
+     peuvent plus se rapprocher en haut ni descendre plus bas que
+     le contact. Conséquence géométrique, pas décorative : la
+     trajectoire devient VERTICALE, alors que celle des haltères
+     est perpendiculaire au buste incliné, donc oblique. C'est
+     exactement ce que donnent les nombres ci-dessous.
+
+   GÉOMÉTRIE (calculée) — épaule S(80,60), bras L1=22, avant-bras
+   L2=22. En haut : bras à −59,3° (perpendiculaire au buste),
+   coude à −49,3° → coude(91,23 ; 41,08), barre(105,58 ; 24,40),
+   |S→barre| = 43,8 soit un coude à 170°.
+   En bas : bras +108°, avant-bras −114° relatif → coude(94,52 ;
+   76,53), barre(107,04 ; 58,44), |S→barre| = 27,05 soit 76°.
+   COURSE DE LA BARRE : 34,07 unités, de (105,58 ; 24,40) à
+   (107,04 ; 58,44) — 1,46 d'écart horizontal sur 34 de descente.
+   La verticalité n'est pas dessinée à la main : elle tombe.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-incline-barre"] = {
+  vb: "48 4 156 156",
+  dur: 3.8,
+  phases: { ecc: [0, 46], con: [54, 82] },
+  alt: "Sur un banc incliné à 35°, la barre descend verticalement jusqu'au haut de la poitrine puis remonte à la verticale ; seuls les bras bougent.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="150" x2="196" y2="150"/>
+    <!-- banc incliné ~35° : dossier, assise, deux pieds -->
+    <line class="mo-pad" x1="74" y1="64" x2="136" y2="106"/>
+    <line class="mo-pad" x1="136" y1="106" x2="178" y2="110"/>
+    <line class="mo-gear" x1="88" y1="74" x2="88" y2="150"/>
+    <line class="mo-gear" x1="170" y1="112" x2="170" y2="150"/>
+    <!-- corps plaqué au dossier -->
+    <circle class="mo-head" cx="68" cy="50" r="9"/>
+    <line class="mo-body" x1="74" y1="56" x2="134" y2="92"/>
+    <line class="mo-body" x1="134" y1="92" x2="168" y2="104"/>
+    <line class="mo-body" x1="168" y1="104" x2="172" y2="150"/>
+    <line class="mo-body" x1="164" y1="150" x2="182" y2="150"/>
+    <!-- trajectoire réelle de la barre : quasi verticale (1,46 d'écart
+         horizontal pour 34 de course). C'est la signature de la barre. -->
+    <line class="mo-rom" x1="105.58" y1="24.4" x2="107.04" y2="58.44"/>`,
+  muscles: [
+    { nom: "Haut des pectoraux",
+      svg: `<ellipse cx="90" cy="70" rx="12" ry="4.4" transform="rotate(35 90 70)"/>` },
+    { nom: "Deltoïde antérieur",
+      svg: `<circle cx="79" cy="59" r="4.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (80, 60). +108° amène le
+         coude bas et en arrière — moins loin qu'aux haltères, la barre
+         bute sur la poitrine avant. */
+      o: "80px 60px",
+      k: [[0, "rotate(0deg)"], [46, "rotate(108deg)"], [54, "rotate(108deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="86" cy="51" rx="3.2" ry="7.5" transform="rotate(31 86 51)"/>`,
+      svg: `
+        <line class="mo-limb" x1="80" y1="60" x2="91.23" y2="41.08"/>
+        <circle class="mo-joint" cx="91.23" cy="41.08" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : rotation relative autour du COUDE.
+             −114° ferme le coude de 170° à 76°. La barre est dessinée
+             LONGUE et perpendiculaire à l'avant-bras, avec un disque à
+             chaque extrémité : une seule pièce pour les deux mains. */
+          o: "91.23px 41.08px",
+          k: [[0, "rotate(0deg)"], [46, "rotate(-114deg)"], [54, "rotate(-114deg)"],
+              [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="91.23" y1="41.08" x2="105.58" y2="24.4"/>
+            <circle class="mo-hand" cx="105.58" cy="24.4" r="3"/>
+            <line class="mo-bar2" x1="91.18" y1="12" x2="119.98" y2="36.8"/>
+            <circle class="mo-plate-o" cx="91.18" cy="12" r="6.5"/>
+            <circle class="mo-plate-o" cx="119.98" cy="36.8" r="6.5"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M140 26 L140 58 M135 51 L140 58 L145 51"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M140 58 L140 26 M135 33 L140 26 L145 33"/>` }
+  ]
+};
+
+/* =========================================================
+   142. EXTENSION TRICEPS À LA CORDE, POULIE HAUTE
+        (extension-corde-poulie-haute)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à la poulie haute, corde en prise
+               neutre, coudes collés au buste.
+   Mobiles   : le COUDE, et lui seul.
+   Fixes     : l'ÉPAULE, le rachis.
+   Sens/plan : le CONCENTRIQUE va vers le BAS. Plan sagittal.
+   ROM       : coude d'environ 78° en haut à ~178° en bas — la
+               corde autorise quelques degrés de plus que la barre,
+               parce que les mains ne se gênent pas.
+   Agonistes : triceps brachial, chef latéral surtout.
+
+   POURQUOI DEUX VUES, ET POURQUOI C'EST NÉCESSAIRE ICI.
+   Ce qui distingue la corde de la barre droite ne se passe PAS
+   dans le plan sagittal : en fin d'extension les mains S'ÉCARTENT
+   et les paumes tournent vers l'arrière. Vu de profil, ce
+   mouvement est perpendiculaire à l'écran — il ne se voit pas, et
+   toute tentative de le suggérer en animation dessinerait un
+   déplacement qui n'a pas lieu dans ce plan.
+   L'animation montre donc ce qui EST sagittal : l'extension du
+   coude. L'écartement est confié à une IMAGE FIXE de face. Une
+   image fixe n'a pas de variation dans le temps : sa projection
+   est exacte à l'instant qu'elle montre, là où une animation
+   mentirait.
+
+   GÉOMÉTRIE (calculée) — épaule S(128,66), bras vertical L=22 →
+   coude E(128,88) ; avant-bras 22.
+   Haut : avant-bras à 197,2° → main(106,98 ; 81,49).
+   Bas  : avant-bras à 93,9° → main(126,50 ; 109,95). → −103,3°.
+   CÂBLE depuis la poulie P(96,30) : |P→haut| = 52,65 à 77,96° ;
+   |P→bas| = 85,57 à 69,12°. → rotate(−8,84°) scale(1,6252), en
+   suivant la main pas à pas sur la MÊME grille de keyframes.
+   ========================================================= */
+EXERCISE_MOTIONS["extension-corde-poulie-haute"] = {
+  vb: "86 20 96 138",
+  dur: 3.5,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Face à la poulie haute, coudes collés au buste : les avant-bras poussent la corde vers le bas jusqu'aux bras tendus, puis remontent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="92" y1="152" x2="174" y2="152"/>
+    <line class="mo-gear" x1="96" y1="34" x2="96" y2="152"/>
+    <circle class="mo-pulley" cx="96" cy="30" r="5"/>
+    <!-- corps debout, très légèrement penché vers la machine -->
+    <circle class="mo-head" cx="125" cy="48" r="9"/>
+    <line class="mo-body" x1="133" y1="64" x2="136" y2="110"/>
+    <line class="mo-body" x1="136" y1="110" x2="132" y2="152"/>
+    <line class="mo-body" x1="136" y1="110" x2="141" y2="152"/>
+    <!-- BRAS FIXE : le coude ne quitte pas le flanc -->
+    <line class="mo-limb" x1="133" y1="65" x2="128" y2="68"/>
+    <line class="mo-limb" x1="128" y1="68" x2="128" y2="88"/>
+    <circle class="mo-joint" cx="128" cy="88" r="2.8"/>
+    <!-- arc réellement parcouru par les mains -->
+    <path class="mo-rom" fill="none" d="M106.98 81.49 A22 22 0 0 0 126.5 109.95"/>`,
+  muscles: [
+    { nom: "Triceps brachial (chef latéral)",
+      svg: `<ellipse cx="130.4" cy="77" rx="3.2" ry="8"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation + échelle autour de la POULIE pour que son
+         extrémité colle à la corde pendant tout le mouvement. */
+      o: "96px 30px",
+      k: [[0, "rotate(0.00deg) scale(1.0000)"], [5.33, "rotate(2.26deg) scale(1.1179)"],
+          [10.67, "rotate(2.38deg) scale(1.2430)"], [16, "rotate(0.91deg) scale(1.3636)"],
+          [21.33, "rotate(-1.67deg) scale(1.4712)"], [26.67, "rotate(-5.00deg) scale(1.5598)"],
+          [32, "rotate(-8.84deg) scale(1.6252)"], [40, "rotate(-8.84deg) scale(1.6252)"],
+          [48, "rotate(-5.00deg) scale(1.5598)"], [56, "rotate(-1.67deg) scale(1.4712)"],
+          [64, "rotate(0.91deg) scale(1.3636)"], [72, "rotate(2.38deg) scale(1.2430)"],
+          [80, "rotate(2.26deg) scale(1.1179)"], [88, "rotate(0.00deg) scale(1.0000)"],
+          [100, "rotate(0.00deg) scale(1.0000)"]],
+      svg: `<line class="mo-cable" x1="96" y1="30" x2="106.98" y2="81.49"/>`
+    },
+    {
+      /* AVANT-BRAS + CORDE : rotation autour du COUDE (128, 88).
+         MÊME grille que le câble — l'easing agit par segment, deux
+         grilles différentes désynchroniseraient les deux pièces.
+         La corde est dessinée comme un NŒUD et deux brins courts.
+         Vus de profil, les deux brins se superposent exactement :
+         les dessiner écartés serait inventer un déplacement dans un
+         plan où il n'a pas lieu. L'écartement est dans la 2e vue. */
+      o: "128px 88px",
+      k: [[0, "rotate(0.00deg)"], [5.33, "rotate(-17.22deg)"], [10.67, "rotate(-34.43deg)"],
+          [16, "rotate(-51.65deg)"], [21.33, "rotate(-68.87deg)"], [26.67, "rotate(-86.08deg)"],
+          [32, "rotate(-103.30deg)"], [40, "rotate(-103.30deg)"], [48, "rotate(-86.08deg)"],
+          [56, "rotate(-68.87deg)"], [64, "rotate(-51.65deg)"], [72, "rotate(-34.43deg)"],
+          [80, "rotate(-17.22deg)"], [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
+      svg: `
+        <line class="mo-limb" x1="128" y1="88" x2="106.98" y2="81.49"/>
+        <circle class="mo-hub" cx="106.98" cy="81.49" r="3.2"/>
+        <line class="mo-bar3" x1="106.98" y1="81.49" x2="101.4" y2="87.5"/>
+        <circle class="mo-hand" cx="101.4" cy="87.5" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M158 76 L158 114 M153 106 L158 114 L163 106"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M158 114 L158 76 M153 84 L158 76 L163 84"/>` }
+  ],
+  vue2: {
+    titre: "Vu de face, en bas",
+    vb: "88 24 104 128",
+    alt: "Vue de face de la position basse : les deux brins de la corde divergent, les mains sont écartées de part et d'autre des cuisses, paumes tournées vers l'arrière.",
+    legende: "Position basse : les mains s'écartent et les paumes tournent vers l'arrière. C'est ce que la corde permet et que la barre droite interdit — un déplacement latéral, donc invisible de profil.",
+    svg: `
+      <line class="mo-ground" x1="94" y1="146" x2="186" y2="146"/>
+      <!-- pas de poulie dessinée ici : de face, elle se superposerait à la
+           tête et ferait lire deux crânes empilés. Le câble entre par le
+           haut du cadre, ce qui suffit à dire d'où il vient. -->
+      <line class="mo-cable" x1="140" y1="26" x2="140" y2="72"/>
+      <circle class="mo-hub" cx="140" cy="74" r="3.4"/>
+      <!-- les deux brins de la corde, ÉCARTÉS : c'est la position basse -->
+      <line class="mo-bar3" x1="140" y1="76" x2="121" y2="104"/>
+      <line class="mo-bar3" x1="140" y1="76" x2="159" y2="104"/>
+      <circle class="mo-hand" cx="121" cy="104" r="3.4"/>
+      <circle class="mo-hand" cx="159" cy="104" r="3.4"/>
+      <!-- corps de face -->
+      <circle class="mo-head" cx="140" cy="50" r="9"/>
+      <line class="mo-body" x1="140" y1="59" x2="140" y2="112"/>
+      <line class="mo-body" x1="127" y1="66" x2="153" y2="66"/>
+      <line class="mo-body" x1="140" y1="112" x2="131" y2="146"/>
+      <line class="mo-body" x1="140" y1="112" x2="149" y2="146"/>
+      <!-- bras : coudes collés au buste, avant-bras qui divergent -->
+      <line class="mo-limb" x1="127" y1="66" x2="125" y2="88"/>
+      <line class="mo-limb" x1="153" y1="66" x2="155" y2="88"/>
+      <circle class="mo-joint" cx="125" cy="88" r="2.6"/>
+      <circle class="mo-joint" cx="155" cy="88" r="2.6"/>
+      <line class="mo-limb" x1="125" y1="88" x2="121" y2="104"/>
+      <line class="mo-limb" x1="155" y1="88" x2="159" y2="104"/>
+      <!-- flèches d'écartement : latérales, donc dans CE plan seulement -->
+      <path class="mo-arr" d="M116 112 L106 118 M110 113 L106 118 L112 120"/>
+      <path class="mo-arr" d="M164 112 L174 118 M168 113 L174 118 L168 120"/>`
+  }
+};
+
+/* =========================================================
+   143. LEG CURL DEBOUT  (leg-curl-debout)
+   -----------------------------------------------------------
+   Position  : DEBOUT face à la machine, buste contre le support,
+               une cuisse calée sous le coussinet, hanche TENDUE.
+   Mobiles   : le GENOU de la jambe active (flexion).
+   Fixes     : la HANCHE — c'est tout l'intérêt de la version
+               debout. Le bassin, le buste, la jambe d'appui.
+   Sens/plan : le talon vers la fesse = CONCENTRIQUE. Sagittal.
+   ROM       : genou de 180° (jambe tendue) à ~80° — 100° de
+               flexion.
+   Agonistes : ischio-jambiers d'UNE seule jambe. Hanche tendue,
+               la longue portion du biceps fémoral travaille en
+               position plus courte qu'assis : les deux versions ne
+               se remplacent pas, elles se complètent.
+   Distinction : hanche TENDUE et DEBOUT (≠ leg curl assis, hanche
+               à 90°, ≠ leg curl allongé, à plat ventre), et une
+               jambe à la fois (≠ les deux autres, bilatérales).
+
+   GÉOMÉTRIE (calculée) — genou K(140,123), tibia 26.
+   Jambe tendue : cheville(140,149). Fléchie à 100° :
+   cheville(165,61 ; 118,49). L'axe de la machine est confondu
+   avec l'axe du genou, comme sur la machine réelle.
+
+   NOTE HONNÊTE SUR LA SUPERPOSITION : de profil, la jambe d'appui
+   et la jambe active partent du même point. Elles sont côte à
+   côte dans la réalité, l'une cache l'autre à l'écran. Les
+   décaler pour « mieux voir » dessinerait un écartement de hanche
+   qui n'existe pas.
+   ========================================================= */
+EXERCISE_MOTIONS["leg-curl-debout"] = {
+  vb: "78 34 106 130",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Debout contre le support, hanche tendue : le talon d'une jambe monte vers la fesse par flexion du genou, puis redescend lentement.",
+  fixe: `
+    <line class="mo-ground" x1="84" y1="157" x2="178" y2="157"/>
+    <!-- machine : colonne, appui de buste, poignées -->
+    <line class="mo-gear" x1="106" y1="44" x2="106" y2="157"/>
+    <line class="mo-pad" x1="110" y1="66" x2="112" y2="98"/>
+    <line class="mo-bar3" x1="112" y1="62" x2="122" y2="62"/>
+    <!-- coussinet de cuisse : la hanche est bloquée, pas le genou -->
+    <line class="mo-pad" x1="126" y1="104" x2="140" y2="104"/>
+    <!-- colonne de charges : translation verticale. Linéaire faute de
+         connaître la came réelle — c'est une hypothèse, pas une mesure. -->
+    <rect class="mo-mass" x="88" y="118" width="14" height="6" rx="1.5"/>
+    <rect class="mo-mass" x="88" y="126" width="14" height="6" rx="1.5"/>
+    <rect class="mo-mass" x="88" y="134" width="14" height="6" rx="1.5"/>
+    <!-- CORPS : tout est fixe sauf le tibia de la jambe active -->
+    <circle class="mo-head" cx="136" cy="52" r="9"/>
+    <line class="mo-body" x1="139" y1="61" x2="140" y2="97"/>
+    <line class="mo-limb" x1="139" y1="64" x2="128" y2="72"/>
+    <line class="mo-limb" x1="128" y1="72" x2="118" y2="63"/>
+    <circle class="mo-joint" cx="140" cy="97" r="2.8"/>
+    <!-- CUISSE (commune aux deux jambes de profil) puis JAMBE D'APPUI -->
+    <line class="mo-body" x1="140" y1="97" x2="140" y2="123"/>
+    <line class="mo-limb" x1="140" y1="123" x2="140" y2="149"/>
+    <line class="mo-limb" x1="140" y1="149" x2="130" y2="157"/>
+    <line class="mo-limb" x1="140" y1="149" x2="145" y2="157"/>
+    <!-- AXE DE LA MACHINE CONFONDU AVEC L'AXE DU GENOU -->
+    <circle class="mo-pulley" cx="140" cy="123" r="4.5"/>
+    <!-- arc réellement parcouru par la cheville -->
+    <path class="mo-rom" fill="none" d="M140 149 A26 26 0 0 0 165.61 118.49"/>`,
+  muscles: [
+    { nom: "Ischio-jambiers (hanche tendue)",
+      svg: `<ellipse cx="145" cy="110" rx="3.4" ry="11"/>` }
+  ],
+  parts: [
+    {
+      /* TIBIA + BOUDIN + BRAS DE LEVIER : rotation autour du GENOU,
+         qui est aussi l'axe de la machine. −100° ferment le genou de
+         180° à 80°. Le boudin est solidaire du levier, donc du tibia :
+         c'est pour cela qu'il est dessiné dans cette pièce. */
+      o: "140px 123px",
+      k: [[0, "rotate(0.00deg)"], [5.33, "rotate(-16.67deg)"], [10.67, "rotate(-33.33deg)"],
+          [16, "rotate(-50.00deg)"], [21.33, "rotate(-66.67deg)"], [26.67, "rotate(-83.33deg)"],
+          [32, "rotate(-100.00deg)"], [40, "rotate(-100.00deg)"], [48, "rotate(-83.33deg)"],
+          [56, "rotate(-66.67deg)"], [64, "rotate(-50.00deg)"], [72, "rotate(-33.33deg)"],
+          [80, "rotate(-16.67deg)"], [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
+      svg: `
+        <line class="mo-gear" x1="140" y1="123" x2="140" y2="147"/>
+        <line class="mo-limb" x1="140" y1="123" x2="140" y2="149"/>
+        <line class="mo-limb" x1="140" y1="149" x2="130" y2="155"/>
+        <circle class="mo-mass" cx="140" cy="145" r="6"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M170 148 L176 122 M170 130 L176 122 L181 129"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M176 122 L170 148 M165 140 L170 148 L176 141"/>` }
+  ]
+};
+
+/* =========================================================
+   144. ÉLÉVATIONS LATÉRALES À LA MACHINE
+        (elevations-laterales-machine)
+   -----------------------------------------------------------
+   Position  : ASSIS, dos plaqué, épaules dans l'axe des pivots.
+               Les coussinets appuient sur le BRAS, pas sur la
+               main : c'est ce qui supprime la triche et garde la
+               résistance en bas de course.
+   Mobiles   : les deux ÉPAULES (ABDUCTION).
+   Fixes     : le COUDE, dont l'angle ne change pas ; le rachis,
+               le bassin.
+   Sens/plan : montée = concentrique. Plan FRONTAL.
+   ROM       : d'environ 12° d'abduction à 90° (bras horizontaux).
+               Pas au-delà : le trapèze prendrait le relais.
+   Agonistes : deltoïde moyen.
+
+   POURQUOI CE SCHÉMA EST VU DE FACE, alors que presque toute la
+   bibliothèque est de profil : l'abduction se produit dans le
+   plan FRONTAL. Vue de profil, elle serait perpendiculaire à
+   l'écran — le bras semblerait raccourcir puis rallonger sans
+   bouger. Vue de FACE, elle est dans le plan de l'image : la
+   longueur projetée du bras reste constante, le dessin ne raconte
+   rien d'autre que ce qui se passe.
+
+   GÉOMÉTRIE (calculée) — épaules (126,72) et (154,72), bras 36
+   du moignon à la main (bras 20 + avant-bras 16, coude fléchi de
+   quelques degrés et FIGÉ : la pièce tourne d'un bloc, ce qui est
+   exactement ce que fait la machine).
+   Gauche : main de (120,17 ; 107,47) à (90,10 ; 73,67), soit une
+   rotation de +78°. Droite : miroir, −78°.
+   ========================================================= */
+EXERCISE_MOTIONS["elevations-laterales-machine"] = {
+  vb: "84 34 116 122",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis à la machine, bras contre les coussinets : les deux bras montent sur les côtés jusqu'à l'horizontale, puis redescendent en freinant.",
+  fixe: `
+    <line class="mo-ground" x1="90" y1="150" x2="190" y2="150"/>
+    <!-- bâti : deux montants et la traverse qui porte les pivots -->
+    <line class="mo-gear" x1="96" y1="62" x2="96" y2="150"/>
+    <line class="mo-gear" x1="184" y1="62" x2="184" y2="150"/>
+    <line class="mo-gear" x1="96" y1="62" x2="184" y2="62"/>
+    <!-- siège et dossier, vus de face : derrière le corps -->
+    <line class="mo-pad" x1="124" y1="112" x2="156" y2="112"/>
+    <line class="mo-pad" x1="128" y1="112" x2="128" y2="76"/>
+    <line class="mo-pad" x1="152" y1="112" x2="152" y2="76"/>
+    <!-- CORPS DE FACE : rien de tout cela ne bouge -->
+    <circle class="mo-head" cx="140" cy="52" r="9"/>
+    <line class="mo-body" x1="140" y1="61" x2="140" y2="112"/>
+    <line class="mo-body" x1="126" y1="72" x2="154" y2="72"/>
+    <line class="mo-body" x1="132" y1="112" x2="130" y2="140"/>
+    <line class="mo-body" x1="148" y1="112" x2="150" y2="140"/>
+    <line class="mo-limb" x1="130" y1="140" x2="122" y2="144"/>
+    <line class="mo-limb" x1="150" y1="140" x2="158" y2="144"/>
+    <!-- AXES DE LA MACHINE CONFONDUS AVEC LES ÉPAULES -->
+    <circle class="mo-pulley" cx="126" cy="72" r="4"/>
+    <circle class="mo-pulley" cx="154" cy="72" r="4"/>
+    <!-- arcs réellement parcourus par les deux mains -->
+    <path class="mo-rom" fill="none" d="M120.17 107.47 A35.95 35.95 0 0 1 90.10 73.67"/>
+    <path class="mo-rom" fill="none" d="M159.83 107.47 A35.95 35.95 0 0 0 189.90 73.67"/>`,
+  muscles: [
+    { nom: "Deltoïde moyen (gauche)",
+      svg: `<ellipse cx="123" cy="74" rx="4.6" ry="5.6"/>` },
+    { nom: "Deltoïde moyen (droit)",
+      svg: `<ellipse cx="157" cy="74" rx="4.6" ry="5.6"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS GAUCHE + COUSSINET + LEVIER : une seule pièce rigide qui
+         tourne de +78° autour du pivot/épaule. Le coude garde son angle
+         — c'est la machine qui impose la trajectoire. */
+      o: "126px 72px",
+      k: [[0, "rotate(0.00deg)"], [32, "rotate(78.00deg)"], [40, "rotate(78.00deg)"],
+          [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
+      svg: `
+        <line class="mo-limb" x1="126" y1="72" x2="121.84" y2="91.56"/>
+        <circle class="mo-joint" cx="121.84" cy="91.56" r="2.6"/>
+        <line class="mo-limb" x1="121.84" y1="91.56" x2="120.17" y2="107.47"/>
+        <circle class="mo-hand" cx="120.17" cy="107.47" r="3"/>
+        <line class="mo-gear" x1="126" y1="72" x2="118.20" y2="84.65"/>
+        <line class="mo-pad" x1="116.74" y1="91.50" x2="119.66" y2="77.80"/>`
+    },
+    {
+      /* BRAS DROIT : miroir exact, rotation opposée. */
+      o: "154px 72px",
+      k: [[0, "rotate(0.00deg)"], [32, "rotate(-78.00deg)"], [40, "rotate(-78.00deg)"],
+          [88, "rotate(0.00deg)"], [100, "rotate(0.00deg)"]],
+      svg: `
+        <line class="mo-limb" x1="154" y1="72" x2="158.16" y2="91.56"/>
+        <circle class="mo-joint" cx="158.16" cy="91.56" r="2.6"/>
+        <line class="mo-limb" x1="158.16" y1="91.56" x2="159.83" y2="107.47"/>
+        <circle class="mo-hand" cx="159.83" cy="107.47" r="3"/>
+        <line class="mo-gear" x1="154" y1="72" x2="161.80" y2="84.65"/>
+        <line class="mo-pad" x1="163.26" y1="91.50" x2="160.34" y2="77.80"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M192 106 L192 74 M187 82 L192 74 L197 82"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M192 74 L192 106 M187 98 L192 106 L197 98"/>` }
+  ]
+};
+
+/* =========================================================
+   145. CRUNCH À LA MACHINE  (crunch-machine)
+   -----------------------------------------------------------
+   Position  : ASSIS, l'axe de la machine à hauteur du nombril,
+               coussinets ou poignées pris aux épaules.
+   Mobiles   : le RACHIS, qui s'ENROULE. Deux segments dans ce
+               schéma, et non un seul : un buste rigide qui
+               bascule autour de la hanche décrirait un
+               relevé de buste, pas un crunch. La différence
+               n'est pas cosmétique — c'est l'exercice.
+   Fixes     : le bassin, plaqué au siège ; les jambes.
+   Sens/plan : l'enroulement vers l'avant = CONCENTRIQUE.
+               Sagittal.
+   ROM       : court. −14° au niveau lombaire, −20° de plus au
+               niveau thoracique, soit 34° cumulés aux épaules.
+               Un crunch qui va chercher les cuisses n'est plus un
+               crunch : la hanche a pris le relais.
+   Agonistes : grand droit de l'abdomen.
+   Distinction : chargé et guidé (≠ crunch au sol, qui plafonne
+               vite), buste assis et axe à la taille (≠ crunch à
+               la poulie, à genoux, où la charge tire d'en haut).
+   ========================================================= */
+EXERCISE_MOTIONS["crunch-machine"] = {
+  vb: "82 46 108 118",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis à la machine abdominale, le buste s'enroule vers l'avant sur une amplitude courte, menton vers le sternum, puis revient lentement.",
+  fixe: `
+    <line class="mo-ground" x1="88" y1="152" x2="184" y2="152"/>
+    <!-- bâti, siège, repose-pieds -->
+    <line class="mo-gear" x1="100" y1="70" x2="100" y2="152"/>
+    <line class="mo-pad" x1="132" y1="118" x2="172" y2="118"/>
+    <line class="mo-gear" x1="138" y1="118" x2="138" y2="152"/>
+    <line class="mo-gear" x1="168" y1="118" x2="168" y2="152"/>
+    <line class="mo-bar3" x1="170" y1="140" x2="180" y2="140"/>
+    <!-- colonne de charges : translation verticale, hypothèse linéaire -->
+    <rect class="mo-mass" x="94" y="112" width="14" height="6" rx="1.5"/>
+    <rect class="mo-mass" x="94" y="120" width="14" height="6" rx="1.5"/>
+    <rect class="mo-mass" x="94" y="128" width="14" height="6" rx="1.5"/>
+    <!-- BASSIN ET JAMBES : immobiles -->
+    <circle class="mo-joint" cx="134" cy="114" r="3"/>
+    <line class="mo-body" x1="134" y1="114" x2="170" y2="116"/>
+    <line class="mo-body" x1="170" y1="116" x2="176" y2="140"/>
+    <!-- AXE DE LA MACHINE, à hauteur du nombril -->
+    <circle class="mo-pulley" cx="134" cy="114" r="4.5"/>
+    <!-- amplitude réelle de l'épaule : courte, et c'est voulu -->
+    <path class="mo-rom" fill="none" d="M129.83 82.30 A32.4 32.4 0 0 0 111.95 92.28"/>`,
+  parts: [
+    {
+      /* SEGMENT LOMBAIRE : −14° autour de l'axe de la machine. */
+      o: "134px 114px",
+      k: [[0, "rotate(0.00deg)"], [16, "rotate(-7.00deg)"], [32, "rotate(-14.00deg)"],
+          [40, "rotate(-14.00deg)"], [64, "rotate(-7.00deg)"], [88, "rotate(0.00deg)"],
+          [100, "rotate(0.00deg)"]],
+      muscleNom: "Grand droit (portion basse)",
+      muscle: `<ellipse cx="139" cy="106" rx="3.4" ry="7"/>`,
+      svg: `
+        <line class="mo-body" x1="134" y1="114" x2="131.22" y2="98.24"/>
+        <circle class="mo-joint" cx="131.22" cy="98.24" r="2.6"/>`,
+      children: [
+        {
+          /* SEGMENT THORACIQUE : −20° DE PLUS, relatifs au précédent.
+             C'est l'addition des deux qui fait un enroulement et non
+             une bascule. Les coussinets d'épaule suivent le buste,
+             donc ils sont dessinés ici. */
+          o: "131.22px 98.24px",
+          k: [[0, "rotate(0.00deg)"], [16, "rotate(-10.00deg)"], [32, "rotate(-20.00deg)"],
+              [40, "rotate(-20.00deg)"], [64, "rotate(-10.00deg)"], [88, "rotate(0.00deg)"],
+              [100, "rotate(0.00deg)"]],
+          muscleNom: "Grand droit (portion haute)",
+          muscle: `<ellipse cx="136" cy="90" rx="3.4" ry="7"/>`,
+          svg: `
+            <line class="mo-body" x1="131.22" y1="98.24" x2="129.83" y2="82.30"/>
+            <circle class="mo-head" cx="129.38" cy="69.31" r="9"/>
+            <!-- coussinets d'épaule + bras qui les tiennent -->
+            <line class="mo-pad" x1="120.5" y1="79.5" x2="139.2" y2="85.1"/>
+            <line class="mo-limb" x1="129.83" y1="82.30" x2="122" y2="92"/>
+            <circle class="mo-hand" cx="122" cy="92" r="2.8"/>
+            <line class="mo-gear" x1="129.83" y1="82.30" x2="112" y2="76"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M172 70 L158 82 M166 76 L158 82 L159 73"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M158 82 L172 70 M164 71 L172 70 L171 78"/>` }
+  ]
+};

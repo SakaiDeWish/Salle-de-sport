@@ -531,7 +531,8 @@ function openSessionModal(id, edit = false) {
       <h2 class="display-sm">${esc(r.nom)}</h2>
       <p class="program-meta">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
         à ${new Date(r.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-        · ${fmtClock(r.dureeMs)} · repos ${fmtClock(r.reposMs)} · ${Math.round(r.volume)} kg
+        · ${fmtClock(r.dureeMs)}${r.echauffementMs ? ` (dont ${fmtClock(r.echauffementMs)} d'échauffement)` : ""}
+        · repos ${fmtClock(r.reposMs)} · ${Math.round(r.volume)} kg
         ${r.objectifLabel ? " · Programme : " + esc(r.objectifLabel) : ""}</p>
       ${r.rpe ? `<p class="program-meta">Ressenti : <strong>RPE ${r.rpe}/10</strong></p>` : ""}
       ${r.notes ? `<p class="session-notes">« ${esc(r.notes)} »</p>` : ""}

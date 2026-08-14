@@ -2625,3 +2625,50 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   .sets-table th:nth-child(4), .sets-table td:nth-child(4) { width: 30%; }
   .sets-table .set-note-line td { width: auto; }
 }
+
+/* ---------- Chrono d'échauffement (écran de préparation) ----------
+   Le bloc reste discret tant qu'il est à zéro, et prend de la
+   présence dès qu'il tourne : un chrono qui compte doit se voir
+   depuis l'autre bout du tapis. */
+.warmup-card {
+  margin: 14px 0 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--bg-soft);
+  transition: border-color 0.2s ease;
+}
+.warmup-card.running { border-color: var(--accent); }
+.warmup-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.warmup-lab {
+  font-family: var(--font-display); font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft);
+}
+.warmup-card.running .warmup-lab { color: var(--text); }
+.warmup-dot { color: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+.warmup-val {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 800;
+  font-variant-numeric: tabular-nums; color: var(--text-soft);
+}
+.warmup-card.has-time .warmup-val, .warmup-card.running .warmup-val { color: var(--accent); }
+.warmup-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.warmup-sub { margin: 8px 0 0; font-size: 0.82rem; line-height: 1.45; color: var(--text-soft); }
+
+/* ---------- Rattrapage de l'échauffement (écran de résumé) ---------- */
+.warmup-fix {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px dashed var(--border); border-radius: var(--radius-sm);
+}
+.wf-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.wf-lab {
+  font-family: var(--font-display); font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft);
+}
+.wf-val {
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 800;
+  font-variant-numeric: tabular-nums; color: var(--accent);
+}
+.wf-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.wf-row .btn { flex: 1 1 auto; min-width: 72px; }
+.wf-row .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.wf-sub { margin: 8px 0 0; font-size: 0.82rem; line-height: 1.45; color: var(--text-soft); }
