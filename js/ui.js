@@ -384,6 +384,7 @@ const HOME_CARDS_DEFAULT = [
   { key: "pr", on: true },
   { key: "mois", on: true },
   { key: "streak", on: true },
+  { key: "serieCard", on: true },
   { key: "poids", on: false },
   { key: "liens", on: true }
 ];
@@ -395,6 +396,7 @@ const HOME_CARD_LABELS = {
   pr: "Dernier record",
   mois: "Résumé du mois",
   streak: "Streak (semaines d'affilée)",
+  serieCard: "Carte série (calendrier + records)",
   poids: "Poids de corps",
   liens: "Liens rapides"
 };

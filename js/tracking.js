@@ -80,7 +80,30 @@ function goalStatus() {
   cursor -= 7 * 86400000;
   while ((perWeek.get(cursor) || 0) >= goal) { streak++; cursor -= 7 * 86400000; }
 
-  return { goal, doneThisWeek, achievedThisWeek: doneThisWeek >= goal, streak, perWeek };
+  /* PLUS LONGUE SÉRIE et TOTAL : on ne les recalcule qu'une fois ici,
+     pas à chaque affichage de carte — les deux lisent la même carte
+     perWeek que le streak courant, donc la même notion de « semaine
+     validée » partout.
+     ATTENTION : perWeek ne contient QUE les semaines où une séance a
+     eu lieu — une semaine blanche en est absente, elle n'y vaut pas 0.
+     Parcourir seulement les clés existantes ferait passer deux
+     semaines validées séparées par une semaine blanche pour
+     consécutives. On balaie donc semaine par semaine, à intervalle
+     fixe de 7 jours, du plus ancien au plus récent. */
+  let longest = 0, courante = 0, totalAtteintes = 0;
+  const clefs = [...perWeek.keys()];
+  if (clefs.length) {
+    const debut = Math.min(...clefs);
+    for (let wk = debut; wk <= thisWeek; wk += 7 * 86400000) {
+      if ((perWeek.get(wk) || 0) >= goal) {
+        courante++; totalAtteintes++;
+        longest = Math.max(longest, courante);
+      } else courante = 0;
+    }
+  }
+  longest = Math.max(longest, streak);   // la série en cours peut être la plus longue
+
+  return { goal, doneThisWeek, achievedThisWeek: doneThisWeek >= goal, streak, longest, totalAtteintes, perWeek };
 }
 
 /* ---------- Statistiques globales ---------- */

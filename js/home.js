@@ -104,6 +104,62 @@ function homeAccessTiles() {
   </div>`;
 }
 
+/* ---------- Carte « Série » : bandeau de calendrier + records ----------
+   Le numéral géant de l'en-tête (streak-hero) dit CE QU'ON EN EST ; cette
+   carte dit COMMENT ON EN EST ARRIVÉ LÀ — les dernières semaines d'un
+   coup d'œil, la plus longue série jamais tenue, le total de semaines
+   validées. Les trois lisent goalStatus(), donc la même définition
+   d'une « semaine validée » partout : pas de streak qui se contredit
+   d'une carte à l'autre. */
+function serieCardHtml(gs) {
+  const N = 12;                                   // fenêtre affichée
+  const thisWeek = weekKey(Date.now());
+  const debutSuivi = gs.perWeek.size ? Math.min(...gs.perWeek.keys()) : thisWeek;
+  const semaines = [];
+  for (let i = N - 1; i >= 0; i--) semaines.push(thisWeek - i * 7 * 86400000);
+
+  const bande = semaines.map(wk => {
+    const avant = wk < debutSuivi;
+    const atteinte = (gs.perWeek.get(wk) || 0) >= gs.goal;
+    const courante = wk === thisWeek;
+    const cls = ["serie-cell"];
+    if (avant) cls.push("before");
+    else if (atteinte) cls.push("on");
+    if (courante) cls.push("now");
+    const dateLab = new Date(wk).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+    const etat = avant ? "hors période de suivi" : atteinte ? "objectif atteint" : "objectif manqué";
+    return `<span class="${cls.join(" ")}" title="Semaine du ${dateLab} — ${etat}"></span>`;
+  }).join("");
+
+  return `
+    <div class="card serie-card">
+      <div class="serie-head">
+        <span class="serie-flame">${icon("flame")}</span>
+        <div>
+          <p class="chrono-label">Série${statInfo("streak")}</p>
+          <p class="serie-num">${gs.streak}<span class="goal-left"> semaine${gs.streak > 1 ? "s" : ""} d'affilée</span></p>
+        </div>
+      </div>
+      <div class="serie-strip" role="img" aria-label="${N} dernières semaines, objectif ${gs.goal} séance(s) : ${gs.streak} d'affilée actuellement, ${gs.longest} au plus long">
+        ${bande}
+      </div>
+      <div class="serie-stats">
+        <div><p class="chrono-label">Plus longue série</p><p class="goal-big">${gs.longest}<span class="goal-left"> sem.</span></p></div>
+        <div><p class="chrono-label">Total de semaines validées</p><p class="goal-big">${gs.totalAtteintes}</p></div>
+      </div>
+      ${disclosure("accueil.serieComment", {
+        summary: `<span class="disc-title">Comment fonctionne la série ?</span>`,
+        label: "Voir",
+        detail: `
+          <div class="serie-explique">
+            <p><strong>${icon("check")}</strong> Valide ton objectif hebdo (${gs.goal} séance${gs.goal > 1 ? "s" : ""}) au moins une fois pour commencer la série.</p>
+            <p><strong>${icon("flame")}</strong> Chaque semaine où l'objectif est de nouveau atteint prolonge la série d'un cran.</p>
+            <p><strong>↻</strong> Une semaine ratée la ramène à zéro — mais elle n'efface ni ta plus longue série, ni le total déjà validé.</p>
+          </div>`
+      })}
+    </div>`;
+}
+
 /* Panneau de personnalisation : quelles cartes, dans quel ordre (C2) */
 function homeCustomizePanel() {
   const cards = getHomeCards();
@@ -205,6 +261,8 @@ function renderHome() {
             ${statLigne(k)}
           </div>`).join("")}
       </div>`,
+
+    serieCard: () => serieCardHtml(gs),
 
     poids: () => `
       <div class="card home-tile">
