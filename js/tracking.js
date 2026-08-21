@@ -193,20 +193,61 @@ function computeBadges() {
   const weeksOK = [...gs.perWeek.values()].filter(c => c >= gs.goal).length;
   const prs = computePRs();
   const hasProgress = prs.some(p => p.points.length >= 2 && p.best.poids > p.points[0].poids);
+  /* Chaque badge porte désormais SA MESURE et SA CIBLE, pas seulement
+     un booléen. Un badge verrouillé qui ne dit pas où tu en es ne
+     motive personne : « 7 séances sur 10 » vaut mieux qu'une tuile
+     grisée.
+
+     `binaire: true` marque les badges qui n'ont PAS d'état
+     intermédiaire — on progresse sur sa charge ou non. Leur afficher
+     un anneau à 0 % serait inventer une progression qui n'existe
+     pas ; ils gardent donc la simple tuile verrouillée. */
+  const B = (ico, nom, desc, val, cible, opts = {}) =>
+    ({ ico, nom, desc, val, cible, ok: val >= cible, ...opts });
+
   return [
-    { ico: "party", nom: "Première séance", desc: "Terminer ta première séance", ok: h.length >= 1 },
-    { ico: "flame", nom: "Lancé", desc: "5 séances terminées", ok: h.length >= 5 },
-    { ico: "medal", nom: "Habitué", desc: "10 séances terminées", ok: h.length >= 10 },
-    { ico: "trophy", nom: "Machine", desc: "25 séances terminées", ok: h.length >= 25 },
-    { ico: "crown", nom: "Légende", desc: "50 séances terminées", ok: h.length >= 50 },
-    { ico: "check", nom: "Semaine parfaite", desc: "Objectif hebdo atteint une fois", ok: weeksOK >= 1 },
-    { ico: "calendar", nom: "Régulier", desc: "Objectif hebdo atteint 3 fois", ok: weeksOK >= 3 },
-    { ico: "bolt", nom: "Inarrêtable", desc: "Streak de 4 semaines validées", ok: gs.streak >= 4 },
-    { ico: "trend", nom: "Premier PR", desc: "Progresser sur la charge d'un exercice", ok: hasProgress },
-    { ico: "dumbbell", nom: "10 tonnes", desc: "10 000 kg de volume cumulé", ok: stats.volume >= 10000 },
-    { ico: "stack", nom: "100 tonnes", desc: "100 000 kg de volume cumulé", ok: stats.volume >= 100000 },
-    { ico: "clock", nom: "Marathonien", desc: "10 h d'entraînement cumulées", ok: stats.tempsMs >= 10 * 3600000 }
+    B("party", "Première séance", "Terminer ta première séance", h.length, 1, { binaire: true }),
+    B("flame", "Lancé", "5 séances terminées", h.length, 5),
+    B("medal", "Habitué", "10 séances terminées", h.length, 10),
+    B("trophy", "Machine", "25 séances terminées", h.length, 25),
+    B("crown", "Légende", "50 séances terminées", h.length, 50),
+    B("check", "Semaine parfaite", "Objectif hebdo atteint une fois", weeksOK, 1, { binaire: true }),
+    B("calendar", "Régulier", "Objectif hebdo atteint 3 fois", weeksOK, 3),
+    B("bolt", "Inarrêtable", "Streak de 4 semaines validées", gs.streak, 4),
+    B("trend", "Premier PR", "Progresser sur la charge d'un exercice", hasProgress ? 1 : 0, 1, { binaire: true }),
+    B("dumbbell", "10 tonnes", "10 000 kg de volume cumulé", stats.volume, 10000),
+    B("stack", "100 tonnes", "100 000 kg de volume cumulé", stats.volume, 100000),
+    B("clock", "Marathonien", "10 h d'entraînement cumulées", stats.tempsMs, 10 * 3600000)
   ];
+}
+
+/* Formate l'avancement d'un badge dans son unité d'origine.
+   Un badge de volume se lit en kg, un badge de temps en heures : dire
+   « 36000000 / 36000000 » n'aiderait personne. */
+function badgeAvance(b) {
+  if (b.ico === "clock") {
+    const h = v => (v / 3600000).toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+    return `${h(b.val)} h sur ${h(b.cible)} h`;
+  }
+  if (b.ico === "dumbbell" || b.ico === "stack") {
+    const k = v => Math.round(v).toLocaleString("fr-FR");
+    return `${k(b.val)} kg sur ${k(b.cible)} kg`;
+  }
+  return `${Math.round(b.val)} sur ${b.cible}`;
+}
+
+/* Anneau de progression. Le pourcentage est BORNÉ à [0, 1] : un
+   volume de 120 000 kg sur une cible de 100 000 donnerait un
+   dasharray négatif, et l'anneau se dessinerait à l'envers. */
+function badgeRing(b) {
+  const r = 15, circ = 2 * Math.PI * r;
+  const pct = Math.max(0, Math.min(1, b.cible > 0 ? b.val / b.cible : 0));
+  return `<svg class="badge-ring" viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+    <circle class="br-fond" cx="18" cy="18" r="${r}"/>
+    <circle class="br-arc" cx="18" cy="18" r="${r}"
+      stroke-dasharray="${(circ * pct).toFixed(2)} ${circ.toFixed(2)}"/>
+    <text class="br-txt" x="18" y="18" text-anchor="middle" dominant-baseline="central">${Math.round(pct * 100)}</text>
+  </svg>`;
 }
 
 /* ---------- Panneaux du suivi ---------- */
@@ -265,13 +306,28 @@ function renderDashboard() {
       ${disclosure("dash.xp", {
         summary: `<span class="xp-level">NIV. ${level.lvl}${statInfo("xp")}</span>
           <span class="disc-meta">${xp} XP · ${level.need - level.into} avant le niveau ${level.lvl + 1}</span>`,
-        detail: `<div class="badge-grid">
+        detail: `${(() => {
+          /* Le badge le plus proche, nommé en tête. L'ordre de la
+             grille reste FIXE — le trier par avancement ferait sauter
+             les tuiles d'une visite à l'autre, et on ne retrouverait
+             plus rien. La motivation passe par cette ligne, pas par
+             un classement mouvant. */
+          const proches = badges.filter(b => !b.ok && !b.binaire && b.cible > 0)
+            .sort((x, y) => (y.val / y.cible) - (x.val / x.cible));
+          const p = proches[0];
+          return p ? `<p class="badge-next">Le plus proche : <strong>${esc(p.nom)}</strong>
+            <span class="badge-next-n">${esc(badgeAvance(p))}</span></p>` : "";
+        })()}
+        <div class="badge-grid">
           ${badges.map(b => `
             <div class="badge-tile ${b.ok ? "badge-ok" : ""}">
               <span class="badge-ico">${icon(b.ico)}</span>
               <span class="badge-nom">${esc(b.nom)}</span>
               <span class="badge-desc">${esc(b.desc)}</span>
-              ${b.ok ? '<span class="badge-check">✓</span>' : ""}
+              ${b.ok ? '<span class="badge-check">✓</span>'
+                     : (b.binaire ? "" : `<span class="badge-prog" role="img"
+                          aria-label="Avancement : ${esc(badgeAvance(b))}">${badgeRing(b)}</span>`)}
+              ${b.ok || b.binaire ? "" : `<span class="badge-compte">${esc(badgeAvance(b))}</span>`}
             </div>`).join("")}
         </div>
         <p class="video-hint">${badgesOK} badge${badgesOK > 1 ? "s" : ""} sur ${badges.length} débloqué${badgesOK > 1 ? "s" : ""}.</p>`,

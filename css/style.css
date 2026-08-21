@@ -3014,3 +3014,56 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 
 /* Dans une tuile de stat, le badge se pose sous le chiffre. */
 .stat-tile .delta, .home-tile .delta { margin-top: 2px; }
+
+/* ---------- Avancement des badges ----------
+   Une tuile verrouillée disait seulement « pas encore ». Elle dit
+   maintenant COMBIEN IL RESTE — c'est la seule chose qui donne envie
+   d'y retourner. */
+.badge-tile { padding-right: 52px; }          /* place pour l'anneau */
+.badge-tile.badge-ok { padding-right: 14px; }
+.badge-prog {
+  position: absolute; top: 10px; right: 10px;
+  width: 36px; height: 36px;
+  display: block;
+}
+.badge-ring { width: 36px; height: 36px; display: block; }
+.badge-ring .br-fond { fill: none; stroke: var(--border); stroke-width: 3; }
+.badge-ring .br-arc {
+  fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round;
+  transform: rotate(-90deg); transform-origin: 18px 18px;
+}
+.badge-ring .br-txt {
+  fill: var(--text-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+/* ATTENTION : « badge-avance » désigne DÉJÀ le niveau « avancé » d'un
+   exercice (badge-${ex.niveau}, en rouge). Réutiliser ce nom repeignait
+   ces badges-là en mono minuscule, et inversement teintait
+   l'avancement des badges en rouge. D'où « badge-compte ». */
+.badge-compte {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+  margin-top: 2px;
+}
+/* La tuile verrouillée s'éclaircit : à 45 % d'opacité et 0,8 de
+   désaturation, l'anneau et son chiffre étaient illisibles — la
+   grisaille disait « pas pour toi » au lieu de « bientôt ». */
+.badge-tile { opacity: 0.72; filter: grayscale(0.35); }
+
+.badge-next {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 0.88rem;
+}
+.badge-next strong { color: var(--accent-2); }
+.badge-next-n {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--text-soft);
+}
