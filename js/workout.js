@@ -857,11 +857,25 @@ function renderLiveExercises() {
         const mem = recallSet(ex.exId, ex.sets.length);
         return mem ? `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong></p>` : "";
       })()}
+      <!-- PAS-À-PAS. Les <input> restent la source de vérité : validateSet
+           les lit toujours par leur id, et recallSet les pré-remplit comme
+           avant. Les boutons ± ne font qu'écrire dedans. En salle, la
+           charge bouge par paliers de 2,5 kg — deux taps valent mieux que
+           le clavier numérique avec les mains moites. Le champ reste
+           tapable pour une valeur inhabituelle. -->
       <div class="set-form">
-        <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
-          value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
-        <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
-          value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
+        <div class="stepper" data-step="2.5" data-min="0">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg">−</button>
+          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
+            value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg">+</button>
+        </div>
+        <div class="stepper" data-step="1" data-min="1">
+          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
+          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
+            value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
+          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
+        </div>
         <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
@@ -878,6 +892,9 @@ function renderLiveExercises() {
       expandedIndex = (expandedIndex === i) ? -1 : i;   // re-tap = tout replier
       renderLiveExercises();
     }));
+
+  elLiveExercises.querySelectorAll(".step-btn").forEach(btn =>
+    btn.addEventListener("click", () => stepValue(btn)));
 
   elLiveExercises.querySelectorAll(".validate-set").forEach(btn =>
     btn.addEventListener("click", () => validateSet(parseInt(btn.dataset.i, 10))));
@@ -1288,6 +1305,31 @@ function ssApplyRemembered() {
 }
 
 /* ---------- Validation d'une série + repos ---------- */
+/* Incrémente le champ visé d'un palier.
+   Trois précautions qui ne se voient pas mais qui comptent :
+   — un champ VIDE ne part pas de zéro mais du pas lui-même (+2,5 kg
+     sur un champ vide donne 2,5, pas 0) ;
+   — le minimum du groupe est respecté (les reps ne descendent pas
+     sous 1, le poids pas sous 0) ;
+   — l'arrondi passe par Math.round(x * 100) / 100 : 0.1 + 0.2 vaut
+     0.30000000000000004 en flottant, et une charge affichée
+     « 42.50000000000001 » aurait fini par arriver. */
+function stepValue(btn) {
+  const champ = document.getElementById(btn.dataset.target);
+  if (!champ) return;
+  const grp = btn.closest(".stepper");
+  const pas = parseFloat(grp.dataset.step) || 1;
+  const min = parseFloat(grp.dataset.min);
+  const delta = parseInt(btn.dataset.delta, 10) * pas;
+  const actuel = champ.value === "" ? null : parseFloat(champ.value);
+  let v = actuel === null || Number.isNaN(actuel)
+    ? (delta > 0 ? pas : min)
+    : actuel + delta;
+  if (Number.isFinite(min)) v = Math.max(min, v);
+  champ.value = String(Math.round(v * 100) / 100);
+  champ.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 function validateSet(i) {
   const ex = live.exercises[i];
   const reps = parseInt(document.getElementById("reps-" + i).value, 10);
