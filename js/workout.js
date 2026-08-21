@@ -246,86 +246,98 @@ function newLiveExercise(ex, target, restSec) {
 
 /* ==================== ÉCHAUFFEMENT ====================
 
-   Le chrono de séance démarre à la première série. L'échauffement,
-   lui, a lieu AVANT — il ne comptait donc nulle part, et la « durée
-   totale » d'une séance était systématiquement sous-estimée de dix à
-   quinze minutes. C'est ce trou qu'on bouche.
+   L'échauffement était un chrono SÉPARÉ, lancé avant la séance depuis
+   l'écran de préparation, puis « consommé » au démarrage. Il est
+   maintenant une PHASE DE LA SÉANCE, et ce n'est pas qu'un
+   déplacement d'écran : ça change le calcul.
 
-   L'échauffement vit dans son propre enregistrement, indépendant de
-   la séance : on peut le lancer sans savoir encore ce qu'on va faire,
-   quitter l'app, revenir. Au démarrage de la séance il est CONSOMMÉ —
-   sa durée passe dans la séance, et son enregistrement est effacé
-   pour qu'il ne soit jamais compté deux fois. */
+   Avant : durée = (fin − début) + échauffement. Le temps
+   d'échauffement était ajouté DE L'EXTÉRIEUR, et rien ne garantissait
+   sa cohérence avec la fenêtre de la séance — on pouvait déclarer
+   vingt minutes d'échauffement sur une séance de quinze.
+
+   Maintenant : la séance démarre AVEC l'échauffement, donc
+   durée = fin − début, point. `echauffementMs` ne s'ajoute plus à
+   rien : il DÉCRIT une portion de cette durée. Un chiffre qui décrit
+   ne peut pas contredire le total.
+
+   La phase se termine de trois façons : le bouton, la validation de
+   la première série (personne ne pense au bouton une barre à la
+   main), ou la fin de séance.
+
+   RESTE DE L'ANCIEN MODÈLE : une clé « gymcoach.warmup » peut traîner
+   chez quelqu'un qui avait lancé un échauffement sans démarrer de
+   séance. On la récupère UNE FOIS au démarrage, en reculant d'autant
+   le début de séance — ce temps entre ainsi vraiment dans la fenêtre
+   au lieu de s'y ajouter par-dessus. */
 STORAGE_KEYS.warmup = "gymcoach.warmup";
 
-function warmupState() {
+function warmupLegacyMs() {
   const w = loadJSON(STORAGE_KEYS.warmup, null);
-  return w && typeof w === "object" ? w : { startedAt: null, cumul: 0 };
+  if (!w || typeof w !== "object") return 0;
+  const ms = (w.cumul || 0) + (w.startedAt ? Date.now() - w.startedAt : 0);
+  localStorage.removeItem(STORAGE_KEYS.warmup);
+  return Math.max(0, ms);
 }
+
+/* Échauffement en cours ? */
+function warmupOn() { return !!(live && live.echauffementDebut); }
+
+/* Temps d'échauffement à cet instant : figé une fois la phase close,
+   vivant tant qu'elle tourne. */
 function warmupMs() {
-  const w = warmupState();
-  return (w.cumul || 0) + (w.startedAt ? Date.now() - w.startedAt : 0);
-}
-function warmupRunning() { return !!warmupState().startedAt; }
-function warmupStart() {
-  const w = warmupState();
-  if (!w.startedAt) { w.startedAt = Date.now(); saveJSON(STORAGE_KEYS.warmup, w); }
-  renderWarmup();
-}
-function warmupStop() {
-  const w = warmupState();
-  if (w.startedAt) {
-    w.cumul = (w.cumul || 0) + (Date.now() - w.startedAt);
-    w.startedAt = null;
-    saveJSON(STORAGE_KEYS.warmup, w);
-  }
-  renderWarmup();
-}
-function warmupReset() {
-  localStorage.removeItem(STORAGE_KEYS.warmup);
-  renderWarmup();
-}
-/* Consommé une seule fois, au démarrage de la séance. */
-function warmupConsume() {
-  const ms = warmupMs();
-  localStorage.removeItem(STORAGE_KEYS.warmup);
-  renderWarmup();
-  return ms;
+  if (!live) return 0;
+  const base = live.echauffementMs || 0;
+  return live.echauffementDebut ? base + (nowRef() - live.echauffementDebut) : base;
 }
 
-let warmupTimer = null;
-function renderWarmup() {
-  const el = document.getElementById("warmup-block");
+/* Clôt la phase. Idempotent : appelé par le bouton, par la première
+   série validée et par la fin de séance, il ne doit rien accumuler
+   deux fois. */
+function endWarmup() {
+  if (!live || !live.echauffementDebut) return;
+  live.echauffementMs = (live.echauffementMs || 0) + (nowRef() - live.echauffementDebut);
+  live.echauffementDebut = null;
+  saveLive();
+  /* NE PAS appeler renderLiveExercises() ici. La phase d'échauffement
+     n'a aucune incidence sur les cartes d'exercice — et surtout, cette
+     fonction est appelée EN TÊTE de validateSet : re-rendre la liste
+     recréait les champs #poids-N / #reps-N, effaçant les valeurs
+     saisies juste avant que validateSet ne les lise. Résultat : plus
+     aucune série ne s'enregistrait. */
+  renderWarmupBand();
+  tick();
+}
+
+/* Relance la phase — pour qui a coupé trop tôt, ou s'échauffe de
+   nouveau avant un gros exercice. */
+function resumeWarmup() {
+  if (!live || live.echauffementDebut) return;
+  live.echauffementDebut = Date.now();
+  saveLive();
+  renderWarmupBand();
+  tick();
+}
+
+/* Bandeau d'échauffement, dans l'écran de séance. Il ne s'affiche que
+   pendant la phase : une fois close, le temps vit dans l'en-tête sous
+   « dont échauff. » et le bandeau disparaît au lieu d'encombrer. */
+function renderWarmupBand() {
+  const el = document.getElementById("warmup-band");
   if (!el) return;
-  const ms = warmupMs();
-  const on = warmupRunning();
-  el.className = "warmup-card" + (ms > 0 ? " has-time" : "") + (on ? " running" : "");
+  const on = warmupOn();
+  el.classList.toggle("hidden", !on);
+  if (!on) return;
   el.innerHTML = `
-    <div class="warmup-head">
-      <span class="warmup-lab">${on ? "<span class=\"warmup-dot\">●</span> " : ""}Échauffement</span>
-      <span class="warmup-val" id="warmup-val">${fmtClock(ms)}</span>
+    <div class="wb-head">
+      <span class="wb-lab"><span class="wb-dot" aria-hidden="true">●</span> Échauffement en cours</span>
+      <span class="wb-val" id="wb-val">${fmtClock(warmupMs())}</span>
     </div>
-    <div class="warmup-actions">
-      <button class="btn ${on ? "btn-ghost" : "btn-primary"} btn-sm" id="warmup-toggle">${
-        on ? "⏸ Arrêter" : (ms > 0 ? "▶ Reprendre" : "▶ Démarrer l'échauffement")}</button>
-      ${ms > 0 ? `<button class="btn btn-ghost btn-sm" id="warmup-clear">Remettre à zéro</button>` : ""}
+    <div class="wb-actions">
+      <button class="btn btn-primary btn-sm" id="wb-done">Échauffement terminé</button>
     </div>
-    <p class="warmup-sub">${ms > 0
-      ? "Ce temps sera ajouté à la séance que tu lanceras ensuite : la durée totale dira enfin la vérité."
-      : "Lance-le avant de commencer. Il s'arrête tout seul au démarrage de la séance, et son temps y est ajouté."}</p>`;
-
-  document.getElementById("warmup-toggle").addEventListener("click", () =>
-    warmupRunning() ? warmupStop() : warmupStart());
-  const clr = document.getElementById("warmup-clear");
-  if (clr) clr.addEventListener("click", warmupReset);
-
-  /* Le chrono ne tourne que quand il tourne : rien à rafraîchir sinon. */
-  if (warmupTimer) { clearInterval(warmupTimer); warmupTimer = null; }
-  if (on) warmupTimer = setInterval(() => {
-    const v = document.getElementById("warmup-val");
-    if (v) v.textContent = fmtClock(warmupMs());
-    else { clearInterval(warmupTimer); warmupTimer = null; }
-  }, 1000);
+    <p class="wb-sub">Il s'arrête tout seul dès que tu valides ta première série.</p>`;
+  document.getElementById("wb-done").addEventListener("click", endWarmup);
 }
 
 function startSession(nom, exercises) {
@@ -335,12 +347,19 @@ function startSession(nom, exercises) {
     endedAt: null,
     pausedAt: null,   // séance en pause ?
     pauseMs: 0,       // temps total passé en pause (exclu du chrono)
-    /* Temps d'échauffement repris du chrono d'avant-séance. Il est
-       figé ici : la séance ne le recalcule plus jamais. */
-    echauffementMs: warmupConsume(),
     exercises,
     currentIndex: exercises.length ? 0 : -1
   };
+  /* Un éventuel échauffement de l'ancien modèle est reversé en
+     RECULANT le début de séance : le temps entre dans la fenêtre au
+     lieu de s'y ajouter par-dessus, et durée = fin − début reste vrai. */
+  const legacy = warmupLegacyMs();
+  if (legacy > 0) live.startedAt -= legacy;
+  live.echauffementMs = legacy;
+  /* La séance s'ouvre EN ÉCHAUFFEMENT. C'est le cas de très loin le
+     plus fréquent, et en sortir coûte un tap ; l'inverse — devoir
+     penser à le lancer — coûte l'oubli. */
+  live.echauffementDebut = Date.now();
   ssApplyRemembered();
   saveLive();
   showLive();
@@ -350,7 +369,9 @@ function startSession(nom, exercises) {
    trois calculs recopiés à la main finissaient toujours par diverger. */
 function liveElapsed() {
   if (!live) return 0;
-  return nowRef() - live.startedAt - (live.pauseMs || 0) + (live.echauffementMs || 0);
+  /* Plus de « + echauffementMs » : la phase d'échauffement se déroule
+     ENTRE startedAt et maintenant. L'ajouter la compterait deux fois. */
+  return nowRef() - live.startedAt - (live.pauseMs || 0);
 }
 
 document.getElementById("start-free").addEventListener("click", () => {
@@ -403,6 +424,7 @@ function showLive() {
   resetHdrScroll();
   renderPauseState();
   document.getElementById("live-title").textContent = live.nom;
+  renderWarmupBand();
   renderLiveExercises();
   if (liveTimer) clearInterval(liveTimer);
   liveTimer = setInterval(tick, 250);
@@ -624,10 +646,13 @@ function tick() {
   if (!live) return;
   const clock = fmtClock(liveElapsed());
   document.getElementById("chrono-session").textContent = clock;
+  const echMs = warmupMs();
   const ech = document.getElementById("chrono-warmup");
-  if (ech) ech.textContent = fmtClock(live.echauffementMs || 0);
+  if (ech) ech.textContent = fmtClock(echMs);
   const echB = document.getElementById("chrono-warmup-block");
-  if (echB) echB.classList.toggle("hidden", !(live.echauffementMs > 0));
+  if (echB) echB.classList.toggle("hidden", !(echMs > 0));
+  const wbv = document.getElementById("wb-val");
+  if (wbv) wbv.textContent = fmtClock(echMs);
   const pillChrono = document.getElementById("hdr-pill-chrono");
   if (pillChrono) pillChrono.textContent = clock;
   document.getElementById("chrono-rest-total").textContent = fmtClock(totalRestMs());
@@ -1331,6 +1356,9 @@ function stepValue(btn) {
 }
 
 function validateSet(i) {
+  /* Personne ne pense au bouton « échauffement terminé » une barre à
+     la main. Valider une série le dit à sa place. */
+  if (warmupOn()) endWarmup();
   const ex = live.exercises[i];
   const reps = parseInt(document.getElementById("reps-" + i).value, 10);
   const poids = parseFloat(document.getElementById("poids-" + i).value);
@@ -1605,6 +1633,7 @@ document.getElementById("live-abort").addEventListener("click", () => {
 
 function finishSession() {
   if (live && live.pausedAt) resumeSession(); // solde la pause avant de figer les temps
+  if (warmupOn()) endWarmup();               // idem pour l'échauffement encore ouvert
   if (rest) endRest();
   const now = Date.now();
   const cur = live.exercises[live.currentIndex];
@@ -1622,8 +1651,11 @@ function finishSession() {
        c'est ce que réclamaient les statistiques : sans l'échauffement,
        le temps affiché était toujours faux, jamais d'une erreur
        aléatoire mais d'un manque systématique. */
-    dureeMs: now - live.startedAt - (live.pauseMs || 0) + (live.echauffementMs || 0),
-    echauffementMs: live.echauffementMs || 0,
+    dureeMs: now - live.startedAt - (live.pauseMs || 0),
+    /* Borné à la durée : l'échauffement en est une PORTION, il ne peut
+       pas la dépasser. Sans cette borne, un échauffement laissé ouvert
+       pendant une pause pourrait afficher « 40 min dont 45 min ». */
+    echauffementMs: Math.min(live.echauffementMs || 0, now - live.startedAt - (live.pauseMs || 0)),
     reposMs: totalRestMs(),
     statut: "Terminée",
     /* Toute séance — y compris libre — est rattachée au programme actif :
@@ -1715,30 +1747,31 @@ function renderWarmupFix(r) {
   const el = document.getElementById("warmup-fix");
   if (!el) return;
   const ech = r.echauffementMs || 0;
-  const base = r.dureeMs - ech;         // durée sans échauffement, invariante
+  const total = r.dureeMs || 0;
   el.innerHTML = `
     <div class="wf-head">
-      <span class="wf-lab">Échauffement compté</span>
+      <span class="wf-lab">Dont échauffement</span>
       <span class="wf-val" id="wf-val">${fmtClock(ech)}</span>
     </div>
     <div class="wf-row">
       <button class="btn btn-ghost btn-sm" data-wf="-5" ${ech <= 0 ? "disabled" : ""}>− 5 min</button>
       <button class="btn btn-ghost btn-sm" data-wf="-1" ${ech <= 0 ? "disabled" : ""}>− 1 min</button>
-      <button class="btn btn-ghost btn-sm" data-wf="1">+ 1 min</button>
-      <button class="btn btn-ghost btn-sm" data-wf="5">+ 5 min</button>
+      <button class="btn btn-ghost btn-sm" data-wf="1" ${ech >= total ? "disabled" : ""}>+ 1 min</button>
+      <button class="btn btn-ghost btn-sm" data-wf="5" ${ech >= total ? "disabled" : ""}>+ 5 min</button>
     </div>
-    <p class="wf-sub">${ech > 0
-      ? "Repris du chrono d'échauffement. Corrige-le si besoin — la durée totale suit."
-      : "Tu t'es échauffé sans lancer le chrono ? Ajoute le temps ici, il entrera dans la durée totale."}</p>`;
+    <p class="wf-sub">Corrige le partage si tu as coupé l'échauffement trop tôt ou trop tard.
+      La durée totale (${fmtClock(total)}) ne bouge pas : l'échauffement en est une portion.</p>`;
   el.querySelectorAll("[data-wf]").forEach(b => b.addEventListener("click", () => {
-    const nouveau = Math.max(0, (r.echauffementMs || 0) + parseInt(b.dataset.wf, 10) * 60000);
+    /* CE QUI A CHANGÉ : l'échauffement ne s'AJOUTE plus à la durée, il
+       la DÉCOUPE. Corriger le partage ne peut donc pas allonger la
+       séance — et le curseur est borné à [0, durée] : déclarer trente
+       minutes d'échauffement sur une séance de vingt n'a aucun sens. */
+    const nouveau = Math.max(0, Math.min(total,
+      (r.echauffementMs || 0) + parseInt(b.dataset.wf, 10) * 60000));
     r.echauffementMs = nouveau;
-    r.dureeMs = base + nouveau;
     const h = getHistory();
     const i = h.findIndex(s => s.id === r.id);
-    if (i >= 0) { h[i].echauffementMs = nouveau; h[i].dureeMs = r.dureeMs; setHistory(h); }
-    const d = document.getElementById("sum-duree");
-    if (d) d.textContent = fmtClock(r.dureeMs);
+    if (i >= 0) { h[i].echauffementMs = nouveau; setHistory(h); }
     renderWarmupFix(r);
   }));
 }
@@ -1972,7 +2005,6 @@ function showSetup() {
   elSummary.classList.add("hidden");
   elSetup.classList.remove("hidden");
   defaultRestInput.value = getDefaultRest();
-  renderWarmup();
   renderProgramDayButtons();
   renderHistory();
 }

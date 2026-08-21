@@ -299,9 +299,6 @@
               de secours pour les séances libres sans suggestion.</p>
           </div>
         </div>
-        <!-- Chrono d'échauffement : il tourne AVANT la séance et son temps
-             est versé dans la séance au démarrage (voir workout.js). -->
-        <div class="warmup-card" id="warmup-block"></div>
         <div class="start-buttons">
           <button class="btn btn-primary btn-lg" id="start-free">Démarrer une séance libre</button>
         </div>
@@ -383,6 +380,11 @@
            chaque série. Elles défilent donc maintenant avec le contenu.
            « Terminer » ne devient pas moins accessible pour autant : le
            ✓ de la pilule compacte le propose partout, à tout moment. -->
+      <!-- Bandeau d'échauffement : visible seulement pendant la phase.
+           Une fois close, le temps vit dans l'en-tête sous « dont
+           échauff. » et le bandeau s'efface au lieu d'encombrer. -->
+      <div class="warmup-band hidden" id="warmup-band"></div>
+
       <div class="program-actions live-actions-flow">
         <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
         <button class="btn btn-ghost" id="live-superset">⚡ Super set</button>

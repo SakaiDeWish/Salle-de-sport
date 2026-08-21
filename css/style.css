@@ -2628,7 +2628,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   .sets-table .set-note-line td { width: auto; }
 }
 
-/* ---------- Chrono d'échauffement (écran de préparation) ----------
+/* ---------- Bandeau d'échauffement (DANS l'écran de séance) ----------
    Le bloc reste discret tant qu'il est à zéro, et prend de la
    présence dès qu'il tourne : un chrono qui compte doit se voir
    depuis l'autre bout du tapis. */
@@ -3067,3 +3067,35 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   letter-spacing: 0.02em;
   color: var(--text-soft);
 }
+
+/* ---------- Bandeau d'échauffement, phase de séance ----------
+   Il ne vit que pendant la phase. Une fois close, le temps reste
+   visible dans l'en-tête sous « dont échauff. » et le bandeau
+   s'efface : un bloc qui ne sert plus n'a pas à occuper l'écran
+   pendant les quarante minutes suivantes. */
+.warmup-band {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: linear-gradient(120deg, var(--accent-soft), transparent 60%), var(--card);
+}
+.wb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.wb-lab {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--text);
+}
+.wb-dot { color: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+.wb-val {
+  font-family: var(--font-display);
+  font-size: 1.9rem; line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-2);
+}
+.wb-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.wb-sub { margin: 0; font-size: 0.8rem; line-height: 1.45; color: var(--text-soft); }
