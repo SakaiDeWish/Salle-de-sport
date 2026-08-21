@@ -340,6 +340,74 @@ function renderWarmupBand() {
   document.getElementById("wb-done").addEventListener("click", endWarmup);
 }
 
+/* ==================== ARRÊT AUTOMATIQUE ====================
+
+   Une séance oubliée reste ouverte indéfiniment et empoisonne tout ce
+   qui en dépend : la durée, le temps du mois, la moyenne par séance.
+   Au bout d'un certain temps sans rien valider, on la clôt.
+
+   DEUX SUBTILITÉS QUI DÉCIDENT DE LA JUSTESSE DU RÉSULTAT.
+
+   1. L'HEURE DE FIN N'EST PAS « MAINTENANT ».
+      Si tu oublies ta séance le mardi soir et rouvres l'app le jeudi,
+      clore à l'instant présent enregistrerait une séance de 40 heures
+      — soit exactement le mensonge qu'on cherche à éviter. On clôt à
+      la DERNIÈRE ACTIVITÉ RÉELLE : la dernière série validée, ou le
+      début de séance s'il n'y en a aucune.
+
+   2. LE MINUTEUR NE TOURNE PAS QUAND L'APP EST FERMÉE.
+      Un setInterval ne s'exécute pas dans une poche. Le cas le plus
+      fréquent — fermer l'app et revenir le lendemain — n'est donc PAS
+      couvert par une surveillance en direct. La vérification a lieu
+      aux deux moments : pendant que l'app tourne, ET au chargement
+      d'une séance reprise. */
+STORAGE_KEYS.autoStop = "gymcoach.autoStop";
+const AUTOSTOP_DEFAUT = 120;   // minutes
+
+function autoStopMin() {
+  const v = parseInt(localStorage.getItem(STORAGE_KEYS.autoStop), 10);
+  return Number.isFinite(v) && v >= 0 ? v : AUTOSTOP_DEFAUT;
+}
+
+/* Dernière activité réelle : la série validée la plus récente, ou à
+   défaut le début de la séance. La pause ne compte pas comme
+   activité — c'est justement l'état dans lequel on oublie. */
+function derniereActivite(l = live) {
+  if (!l) return 0;
+  let t = l.startedAt || 0;
+  for (const ex of l.exercises || [])
+    for (const st of ex.sets || [])
+      if (st.doneAt && st.doneAt > t) t = st.doneAt;
+  return t;
+}
+
+/* Séance périmée ? Renvoie l'heure de dernière activité, ou 0. */
+function seancePerimee(l = live) {
+  const min = autoStopMin();
+  if (!min || !l || l.endedAt) return 0;
+  const t = derniereActivite(l);
+  return (Date.now() - t) > min * 60000 ? t : 0;
+}
+
+/* Clôture d'une séance oubliée. Sans série validée il n'y a rien à
+   garder : on efface au lieu d'enregistrer une coquille vide. */
+function autoStopSession() {
+  if (!live) return;
+  const t = derniereActivite();
+  const aDesSeries = live.exercises.some(ex => ex.sets.length > 0);
+  if (!aDesSeries) {
+    clearLive();
+    showSetup();
+    toast(`Séance oubliée depuis plus de ${autoStopMin()} min : abandonnée, aucune série n'avait été validée.`);
+    return;
+  }
+  /* On fige l'horloge à la dernière activité AVANT d'appeler
+     finishSession, qui lit Date.now() : sans ça la séance durerait
+     jusqu'à l'instant de la découverte. */
+  live.autoStopAt = t;
+  finishSession(true);
+}
+
 function startSession(nom, exercises) {
   live = {
     nom,
@@ -642,8 +710,20 @@ function toggleHeaderManual(on) {
   resetHdrScroll();
 }
 
+let autoStopCheck = 0;
 function tick() {
   if (!live) return;
+  /* Surveillance de l'oubli. tick() bat toutes les 250 ms ; inutile de
+     recalculer aussi souvent, un passage toutes les 10 s suffit. */
+  if (Date.now() - autoStopCheck > 10000) {
+    autoStopCheck = Date.now();
+    if (seancePerimee()) {
+      const min = autoStopMin();
+      autoStopSession();
+      toast(`Séance close automatiquement : plus rien de validé depuis ${min} min. La durée s'arrête à ta dernière série.`);
+      return;
+    }
+  }
   const clock = fmtClock(liveElapsed());
   document.getElementById("chrono-session").textContent = clock;
   const echMs = warmupMs();
@@ -1631,11 +1711,14 @@ document.getElementById("live-abort").addEventListener("click", () => {
   showSetup();
 });
 
-function finishSession() {
+function finishSession(auto = false) {
   if (live && live.pausedAt) resumeSession(); // solde la pause avant de figer les temps
   if (warmupOn()) endWarmup();               // idem pour l'échauffement encore ouvert
   if (rest) endRest();
-  const now = Date.now();
+  /* Clôture automatique : l'heure de fin est la DERNIÈRE ACTIVITÉ, pas
+     l'instant où on s'en aperçoit. Sinon une séance oubliée mardi et
+     découverte jeudi s'enregistrerait comme une séance de 40 heures. */
+  const now = (auto && live.autoStopAt) ? live.autoStopAt : Date.now();
   const cur = live.exercises[live.currentIndex];
   if (cur && cur.startedAt && !cur.endedAt) cur.endedAt = now;
   live.endedAt = now;
@@ -1667,6 +1750,9 @@ function finishSession() {
     objectifLabel: program ? program.objectifLabel : null,
     rpe: null,   // renseigné depuis l'écran de résumé
     notes: "",
+    /* Marque la séance close par le minuteur d'oubli : sa fin est une
+       déduction, pas un geste. L'historique doit pouvoir le dire. */
+    autoClos: !!auto,
     /* Récap automatique : calculé À LA FIN, une fois pour toutes, et
        stocké tel quel. Le recalculer à l'affichage donnerait un texte
        qui change quand l'analyseur évolue — un compte rendu daté ne
@@ -2026,6 +2112,16 @@ document.querySelectorAll('.tab[data-view="seance"]').forEach(tab =>
   const saved = loadJSON(STORAGE_KEYS.live, null);
   if (saved && saved.startedAt && !saved.endedAt) {
     live = saved;
+    /* LE CAS QUI COMPTE VRAIMENT. Un setInterval ne tourne pas quand
+       l'app est fermée : la séance oubliée hier soir n'a été surveillée
+       par personne. C'est donc ICI, à la réouverture, que le rattrapage
+       a lieu — avant même d'afficher l'écran de séance. */
+    if (seancePerimee()) {
+      const min = autoStopMin();
+      autoStopSession();
+      toast(`Séance close automatiquement : plus rien de validé depuis ${min} min. La durée s'arrête à ta dernière série.`);
+      return;
+    }
     // reprendre la séance interrompue (rafraîchissement de page)
     activateView("seance");
     showLive();

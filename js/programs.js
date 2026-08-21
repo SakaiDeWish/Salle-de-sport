@@ -85,6 +85,7 @@ document.querySelectorAll("[data-ppanel]").forEach(seg =>
     seg.classList.add("active");
     document.getElementById("panel-generer").classList.toggle("hidden", seg.dataset.ppanel !== "generer");
     document.getElementById("panel-programmes").classList.toggle("hidden", seg.dataset.ppanel !== "programmes");
+    document.getElementById("panel-importer").classList.toggle("hidden", seg.dataset.ppanel !== "importer");
     if (seg.dataset.ppanel === "programmes") renderProgramsPanel();
   }));
 

@@ -171,10 +171,30 @@
 
     <div class="segmented" role="tablist" aria-label="Mode programme">
       <button class="seg active" data-ppanel="generer" role="tab">Générer</button>
+      <button class="seg" data-ppanel="importer" role="tab">Importer</button>
       <button class="seg" data-ppanel="programmes" role="tab">Mes programmes</button>
     </div>
 
     <section id="panel-programmes" class="suivi-panel hidden"><!-- rendu par js/programs.js --></section>
+
+    <!-- Import d'un programme depuis un texte collé. Voir
+         js/import-programme.js pour pourquoi ce n'est pas une photo. -->
+    <section id="panel-importer" class="suivi-panel hidden">
+      <div class="card">
+        <h3 class="set-h">Coller un programme</h3>
+        <p class="video-hint" style="margin-bottom:12px">
+          Ton téléphone lit déjà le texte d'une photo : appuie longuement sur l'image
+          de ton programme, choisis <strong>Sélectionner le texte</strong> (iOS) ou
+          <strong>Google Lens</strong> (Android), copie, puis colle ici.
+        </p>
+        <textarea id="imp-txt" rows="9" placeholder="Jour 1 — Push&#10;Développé couché 4x8&#10;Développé incliné haltères 3x10&#10;Élévations latérales 3x15&#10;&#10;Jour 2 — Pull&#10;Tractions 4x6&#10;Rowing barre 4x8"></textarea>
+        <div class="program-actions" style="margin-top:12px">
+          <button class="btn btn-primary" id="imp-lire">Analyser</button>
+          <button class="btn btn-ghost" id="imp-vider">Vider</button>
+        </div>
+      </div>
+      <div id="imp-apercu"></div>
+    </section>
 
     <section id="panel-generer">
     <form id="program-form" class="program-form card">
@@ -628,6 +648,7 @@
   <script src="js/workout.js"></script>
   <script src="js/tracking.js"></script>
   <script src="js/home.js"></script>
+  <script src="js/import-programme.js"></script>
   <script src="js/programs.js"></script>
   <script src="js/shell.js"></script>
 </body>

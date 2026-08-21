@@ -163,6 +163,20 @@ function settingsHtml() {
     </div>
 
     <div class="card set-card">
+      <h3 class="set-h">Séance oubliée</h3>
+      <div class="set-row">
+        <span class="set-lab">Arrêt automatique
+          <span class="set-sub">Sans série validée pendant ce temps, la séance se clôt
+            toute seule. Sa durée s'arrête à ta dernière série, pas au moment
+            où l'app s'en aperçoit.</span></span>
+        <select id="set-autostop" class="set-select" aria-label="Délai d'arrêt automatique">
+          ${[[30, "30 min"], [60, "1 h"], [120, "2 h"], [240, "4 h"], [0, "Jamais"]]
+            .map(([v, t]) => `<option value="${v}" ${autoStopMin() === v ? "selected" : ""}>${t}</option>`).join("")}
+        </select>
+      </div>
+    </div>
+
+    <div class="card set-card">
       <h3 class="set-h">À propos</h3>
       <p class="set-sub">GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute,
         consulte un professionnel de santé.</p>
@@ -211,6 +225,9 @@ function openSettings() {
   document.getElementById("set-test-son").addEventListener("click", () => {
     if (typeof beep === "function") beep(true);
   });
+  const as = document.getElementById("set-autostop");
+  if (as) as.addEventListener("change", () =>
+    localStorage.setItem(STORAGE_KEYS.autoStop, as.value));
 }
 
 document.getElementById("settings-fab").addEventListener("click", openSettings);

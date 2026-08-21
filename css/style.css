@@ -3099,3 +3099,70 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 }
 .wb-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .wb-sub { margin: 0; font-size: 0.8rem; line-height: 1.45; color: var(--text-soft); }
+
+/* ---------- Message éphémère ---------- */
+.toast {
+  position: fixed;
+  left: 50%; bottom: calc(96px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 12px);
+  z-index: 300;
+  max-width: min(92vw, 420px);
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-hover);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  text-align: center;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: opacity 0.22s ease; }
+}
+
+/* Menu déroulant dans les réglages : le <select> hérite du style
+   global des champs, trop large ici pour une ligne label + contrôle. */
+.set-select {
+  width: auto;
+  min-width: 116px;
+  padding: 10px 12px;
+  min-height: 44px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ---------- Import de programme ---------- */
+.imp-jour { margin-bottom: 14px; }
+.imp-jour .chrono-label { display: block; margin-bottom: 6px; }
+.imp-ligne {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.imp-ligne:last-child { border-bottom: none; }
+.imp-nom { flex: 1; font-weight: 600; }
+.imp-ligne.ko .imp-nom { color: var(--text-soft); text-decoration: line-through; }
+.imp-sets {
+  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.02em; color: var(--text-soft);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.imp-tag {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--red); border: 1px solid var(--red);
+  border-radius: var(--radius-sm); padding: 2px 7px; white-space: nowrap;
+}
+.imp-inconnus { margin-top: 14px; border-top: 1px dashed var(--border); padding-top: 14px; }
+.imp-liste { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.imp-ignorees { margin-top: 12px; font-size: 0.85rem; color: var(--text-soft); }
+.imp-ignorees summary { cursor: pointer; padding: 6px 0; min-height: 32px; }
+#imp-txt { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; }
+.imp-ligne.flou .imp-nom { color: var(--yellow); }
+.imp-tag-flou { color: var(--yellow); border-color: var(--yellow); }
