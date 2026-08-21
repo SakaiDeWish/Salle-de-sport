@@ -26,6 +26,27 @@ function discSet(key, open) {
   saveJSON(STORAGE_KEYS.disclosure, m);
 }
 
+/* ==================== MESSAGE ÉPHÉMÈRE ====================
+   Pour ce que l'app doit dire sans interrompre : une séance close
+   toute seule, un import terminé. `role="status"` le fait annoncer
+   par les lecteurs d'écran sans voler le focus. */
+let toastTimer = null;
+function toast(msg, ms = 6000) {
+  let el = document.getElementById("toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "toast";
+    el.className = "toast";
+    el.setAttribute("role", "status");
+    el.setAttribute("aria-live", "polite");
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("on"), ms);
+}
+
 /* ==================== BADGE DE VARIATION ====================
    Un triangle de sens et un pourcentage : hausse, baisse, ou stable.
 
