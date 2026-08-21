@@ -177,16 +177,28 @@
 
     <section id="panel-programmes" class="suivi-panel hidden"><!-- rendu par js/programs.js --></section>
 
-    <!-- Import d'un programme depuis un texte collé. Voir
-         js/import-programme.js pour pourquoi ce n'est pas une photo. -->
+    <!-- Import d'un programme : texte collé, fichier texte, ou photo.
+         Voir js/import-programme.js pour ce que le navigateur sait
+         réellement faire d'une photo — et ce qu'il ne sait pas. -->
     <section id="panel-importer" class="suivi-panel hidden">
       <div class="card">
-        <h3 class="set-h">Coller un programme</h3>
-        <p class="video-hint" style="margin-bottom:12px">
-          Ton téléphone lit déjà le texte d'une photo : appuie longuement sur l'image
-          de ton programme, choisis <strong>Sélectionner le texte</strong> (iOS) ou
-          <strong>Google Lens</strong> (Android), copie, puis colle ici.
-        </p>
+        <h3 class="set-h">Importer un programme</h3>
+
+        <!-- Champs de fichier cachés : les tuiles de la feuille les
+             déclenchent. capture="environment" ouvre l'appareil photo
+             arrière directement sur mobile, et est ignoré ailleurs. -->
+        <input type="file" id="imp-f-camera" accept="image/*" capture="environment" class="visually-hidden">
+        <input type="file" id="imp-f-photo" accept="image/*" class="visually-hidden">
+        <input type="file" id="imp-f-fichier" accept="image/*,text/plain,.txt,.md,.csv" class="visually-hidden">
+
+        <div class="program-actions" style="margin-bottom:12px">
+          <button class="btn btn-ghost" id="imp-contexte">＋ Photo ou fichier</button>
+          <button class="btn btn-ghost" id="imp-coller">Coller le texte</button>
+        </div>
+
+        <!-- Photo choisie + marche à suivre propre à la plateforme -->
+        <div id="imp-image" class="imp-image hidden"></div>
+
         <textarea id="imp-txt" rows="9" placeholder="Jour 1 — Push&#10;Développé couché 4x8&#10;Développé incliné haltères 3x10&#10;Élévations latérales 3x15&#10;&#10;Jour 2 — Pull&#10;Tractions 4x6&#10;Rowing barre 4x8"></textarea>
         <div class="program-actions" style="margin-top:12px">
           <button class="btn btn-primary" id="imp-lire">Analyser</button>
