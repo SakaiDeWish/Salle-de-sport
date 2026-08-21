@@ -1547,8 +1547,41 @@ const EXERCISE_ALIASES = {
   "extension-corde-poulie-haute": ["rope pushdown", "triceps rope pushdown", "extension corde", "pushdown corde"],
   "leg-curl-debout": ["standing leg curl", "curl fémoral debout", "leg curl une jambe"],
   "elevations-laterales-machine": ["machine lateral raise", "lateral raise machine", "élévation latérale guidée"],
-  "crunch-machine": ["machine crunch", "ab machine", "crunch guidé", "abdominal machine"]
+  "crunch-machine": ["machine crunch", "ab machine", "crunch guidé", "abdominal machine"],
+
+  /* Ajoutés après le passage d'un vrai programme anglophone à
+     l'import : chacun corrige un exercice qui EXISTE en bibliothèque
+     mais que son nom anglais ne trouvait pas. */
+  "squat-barre-plus": ["squats", "barbell back squat"],
+  "presse-unilaterale": ["single leg press", "one leg press", "unilateral leg press",
+                         "presse unilatérale", "presse une jambe"],
+  "rowing-machine-assis-plus": ["chest supported row", "chest-supported row", "seal row"],
+  "shrugs-halteres": ["shrug", "dumbbell shrug", "incline dumbbell shrug", "incline shrug",
+                      "haussement d'épaules"],
+  "face-pull-plus": ["rope face pull", "face pull corde"],
+  "tirage-bras-tendus-plus": ["cable pullover", "straight arm pullover", "lat prayer"],
+  "kickback-triceps-plus": ["cable tricep kickback", "cable triceps kickback", "tricep kickback"],
+  "mollets-unijambiste": ["single leg calf raise", "one leg calf raise", "mollet une jambe"]
 };
+
+/* Les clés « -plus » ci-dessus complètent un exercice qui a DÉJÀ des
+   alias plus haut dans la table. Un objet ne gardant qu'une valeur par
+   clé, les redéclarer écraserait les premiers : on les fusionne. */
+Object.keys(EXERCISE_ALIASES).forEach(k => {
+  if (!k.endsWith("-plus")) return;
+  const base = k.slice(0, -5);
+  EXERCISE_ALIASES[base] = (EXERCISE_ALIASES[base] || []).concat(EXERCISE_ALIASES[k]);
+  delete EXERCISE_ALIASES[k];
+});
+
+/* Un alias posé sur un identifiant qui n'existe pas ne prévient
+   personne : il ne sert simplement jamais. C'est exactement ce qui
+   venait d'arriver à « mollets-une-jambe », dont le vrai identifiant
+   est « mollets-unijambiste ». */
+(() => {
+  const orphelins = Object.keys(EXERCISE_ALIASES).filter(k => !EXERCISES.some(e => e.id === k));
+  if (orphelins.length) console.warn("Alias sans exercice :", orphelins.join(", "));
+})();
 
 /* Tous les noms connus d'un exercice (nom + alias intégrés + alias perso) */
 function exAliases(ex) {
