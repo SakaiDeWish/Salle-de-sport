@@ -2710,3 +2710,96 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 @media (max-width: 480px) {
   .serie-cell { min-width: 12px; }
 }
+
+/* ---------- Bouton « départ » (.btn-go) ----------
+   Repris d'un composant React (interactive-hover-button) et réécrit
+   sans framework : une pastille d'accent s'étend jusqu'à remplir le
+   bouton, le libellé glisse vers la droite et une flèche prend sa
+   place.
+
+   LE PROBLÈME DU COMPOSANT D'ORIGINE, et ce qui est corrigé ici :
+   tout l'effet repose sur :hover. Or GymCoach s'utilise au téléphone,
+   où le survol n'existe pas — l'animation ne se serait jamais jouée
+   pour la grande majorité des séances. Pire, sur tactile :hover
+   « colle » après un tap et laisse le bouton allumé.
+   Le survol est donc réservé aux appareils à POINTEUR FIN, et
+   l'appui (:active) déclenche le même état partout. Sur un
+   téléphone, l'effet joue au moment où le doigt se pose.
+
+   Réservé aux VRAIS départs — lancer une séance du programme. Le
+   mettre sur « Valider la série », pressé quarante fois par séance,
+   retarderait le retour visuel et lasserait en deux entraînements. */
+.btn-go {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;          /* garde la pastille au-dessus du fond du bouton */
+}
+/* La pastille est ancrée DANS LE REMBOURRAGE GAUCHE, pas à 20 %/40 %
+   comme l'original. Celui-ci suppose un bouton court (128 px, deux
+   mots) où ces coordonnées tombent dans le vide ; ici le libellé
+   remplit la largeur et la pastille atterrissait au milieu des mots,
+   où elle se lisait comme une coquille. À 9 px du bord elle reste
+   dégagée quelle que soit la longueur du texte. */
+.btn-go .go-dot {
+  position: absolute;
+  left: 9px; top: 50%; margin-top: -4px;
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  /* --accent-2 et non --accent : en thème clair, le texte du bouton
+     sur #d14836 mesure 4,40:1, juste sous le seuil AA de 4,5. Sur
+     #b93a29 il monte à 5,58:1. En thème sombre l'écart est
+     imperceptible (16,6 → 14,6:1, tous deux très au-dessus). */
+  background: var(--accent-2);
+  transform: scale(1);
+  z-index: -1;
+  transition: left 0.32s ease, top 0.32s ease, margin-top 0.32s ease,
+              width 0.32s ease, height 0.32s ease, transform 0.32s ease;
+}
+.btn-go .go-label {
+  display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.btn-go .go-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  color: var(--accent-contrast);
+  transform: translateX(48px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.btn-go .go-slide .icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* État « allumé ». Écrit deux fois plutôt qu'une : le survol doit
+   rester enfermé dans sa media query, l'appui doit en sortir. */
+@media (hover: hover) and (pointer: fine) {
+  .btn-go:hover .go-dot {
+    left: 0; top: 0; margin-top: 0; width: 100%; height: 100%;
+    transform: scale(1.8);
+  }
+  .btn-go:hover .go-label { transform: translateX(48px); opacity: 0; }
+  .btn-go:hover .go-slide { transform: translateX(0); opacity: 1; }
+  /* .btn-ghost:hover repeint le texte en accent : sur fond accent il
+     deviendrait invisible pendant le fondu. */
+  .btn-go:hover { color: var(--text); border-color: transparent; }
+}
+.btn-go:active .go-dot {
+  left: 0; top: 0; margin-top: 0; width: 100%; height: 100%;
+  transform: scale(1.8);
+}
+.btn-go:active .go-label { transform: translateX(48px); opacity: 0; }
+.btn-go:active .go-slide { transform: translateX(0); opacity: 1; }
+.btn-go:active { color: var(--text); border-color: transparent; }
+
+/* Un mouvement qui traverse tout le bouton n'est pas négociable pour
+   qui a demandé moins d'animation : on garde le remplissage, on
+   retire le glissement. */
+@media (prefers-reduced-motion: reduce) {
+  .btn-go .go-dot, .btn-go .go-label, .btn-go .go-slide { transition: none; }
+  .btn-go:active .go-label, .btn-go:hover .go-label { transform: none; }
+  .btn-go:active .go-slide, .btn-go:hover .go-slide { transform: none; }
+}
