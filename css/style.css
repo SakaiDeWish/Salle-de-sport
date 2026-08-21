@@ -3169,10 +3169,41 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 
 /* ---------- Résolution d'une ligne d'import ---------- */
 .imp-ligne { flex-direction: column; align-items: stretch; gap: 8px; }
-.imp-tete { display: flex; align-items: center; gap: 10px; }
+/* L'étiquette passe à la ligne plutôt que d'écraser le nom : sur 390 px
+   de large, « 7A » + un nom long + « 3 × 10-12 » + « INCONNU » ne
+   tiennent pas, et c'est le nom qui perdait. */
+.imp-tete { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.imp-nom { flex: 1 1 55%; min-width: 0; }
 .imp-choix { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .imp-sel { flex: 1 1 180px; min-width: 0; }
 .imp-sel select { width: 100%; min-height: 44px; padding: 10px 12px; font-size: 0.86rem; }
+
+/* Supersérie : « 7A » et « 7B » s'enchaînent sans repos. L'app ne sait
+   pas les exécuter comme telles — le repère dit au moins qu'elles vont
+   ensemble, plutôt que de laisser croire à deux exercices séparés. */
+.imp-ss {
+  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--bg); background: var(--accent);
+  border-radius: var(--radius-sm); padding: 2px 6px; white-space: nowrap;
+}
+/* Commentaire de l'auteur du programme, gardé tel quel. */
+.imp-note {
+  margin: 0; font-size: 0.8rem; line-height: 1.45; color: var(--text-soft);
+  font-style: italic;
+}
+/* Séries que l'auteur n'a pas données : à l'utilisateur de trancher. */
+.imp-sets-edit { display: flex; flex-wrap: wrap; gap: 10px; }
+.imp-sets-edit label {
+  display: flex; flex-direction: column; gap: 4px;
+  font-size: 0.74rem; font-weight: 700; color: var(--text-soft);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.imp-sets-edit input {
+  width: 110px; min-height: 44px; padding: 8px 10px;
+  font-family: var(--font-mono); font-size: 0.9rem; font-weight: 400;
+  text-transform: none; letter-spacing: 0;
+}
 
 /* ---------- Formulaire de fiche complète ---------- */
 .fx-form { display: flex; flex-direction: column; gap: 14px; }

@@ -24,104 +24,328 @@
    franchement ceux qu'il ne reconnaît pas plutôt que d'inventer.
    ========================================================= */
 
+/* ==================== CE QU'ON REÇOIT VRAIMENT ====================
+
+   Un programme n'est presque jamais collé proprement. Le texte qui a
+   servi de banc d'essai vient d'une transcription vidéo passée par
+   l'OCR d'un téléphone, et cumule tout ce qui peut mal tourner :
+
+     — des horodatages, tantôt seuls sur leur ligne (« 2:26 »), tantôt
+       collés en fin de ligne (« … 10-12 reps 2:59 ») ;
+     — des noms coupés en deux par la largeur de l'écran :
+       « Exercise 4: Eccentric-Accentuated Leg » / « Extension 3 sets
+       x 10-12 reps » — deux lignes pour un seul exercice ;
+     — des préfixes « Exercise 3: », des superséries « 7A / 7B » ;
+     — des commentaires entre parenthèses, parfois sur leur ligne ;
+     — des séries écrites de six façons : « 3 sets × 4 reps »,
+       « 3 sets 10-12 reps » (sans le x), « 3 set x 10/10 reps »,
+       « 2 sets x 30s », « 3 sets to failure », « 3 sets x 7/7|7 » ;
+     — des en-têtes de jour sans le mot « jour » : « Legs 1 (Quad
+       Focused) », parfois suivis d'un exercice SUR LA MÊME LIGNE.
+
+   Mesuré sur ce texte, la première version reconnaissait 0 exercice
+   sur 37 et découpait 9 jours au lieu de 6 — des jours intitulés
+   « reps », parce qu'une ligne orpheline courte et sans chiffre était
+   prise pour un titre. Ce qui suit corrige les cinq causes.
+   ================================================================== */
+
 /* Un titre de jour : « Jour 1 », « Day 2 — Push », « Séance A »,
    « Lundi », ou une ligne courte sans indication de séries. */
 const JOUR_RE = /^\s*(?:jour|journee|journée|day|séance|seance|s[ée]ance)\s*[:\-–—]?\s*(\d+|[a-z])\b/i;
 const JOURS_SEMAINE = /^\s*(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i;
 
-/* Séries × reps, dans les formes réellement rencontrées :
-   « 4x8 », « 4 × 8 », « 3x8-10 », « 4 sets x 12 », « 3 séries de 10 ».
-   Le groupe 1 est le nombre de séries, le groupe 2 les répétitions
-   (éventuellement une fourchette). */
+/* Un jour peut aussi s'annoncer par son seul contenu, sans le mot
+   « jour » : c'est la forme la plus courante des programmes anglo-
+   saxons (« Push 1 », « Legs 2 (Posterior-Chain Focused) »). */
+const SPLIT_MOTS = "push|pull|legs?|upper(?:\\s*body)?|lower(?:\\s*body)?|full\\s*body|arms?|chest|back|shoulders?|"
+  + "haut\\s+du\\s+corps|bas\\s+du\\s+corps|jambes|bras|dos|pectoraux|[ée]paules|abdos";
+const SPLIT_RE = new RegExp("^\\s*(?:" + SPLIT_MOTS + ")\\b[\\s\\d]*(?:\\([^)]*\\))?\\s*$", "i");
+
+/* Marqueur d'exercice : « Exercise 3: », « Exercise 7A: »,
+   « Exercise 4 (Optional): », « Ex. 2 - », « Exercice 5 : ».
+   Groupe 1 : le numéro. Groupe 2 : la lettre de supersérie. */
+const MARQUEUR_RE = /^\s*(?:exercises?|exercices?|ex)\s*\.?\s*(\d{1,2})\s*([a-z])?\s*(?:\([^)]*\))?\s*[:.\-–—]\s*/i;
+
+/* Le même marqueur, mais repéré APRÈS un en-tête resté sur la même
+   ligne : « Pull 2 (Mid-Back…) Exercise 1: OMNI-Grip Lat Pulldown ».
+   Sans cette coupe, tout un jour disparaît d'un coup. */
+const SPLIT_COLLE_RE = new RegExp(
+  "^\\s*((?:" + SPLIT_MOTS + ")\\b[\\s\\d]*(?:\\([^)]*\\))?)\\s+(?=(?:exercises?|exercices?|ex)\\s*\\.?\\s*\\d)", "i");
+
+/* Puce ou numérotation simple. */
+const PUCE_RE = /^\s*(?:[•*·>]\s*|\d{1,2}[.)]\s+)/;
+
+/* Horodatage de transcription : « 2:26 », « 12:20 ». */
+const HORODATE_RE = /\b\d{1,3}:\d{2}\b/g;
+
+/* Une fourchette de répétitions telle qu'elle s'écrit : « 8 », « 30s »,
+   « 10-12 », « 7/7/7 », « 15 à 20 ». La barre verticale est là parce
+   que l'OCR rend souvent « / » par « | ». */
+const REPS_MOTIF = "\\d{1,3}\\s*s?(?:\\s*[-–/|à]\\s*\\d{1,3}\\s*s?)*";
+
+/* Séries × reps. Deux formes, essayées dans cet ordre :
+   1. avec le mot « sets » / « séries », le séparateur devenant
+      FACULTATIF — « 3 sets 10-12 reps » s'écrit vraiment comme ça ;
+   2. la forme nue « 4x8 ». */
 const SETS_RE = new RegExp(
-  "(\\d{1,2})\\s*(?:s[ée]ries?|sets?|x|×)?\\s*(?:de|of|x|×)\\s*(\\d{1,3}(?:\\s*[-–/à]\\s*\\d{1,3})?)"
-  + "|(\\d{1,2})\\s*[x×]\\s*(\\d{1,3}(?:\\s*[-–/à]\\s*\\d{1,3})?)", "i");
+  "(\\d{1,2})\\s*(?:s[ée]ries?|sets?)\\s*(?:de|of|x|×|:)?\\s*(" + REPS_MOTIF + ")"
+  + "|(\\d{1,2})\\s*[x×]\\s*(" + REPS_MOTIF + ")", "i");
+
+/* « 3 sets to failure » : un nombre de séries, pas de répétitions. */
+const ECHEC_RE = /(\d{1,2})\s*(?:s[ée]ries?|sets?)\s+(?:to\s+failure|jusqu'?[àa]\s+l'?[ée]chec|[àa]\s+l'?[ée]chec|au\s+max)/i;
 
 /* Bruit fréquent en fin de ligne : temps de repos, tempo, RPE, charge.
    On le retire du NOM, pas de la ligne — le nom est ce qu'on cherche
    à rapprocher de la bibliothèque. */
 const BRUIT_RE = /\b(?:repos|rest|tempo|rpe|rir)\b.*$|\b\d+\s*(?:s|sec|secondes?|min|kg|lbs?)\b.*$|@.*$/i;
 
+const ECHAUFF_RE = /\b(?:warm[\s-]*up|[ée]chauffement|pyramid\s+warm)\b/i;
+
 function normNom(t) {
   return t
-    .replace(/^[\s•*\-–—·>]+/, "")        // puces
-    .replace(/^\d+[.)]\s*/, "")           // numérotation « 1. »
+    .replace(MARQUEUR_RE, "")
+    .replace(PUCE_RE, "")
+    .replace(/^[\s\-–—]+/, "")
     .replace(BRUIT_RE, "")
-    .replace(/[:\-–—]\s*$/, "")
+    .replace(/[:\-–—|]\s*$/, "")
     .replace(/\s{2,}/g, " ")
     .trim();
 }
 
-/* Analyse le texte collé. Ne décide RIEN : renvoie ce qu'il a compris,
-   avec les lignes non reconnues, pour que l'écran les montre. */
+/* Sépare le nom de ses parenthèses. « Cable Pullover (Kneeling) » se
+   cherche en bibliothèque sous « Cable Pullover » ; le reste est un
+   commentaire de l'auteur, qui a sa place à côté de l'exercice mais
+   pas dans la requête. */
+function extraitNote(nom) {
+  const notes = [];
+  const propre = nom.replace(/\(([^)]*)\)/g, (_, c) => { notes.push(c.trim()); return " "; });
+  return {
+    nom: propre.replace(/\s{2,}/g, " ").replace(/[\s,;]+$/, "").trim(),
+    note: notes.filter(Boolean).join(" · ")
+  };
+}
+
+/* ---------- 1. Nettoyage ----------
+   Retire les horodatages et les barres résiduelles de l'OCR, et jette
+   les lignes qui n'étaient QUE ça. */
+function nettoieLignes(txt) {
+  return String(txt || "").split(/\r?\n/)
+    .map(l => l.replace(HORODATE_RE, " ").replace(/\s*\|\s*/g, " ").replace(/\s{2,}/g, " ").trim())
+    .filter(Boolean);
+}
+
+/* ---------- 2. Recollage ----------
+   LE POINT DÉLICAT. Une ligne coupée par la largeur de l'écran doit
+   rejoindre la précédente, mais un titre de séance ne doit surtout pas
+   avaler l'exercice qui le suit.
+
+   Le signal fiable n'est pas la forme de la coupure — « Exercise 4:
+   Eccentric-Accentuated Leg » se termine par un mot parfaitement
+   ordinaire. C'est l'INCOHÉRENCE : une ligne qui s'annonce comme un
+   exercice et n'a pas de séries est forcément tronquée. D'où deux
+   règles, et deux seulement :
+
+     a) l'entrée précédente porte un marqueur d'exercice mais pas de
+        séries → elle est tronquée, on lui recolle la suite ;
+     b) l'entrée précédente est complète, et la ligne courante n'a ni
+        marqueur, ni séries, ni en-tête → c'est sa fin de phrase
+        (« reps », « 1RM) », « (Deficit Pushups are a replacement) »).
+
+   Une ligne sans marqueur ET sans séries qui suit une autre ligne sans
+   marqueur ET sans séries n'est recollée à rien : c'est ce qui protège
+   « Séance poitrine et dos » de manger l'exercice suivant. */
+function estEnTete(l) {
+  return JOUR_RE.test(l) || JOURS_SEMAINE.test(l) || SPLIT_RE.test(l);
+}
+
+function recolleLignes(lignes) {
+  const out = [];
+  for (const brute of lignes) {
+    /* En-tête et exercice sur la même ligne : on coupe avant d'aller
+       plus loin, sinon les deux se perdent ensemble. */
+    const colle = SPLIT_COLLE_RE.exec(brute);
+    const morceaux = colle
+      ? [colle[1].trim(), brute.slice(colle[0].length).trim()]
+      : [brute];
+
+    for (const l of morceaux) {
+      if (!l) continue;
+      const marqueur = MARQUEUR_RE.test(l) || PUCE_RE.test(l);
+      const sets = SETS_RE.test(l) || ECHEC_RE.test(l);
+      const entete = estEnTete(l);
+      const prec = out.length ? out[out.length - 1] : null;
+
+      if (!entete && !marqueur && prec && !prec.entete) {
+        const precTronquee = prec.marqueur && !prec.sets;
+        if (precTronquee || (prec.sets && !sets)) {
+          prec.texte += " " + l;
+          prec.sets = SETS_RE.test(prec.texte) || ECHEC_RE.test(prec.texte);
+          continue;
+        }
+      }
+      out.push({ texte: l, marqueur, sets, entete });
+    }
+  }
+  return out;
+}
+
+/* ---------- 3. Analyse ----------
+   Ne décide RIEN : renvoie ce qu'il a compris, avec les lignes non
+   reconnues, pour que l'écran les montre. */
 function parseProgrammeTexte(txt) {
-  const lignes = String(txt || "").split(/\r?\n/);
+  const entrees = recolleLignes(nettoieLignes(txt));
   const jours = [];
   const ignorees = [];
   let courant = null;
 
   const nouveauJour = (titre) => {
-    courant = { titre: titre || `Jour ${jours.length + 1}`, lignes: [] };
+    courant = { titre: titre || `Jour ${jours.length + 1}`, lignes: [], echauffement: false };
     jours.push(courant);
   };
 
-  for (const brute of lignes) {
-    const l = brute.trim();
-    if (!l) continue;
+  for (const e of entrees) {
+    const l = e.texte;
 
-    const mJour = JOUR_RE.exec(l) || JOURS_SEMAINE.exec(l);
-    const aDesSets = SETS_RE.test(l);
-
-    /* Un en-tête de jour ne porte jamais de séries : « Jour 3 × 8 »
-       n'existe pas, mais « Développé 4 x 8 » commence par un chiffre.
-       C'est cette condition qui évite de couper un programme en
-       autant de jours qu'il a d'exercices. */
-    if (mJour && !aDesSets) {
+    if (e.entete && !e.sets) {
       nouveauJour(l.replace(/[:\-–—]\s*$/, "").trim());
       continue;
     }
 
-    if (!aDesSets) {
-      /* Ligne sans séries : soit un titre de bloc (« Push », « Haut du
-         corps »), soit du bruit. Courte et sans chiffre, on la prend
-         pour un titre ; sinon on la met de côté et on le dit. */
-      if (l.length <= 32 && !/\d/.test(l)) nouveauJour(l);
-      else ignorees.push(l);
+    /* « Sample Pyramid Warm-up » n'est pas du bruit : c'est une
+       consigne d'échauffement, et la séance sait désormais en tenir
+       une. On la note sur le jour plutôt que de la jeter. */
+    if (!e.sets && ECHAUFF_RE.test(l)) {
+      if (!courant) nouveauJour(null);
+      courant.echauffement = true;
       continue;
     }
 
+    const mMarq = MARQUEUR_RE.exec(l);
+    const superserie = mMarq && mMarq[2] ? (mMarq[1] + mMarq[2].toUpperCase()) : null;
+
+    let series = null, reps = null, coupe = -1;
     const m = SETS_RE.exec(l);
-    const series = parseInt(m[1] || m[3], 10);
-    const reps = (m[2] || m[4] || "").replace(/\s/g, "");
-    const nom = normNom(l.slice(0, m.index));
+    if (m) {
+      series = parseInt(m[1] || m[3], 10);
+      reps = (m[2] || m[4] || "").replace(/\s/g, "").replace(/\|/g, "/");
+      coupe = m.index;
+    } else {
+      const mf = ECHEC_RE.exec(l);
+      if (mf) { series = parseInt(mf[1], 10); reps = "max"; coupe = mf.index; }
+    }
+
+    /* Une ligne qui porte un marqueur d'exercice EST un exercice, même
+       quand l'auteur n'a donné ni séries ni répétitions — cela arrive,
+       et il vaut mieux le dire que la faire disparaître. */
+    if (coupe < 0 && !e.marqueur) { ignorees.push(l); continue; }
+
+    const { nom, note } = extraitNote(normNom(coupe >= 0 ? l.slice(0, coupe) : l));
     if (!nom) { ignorees.push(l); continue; }
     if (!courant) nouveauJour(null);
-    courant.lignes.push({ nom, series, reps, brute: l });
+    courant.lignes.push({
+      nom, series, reps, note, superserie,
+      sansSets: coupe < 0,
+      brute: l
+    });
   }
 
   return { jours: jours.filter(j => j.lignes.length), ignorees };
 }
 
+/* Clé de comparaison. normalize() retire les accents et la casse, mais
+   PAS les traits d'union — et c'est ce détail qui faisait échouer la
+   moitié des rapprochements : l'alias « weighted pull up » ne
+   rencontrait jamais « Weighted Pull-Up ». Apostrophes, barres
+   obliques et ponctuation subissent le même sort. */
+function normCle(s) {
+  return normalize(String(s || ""))
+    .replace(/['’`]/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/* Singulier approximatif, anglais et français confondus. « Squats »
+   doit trouver « Squat ». Le piège est « press » et « bench press »,
+   qui ne sont pas des pluriels : d'où la garde sur « ss ». */
+function singulierMot(w) {
+  if (w.length <= 4 || /ss$/.test(w)) return w;
+  if (/(?:ch|sh|x|z)es$/.test(w)) return w.slice(0, -2);   // crunches → crunch
+  if (/s$/.test(w)) return w.slice(0, -1);
+  return w;
+}
+const singulier = (s) => s.split(" ").map(singulierMot).join(" ");
+
+/* Qualificatifs de TECHNIQUE, pas de mouvement. « Eccentric-
+   Accentuated Leg Extension » reste un leg extension ; « Lateral
+   Raise 21's » reste une élévation latérale. La bibliothèque ne
+   porte pas ces mentions dans ses noms — les retirer retrouve
+   l'exercice, mais on le signale, parce qu'on a jeté quelque chose
+   au passage. */
+const QUALIF_RE = new RegExp("\\b(?:eccentric(?:ally)?\\s*accentuated|eccentric|accentuated|"
+  + "long\\s*lever|omni\\s*grip|21\\s*s|myo(?:\\s*reps?)?|cheat|tempo|paused?|deficit|"
+  + "drop\\s*set|explosive|slow|constant\\s*tension|optional|alternative|superset)\\b", "gi");
+
 /* Rapproche un nom de la bibliothèque. On réutilise exMatches(), donc
    toute la table d'alias français / anglais construite pour la
    recherche — « incline bench press » comme « développé incliné ».
    Renvoie le meilleur candidat, ou null. */
+/* Le matériel, lui, ne se traduit pas tout seul. exMatches() exige que
+   CHAQUE mot de la requête se retrouve quelque part ; « cable » ne
+   figure nulle part dans une bibliothèque française, et suffisait donc
+   à faire échouer « Cable Pullover » alors que l'exercice existe. On
+   substitue — sans ajouter, puisque tous les mots doivent tomber. */
+const MATERIEL_EN = [
+  [/\bcables?\b/g, "poulie"],
+  [/\bropes?\b/g, "corde"],
+  [/\bdumbbells?\b|\bdb\b/g, "haltere"],
+  [/\bbarbells?\b/g, "barre"],
+  [/\bbodyweights?\b/g, "poids du corps"]
+  /* « bench » n'est PAS dans cette liste : « bench press » est un alias
+     connu de la bibliothèque, et le traduire le détruirait. */
+];
+const traduitMateriel = (q) =>
+  MATERIEL_EN.reduce((s, [re, fr]) => s.replace(re, fr), q).replace(/\s+/g, " ").trim();
+
 function trouveExercice(nom) {
   const tous = allExercisesForUI();
-  const n = normalize(nom);
+  const n = normCle(nom);
   const rien = { ex: null, ambigu: false, candidats: [] };
   if (!n) return rien;
 
-  // 1. nom exact — aucune ambiguïté possible
-  let hit = tous.find(e => normalize(e.nom) === n);
-  if (hit) return { ex: hit, ambigu: false, candidats: [] };
-  // 2. alias exact
-  hit = tous.find(e => exAliases(e).some(a => normalize(a) === n));
-  if (hit) return { ex: hit, ambigu: false, candidats: [] };
-  // 3. recherche par mots — celle de la barre de recherche
-  const cands = tous.filter(e => exMatches(e, nom));
+  const exact = (q) =>
+    tous.find(e => normCle(e.nom) === q) ||
+    tous.find(e => exAliases(e).some(a => normCle(a) === q)) || null;
+
+  /* Les requêtes essayées, de la plus fidèle à la plus permissive.
+     « allege » dit s'il a fallu jeter de l'information : dans ce cas
+     le résultat est marqué « à vérifier », même s'il tombe juste. */
+  const essais = [];
+  const ajoute = (q, allege) => {
+    if (q && !essais.some(e => e.q === q)) essais.push({ q, allege });
+  };
+  ajoute(n, false);
+  ajoute(singulier(n), false);
+  ajoute(traduitMateriel(n), false);
+  ajoute(singulier(traduitMateriel(n)), false);
+  const nu = normCle(n.replace(QUALIF_RE, " "));
+  ajoute(nu, true);
+  ajoute(singulier(nu), true);
+  ajoute(traduitMateriel(nu), true);
+  ajoute(singulier(traduitMateriel(nu)), true);
+
+  for (const { q, allege } of essais) {
+    const hit = exact(q);
+    if (hit) return { ex: hit, ambigu: allege, candidats: allege ? [hit] : [] };
+  }
+
+  let cands = [], requete = n, allege = false;
+  for (const essai of essais) {
+    cands = tous.filter(e => exMatches(e, essai.q));
+    if (cands.length) { requete = essai.q; allege = essai.allege; break; }
+  }
   if (!cands.length) return rien;
-  if (cands.length === 1) return { ex: cands[0], ambigu: false, candidats: [] };
+  if (cands.length === 1) return { ex: cands[0], ambigu: allege, candidats: allege ? cands : [] };
+  nom = requete;
 
   const tri = cands.slice().sort((a, b) => cmpCandidat(a, b, nom));
 
@@ -137,12 +361,12 @@ function trouveExercice(nom) {
      pas, elle a choisi une variante à la place de l'utilisateur, et
      elle doit le dire. Un nom exact ou un alias exact passent avant
      et ne sont jamais marqués. */
-  const q = normalize(nom).split(/\s+/).filter(Boolean).length;
-  const c = normalize(tri[0].nom.replace(/\([^)]*\)/g, " ")).split(/\s+/).filter(Boolean).length;
+  const q = nom.split(/\s+/).filter(Boolean).length;
+  const c = normCle(tri[0].nom.replace(/\([^)]*\)/g, " ")).split(/\s+/).filter(Boolean).length;
   /* On renvoie AUSSI les autres candidats : quand le choix est
      incertain, l'écran doit pouvoir les proposer plutôt que de
      laisser l'utilisateur retoucher son texte à l'aveugle. */
-  return { ex: tri[0], ambigu: c > q, candidats: tri.slice(0, 8) };
+  return { ex: tri[0], ambigu: allege || c > q, candidats: tri.slice(0, 8) };
 }
 
 /* Départage entre plusieurs exercices qui correspondent.
@@ -153,24 +377,38 @@ function trouveExercice(nom) {
    « Rowing barre » → « Rowing Pendlay » au lieu de « Rowing barre
    buste penché ». Un nom court peut très bien être une variante.
 
+   DEUXIÈME VERSION, INCOMPLÈTE : elle ne comptait que les mots EN
+   TROP. « Incline Dumbbell Curl » y tombait sur « Curl spider (banc
+   incliné à plat ventre) » plutôt que sur « Curl incliné aux
+   haltères » — parce que « spider » ne compte que deux mots hors
+   parenthèses, contre quatre. Le critère décisif manquait : combien
+   de mots DEMANDÉS le candidat ne porte-t-il pas ? Le spider n'a pas
+   « haltère » dans son nom, le curl incliné si.
+
    RÈGLE RETENUE, dans l'ordre :
-   1. le nom COMMENCE-T-IL par ce qui est demandé ? « Rowing barre
+   1. combien de mots demandés MANQUENT au candidat ? C'est le seul
+      critère qui mesure la ressemblance plutôt que la longueur ;
+   2. le nom COMMENCE-T-IL par ce qui est demandé ? « Rowing barre
       buste penché » commence par « rowing barre », « Rowing Pendlay »
-      non — c'est ce seul critère qui tranche ce cas ;
-   2. combien de mots EN PLUS, une fois les parenthèses retirées ?
+      non — c'est ce critère qui tranche ce cas ;
+   3. combien de mots EN PLUS, une fois les parenthèses retirées ?
       « Tractions (pronation) » n'ajoute rien à « Tractions », alors
       que « Tractions lestées » ajoute un qualificatif ;
-   3. à égalité, le nom le plus court. */
+   4. à égalité, le nom le plus court. */
 function cmpCandidat(a, b, nom) {
   const s = (ex) => {
-    const q = normalize(nom);
-    const plein = normalize(ex.nom);
-    const sansParen = normalize(ex.nom.replace(/\([^)]*\)/g, " "));
-    const motsQ = q.split(/\s+/).filter(Boolean).length;
+    const q = normCle(nom);
+    const plein = normCle(ex.nom);
+    const sansParen = normCle(ex.nom.replace(/\([^)]*\)/g, " "));
+    const motsQ = q.split(/\s+/).filter(Boolean);
     const motsC = sansParen.split(/\s+/).filter(Boolean).length;
+    /* Le nom ET les alias : « Rowing Pendlay » ne porte pas « barre »,
+       même si un de ses alias parle de barbell. */
+    const propre = normCle(ex.nom + " " + exAliases(ex).join(" "));
     return [
+      motsQ.filter(w => !propre.includes(w)).length,
       (plein.startsWith(q) || sansParen.startsWith(q)) ? 0 : 1,
-      Math.max(0, motsC - motsQ),
+      Math.max(0, motsC - motsQ.length),
       ex.nom.length
     ];
   };
@@ -203,12 +441,17 @@ function resoudreProgramme(parse) {
    dit lesquelles, et proposé de les créer. */
 function programmeDepuisImport(resolu, nom) {
   const days = resolu.jours.map((j, i) => {
+    /* Une ligne dont l'auteur n'a donné ni séries ni répétitions garde
+       la valeur saisie dans l'aperçu ; sans saisie, le repli 3 × 10 est
+       explicite plutôt que caché derrière un null qui s'afficherait
+       « null × null » en séance. */
     const exercices = j.lignes.filter(l => l.ex).map(l => ({
       exercice: l.ex,
-      series: l.series,
-      reps: l.reps,
+      series: Number.isFinite(l.series) && l.series > 0 ? l.series : 3,
+      reps: (l.reps == null || l.reps === "") ? "10" : String(l.reps),
       repos: typeof smartRest === "function" ? smartRest(l.ex) : 90,
-      prioritaire: false
+      prioritaire: false,
+      note: l.note || ""
     }));
     return {
       numero: i + 1,
@@ -270,11 +513,26 @@ function renderImportApercu(res) {
           ${j.lignes.map((l, li) => `
             <div class="imp-ligne ${l.ex ? (l.ambigu ? "flou" : "ok") : "ko"}" data-ji="${ji}" data-li="${li}">
               <div class="imp-tete">
+                ${l.superserie ? `<span class="imp-ss">${esc(l.superserie)}</span>` : ""}
                 <span class="imp-nom">${l.ex ? esc(l.ex.nom) : esc(l.nom)}</span>
-                <span class="imp-sets">${l.series} × ${esc(l.reps)}</span>
+                ${l.sansSets
+                  ? `<span class="imp-tag imp-tag-flou">séries à préciser</span>`
+                  : `<span class="imp-sets">${l.series} × ${esc(l.reps)}</span>`}
                 ${l.ex ? (l.ambigu ? `<span class="imp-tag imp-tag-flou">à vérifier</span>` : "")
                        : `<span class="imp-tag">inconnu</span>`}
               </div>
+              ${l.note ? `<p class="imp-note">${esc(l.note)}</p>` : ""}
+              ${l.sansSets ? `
+                <div class="imp-sets-edit">
+                  <label>Séries
+                    <input type="number" min="1" max="12" step="1" value="${l.series || 3}"
+                           data-sets-j="${ji}" data-sets-l="${li}" data-sets-champ="series">
+                  </label>
+                  <label>Répétitions
+                    <input type="text" inputmode="numeric" value="${esc(l.reps || "10")}"
+                           data-sets-j="${ji}" data-sets-l="${li}" data-sets-champ="reps">
+                  </label>
+                </div>` : ""}
               ${(l.ambigu || !l.ex) ? `
                 <div class="imp-choix">
                   ${(l.ambigu && l.candidats.length > 1) ? `
@@ -285,7 +543,11 @@ function renderImportApercu(res) {
                            ${c.id === l.ex.id ? "selected" : ""}>${esc(c.nom)}</option>`).join("")}
                       </select>
                     </label>` : ""}
-                  ${!l.ex ? `<button type="button" class="btn btn-ghost btn-sm imp-chercher"
+                  ${/* Une ligne « à vérifier » doit pouvoir être CHANGÉE. Quand
+                        le rapprochement vient d'un nom simplifié, il n'y a
+                        qu'un candidat, donc pas de menu déroulant : sans ce
+                        bouton, l'utilisateur ne pouvait que créer un doublon. */
+                    (!l.ex || l.ambigu) ? `<button type="button" class="btn btn-ghost btn-sm imp-chercher"
                         data-j="${ji}" data-l="${li}">Choisir dans la bibliothèque</button>` : ""}
                   <button type="button" class="btn btn-ghost btn-sm imp-creer-ex"
                     data-j="${ji}" data-l="${li}">＋ Créer « ${esc(l.nom)} »</button>
@@ -329,6 +591,21 @@ function renderImportApercu(res) {
       l.ex = choisi;
       l.ambigu = false;          // choix explicite : il n'y a plus de doute
       renderImportApercu(res);
+    }));
+
+  /* Séries laissées en blanc par l'auteur du programme. On ne les
+     invente pas dans les données : on affiche un champ pré-rempli et
+     c'est la saisie de l'utilisateur qui fait foi. Pas de re-rendu à
+     chaque frappe — le champ perdrait le curseur. */
+  el.querySelectorAll("[data-sets-champ]").forEach(inp =>
+    inp.addEventListener("input", () => {
+      const l = res.jours[+inp.dataset.setsJ].lignes[+inp.dataset.setsL];
+      if (inp.dataset.setsChamp === "series") {
+        const v = parseInt(inp.value, 10);
+        l.series = Number.isFinite(v) && v > 0 ? Math.min(v, 12) : null;
+      } else {
+        l.reps = inp.value.trim() || null;
+      }
     }));
 
   el.querySelectorAll(".imp-chercher").forEach(b =>
