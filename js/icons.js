@@ -21,6 +21,7 @@ const ICON_SPRITE = `
   <!-- Entraînement -->
   <symbol id="ic-dumbbell" viewBox="0 0 24 24"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="6" y="7" width="3" height="10" rx="1"/><rect x="15" y="7" width="3" height="10" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><path d="M9 12h6"/></symbol>
   <symbol id="ic-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5Z" class="ic-fill"/></symbol>
+  <symbol id="ic-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15"/><path d="m13 6 6 6-6 6"/></symbol>
   <symbol id="ic-flame" viewBox="0 0 24 24"><path d="M12 3c1 3-3 5-3 9a5.5 5.5 0 0 0 11 0c0-2-1-3.5-2-5-.2 1.2-.8 2-2 2.5C16.5 7 15 4.5 12 3Z"/><path d="M12 21c-1.8 0-3-1.3-3-3 0-1.6 1.5-2.5 3-4 1.5 1.5 3 2.4 3 4 0 1.7-1.2 3-3 3Z" class="ic-fill"/></symbol>
   <symbol id="ic-trophy" viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0Z"/><path d="M7 5H3.5c0 4 1.8 5.8 3.8 6M17 5h3.5c0 4-1.8 5.8-3.8 6"/><path d="M12 14v4"/><path d="M8 21h8"/><path d="M9 21c0-2 1.3-3 3-3s3 1 3 3"/></symbol>
   <symbol id="ic-crown" viewBox="0 0 24 24"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-1.5 11h-15Z"/></symbol>

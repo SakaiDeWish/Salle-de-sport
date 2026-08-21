@@ -366,10 +366,20 @@ function renderProgramDayButtons() {
     container.innerHTML = `<p class="video-hint">💡 Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
     return;
   }
-  container.innerHTML = program.days.map((d, i) => `
-    <button class="btn btn-ghost start-day" data-day="${i}">
-      ${objIcon(program.objectif)} Lancer : Séance ${d.numero} — ${esc(d.titre)}
-    </button>`).join("");
+  /* Bouton « départ » (.btn-go) : la pastille d'accent s'étend et prend
+     tout le bouton, le libellé glisse et cède la place à une flèche.
+     Le libellé est écrit DEUX fois — une couche visible et une couche
+     de survol — d'où l'aria-hidden sur la seconde : sans lui, un
+     lecteur d'écran annoncerait chaque séance en double. */
+  container.innerHTML = program.days.map((d, i) => {
+    const lib = `${objIcon(program.objectif)} Lancer : Séance ${d.numero} — ${esc(d.titre)}`;
+    return `
+    <button class="btn btn-ghost btn-go start-day" data-day="${i}">
+      <span class="go-dot" aria-hidden="true"></span>
+      <span class="go-label">${lib}</span>
+      <span class="go-slide" aria-hidden="true">${lib} ${icon("arrow-right")}</span>
+    </button>`;
+  }).join("");
   container.querySelectorAll(".start-day").forEach(btn => {
     btn.addEventListener("click", () => {
       saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
