@@ -109,19 +109,19 @@ function parseProgrammeTexte(txt) {
 function trouveExercice(nom) {
   const tous = allExercisesForUI();
   const n = normalize(nom);
-  const rien = { ex: null, ambigu: false };
+  const rien = { ex: null, ambigu: false, candidats: [] };
   if (!n) return rien;
 
   // 1. nom exact — aucune ambiguïté possible
   let hit = tous.find(e => normalize(e.nom) === n);
-  if (hit) return { ex: hit, ambigu: false };
+  if (hit) return { ex: hit, ambigu: false, candidats: [] };
   // 2. alias exact
   hit = tous.find(e => exAliases(e).some(a => normalize(a) === n));
-  if (hit) return { ex: hit, ambigu: false };
+  if (hit) return { ex: hit, ambigu: false, candidats: [] };
   // 3. recherche par mots — celle de la barre de recherche
   const cands = tous.filter(e => exMatches(e, nom));
   if (!cands.length) return rien;
-  if (cands.length === 1) return { ex: cands[0], ambigu: false };
+  if (cands.length === 1) return { ex: cands[0], ambigu: false, candidats: [] };
 
   const tri = cands.slice().sort((a, b) => cmpCandidat(a, b, nom));
 
@@ -139,7 +139,10 @@ function trouveExercice(nom) {
      et ne sont jamais marqués. */
   const q = normalize(nom).split(/\s+/).filter(Boolean).length;
   const c = normalize(tri[0].nom.replace(/\([^)]*\)/g, " ")).split(/\s+/).filter(Boolean).length;
-  return { ex: tri[0], ambigu: c > q };
+  /* On renvoie AUSSI les autres candidats : quand le choix est
+     incertain, l'écran doit pouvoir les proposer plutôt que de
+     laisser l'utilisateur retoucher son texte à l'aveugle. */
+  return { ex: tri[0], ambigu: c > q, candidats: tri.slice(0, 8) };
 }
 
 /* Départage entre plusieurs exercices qui correspondent.
@@ -184,7 +187,7 @@ function resoudreProgramme(parse) {
     titre: j.titre,
     lignes: j.lignes.map(l => {
       const r = trouveExercice(l.nom);
-      return { ...l, ex: r.ex, ambigu: r.ambigu };
+      return { ...l, ex: r.ex, ambigu: r.ambigu, candidats: r.candidats || [] };
     })
   }));
   const inconnus = [];
@@ -261,26 +264,42 @@ function renderImportApercu(res) {
         <strong>${nbOk}</strong> exercice${nbOk > 1 ? "s" : ""} reconnu${nbOk > 1 ? "s" : ""} sur ${nbLignes}${
           nbFlous ? `, dont <strong>${nbFlous}</strong> à vérifier` : ""}.
       </p>
-      ${res.jours.map(j => `
+      ${res.jours.map((j, ji) => `
         <div class="imp-jour">
           <p class="chrono-label">${esc(j.titre)}</p>
-          ${j.lignes.map(l => `
-            <div class="imp-ligne ${l.ex ? (l.ambigu ? "flou" : "ok") : "ko"}">
-              <span class="imp-nom">${l.ex ? esc(l.ex.nom) : esc(l.nom)}</span>
-              <span class="imp-sets">${l.series} × ${esc(l.reps)}</span>
-              ${l.ex ? (l.ambigu ? `<span class="imp-tag imp-tag-flou"
-                   title="« ${esc(l.nom)} » correspond à plusieurs exercices">à vérifier</span>` : "")
-                     : `<span class="imp-tag">inconnu</span>`}
+          ${j.lignes.map((l, li) => `
+            <div class="imp-ligne ${l.ex ? (l.ambigu ? "flou" : "ok") : "ko"}" data-ji="${ji}" data-li="${li}">
+              <div class="imp-tete">
+                <span class="imp-nom">${l.ex ? esc(l.ex.nom) : esc(l.nom)}</span>
+                <span class="imp-sets">${l.series} × ${esc(l.reps)}</span>
+                ${l.ex ? (l.ambigu ? `<span class="imp-tag imp-tag-flou">à vérifier</span>` : "")
+                       : `<span class="imp-tag">inconnu</span>`}
+              </div>
+              ${(l.ambigu || !l.ex) ? `
+                <div class="imp-choix">
+                  ${(l.ambigu && l.candidats.length > 1) ? `
+                    <label class="imp-sel">
+                      <span class="visually-hidden">Exercice pour « ${esc(l.nom)} »</span>
+                      <select data-pick-j="${ji}" data-pick-l="${li}">
+                        ${l.candidats.map(c => `<option value="${esc(c.id)}"
+                           ${c.id === l.ex.id ? "selected" : ""}>${esc(c.nom)}</option>`).join("")}
+                      </select>
+                    </label>` : ""}
+                  ${!l.ex ? `<button type="button" class="btn btn-ghost btn-sm imp-chercher"
+                        data-j="${ji}" data-l="${li}">Choisir dans la bibliothèque</button>` : ""}
+                  <button type="button" class="btn btn-ghost btn-sm imp-creer-ex"
+                    data-j="${ji}" data-l="${li}">＋ Créer « ${esc(l.nom)} »</button>
+                </div>` : ""}
             </div>`).join("")}
         </div>`).join("")}
 
       ${res.inconnus.length ? `
         <div class="imp-inconnus">
           <p class="chrono-label">${res.inconnus.length} exercice${res.inconnus.length > 1 ? "s" : ""} non reconnu${res.inconnus.length > 1 ? "s" : ""}</p>
-          <p class="goal-left">Ils ne seront pas ajoutés au programme — un exercice inventé
-            vaudrait moins qu'un exercice absent. Crée-les depuis l'onglet
-            <strong>Ajouter</strong>, ou renomme-les dans le texte avec un nom que
-            la bibliothèque connaît, puis relance l'analyse.</p>
+          <p class="goal-left">Tant qu'ils ne sont pas résolus, ils ne seront pas ajoutés au
+            programme — un exercice inventé vaudrait moins qu'un exercice absent.
+            Utilise les boutons de chaque ligne pour choisir un équivalent ou créer
+            l'exercice avec sa fiche.</p>
           <div class="imp-liste">${res.inconnus.map(n => `<span class="tag">${esc(n)}</span>`).join("")}</div>
         </div>` : ""}
 
@@ -295,6 +314,47 @@ function renderImportApercu(res) {
           Créer ce programme</button>
       </div>
     </div>`;
+
+  /* --- Résolution ligne par ligne ---
+     Chaque geste modifie `res` en mémoire puis redessine : l'aperçu
+     reste la seule source de vérité, et le bouton « Créer ce
+     programme » lit toujours l'état courant. */
+  const ligne = (b) => res.jours[+b.dataset.j].lignes[+b.dataset.l];
+
+  el.querySelectorAll("[data-pick-j]").forEach(s2 =>
+    s2.addEventListener("change", () => {
+      const l = res.jours[+s2.dataset.pickJ].lignes[+s2.dataset.pickL];
+      const choisi = allExercisesForUI().find(e => e.id === s2.value);
+      if (!choisi) return;
+      l.ex = choisi;
+      l.ambigu = false;          // choix explicite : il n'y a plus de doute
+      renderImportApercu(res);
+    }));
+
+  el.querySelectorAll(".imp-chercher").forEach(b =>
+    b.addEventListener("click", () => {
+      const l = ligne(b);
+      openPickerPour(l.nom, (ex) => {
+        l.ex = ex; l.ambigu = false;
+        renderImportApercu(res);
+      });
+    }));
+
+  el.querySelectorAll(".imp-creer-ex").forEach(b =>
+    b.addEventListener("click", () => {
+      const l = ligne(b);
+      openFicheForm(l.nom, (ex) => {
+        /* La fiche vient d'être créée : on la pose sur CETTE ligne, et
+           sur toute autre ligne qui portait le même nom — un programme
+           répète souvent le même exercice sur plusieurs jours. */
+        const n = normalize(l.nom);
+        for (const j of res.jours)
+          for (const x of j.lignes)
+            if (!x.ex && normalize(x.nom) === n) { x.ex = ex; x.ambigu = false; }
+        res.inconnus = res.inconnus.filter(u => normalize(u) !== n);
+        renderImportApercu(res);
+      });
+    }));
 
   const creer = document.getElementById("imp-creer");
   if (creer) creer.addEventListener("click", () => {
@@ -318,3 +378,40 @@ document.getElementById("imp-vider")?.addEventListener("click", () => {
   document.getElementById("imp-apercu").innerHTML = "";
   impResolu = null;
 });
+
+/* Sélecteur d'exercice existant : liste filtrable, réutilise la
+   recherche de la bibliothèque. Ouvert depuis une ligne d'import qui
+   n'a pas trouvé son exercice. */
+function openPickerPour(nom, onChoisi) {
+  const tous = allExercisesForUI();
+  const rendre = (q) => {
+    const l = q ? tous.filter(e => exMatches(e, q)) : tous;
+    return l.slice(0, 60).map(e => `
+      <button type="button" class="picker-item pk-item" data-exid="${esc(e.id)}">
+        <span>${esc(e.nom)}</span>
+        <span class="tag">${LABELS.groupes[e.groupe]} · ${LABELS.materiel[e.materiel]}</span>
+      </button>`).join("") || `<p class="goal-left">Aucun exercice ne correspond.</p>`;
+  };
+
+  openHtmlPanel("Choisir un exercice", `
+    <div class="card">
+      <label class="fx-champ">Rechercher
+        <input type="search" id="pk-q" value="${esc(nom)}" placeholder="Nom, muscle, matériel…">
+      </label>
+      <div id="pk-liste" class="alt-list">${rendre(nom)}</div>
+    </div>`);
+
+  const liste = document.getElementById("pk-liste");
+  const brancher = () => liste.querySelectorAll(".pk-item").forEach(b =>
+    b.addEventListener("click", () => {
+      const ex = tous.find(e => e.id === b.dataset.exid);
+      if (!ex) return;
+      closeViewPanel();
+      onChoisi(ex);
+    }));
+  brancher();
+  document.getElementById("pk-q").addEventListener("input", (e) => {
+    liste.innerHTML = rendre(e.target.value.trim());
+    brancher();
+  });
+}
