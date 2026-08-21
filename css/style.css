@@ -3166,3 +3166,28 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 #imp-txt { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.6; }
 .imp-ligne.flou .imp-nom { color: var(--yellow); }
 .imp-tag-flou { color: var(--yellow); border-color: var(--yellow); }
+
+/* ---------- Résolution d'une ligne d'import ---------- */
+.imp-ligne { flex-direction: column; align-items: stretch; gap: 8px; }
+.imp-tete { display: flex; align-items: center; gap: 10px; }
+.imp-choix { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.imp-sel { flex: 1 1 180px; min-width: 0; }
+.imp-sel select { width: 100%; min-height: 44px; padding: 10px 12px; font-size: 0.86rem; }
+
+/* ---------- Formulaire de fiche complète ---------- */
+.fx-form { display: flex; flex-direction: column; gap: 14px; }
+.fx-champ { display: flex; flex-direction: column; gap: 6px; font-size: 0.85rem; font-weight: 700; }
+.fx-champ input, .fx-champ select, .fx-champ textarea { font-weight: 400; }
+.fx-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.fx-note {
+  margin: 0; padding: 12px 14px;
+  border: 1px dashed var(--border); border-radius: var(--radius-sm);
+  font-size: 0.8rem; line-height: 1.5; color: var(--text-soft);
+}
+.fx-flag {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--yellow); border: 1px solid var(--yellow);
+  border-radius: var(--radius-sm); padding: 2px 7px; margin-left: 6px;
+}
+.fx-adevine select { border-color: var(--yellow); }
