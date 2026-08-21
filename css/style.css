@@ -29,6 +29,10 @@
   --radius-sm: 12px;
   --font-display: "Anton", "Arial Narrow", Impact, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  /* Annotation technique : libellés, compteurs, unités. Jusqu'ici
+     simulée en capitales Inter + letter-spacing ; une vraie mono le
+     fait mieux, et aligne les chiffres au passage. */
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
 }
 
@@ -1191,12 +1195,10 @@ textarea { min-height: 90px; resize: vertical; }
   color: var(--text);
   font-family: inherit;
   border: 1px solid var(--accent);
-  background:
-    linear-gradient(120deg, var(--accent-soft), transparent 55%),
-    var(--card);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  /* fond et transition : voir « dégradé vivant » plus bas */
 }
-.home-cta:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+/* Survol conservé mais ENFERMÉ dans sa media query : hors pointeur
+   fin, :hover colle après un tap et laissait la carte soulevée. */
 .home-cta:active { transform: scale(0.99); }
 .home-cta-go {
   flex-shrink: 0;
@@ -2802,4 +2804,177 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   .btn-go .go-dot, .btn-go .go-label, .btn-go .go-slide { transition: none; }
   .btn-go:active .go-label, .btn-go:hover .go-label { transform: none; }
   .btn-go:active .go-slide, .btn-go:hover .go-slide { transform: none; }
+}
+
+/* =========================================================
+   FICHE EXERCICE — la version proposée dans l'aperçu.
+   Trois changements, aucun sur les couleurs de l'app.
+   ========================================================= */
+
+/* 1 · Les annotations techniques passent en vraie mono.
+   Elles étaient de l'Inter 600-800 en capitales avec du
+   letter-spacing — une imitation de mono. Le vrai caractère le fait
+   mieux, et surtout il aligne les chiffres. */
+.tag, .badge, .motion-tag, .motion-vue, .mo-leg-item, .ex-muscles-line strong {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.tag, .badge { font-weight: 600; }
+
+/* 2 · Les étapes d'exécution reçoivent un compteur mono à deux
+   chiffres. Le marqueur <ol> par défaut n'est pas stylable au-delà
+   de ::marker et sautait de « 9. » à « 10. » en décalant le texte ;
+   un compteur en largeur fixe garde la colonne droite. */
+.steps {
+  margin-left: 0;
+  list-style: none;
+  counter-reset: etape;
+  gap: 10px;
+}
+.steps li {
+  counter-increment: etape;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.steps li::before {
+  content: counter(etape, decimal-leading-zero);
+  flex: 0 0 auto;
+  width: 18px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.9;
+  color: var(--text-soft);
+}
+.mistakes { margin-left: 0; list-style: none; }
+.mistakes li { display: flex; align-items: flex-start; gap: 12px; }
+.mistakes li::before {
+  content: "!";
+  flex: 0 0 auto;
+  width: 18px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.8;
+  color: var(--red);
+  text-align: center;
+}
+
+/* 3 · L'accent est rationné sur la fiche. Il apparaissait cinq fois
+   (compteur d'étapes, légende du muscle, repère, flèche, disques) ;
+   il ne reste que là où il porte une information anatomique — dans
+   le schéma. Le reste passe en cendre. */
+.steps li::marker { color: transparent; }
+
+
+/* ---------- Pas-à-pas de saisie ----------
+   Le champ garde sa fonction : on peut toujours taper dedans. Les
+   deux boutons l'encadrent et écrivent à sa place pour le cas
+   courant. Cible de 48 px de haut, la même que le champ. */
+.stepper {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  flex: 1;
+  min-width: 168px;
+  max-width: 220px;
+}
+.stepper .set-input {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  text-align: center;
+  padding: 13px 6px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+/* Les flèches natives du input[type=number] doublonnent avec les
+   boutons et volent des pixels au chiffre. */
+.stepper .set-input::-webkit-outer-spin-button,
+.stepper .set-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper .set-input { -moz-appearance: textfield; appearance: textfield; }
+
+.step-btn {
+  flex: 0 0 auto;
+  width: 48px;
+  min-height: 48px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+.step-btn:hover { border-color: var(--accent-2); color: var(--accent-2); }
+.step-btn:active { background: var(--card-hover); }
+
+@media (max-width: 760px) {
+  /* Sur téléphone les deux groupes prennent chacun une ligne entière :
+     un pas-à-pas écrasé à 80 px n'est plus tapable au pouce. */
+  .stepper { max-width: none; flex-basis: 100%; }
+}
+
+/* =========================================================
+   CARTE « PROCHAINE SÉANCE » — dégradé vivant
+   -----------------------------------------------------------
+   Repris d'un composant React (gradient-button) dont la véritable
+   trouvaille n'est pas le dessin mais la TECHNIQUE : @property
+   enregistre une variable CSS avec un type, ce qui la rend
+   interpolable. Sans ça, une custom property saute d'une valeur à
+   l'autre et aucun dégradé ne peut s'animer.
+
+   Ce qui n'a PAS été repris : ses couleurs. Rose, violet, sarcelle
+   et jaune n'ont rien à faire ici — la carte reste sur l'accent
+   volt et le charbon de l'app. Seule la mécanique est empruntée.
+
+   Un seul endroit : la carte « Prochaine séance » de l'accueil.
+   C'est l'entrée principale de l'app, et c'est le seul écran où
+   rien d'autre n'est animé — le bouton « départ » (.btn-go) vit sur
+   l'écran Séance, les deux ne se croisent jamais.
+   ========================================================= */
+@property --cta-x { syntax: "<percentage>"; initial-value: 8%; inherits: false; }
+@property --cta-y { syntax: "<percentage>"; initial-value: 0%; inherits: false; }
+@property --cta-spread { syntax: "<percentage>"; initial-value: 62%; inherits: false; }
+@property --cta-stop { syntax: "<percentage>"; initial-value: 55%; inherits: false; }
+@property --cta-halo { syntax: "<color>"; initial-value: rgba(206, 255, 0, 0.12); inherits: false; }
+
+.home-cta {
+  background:
+    radial-gradient(var(--cta-spread) 140% at var(--cta-x) var(--cta-y),
+      var(--cta-halo) 0%, transparent var(--cta-stop)),
+    var(--card);
+  transition:
+    --cta-x 0.55s ease, --cta-y 0.55s ease, --cta-spread 0.55s ease,
+    --cta-stop 0.55s ease, --cta-halo 0.55s ease,
+    transform 0.2s ease, border-color 0.2s ease;
+}
+.theme-epure .home-cta { --cta-halo: rgba(209, 72, 54, 0.10); }
+
+/* Le halo balaie la carte et s'intensifie. Survol sur pointeur fin,
+   appui partout ailleurs — même raison que pour .btn-go : au
+   téléphone, :hover n'existe pas et colle après un tap. */
+@media (hover: hover) and (pointer: fine) {
+  .home-cta:hover {
+    --cta-x: 92%; --cta-y: 100%; --cta-spread: 105%; --cta-stop: 78%;
+    --cta-halo: rgba(206, 255, 0, 0.22);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .theme-epure .home-cta:hover { --cta-halo: rgba(209, 72, 54, 0.18); }
+}
+.home-cta:active {
+  --cta-x: 92%; --cta-y: 100%; --cta-spread: 105%; --cta-stop: 78%;
+  --cta-halo: rgba(206, 255, 0, 0.22);
+}
+.theme-epure .home-cta:active { --cta-halo: rgba(209, 72, 54, 0.18); }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-cta { transition: border-color 0.2s ease; }
+  .home-cta:hover { transform: none; }
 }
