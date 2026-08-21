@@ -50,14 +50,18 @@ function closeViewPanel(immediat) {
   if (!el) return;
   el.classList.remove("sheet-in");
   const rendre = () => {
-    if (!panelRetour) { el.classList.add("hidden"); return; }
-    const { noeud, parent, suivant } = panelRetour;
-    noeud.classList.remove("active", "as-panel");
-    parent.insertBefore(noeud, suivant);      // remis à sa place exacte
-    panelRetour = null;
+    if (panelRetour) {
+      const { noeud, parent, suivant } = panelRetour;
+      noeud.classList.remove("active", "as-panel");
+      parent.insertBefore(noeud, suivant);    // remis à sa place exacte
+      panelRetour = null;
+    }
     el.classList.add("hidden");
+    /* Toujours vider : un panneau généré laissé dans le DOM reste
+       trouvable par les querySelectorAll globaux des autres fichiers,
+       qui reprendraient des boutons invisibles pour des vivants. */
     const host = document.getElementById("panel-host");
-    if (host) host.innerHTML = "";            // vide le contenu généré (réglages)
+    if (host) host.innerHTML = "";
   };
   if (immediat) rendre();
   else setTimeout(() => { if (!el.classList.contains("sheet-in")) rendre(); }, 240);

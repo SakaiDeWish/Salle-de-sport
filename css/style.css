@@ -3191,3 +3191,62 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   border-radius: var(--radius-sm); padding: 2px 7px; margin-left: 6px;
 }
 .fx-adevine select { border-color: var(--yellow); }
+
+/* ---------- Feuille « Ajouter du contexte » ----------
+   Trois grandes cibles carrées : on la manipule au pouce, souvent
+   debout, parfois d'une main. */
+.ctx-grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+}
+.ctx-tuile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px;
+  min-height: 104px;
+  padding: 18px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+/* Le survol n'existe pas au doigt, et « colle » après un appui : on le
+   réserve aux pointeurs fins, et on double l'effet sur :active. */
+@media (hover: hover) and (pointer: fine) {
+  .ctx-tuile:hover { border-color: var(--accent-2); background: var(--card-hover); }
+  .ctx-tuile:hover .ctx-ico { color: var(--accent-2); }
+}
+.ctx-tuile:active { border-color: var(--accent-2); background: var(--card-hover); }
+.ctx-ico { color: var(--text-soft); }
+.ctx-ico .icon { width: 26px; height: 26px; }
+.ctx-lab { font-size: 0.9rem; font-weight: 700; }
+.ctx-note {
+  margin: 16px 0 0;
+  font-size: 0.82rem; line-height: 1.5; color: var(--text-soft);
+}
+
+/* ---------- Photo à lire ---------- */
+.imp-image {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+}
+/* Pas de cadre fixe : l'élément épouse la photo, sinon une photo en
+   portrait se retrouve encadrée de deux barres noires. */
+.imp-image img {
+  display: block; margin: 0 auto;
+  max-width: 100%; max-height: 320px; height: auto;
+  border-radius: var(--radius-sm);
+}
+/* Agrandie, l'image reprend sa hauteur réelle : c'est là que l'appui
+   long a assez de texte à saisir. */
+.imp-image.grand img { max-height: none; }
+.imp-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.imp-cons { margin: 0; font-size: 0.88rem; line-height: 1.5; }
+.imp-cons-sub { margin: 0; font-size: 0.78rem; line-height: 1.45; color: var(--text-soft); }

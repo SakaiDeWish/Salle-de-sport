@@ -415,3 +415,160 @@ function openPickerPour(nom, onChoisi) {
     brancher();
   });
 }
+
+/* ==================== AJOUTER UNE PHOTO OU UN FICHIER ====================
+
+   CE QUI EST RÉELLEMENT POSSIBLE, ET CE QUI NE L'EST PAS.
+
+   Aucune API web ne permet d'appeler Live Text ou Google Lens depuis
+   du code. Mais les deux systèmes agissent sur les images AFFICHÉES
+   DANS UNE PAGE :
+     — Safari (iOS 16+) applique Live Text aux <img> d'un site : un
+       appui long propose « Sélectionner le texte » ;
+     — Chrome sur Android propose « Rechercher avec Google Lens » au
+       même appui long, et Lens sait extraire le texte.
+
+   Il suffit donc d'AFFICHER la photo dans l'app pour donner accès à
+   l'OCR du système — sans bibliothèque, sans clé d'API, sans envoyer
+   la photo nulle part. Elle ne quitte jamais l'appareil : elle vit
+   dans une URL d'objet en mémoire, révoquée quand on la retire.
+
+   Un fichier texte, lui, n'a besoin d'aucune de ces contorsions : il
+   est lu et versé directement dans le champ.
+   ==================================================================== */
+
+const IMP_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const IMP_ANDROID = /Android/i.test(navigator.userAgent);
+const IMP_MOBILE = IMP_IOS || IMP_ANDROID;
+
+let impObjectUrl = null;
+
+/* Marche à suivre, dans les mots de la plateforme. Ne rien dire de
+   générique : « utilise l'OCR de ton téléphone » n'aide personne. */
+function impConsigne() {
+  /* Ne sont en gras que les mots à retrouver du regard dans les menus
+     du téléphone. Tout mettre en gras revient à ne rien souligner. */
+  if (IMP_IOS) return `
+    <p class="imp-cons">Appuie longuement sur la photo, puis
+      <strong>Sélectionner le texte</strong> → <strong>Tout sélectionner</strong> →
+      <strong>Copier</strong>. Reviens ici et touche <strong>Coller le texte</strong>.</p>
+    <p class="imp-cons-sub">C'est Live Text, intégré à iOS depuis la version 16. La photo ne quitte pas ton téléphone.</p>`;
+  if (IMP_ANDROID) return `
+    <p class="imp-cons">Appuie longuement sur la photo, puis
+      <strong>Rechercher avec Google Lens</strong> → onglet <strong>Texte</strong> →
+      <strong>Tout sélectionner</strong> → <strong>Copier</strong>. Reviens ici et touche
+      <strong>Coller le texte</strong>.</p>
+    <p class="imp-cons-sub">Selon ton navigateur, l'entrée peut s'appeler « Rechercher l'image ».</p>`;
+  return `
+    <p class="imp-cons">Sur ordinateur, aucun outil de reconnaissance n'est intégré au navigateur.
+      Deux solutions : rouvrir cette page sur ton téléphone, ou passer la photo par
+      <a href="https://lens.google.com/" target="_blank" rel="noopener">Google Lens</a>
+      pour en extraire le texte, puis le coller ici.</p>`;
+}
+
+function impAfficheImage(file) {
+  const el = document.getElementById("imp-image");
+  if (!el) return;
+  if (impObjectUrl) URL.revokeObjectURL(impObjectUrl);
+  impObjectUrl = URL.createObjectURL(file);
+  el.classList.remove("hidden");
+  el.classList.remove("grand");
+  el.innerHTML = `
+    <img id="imp-img" src="${impObjectUrl}" alt="Photo du programme à lire">
+    <div class="imp-actions">
+      <button type="button" class="btn btn-ghost btn-sm" id="imp-img-zoom">Agrandir</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="imp-img-retirer">Retirer la photo</button>
+    </div>
+    ${impConsigne()}`;
+
+  /* Une photo de programme est un mur de texte : réduite à 320 px de
+     haut, on ne vise plus rien au pouce. Le bouton rend la hauteur
+     réelle, ce qui donne à l'appui long de quoi mordre. */
+  const zoom = document.getElementById("imp-img-zoom");
+  zoom.addEventListener("click", () => {
+    const grand = el.classList.toggle("grand");
+    zoom.textContent = grand ? "Réduire" : "Agrandir";
+    document.getElementById("imp-img").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.getElementById("imp-img-retirer").addEventListener("click", () => {
+    if (impObjectUrl) { URL.revokeObjectURL(impObjectUrl); impObjectUrl = null; }
+    el.classList.add("hidden");
+    el.classList.remove("grand");
+    el.innerHTML = "";
+  });
+  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+/* Un fichier texte va directement dans le champ : rien à extraire. */
+function impLitFichier(file) {
+  if (file.type.startsWith("image/")) { impAfficheImage(file); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    const zone = document.getElementById("imp-txt");
+    zone.value = String(fr.result || "");
+    toast(`« ${file.name} » chargé — touche Analyser.`);
+    zone.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+  fr.onerror = () => toast("Ce fichier n'a pas pu être lu.");
+  fr.readAsText(file);
+}
+
+/* Feuille « Ajouter du contexte » : trois entrées, comme partout
+   ailleurs sur mobile. L'appareil photo n'a de sens que là où il
+   existe — sur ordinateur la tuile ouvrirait un sélecteur de fichiers
+   déguisé, donc elle n'apparaît pas. */
+function openContexteSheet() {
+  const tuile = (id, ico, lab) => `
+    <button type="button" class="ctx-tuile" data-ctx="${id}">
+      <span class="ctx-ico">${ico}</span>
+      <span class="ctx-lab">${lab}</span>
+    </button>`;
+
+  openHtmlPanel("Ajouter du contexte", `
+    <div class="ctx-grille">
+      ${IMP_MOBILE ? tuile("camera", icon("camera"), "Appareil photo") : ""}
+      ${tuile("photo", icon("image"), "Photos")}
+      ${tuile("fichier", icon("file"), "Fichiers")}
+    </div>
+    <p class="ctx-note">
+      Une photo est affichée telle quelle : c'est ${IMP_IOS ? "Live Text d'iOS"
+        : IMP_ANDROID ? "Google Lens" : "l'outil de ton choix"} qui en extrait le texte,
+      pas l'application. Rien n'est envoyé sur un serveur.
+      Un fichier texte (.txt, .md, .csv) est lu directement.
+    </p>`);
+
+  document.querySelectorAll("[data-ctx]").forEach(b =>
+    b.addEventListener("click", () => {
+      closeViewPanel();
+      /* Le clic sur l'input doit suivre la fermeture du panneau, sinon
+         Safari considère qu'il ne vient plus d'un geste utilisateur et
+         refuse d'ouvrir le sélecteur. */
+      setTimeout(() => document.getElementById("imp-f-" + b.dataset.ctx)?.click(), 260);
+    }));
+}
+
+["camera", "photo", "fichier"].forEach(k => {
+  document.getElementById("imp-f-" + k)?.addEventListener("change", (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (f) impLitFichier(f);
+    e.target.value = "";     // permet de reprendre le MÊME fichier ensuite
+  });
+});
+
+document.getElementById("imp-contexte")?.addEventListener("click", openContexteSheet);
+
+document.getElementById("imp-coller")?.addEventListener("click", async () => {
+  /* Le presse-papiers exige HTTPS, un geste utilisateur, et peut être
+     refusé sans explication. On ne suppose donc jamais qu'il répond. */
+  try {
+    const t = await navigator.clipboard.readText();
+    if (!t || !t.trim()) { toast("Le presse-papiers est vide."); return; }
+    document.getElementById("imp-txt").value = t;
+    toast("Texte collé — touche Analyser.");
+  } catch {
+    toast("Ton navigateur n'autorise pas la lecture du presse-papiers : colle à la main dans le champ.");
+    document.getElementById("imp-txt").focus();
+  }
+});
