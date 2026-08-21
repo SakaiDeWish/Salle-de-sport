@@ -199,6 +199,24 @@ function renderHome() {
   });
   const moisTemps = thisMonth.reduce((s, r) => s + r.dureeMs, 0);
   const moisVolume = thisMonth.reduce((s, r) => s + (r.volume || 0), 0);
+
+  /* MOIS PRÉCÉDENT, SUR LA MÊME PORTION DE MOIS.
+     Comparer un mois en cours à un mois complet est trompeur : le 3
+     du mois, la variation serait toujours un effondrement de 90 %,
+     et le badge dirait n'importe quoi vingt-huit jours sur trente.
+     On borne donc le mois précédent au même quantième. Le 3 août se
+     compare au 1er-3 juillet, pas à juillet entier. */
+  const jourDuMois = now.getDate();
+  const refPrec = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonth = h.filter(r => {
+    const d = new Date(r.date);
+    return d.getMonth() === refPrec.getMonth()
+      && d.getFullYear() === refPrec.getFullYear()
+      && d.getDate() <= jourDuMois;
+  });
+  const precTemps = lastMonth.reduce((s, r) => s + r.dureeMs, 0);
+  const precVolume = lastMonth.reduce((s, r) => s + (r.volume || 0), 0);
+  const contexteMois = "par rapport à la même période du mois dernier";
   const prs = computePRs();
   const lastPR = prs.slice().sort((a, b) => b.best.date - a.best.date)[0] || null;
   const quote = QUOTES[new Date().getDate() % QUOTES.length];
@@ -251,13 +269,14 @@ function renderHome() {
 
     mois: () => `
       <div class="stat-tiles">
-        ${[["seancesMois", thisMonth.length, "Séances ce mois"],
-           ["tempsMois", fmtClock(moisTemps), "Temps ce mois"],
-           ["volumeMois", Math.round(moisVolume).toLocaleString("fr-FR") + " kg", "Volume ce mois"]
-          ].map(([k, v, lab]) => `
+        ${[["seancesMois", thisMonth.length, "Séances ce mois", thisMonth.length, lastMonth.length],
+           ["tempsMois", fmtClock(moisTemps), "Temps ce mois", moisTemps, precTemps],
+           ["volumeMois", Math.round(moisVolume).toLocaleString("fr-FR") + " kg", "Volume ce mois", moisVolume, precVolume]
+          ].map(([k, v, lab, a, p]) => `
           <div class="card stat-tile">
             <span class="chrono-value">${v}</span>
             <span class="chrono-label">${lab}${statInfo(k)}</span>
+            ${deltaBadge(a, p, { bon: "haut", contexte: contexteMois })}
             ${statLigne(k)}
           </div>`).join("")}
       </div>`,
@@ -269,6 +288,16 @@ function renderHome() {
         <p class="chrono-label">Poids de corps${statInfo("poidsCorps")}</p>
         ${weights.length
           ? `<p class="goal-big">${weights[weights.length - 1].kg} <span class="goal-left">kg</span></p>
+             ${/* LE SEUL ENDROIT OÙ LE SENS DÉPEND DE L'UTILISATEUR.
+                  Monter est un progrès en prise de masse et un recul
+                  en sèche : la couleur suit donc l'objectif du profil,
+                  pas le signe du nombre. Sans objectif connu, le badge
+                  reste cendre — il montre la direction sans trancher.
+                  Seuil à 1 % : sur 80 kg, c'est 800 g, déjà lisible. */""}
+             ${weights.length >= 2 ? deltaBadge(
+                 weights[weights.length - 1].kg, weights[0].kg,
+                 { bon: { masse: "haut", force: "haut", seche: "bas" }[profil?.objectif] || "neutre",
+                   seuil: 1, contexte: "depuis le premier relevé" }) : ""}
              <p class="goal-left">Relevé du ${new Date(weights[weights.length - 1].date).toLocaleDateString("fr-FR")}${
                weights.length >= 2 ? ` · ${(weights[weights.length - 1].kg - weights[0].kg >= 0 ? "+" : "")}${(weights[weights.length - 1].kg - weights[0].kg).toFixed(1)} kg depuis le début` : ""}</p>`
           : `<p class="goal-left">Aucun relevé — ajoute-le depuis l'onglet Suivi.</p>`}

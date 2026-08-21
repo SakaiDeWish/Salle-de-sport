@@ -2978,3 +2978,39 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   .home-cta { transition: border-color 0.2s ease; }
   .home-cta:hover { transform: none; }
 }
+
+/* ---------- Badge de variation ----------
+   Rectangle arrondi à 12 px, et non la pilule à 999 px des .tag :
+   un badge de variation n'est pas une étiquette, c'est une mesure.
+   La forme différente porte la différence de nature. */
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  vertical-align: middle;
+  /* Dans un parent en colonne flex (les cartes de l'accueil), un
+     inline-flex s'étire quand même sur toute la largeur : l'étirement
+     vient de align-self, pas du display. Il faut le dire. */
+  align-self: flex-start;
+  width: fit-content;
+}
+.delta-tri { width: 10px; height: 10px; flex: 0 0 auto; }
+.delta-bon { color: var(--green); }
+.delta-bon .delta-tri { fill: var(--green); }
+.delta-mauvais { color: var(--red); }
+.delta-mauvais .delta-tri { fill: var(--red); }
+.delta-neutre { color: var(--text-soft); }
+.delta-neutre .delta-tri { fill: var(--text-soft); }
+
+/* Dans une tuile de stat, le badge se pose sous le chiffre. */
+.stat-tile .delta, .home-tile .delta { margin-top: 2px; }

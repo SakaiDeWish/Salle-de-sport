@@ -26,6 +26,58 @@ function discSet(key, open) {
   saveJSON(STORAGE_KEYS.disclosure, m);
 }
 
+/* ==================== BADGE DE VARIATION ====================
+   Un triangle de sens et un pourcentage : hausse, baisse, ou stable.
+
+   DEUX CHOSES QUE CE BADGE NE CONFOND PAS.
+
+   1. Le SENS et le JUGEMENT. Le triangle dit ce qui s'est passé, la
+      couleur dit si c'est bien — et « plus » n'est pas toujours
+      « mieux ». Prendre du poids est un progrès en prise de masse et
+      un recul en sèche. L'appelant le sait, le badge non : d'où
+      l'option `bon`, qui peut valoir "haut", "bas" ou "neutre". En
+      neutre, le triangle indique toujours la direction mais la
+      couleur reste cendre : un fait sans verdict.
+
+   2. Le ZÉRO et l'ABSENCE. Sans point de comparaison, ou quand le
+      précédent vaut zéro, la variation en pourcentage n'existe pas
+      — une division par zéro donnerait « +Infini % ». Le badge ne
+      s'affiche alors PAS. Un premier mois n'a pas de mois précédent,
+      et le dire par un blanc est plus honnête qu'un faux chiffre. */
+const DELTA_TRIANGLES = {
+  up: '<path d="M6 3.5 L10 8.5 L2 8.5 Z"/>',
+  down: '<path d="M6 8.5 L2 3.5 L10 3.5 Z"/>',
+  flat: '<path d="M9 6 L4 9.5 L4 2.5 Z"/>'
+};
+
+function deltaBadge(actuel, precedent, opts = {}) {
+  const { bon = "haut", seuil = 2, contexte = "" } = opts;
+  const a = Number(actuel), p = Number(precedent);
+  if (!Number.isFinite(a) || !Number.isFinite(p) || p === 0) return "";
+
+  const pct = ((a - p) / Math.abs(p)) * 100;
+  const abs = Math.abs(pct);
+  const stable = abs < seuil;
+  const hausse = pct > 0;
+
+  /* Sous le seuil, on ne colore pas : une variation de 1 % sur un
+     volume mensuel est du bruit, pas une tendance. */
+  let ton = "neutre";
+  if (!stable && bon !== "neutre") ton = (hausse === (bon === "haut")) ? "bon" : "mauvais";
+
+  const sens = stable ? "flat" : (hausse ? "up" : "down");
+  const chiffre = abs.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+  const mot = stable ? "stable" : (hausse ? "en hausse de" : "en baisse de");
+  const lu = stable
+    ? `Stable${contexte ? " " + contexte : ""}`
+    : `${mot} ${chiffre} %${contexte ? " " + contexte : ""}`;
+
+  return `<span class="delta delta-${ton}" role="img" aria-label="${esc(lu)}">
+    <svg class="delta-tri" viewBox="0 0 12 12" aria-hidden="true" focusable="false">${DELTA_TRIANGLES[sens]}</svg>
+    <span class="delta-n">${chiffre} %</span>
+  </span>`;
+}
+
 /* Bloc dépliable standard.
    summary : ce qu'on voit toujours (court, l'essentiel)
    detail  : ce qui se déplie — DOIT expliquer quoi/pourquoi (`what`)
