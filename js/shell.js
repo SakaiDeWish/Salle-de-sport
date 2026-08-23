@@ -160,8 +160,16 @@ function settingsHtml() {
       </div>
       <label class="set-row set-check">
         <span class="set-lab">Vibration
-          <span class="set-sub">Une impulsion brève, si l'appareil le permet.</span></span>
+          <span class="set-sub">Trois tapes brèves sur les 3 dernières secondes du repos,
+            puis une impulsion pleine à la reprise. Si l'appareil le permet.</span></span>
         <input type="checkbox" id="set-vibrate" ${restVibrateOn() ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Rappel si un exercice traîne
+          <span class="set-sub">Double vibration quand un exercice dépasse la durée prévue
+            par le programme — ses séries, plus ses repos. En séance libre, aucune durée
+            n'est prévue : pas de rappel.</span></span>
+        <input type="checkbox" id="set-debord" ${debordOn() ? "checked" : ""}>
       </label>
       <button class="btn btn-ghost btn-sm" id="set-test-son">Tester le signal</button>
     </div>
@@ -226,6 +234,9 @@ function openSettings() {
     if (typeof beep === "function") beep(true, +vol.value);
   });
   v.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restVibrate, v.checked ? "1" : "0"));
+  const dbd = document.getElementById("set-debord");
+  if (dbd) dbd.addEventListener("change", () =>
+    localStorage.setItem(STORAGE_KEYS.exDeborde, dbd.checked ? "1" : "0"));
   document.getElementById("set-test-son").addEventListener("click", () => {
     if (typeof beep === "function") beep(true);
   });

@@ -715,6 +715,26 @@ textarea { min-height: 90px; resize: vertical; }
 }
 .rest-countdown.overtime { color: var(--red); }
 
+/* Les trois dernières secondes. Le préavis existe d'abord par la
+   vibration, mais elle est invisible, peut être coupée dans les
+   réglages, et n'existe pas sur ordinateur : le décompte bat donc
+   aussi à l'œil. Une pulsation par seconde, calée sur les impulsions.
+
+   VERT, PAS L'ACCENT. En thème sombre l'accent citron irait très bien,
+   mais en thème clair il vaut #d14836 — un rouge-brique que rien ne
+   distingue du #b3261e du dépassement juste en dessous. Deux rouges
+   presque identiques pour dire « prépare-toi » et « tu débordes » :
+   c'est exactement l'inverse d'un signal. */
+.rest-countdown.preavis { color: var(--green); animation: preavis-bat 1s ease-in-out infinite; }
+@keyframes preavis-bat {
+  0%, 100% { transform: scale(1); }
+  18%      { transform: scale(1.09); }
+  45%      { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rest-countdown.preavis { animation: none; }
+}
+
 .rest-controls { display: flex; gap: 12px; }
 
 /* ---------- Sélecteur d'exercice ---------- */

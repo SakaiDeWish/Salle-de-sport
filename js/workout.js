@@ -193,6 +193,49 @@ function beep(force, volume) {
   }
 }
 
+/* Vibration SEULE, sans le bip. Même interrupteur que le signal de fin
+   de repos : qui a coupé la vibration ne veut pas la retrouver
+   ailleurs sous un autre nom. */
+function vibre(motif) {
+  if (localStorage.getItem(STORAGE_KEYS.restVibrate) === "0") return;
+  try { navigator.vibrate && navigator.vibrate(motif); } catch { /* non supporté */ }
+}
+
+/* ==================== PRÉAVIS DE REPRISE ====================
+
+   Le bip de fin de repos arrive quand le repos est DÉJÀ fini : on se
+   remet en position après coup, et la série commence en retard sur le
+   chrono. Trois impulsions brèves AVANT la reprise laissent le temps
+   de se placer.
+
+   Elles se distinguent du signal final par leur durée, pas par leur
+   nombre : trois tapes de 45 ms, puis la vibration pleine de 180 ms.
+   C'est un décompte, pas une seconde alarme.
+
+   Ce préavis ne se rattrape jamais. tick() ne bat pas quand l'app est
+   en arrière-plan ; au réveil, le repos peut être terminé depuis une
+   minute. Prévenir alors d'une reprise déjà passée serait pire que se
+   taire — d'où la condition « il reste encore du temps ». */
+const REST_PREAVIS_S = 3;
+const REST_PREAVIS_MS = 45;
+
+/* ==================== EXERCICE QUI TRAÎNE ====================
+
+   « Plus long que la normale » suppose une normale. Ce n'est pas une
+   invention pour l'occasion : c'est le modèle qui sert déjà à estimer
+   la durée d'une séance (estimateDayMinutes) — 40 s d'effort par
+   série, plus le repos prescrit. Un exercice qui dépasse ce total a
+   pris plus de temps que ce que le programme prévoyait.
+
+   SANS PRESCRIPTION, PAS DE RAPPEL. En séance libre, aucune normale
+   n'existe : se fabriquer un seuil pour avoir quelque chose à dire
+   vaudrait moins que se taire. */
+const EFFORT_PAR_SERIE_S = 40;
+const DEBORD_VIB = [70, 110, 70];   // double impulsion : reconnaissable
+
+STORAGE_KEYS.exDeborde = "gymcoach.exDeborde";
+function debordOn() { return localStorage.getItem(STORAGE_KEYS.exDeborde) !== "0"; }
+
 /* ---------- Éléments ---------- */
 const elSetup = document.getElementById("seance-setup");
 const elLive = document.getElementById("seance-live");
@@ -553,6 +596,31 @@ function targetSetsOf(ex) {
   return m ? parseInt(m[1], 10) : null;
 }
 
+/* Durée « normale » d'un exercice, en millisecondes. Zéro quand il n'y
+   a pas de prescription : l'absence de normale se dit par zéro, pas
+   par un chiffre par défaut. */
+function dureeNormaleMs(ex) {
+  const n = targetSetsOf(ex);
+  if (!n) return 0;
+  return n * (EFFORT_PAR_SERIE_S + (ex.restSec || 0)) * 1000;
+}
+
+/* Prévient UNE fois, et le retient dans la séance enregistrée : une
+   app rechargée ne doit pas re-signaler ce qu'elle a déjà signalé.
+   Le repère est posé même si le rappel est désactivé, sinon l'activer
+   en cours d'exercice déclencherait une alerte périmée. */
+function signaleDebordement(ex) {
+  if (!ex.startedAt || ex.endedAt || ex.debordVu) return;
+  const normale = dureeNormaleMs(ex);
+  if (!normale || exerciseElapsed(ex) <= normale) return;
+  ex.debordVu = true;
+  saveLive();
+  if (!debordOn()) return;
+  vibre(DEBORD_VIB);
+  toast(`« ${ex.nom} » dépasse les ${Math.round(normale / 60000)} min prévues. `
+      + `Simple repère : rien ne t'oblige à accélérer.`);
+}
+
 /* Séries restantes POUR UN EXERCICE (point 2).
    Sur un programme préfabriqué on connaît la prescription ; en séance
    libre il n'y a pas de cible, on compte simplement ce qui est fait. */
@@ -742,6 +810,7 @@ function tick() {
   live.exercises.forEach((ex, i) => {
     const el = document.getElementById("ex-chrono-" + i);
     if (el) el.textContent = fmtClock(exerciseElapsed(ex));
+    signaleDebordement(ex);
   });
 
   updateMinibar();
@@ -753,8 +822,14 @@ function tick() {
     const cd = document.getElementById("rest-countdown");
     const ring = document.getElementById("rest-ring");
     if (remaining > 0) {
-      cd.textContent = fmtSec(Math.ceil(remaining));
+      const s = Math.ceil(remaining);
+      cd.textContent = fmtSec(s);
       cd.classList.remove("overtime");
+      /* Une tape par seconde sur les trois dernières, et une seule par
+         seconde : tick() bat quatre fois plus vite qu'elles. */
+      const preavis = s <= REST_PREAVIS_S;
+      cd.classList.toggle("preavis", preavis);
+      if (preavis && rest.preavis !== s) { rest.preavis = s; vibre(REST_PREAVIS_MS); }
       if (ring) {
         ring.classList.remove("ring-over");
         // l'anneau se vide à mesure que le repos s'écoule
@@ -763,6 +838,7 @@ function tick() {
     } else {
       if (!rest.beeped) { beep(); rest.beeped = true; }
       cd.textContent = "+" + fmtSec(Math.floor(-remaining));
+      cd.classList.remove("preavis");
       cd.classList.add("overtime");
       if (ring) {
         ring.classList.add("ring-over");
