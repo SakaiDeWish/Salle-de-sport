@@ -18103,3 +18103,185 @@ EXERCISE_MOTIONS["crunch-machine"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M158 82 L172 70 M164 71 L172 70 L171 78"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   146. L-SIT JAMBES TENDUES
+        (l-sit-jambes-tendues)
+
+   MÊME RIG QUE LE L-SIT LESTÉ, ET C'EST VOULU. Les deux exercices sont
+   la même position ; seul le lest les sépare. Reprendre la géométrie
+   déjà vérifiée du n° 140 plutôt que d'en redessiner une variante fait
+   que les deux fiches se superposent exactement à l'écran — ce qui est
+   la vérité du mouvement.
+
+   Barres parallèles à 26 du sol, mains en (96 124), épaules en (96 88)
+   — bras verrouillé de 36 exactement. Bassin en (92 117), quatre
+   unités en arrière de l'aplomb des épaules, 33 au-dessus du sol.
+   Jambes tendues à l'horizontale : genou (118 117), cheville (144 117),
+   pointes tendues.
+
+   TOUT EST SAGITTAL : la vue de profil est exacte, aucun segment n'est
+   raccourci par la projection. Fémur 26, tibia 26, pied 9,00.
+
+   CE QU'IL FAUT TENIR. Les deux jambes tendues imposent 7,35 unités
+   poids × longueur de couple fléchisseur à la hanche, en permanence et
+   sans aucune compensation passive. C'est ce chiffre — et non un
+   ressenti — qui situe cette version par rapport au groupé (4,99).
+
+   PAS DE FLÈCHES. Il n'y a ni concentrique ni excentrique : la position
+   n'a qu'une durée. L'anneau de maintien dit ce temps ; une flèche
+   affirmerait un déplacement qui n'existe pas.
+
+   SANS LEST, LE REPÈRE CHANGE DE PLACE. Le n° 140 dessine une masse aux
+   chevilles ; ici, rien n'y pend, et c'est la ligne d'horizontale des
+   jambes qui devient le seul juge de la position.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["l-sit-jambes-tendues"] = {
+  vb: "78 66 84 92",
+  dur: 4,
+  isometrique: true,
+  maintien: "126 100",
+  alt: "Assis entre deux barres parallèles, bras tendus et verrouillés qui poussent le corps vers le haut, bassin décollé de 58 cm du sol, jambes tendues à l'horizontale et pointes tendues. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="82" y1="150" x2="158" y2="150"/>
+    <!-- BARRES PARALLÈLES : le point d'appui, à 26 du sol -->
+    <line class="mo-bar3" x1="86" y1="124" x2="112" y2="124"/>
+    <line class="mo-gear" x1="90" y1="124" x2="90" y2="150"/>
+    <line class="mo-gear" x1="108" y1="124" x2="108" y2="150"/>
+    <!-- GARDE SOUS LE BASSIN : 33 unités, soit 58 cm. C'est elle qui
+         distingue un vrai L-sit d'un appui traînant. -->
+    <line class="mo-rom" x1="92" y1="117" x2="92" y2="150"/>
+    <line class="mo-rom" x1="89" y1="150" x2="95" y2="150"/>
+    <!-- HORIZONTALE DES JAMBES : sans lest, c'est le seul juge -->
+    <line class="mo-rom" x1="92" y1="117" x2="156" y2="117"/>
+    <!-- BRAS VERROUILLÉ, strictement vertical : 36 exactement -->
+    <circle class="mo-hand" cx="96" cy="124" r="3.2"/>
+    <line class="mo-limb" x1="96" y1="124" x2="96" y2="88"/>
+    <circle class="mo-joint" cx="96" cy="88" r="3"/>
+    <!-- TÊTE : son écart à l'épaule (11) est le repère de la dépression
+         scapulaire. Épaules qui montent, écart qui se referme. -->
+    <circle class="mo-head" cx="93" cy="77" r="7"/>
+    <!-- TRONC puis JAMBES TENDUES à l'horizontale -->
+    <line class="mo-body" x1="96" y1="88" x2="92" y2="117"/>
+    <circle class="mo-joint" cx="92" cy="117" r="3"/>
+    <line class="mo-limb" x1="92" y1="117" x2="118" y2="117"/>
+    <circle class="mo-joint" cx="118" cy="117" r="2.6"/>
+    <line class="mo-limb" x1="118" y1="117" x2="144" y2="117"/>
+    <circle class="mo-joint" cx="144" cy="117" r="2.6"/>
+    <line class="mo-limb" x1="144" y1="117" x2="152.46" y2="120.08"/>`,
+  muscles: [
+    { nom: "Grand droit", svg: `<ellipse cx="95" cy="103" rx="3.2" ry="10"/>` },
+    { nom: "Fléchisseurs de hanche", svg: `<circle cx="98" cy="114" r="4.5"/>` },
+    { nom: "Quadriceps", svg: `<ellipse cx="112" cy="115" rx="9" ry="2.6"/>` },
+    { nom: "Triceps + dépression scapulaire",
+      svg: `<ellipse cx="99" cy="98" rx="3" ry="8"/>` }
+  ],
+  parts: []
+};
+
+/* ─────────────────────────────────────────────────────────────
+   147. L-SIT GROUPÉ (GENOUX REPLIÉS)
+        (l-sit-groupe)
+
+   ÉTAPE 1 — CE QUI CHANGE, ET CE QUI NE CHANGE PAS.
+
+   L'APPUI EST IDENTIQUE, au point près : barres à 26 du sol, mains
+   (96 124), épaules (96 88), bras verrouillé de 36, bassin (92 117) à
+   33 au-dessus du sol. C'est le fond de l'affaire — le groupé n'est pas
+   un autre exercice, c'est le même appui avec un levier plus court. Les
+   deux schémas se superposent donc du sol jusqu'à la hanche, et
+   divergent à partir d'elle seulement.
+
+   LES JAMBES. Cuisse à 10° AU-DESSUS de l'horizontale : genou en
+   (117,61 112,49), fémur 26,004. Le groupé ne se tient pas cuisses
+   pendantes — « cuisses sous l'horizontale » est la deuxième erreur de
+   la fiche, et le schéma doit montrer la version juste. Tibia VERTICAL,
+   cheville en (117,61 138,49), tibia 26,000, ce qui donne un genou à
+   80,0° : le groupé de manuel. Pied de 9,00 pointé vers l'avant-bas.
+
+   LE TIBIA A ÉTÉ REDRESSÉ APRÈS MESURE, ET C'EST TOUT L'INTÉRÊT DE
+   MESURER. Première version : tibia incliné de 15° vers l'arrière, comme
+   on se figure spontanément un groupé. L'axe du tibia passait alors à
+   2,44 du bout de la barre — l'air de passer devant. Sauf qu'un trait de
+   membre fait 4 d'épaisseur et une barre 5 : bord à bord, le tibia
+   ENTRAIT DANS LA BARRE de 2,06. Le dessin montrait une jambe traversant
+   le matériel.
+
+   Redressé à la verticale, l'axe passe à 5,61 du bout de barre, soit
+   1,11 de dégagement bord à bord. Et ce n'est pas un compromis : avec la
+   cuisse à l'horizontale, un tibia vertical EST le groupé canonique.
+   La contrainte physique et la forme juste disaient la même chose.
+
+   RIEN D'AUTRE NE TOUCHE : cheville à 11,51 du sol, orteil à 7,71,
+   cuisse à 5,86 du bout de barre bord à bord.
+
+   POURQUOI C'EST PLUS ACCESSIBLE, EN CHIFFRES. Avec les mêmes
+   paramètres segmentaires que le n° 140 (masses et centres de masse
+   standards), le couple fléchisseur de hanche vaut 5,46 unités poids ×
+   longueur, contre 7,35 jambes tendues : 74 %, soit un quart de moins.
+   La différence ne vient pas de la force demandée aux bras — identique —
+   mais du seul rapprochement du centre de masse des jambes.
+
+   Le chiffre a suivi la correction du tibia : il valait 4,99 avec la
+   jambe repliée vers l'arrière. Redresser le tibia éloigne le pied, donc
+   réduit le gain. Un schéma faux aurait promis un tiers de moins là où
+   la position réellement dessinée en donne un quart.
+
+   PAS DE FLÈCHES, comme aux deux autres : une position tenue n'a qu'une
+   durée. L'anneau de maintien la dit.
+
+   LE REPÈRE DESSINÉ. La ligne d'horizontale part de la hanche : elle
+   n'est plus la cible des chevilles comme au L-sit tendu, mais le
+   PLANCHER des cuisses. C'est le même trait au même endroit, et il ne
+   dit pas la même chose — d'où le commentaire dans le SVG.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["l-sit-groupe"] = {
+  /* CADRE ET DÉCOR STRICTEMENT IDENTIQUES aux n° 140 et 146. Le groupé
+     est plus compact : un viewBox ajusté à lui l'aurait dessiné plus
+     GROS que les deux autres, et comparer trois figures à trois
+     échelles différentes ne compare rien. Même fenêtre, même sol,
+     mêmes barres, même anneau — seules les jambes changent, ce qui est
+     exactement ce que la progression a de vrai. Anneau à 15,05 des
+     jambes, rayon 9 : aucun contact. */
+  vb: "78 66 84 92",
+  dur: 4,
+  isometrique: true,
+  maintien: "126 100",
+  alt: "Assis entre deux barres parallèles, bras tendus et verrouillés, bassin décollé de 58 cm du sol, genoux repliés vers la poitrine avec les cuisses au-dessus de l'horizontale et les tibias vers le bas. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="82" y1="150" x2="158" y2="150"/>
+    <!-- BARRES PARALLÈLES : appui identique au L-sit tendu -->
+    <line class="mo-bar3" x1="86" y1="124" x2="112" y2="124"/>
+    <line class="mo-gear" x1="90" y1="124" x2="90" y2="150"/>
+    <line class="mo-gear" x1="108" y1="124" x2="108" y2="150"/>
+    <!-- GARDE SOUS LE BASSIN : 33 unités. Bassin au sol = plus d'exercice -->
+    <line class="mo-rom" x1="92" y1="117" x2="92" y2="150"/>
+    <line class="mo-rom" x1="89" y1="150" x2="95" y2="150"/>
+    <!-- HORIZONTALE : ici ce n'est plus la CIBLE des chevilles mais le
+         PLANCHER des cuisses — d'où un trait court, qui s'arrête au
+         genou au lieu de filer jusqu'au bout des jambes tendues. -->
+    <line class="mo-rom" x1="92" y1="117" x2="124" y2="117"/>
+    <!-- BRAS VERROUILLÉ, strictement vertical : 36 exactement -->
+    <circle class="mo-hand" cx="96" cy="124" r="3.2"/>
+    <line class="mo-limb" x1="96" y1="124" x2="96" y2="88"/>
+    <circle class="mo-joint" cx="96" cy="88" r="3"/>
+    <!-- TÊTE : écart de 11 à l'épaule = dépression scapulaire tenue -->
+    <circle class="mo-head" cx="93" cy="77" r="7"/>
+    <!-- TRONC, puis CUISSE à 10° au-dessus de l'horizontale -->
+    <line class="mo-body" x1="96" y1="88" x2="92" y2="117"/>
+    <circle class="mo-joint" cx="92" cy="117" r="3"/>
+    <line class="mo-limb" x1="92" y1="117" x2="117.61" y2="112.49"/>
+    <circle class="mo-joint" cx="117.61" cy="112.49" r="2.6"/>
+    <!-- TIBIA VERTICAL : genou à 80°, et 1,11 de dégagement bord à bord
+         avec le bout de barre. Incliné vers l'arrière, il entrait dedans. -->
+    <line class="mo-limb" x1="117.61" y1="112.49" x2="117.61" y2="138.49"/>
+    <circle class="mo-joint" cx="117.61" cy="138.49" r="2.6"/>
+    <line class="mo-limb" x1="117.61" y1="138.49" x2="125.77" y2="142.29"/>`,
+  muscles: [
+    { nom: "Grand droit", svg: `<ellipse cx="95" cy="103" rx="3.2" ry="10"/>` },
+    { nom: "Fléchisseurs de hanche", svg: `<circle cx="99" cy="114" r="4.5"/>` },
+    { nom: "Triceps + dépression scapulaire",
+      svg: `<ellipse cx="99" cy="98" rx="3" ry="8"/>` }
+  ],
+  parts: []
+};
