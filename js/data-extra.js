@@ -1466,6 +1466,134 @@ const EXERCISES_LSIT = [
 EXERCISES.push(...EXERCISES_LSIT);
 
 /* =========================================================
+   Variantes des autres exercices STATIQUES.
+
+   Un mot sur ce que « statique » veut dire ici, parce que la base
+   prête à confusion : le champ `type: "iso"` signifie ISOLATION, pas
+   isométrie — c'est pour cela que 78 exercices le portent, curls et
+   leg extensions compris. Les vrais maintiens sont les sept marqués
+   `isometrique` dans leur schéma animé. Trois formaient déjà la
+   famille L-sit ; les quatre autres étaient seuls.
+
+   UN MAINTIEN NE SE RÈGLE PAS EN CHARGE, MAIS EN LEVIER. C'est le
+   seul réglage disponible, et il est calculable — d'où une variante
+   qui raccourcit le levier (progression) ou l'allonge (surcharge)
+   pour chacun des quatre.
+
+   ATTENTION À L'INDICATEUR CHOISI. Pour la planche, la part du poids
+   posée sur les avant-bras semble le bon chiffre. Elle ne l'est pas :
+   avancer les coudes ALLONGE la base d'appui, donc SOULAGE les bras
+   (74,8 % → 68,1 %) alors que l'exercice devient nettement plus dur.
+   Ce que les abdominaux retiennent est un moment anti-extension autour
+   de la hanche : 8,14 pour la planche standard, 2,87 sur les genoux
+   (35 %), 12,29 en long levier (151 %). C'est cet indicateur-là qui
+   classe les trois dans le bon ordre.
+   ========================================================= */
+const EXERCISES_STATIQUES = [
+  {
+    id: "planche-genoux",
+    nom: "Planche sur les genoux",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Transverse, grand droit, grand fessier",
+    description: "La planche avec l'appui avancé aux genoux : le levier raccourcit et le moment que les abdominaux retiennent tombe à un tiers de celui de la planche complète. La bonne marche quand le bassin s'affaisse au bout de dix secondes.",
+    execution: [
+      "Coudes sous les épaules, avant-bras à plat au sol, mains vers l'avant.",
+      "Genoux au sol, tibias posés derrière, pieds relevés.",
+      "Aligne épaules, hanches et genoux : c'est la même ligne droite que la planche, simplement plus courte.",
+      "Serre les fessiers et rentre le bassin. Passe à la planche complète quand tu tiens 60 s sans que la ligne bouge."
+    ],
+    erreurs: [
+      "Bassin qui remonte : la position devient un repos, plus un gainage.",
+      "Cambrure lombaire, ventre qui plonge vers le sol.",
+      "Appui sur les mains plutôt que sur les avant-bras.",
+      "Tête rentrée ou relevée : elle suit la ligne du corps."
+    ],
+    videoQuery: "planche sur les genoux gainage débutant technique"
+  },
+  {
+    id: "planche-long-levier",
+    nom: "Planche à long levier",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "avance", type: "iso",
+    muscles: "Transverse, grand droit, grand dorsal, grand fessier",
+    description: "La planche avec les coudes avancés loin devant les épaules. Le corps s'allonge et s'aplatit, et le moment anti-extension à la hanche passe à une fois et demie celui de la planche standard. Les avant-bras portent pourtant MOINS de poids — c'est le tronc qui prend tout.",
+    execution: [
+      "Pars en planche classique, coudes sous les épaules.",
+      "Avance les coudes centimètre par centimètre vers l'avant : les épaules reculent derrière eux et le corps s'aplatit.",
+      "Arrête-toi à la limite où le bassin reste rentré et les lombaires plates — pas un centimètre de plus.",
+      "Dix à vingt secondes suffisent : c'est une position de surcharge, pas d'endurance."
+    ],
+    erreurs: [
+      "Avancer jusqu'à cambrer : tout le bénéfice part dans les lombaires.",
+      "Épaules qui s'affaissent entre les omoplates au lieu de rester poussées.",
+      "Retenir sa respiration pour tenir plus longtemps.",
+      "Vouloir la durée d'une planche normale : la position est une fois et demie plus exigeante."
+    ],
+    videoQuery: "long lever plank technique gainage avancé"
+  },
+  {
+    id: "gainage-lateral-jambe",
+    nom: "Gainage latéral jambe levée",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "avance", type: "iso",
+    muscles: "Obliques, carré des lombes, moyen fessier",
+    description: "Le gainage latéral avec la jambe du dessus levée. L'appui au sol se réduit à un seul pied, et le moyen fessier de la jambe levée travaille en même temps que celui de la jambe d'appui : deux fessiers au lieu d'un.",
+    execution: [
+      "Installe un gainage latéral propre : coude sous l'épaule, corps en ligne, hanche haute.",
+      "Lève la jambe du dessus d'environ 35°, sans laisser la hanche partir en arrière.",
+      "Garde le pied de la jambe levée dans l'axe du corps, orteils vers l'avant.",
+      "Tiens, puis change de côté. La hanche qui redescend signe la fin de la série."
+    ],
+    erreurs: [
+      "Hanche du dessous qui s'affaisse dès que la jambe monte.",
+      "Rouler en arrière pour lever la jambe plus haut.",
+      "Lever la jambe plié au genou, ce qui supprime le levier.",
+      "Négliger le côté faible : les deux côtés se travaillent au même temps, pas au même ressenti."
+    ],
+    videoQuery: "side plank leg raise gainage latéral jambe levée technique"
+  },
+  {
+    id: "hollow-hold-groupe",
+    nom: "Hollow hold groupé",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Grand droit, transverse, fléchisseurs de hanche",
+    description: "Le hollow hold genoux repliés, cuisses à la verticale et tibias à l'horizontale. Le centre de masse des jambes revient presque au-dessus de la hanche : le moment à retenir tombe à un quart de celui du hollow hold tendu. C'est là qu'on apprend à plaquer les lombaires, avant d'y ajouter le levier.",
+    execution: [
+      "Allongé sur le dos, plaque les lombaires au sol : c'est le seul contact qui doit rester.",
+      "Monte les genoux à l'aplomb des hanches, cuisses verticales, tibias horizontaux.",
+      "Décolle les épaules et tends les bras au-delà de la tête.",
+      "Si le bas du dos décolle, c'est fini : redescends plutôt que de tenir mal."
+    ],
+    erreurs: [
+      "Lombaires décollées : l'exercice se transforme en travail de fléchisseurs de hanche.",
+      "Menton collé à la poitrine au lieu du regard vers les genoux.",
+      "Tibias qui pendent vers le sol, cuisses sous la verticale.",
+      "Se balancer pour tenir : un maintien ne se balance pas."
+    ],
+    videoQuery: "tuck hollow hold genoux repliés technique gainage"
+  },
+  {
+    id: "wall-sit-une-jambe",
+    nom: "Wall sit une jambe",
+    groupe: "quadriceps", materiel: "poids-du-corps", niveau: "avance", type: "iso",
+    muscles: "Quadriceps (isométrie), grand fessier, fléchisseurs de hanche de la jambe levée",
+    description: "La chaise contre le mur sur une seule jambe : le même poids de corps repose sur un seul quadriceps, soit environ le double de charge. La jambe libre, tendue devant, ajoute son propre levier et fait travailler ses fléchisseurs de hanche.",
+    execution: [
+      "Installe une chaise contre le mur classique : cuisses parallèles au sol, genou au-dessus de la cheville.",
+      "Tends une jambe devant toi, légèrement au-dessus de l'horizontale, pied fléchi.",
+      "Garde le genou d'appui à l'aplomb de la cheville : il ne doit ni rentrer ni avancer.",
+      "Change de jambe et fais le même temps des deux côtés, même si le second est plus dur."
+    ],
+    erreurs: [
+      "Genou d'appui qui part vers l'intérieur — l'erreur la plus fréquente et la plus coûteuse.",
+      "Bassin qui glisse vers le haut du mur pour soulager la cuisse.",
+      "Prendre appui sur les mains posées sur la cuisse.",
+      "Jambe libre qui redescend au sol sans qu'on s'en aperçoive."
+    ],
+    videoQuery: "single leg wall sit chaise une jambe technique"
+  }
+];
+EXERCISES.push(...EXERCISES_STATIQUES);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1482,6 +1610,18 @@ const EXERCISE_ALIASES = {
                            "équerre", "l-sit jambes tendues", "straight leg l-sit"],
   "l-sit-groupe": ["tuck l-sit", "tuck l sit", "tuck sit", "l-sit groupé",
                    "l sit genoux repliés", "équerre groupée", "tucked l-sit"],
+
+  /* Variantes statiques. « Long-Lever Planks » vient d'un vrai
+     programme importé, où il ne trouvait que « Planche » à peu près. */
+  "planche-genoux": ["knee plank", "planche genoux", "gainage genoux", "plank on knees"],
+  "planche-long-levier": ["long lever plank", "long-lever plank", "planche longue",
+                          "rkc plank", "planche coudes avancés"],
+  "gainage-lateral-jambe": ["side plank leg raise", "star side plank",
+                            "gainage latéral jambe levée", "side plank abduction"],
+  "hollow-hold-groupe": ["tuck hollow hold", "hollow hold groupé", "hollow tuck",
+                         "hollow hold genoux repliés"],
+  "wall-sit-une-jambe": ["single leg wall sit", "one leg wall sit", "chaise une jambe",
+                         "wall sit unilatéral"],
   "developpe-couche-barre": ["bench press", "couché à la barre", "développé allongé", "barbell bench"],
   "developpe-couche-halteres": ["dumbbell bench press", "couché haltères"],
   "developpe-incline-halteres": ["incline dumbbell press", "incliné haltères"],
@@ -1580,7 +1720,12 @@ const EXERCISE_ALIASES = {
   "leg-curl-assis": ["seated leg curl", "curl fémoral assis"],
   "hack-squat": ["machine hack squat", "squat hack"],
   "step-ups": ["step up", "montée sur banc", "box step up"],
-  "wall-sit": ["chaise", "mur", "isometric squat"],
+  /* « wall sit » nu doit rester la version à DEUX jambes. Sans cet
+     alias explicite, la variante unilatérale le prenait : son nom
+     commence par « wall sit », celui du parent ne commence pas par lui
+     (« Chaise contre le mur (wall sit) »), et le départage tranche sur
+     ce critère. Le même piège que pour « L-sit ». */
+  "wall-sit": ["chaise", "mur", "isometric squat", "wall sit", "wallsit"],
   "rowing-machine-assis": ["seated cable row", "seated row", "rowing assis"],
   "tirage-horizontal-poulie": ["cable row", "low row", "tirage horizontal"],
   "tirage-bras-tendus": ["straight arm pulldown", "pullover poulie"],

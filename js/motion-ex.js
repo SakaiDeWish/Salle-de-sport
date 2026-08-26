@@ -3739,8 +3739,16 @@ EXERCISE_MOTIONS["planche"] = {
     <!-- REPÈRE D'ALIGNEMENT : il dépasse aux deux bouts pour que la
          rectitude tête-talons se lise d'un coup d'oeil. -->
     <line class="mo-rom" x1="34" y1="100" x2="166" y2="129"/>
-    <!-- avant-bras au sol, coude À L'APLOMB de l'épaule -->
-    <line class="mo-limb" x1="60" y1="130" x2="86" y2="130"/>
+    <!-- avant-bras au sol, coude À L'APLOMB de l'épaule.
+
+         CORRIGÉ : il partait du coude vers x = 86, c'est-à-dire vers
+         les PIEDS, la tête étant à gauche. Un avant-bras ne part pas
+         en arrière du coude — la main se retrouvait sous le bassin.
+         Le gainage latéral, lui, l'orientait déjà correctement, ce qui
+         a rendu l'erreur visible en comparant les deux. Il pointe
+         maintenant vers la tête, main en (34 130). -->
+    <line class="mo-limb" x1="60" y1="130" x2="34" y2="130"/>
+    <circle class="mo-hand" cx="34" cy="130" r="3"/>
     <line class="mo-limb" x1="60" y1="130" x2="60" y2="106"/>
     <circle class="mo-joint" cx="60" cy="130" r="2.8"/>
     <circle class="mo-joint" cx="60" cy="106" r="2.8"/>
@@ -18282,6 +18290,337 @@ EXERCISE_MOTIONS["l-sit-groupe"] = {
     { nom: "Fléchisseurs de hanche", svg: `<circle cx="99" cy="114" r="4.5"/>` },
     { nom: "Triceps + dépression scapulaire",
       svg: `<ellipse cx="99" cy="98" rx="3" ry="8"/>` }
+  ],
+  parts: []
+};
+
+/* ─────────────────────────────────────────────────────────────
+   148. PLANCHE SUR LES GENOUX   (planche-genoux)
+   149. PLANCHE À LONG LEVIER    (planche-long-levier)
+
+   POURQUOI CES DEUX-LÀ ENSEMBLE. Elles encadrent la planche standard,
+   et ce qui les sépare se calcule. Un maintien ne se règle pas en
+   charge : il se règle en LEVIER.
+
+   L'INDICATEUR QU'IL NE FAUT PAS PRENDRE. La part du poids posée sur
+   les avant-bras semble mesurer la difficulté. Elle ne la mesure pas :
+   avancer les coudes allonge la base d'appui et SOULAGE les bras —
+   74,8 % en planche standard, 68,1 % en long levier — alors que la
+   position devient nettement plus dure. Le chiffre baisse quand
+   l'exercice monte.
+
+   L'INDICATEUR JUSTE. La planche est un exercice anti-extension : ce
+   que les abdominaux retiennent est le moment autour de la hanche
+   produit par la réaction du sol au pied, moins le poids des jambes.
+   Calculé sur les positions réellement dessinées, avec les masses
+   segmentaires standards :
+
+       sur les genoux    2,87    (35 %)
+       standard          8,14    (100 %)
+       long levier      12,29    (151 %)
+
+   Trois chiffres, un seul ordre, et il correspond à ce que tout le
+   monde ressent. C'est la définition d'un bon indicateur.
+
+   GENOUX — GÉOMÉTRIE. L'appui passe du pied au genou. La chaîne
+   épaule → hanche → genou vaut 32,03 + 25,91 = 57,94 et le genou doit
+   toucher le sol, 24 sous l'épaule : l'horizontale vaut donc
+   √(57,94² − 24²) = 52,74 et le genou tombe en (112,74 130). Le corps
+   se redresse à 24,47° contre 12,31° — un raccourcissement de levier
+   se paie toujours en inclinaison. Hanche interpolée sur la ligne à
+   32,03/57,94, donc (89,15 119,27). Tibias posés au sol derrière,
+   pieds relevés à 35°. Tête à 1,83 du bras vertical, bord à bord.
+
+   LONG LEVIER — GÉOMÉTRIE. Le coude reste en (60 130) pour que les
+   trois schémas partagent le même repère. Le bras s'incline de 25° :
+   l'épaule descend en (70,14 108,25), donc DERRIÈRE le coude, ce qui
+   est exactement ce qu'on voit sur une planche à long levier. L'angle
+   du corps est ensuite l'inconnue : il est résolu pour que l'orteil
+   touche le sol à 130,00 pile, et vaut 10,92°. Le corps est plus long
+   ET plus plat. Segments inchangés : bras 24,000, tronc 32,030,
+   fémur 25,912, tibia 25,989.
+
+   PAS DE FLÈCHES, comme pour toute position tenue.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["planche-genoux"] = {
+  vb: "30 74 150 68",
+  dur: 4.0,
+  isometrique: true,
+  maintien: "104 88",
+  alt: "Gainage sur les avant-bras et les genoux : le corps forme une ligne droite de la tête aux genoux, inclinée de 24 degrés, tibias posés au sol derrière et pieds relevés. La position se maintient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="130" x2="172" y2="130"/>
+    <!-- REPÈRE D'ALIGNEMENT : il s'arrête AU GENOU, qui est l'appui.
+         Le prolonger irait sous le sol et promettrait une ligne qui
+         n'existe pas. -->
+    <line class="mo-rom" x1="32.7" y1="93.6" x2="112.74" y2="130"/>
+    <!-- avant-bras au sol, coude à l'aplomb de l'épaule, main en avant -->
+    <line class="mo-limb" x1="60" y1="130" x2="34" y2="130"/>
+    <circle class="mo-hand" cx="34" cy="130" r="3"/>
+    <line class="mo-limb" x1="60" y1="130" x2="60" y2="106"/>
+    <circle class="mo-joint" cx="60" cy="130" r="2.8"/>
+    <circle class="mo-joint" cx="60" cy="106" r="2.8"/>
+    <!-- corps : épaule, hanche, genou sur une seule droite -->
+    <circle class="mo-head" cx="48.17" cy="100.62" r="8"/>
+    <line class="mo-body" x1="60" y1="106" x2="89.15" y2="119.27"/>
+    <circle class="mo-joint" cx="89.15" cy="119.27" r="2.6"/>
+    <line class="mo-body" x1="89.15" y1="119.27" x2="112.74" y2="130"/>
+    <circle class="mo-joint" cx="112.74" cy="130" r="2.8"/>
+    <!-- tibias au sol, pieds relevés : le signe qu'on n'est pas sur les pointes -->
+    <line class="mo-limb" x1="112.74" y1="130" x2="138.73" y2="130"/>
+    <circle class="mo-joint" cx="138.73" cy="130" r="2.6"/>
+    <line class="mo-limb" x1="138.73" y1="130" x2="148.32" y2="123.28"/>`,
+  muscles: [
+    { nom: "Transverse · grand droit",
+      svg: `<ellipse cx="74.6" cy="112.6" rx="11" ry="3.4" transform="rotate(24.5 74.6 112.6)"/>` },
+    { nom: "Grand fessier",
+      svg: `<circle cx="92" cy="115" r="4.5"/>` }
+  ],
+  parts: []
+};
+
+EXERCISE_MOTIONS["planche-long-levier"] = {
+  vb: "30 74 150 68",
+  dur: 4.0,
+  isometrique: true,
+  maintien: "104 88",
+  alt: "Gainage sur les avant-bras avec les coudes très avancés : les épaules se trouvent derrière les coudes, le corps est presque à plat, en ligne droite de la tête aux pointes de pieds. La position se maintient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="130" x2="176" y2="130"/>
+    <!-- REPÈRE D'ALIGNEMENT : posé SUR la ligne du corps et prolongé
+         aux deux bouts. Première version tracée à vue, à 12,63° au
+         lieu de 10,92° : un repère de rectitude qui n'est pas parallèle
+         au corps désigne un défaut inexistant. Recalé sur l'épaule
+         (70,14 108,25) et l'angle réel — il passe exactement par la
+         hanche dessinée, 114,32. -->
+    <line class="mo-rom" x1="40.68" y1="102.57" x2="164.33" y2="126.42"/>
+    <!-- avant-bras au sol. Le coude est le même point qu'aux deux
+         autres schémas ; c'est l'ÉPAULE qui a reculé derrière lui. -->
+    <line class="mo-limb" x1="60" y1="130" x2="34" y2="130"/>
+    <circle class="mo-hand" cx="34" cy="130" r="3"/>
+    <line class="mo-limb" x1="60" y1="130" x2="70.14" y2="108.25"/>
+    <circle class="mo-joint" cx="60" cy="130" r="2.8"/>
+    <circle class="mo-joint" cx="70.14" cy="108.25" r="2.8"/>
+    <!-- corps : une droite, de la tête aux chevilles -->
+    <circle class="mo-head" cx="57.38" cy="105.79" r="8"/>
+    <line class="mo-body" x1="70.14" y1="108.25" x2="101.59" y2="114.32"/>
+    <line class="mo-body" x1="101.59" y1="114.32" x2="127.04" y2="119.22"/>
+    <line class="mo-body" x1="127.04" y1="119.22" x2="152.55" y2="124.15"/>
+    <circle class="mo-joint" cx="101.59" cy="114.32" r="2.6"/>
+    <circle class="mo-joint" cx="127.04" cy="119.22" r="2.6"/>
+    <!-- pointe de pied au sol, à 130,00 exactement -->
+    <line class="mo-limb" x1="152.55" y1="124.15" x2="162.7" y2="130"/>`,
+  muscles: [
+    { nom: "Transverse · grand droit",
+      svg: `<ellipse cx="85.9" cy="111.3" rx="13" ry="3.4" transform="rotate(10.9 85.9 111.3)"/>` },
+    { nom: "Grand dorsal (épaule poussée)",
+      svg: `<ellipse cx="76" cy="111" rx="5" ry="3"/>` },
+    { nom: "Grand fessier",
+      svg: `<circle cx="103" cy="110" r="4.5"/>` }
+  ],
+  parts: []
+};
+
+/* ─────────────────────────────────────────────────────────────
+   150. GAINAGE LATÉRAL JAMBE LEVÉE   (gainage-lateral-jambe)
+
+   CE QUI EST VISIBLE DANS CETTE VUE, ET CE QUI NE L'EST PAS. Le
+   schéma parent est vu DE FACE par rapport à la personne couchée sur
+   le flanc — c'est ce qui permet de dessiner le bras libre tendu vers
+   le plafond. Conséquence : le plan frontal est dans la feuille, le
+   plan sagittal est perpendiculaire.
+
+   L'abduction de hanche appartient au plan frontal : lever la jambe du
+   dessus se voit donc EN VRAIE GRANDEUR, sans aucun raccourcissement à
+   déclarer. C'est pour cette raison que la variante retenue est la
+   jambe levée et non la version sur les genoux : fléchir le genou est
+   un mouvement sagittal, il rentrerait dans la feuille, et sa longueur
+   apparente ne voudrait plus rien dire. On ne dessine pas ce que la
+   projection ne montre pas.
+
+   GÉOMÉTRIE. Corps incliné de 12,84°, inchangé. La jambe levée part de
+   la même hanche (118,27 128,44), mesure 52,00 comme celle du dessous,
+   et s'écarte de 35° du corps : genou en (142,35 118,63), pied en
+   (166,43 108,83). Elle reste à plus de 50 du bras libre : rien ne se
+   croise. La jambe d'appui, elle, ne bouge pas d'un point.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["gainage-lateral-jambe"] = {
+  vb: "62 78 120 70",
+  dur: 4,
+  isometrique: true,
+  maintien: "112 128",
+  alt: "Gainage latéral en appui sur un avant-bras, avec la jambe du dessus levée d'environ 35 degrés au-dessus de la ligne du corps, un seul pied au sol. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="66" y1="140" x2="178" y2="140"/>
+    <!-- APPUI RÉDUIT À DEUX POINTS : le coude et UN pied -->
+    <line class="mo-rom" x1="90" y1="144" x2="168.97" y2="144"/>
+    <line class="mo-rom" x1="90" y1="141" x2="90" y2="147"/>
+    <line class="mo-rom" x1="168.97" y1="141" x2="168.97" y2="147"/>
+    <line class="mo-rom" x1="119.1" y1="128.63" x2="119.1" y2="147"/>
+    <!-- CORPS aligné, incliné de 12,84° : identique au parent -->
+    <circle class="mo-head" cx="78.3" cy="119.33" r="8"/>
+    <line class="mo-body" x1="90" y1="122" x2="118.27" y2="128.44"/>
+    <circle class="mo-joint" cx="118.27" cy="128.44" r="3"/>
+    <!-- JAMBE LEVÉE, 35° au-dessus du corps. Abduction = plan frontal
+         = plan de la feuille : longueur vraie, 52,00. -->
+    <line class="mo-limb" x1="118.27" y1="128.44" x2="142.35" y2="118.63"/>
+    <circle class="mo-joint" cx="142.35" cy="118.63" r="2.6"/>
+    <line class="mo-limb" x1="142.35" y1="118.63" x2="166.43" y2="108.83"/>
+    <circle class="mo-joint" cx="166.43" cy="108.83" r="2.6"/>
+    <line class="mo-limb" x1="166.43" y1="108.83" x2="172.5" y2="106.7"/>
+    <!-- JAMBE D'APPUI : inchangée, seul pied au sol -->
+    <line class="mo-body" x1="118.27" y1="128.44" x2="168.97" y2="140"/>
+    <circle class="mo-joint" cx="143.62" cy="134.22" r="2.6"/>
+    <line class="mo-body" x1="168.97" y1="140" x2="174" y2="137"/>
+    <!-- BRAS D'APPUI : coude SOUS l'épaule, donc bras vertical -->
+    <line class="mo-limb" x1="90" y1="122" x2="90" y2="140"/>
+    <circle class="mo-joint" cx="90" cy="122" r="2.8"/>
+    <circle class="mo-joint" cx="90" cy="140" r="2.8"/>
+    <line class="mo-limb" x1="90" y1="140" x2="72" y2="140"/>
+    <circle class="mo-hand" cx="72" cy="140" r="3"/>
+    <!-- BRAS LIBRE, tendu vers le plafond -->
+    <line class="mo-limb" x1="90" y1="122" x2="90" y2="104"/>
+    <circle class="mo-joint" cx="90" cy="104" r="2.6"/>
+    <line class="mo-limb" x1="90" y1="104" x2="90" y2="86"/>
+    <circle class="mo-hand" cx="90" cy="86" r="3"/>`,
+  muscles: [
+    { nom: "Obliques", svg: `<circle cx="98" cy="127" r="4"/>` },
+    { nom: "Moyen fessier (appui)", svg: `<circle cx="125" cy="128" r="3.5"/>` },
+    { nom: "Moyen fessier (jambe levée)", svg: `<circle cx="127" cy="123" r="3.5"/>` }
+  ],
+  parts: []
+};
+
+/* ─────────────────────────────────────────────────────────────
+   151. HOLLOW HOLD GROUPÉ   (hollow-hold-groupe)
+
+   MÊME RAISONNEMENT QUE LE L-SIT GROUPÉ, MÊME MODÈLE DE CALCUL. Le
+   hollow hold est un maintien contre l'extension lombaire : ce qui le
+   rend dur, c'est le moment que les jambes tendues imposent à la
+   hanche. Replier les genoux ramène leur centre de masse presque à
+   l'aplomb de la hanche.
+
+   Sur les positions réellement dessinées, avec les masses segmentaires
+   standards : 6,86 jambes tendues, 1,88 groupé — soit 27 %. Le hollow
+   groupé n'est donc pas « un peu plus facile » : c'est le quart de la
+   demande. Cela explique pourquoi tant de gens tiennent le tendu en
+   décollant les lombaires — ils font un exercice quatre fois trop dur
+   pour eux, et le dos paie la différence.
+
+   GÉOMÉTRIE. Le haut du corps ne bouge pas d'un point : appui lombaire
+   entre 94 et 106, épaules en (80,27 132,82) à 7,2 du sol, tête et
+   bras tendus au-delà, identiques au parent. Cuisse VERTICALE depuis
+   la hanche (108 138), donc genou en (108 112) ; tibia HORIZONTAL vers
+   la tête, cheville en (82 112). Cuisse 25,999, tibia 25,999.
+
+   RIEN NE SE CROISE, ET C'EST LE POINT DÉLICAT : le tibia passe
+   au-dessus du visage. Vérifié — 9,80 de dégagement bord à bord avec
+   la tête, 19,60 avec le bras. Le pied pointe vers le bas-arrière,
+   comme il le fait quand la cheville est relâchée.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["hollow-hold-groupe"] = {
+  vb: "36 106 134 46",
+  dur: 4,
+  isometrique: true,
+  maintien: "96 134",
+  alt: "Allongé sur le dos en position creuse, seules les lombaires touchant le sol, épaules décollées, bras tendus au-delà de la tête, genoux repliés avec les cuisses à la verticale et les tibias à l'horizontale. La position se tient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="140" x2="164" y2="140"/>
+    <!-- ÉCART AU SOL des épaules : tout est en l'air sauf les lombaires -->
+    <line class="mo-rom" x1="80.27" y1="132.82" x2="80.27" y2="140"/>
+    <!-- APPUI LOMBAIRE : l'unique contact, environ 12 unités -->
+    <line class="mo-bar3" x1="94" y1="140" x2="106" y2="140"/>
+    <!-- VERTICALE DE LA CUISSE : le repère du groupé, genou à l'aplomb
+         de la hanche. Cuisse penchée = exercice perdu. -->
+    <line class="mo-rom" x1="108" y1="112" x2="108" y2="140"/>
+    <!-- CORPS. Le dos est une COURBE : les lombaires se plaquent. -->
+    <circle class="mo-head" cx="71.2" cy="128.59" r="8"/>
+    <path class="mo-body" fill="none" d="M80.27 132.82 Q92 138.6 100 140 Q105.5 139.4 108 138"/>
+    <circle class="mo-joint" cx="108" cy="138" r="3"/>
+    <!-- CUISSE verticale, TIBIA horizontal : 9,80 au-dessus de la tête -->
+    <line class="mo-limb" x1="108" y1="138" x2="108" y2="112"/>
+    <circle class="mo-joint" cx="108" cy="112" r="2.6"/>
+    <line class="mo-limb" x1="108" y1="112" x2="82" y2="112"/>
+    <circle class="mo-joint" cx="82" cy="112" r="2.6"/>
+    <line class="mo-limb" x1="82" y1="112" x2="76.39" y2="116.71"/>
+    <!-- BRAS tendus au-delà de la tête, inchangés -->
+    <line class="mo-limb" x1="80.27" y1="132.82" x2="63.95" y2="125.21"/>
+    <circle class="mo-joint" cx="63.95" cy="125.21" r="2.6"/>
+    <line class="mo-limb" x1="63.95" y1="125.21" x2="47.64" y2="117.6"/>
+    <circle class="mo-hand" cx="47.64" cy="117.6" r="3"/>`,
+  muscles: [
+    { nom: "Grand droit de l'abdomen", svg: `<circle cx="84" cy="132" r="4"/>` },
+    { nom: "Transverse", svg: `<circle cx="103" cy="134" r="3"/>` },
+    { nom: "Fléchisseurs de hanche", svg: `<circle cx="108" cy="130" r="3"/>` }
+  ],
+  parts: []
+};
+
+/* ─────────────────────────────────────────────────────────────
+   152. WALL SIT UNE JAMBE   (wall-sit-une-jambe)
+
+   LE CALCUL EST TRIVIAL, ET C'EST CE QUI LE REND UTILE. Le même poids
+   de corps repose sur un seul quadriceps au lieu de deux : la demande
+   double, sans qu'aucun poids soit ajouté. Un maintien se règle en
+   levier ou en nombre d'appuis — ici c'est le nombre d'appuis.
+
+   GÉOMÉTRIE. La jambe d'appui ne bouge pas d'un point : cuisse
+   horizontale (58 118)→(84 118), tibia vertical (84 118)→(84 144),
+   pied à plat. Les trois repères du parent sont conservés, dont le
+   plus important, le genou à l'aplomb de la cheville.
+
+   La jambe libre part de la même hanche, tendue 15° au-dessus de
+   l'horizontale : genou en (83,11 111,27), cheville en (108,23 104,54),
+   orteil relevé en (114,01 97,65). Fémur et tibia à 26,000.
+
+   LE CADRE S'ÉLARGIT, ET C'EST ASSUMÉ. Le parent tient dans une
+   fenêtre large de 68 ; la jambe tendue sort à 114. Deux options :
+   relever la jambe à 25° pour rentrer dans le cadre existant, ou
+   élargir le cadre. Choisir l'angle en fonction du cadre reviendrait à
+   laisser le dessin dicter l'anatomie — 15° est l'inclinaison usuelle,
+   donc c'est la fenêtre qui cède, portée à 78 de large.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["wall-sit-une-jambe"] = {
+  vb: "42 58 78 100",
+  dur: 4.0,
+  isometrique: true,
+  maintien: "84 118",
+  alt: "Dos plaqué contre un mur, une seule jambe en appui avec la cuisse parallèle au sol et le tibia vertical, l'autre jambe tendue devant, légèrement au-dessus de l'horizontale. La position se maintient sans bouger.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="150" x2="108" y2="150"/>
+    <line class="mo-gear" x1="50" y1="62" x2="50" y2="150"/>
+    <!-- LES TROIS REPÈRES DU PARENT : cuisse horizontale, genou à
+         l'aplomb de la cheville, talon à une longueur de fémur du mur. -->
+    <line class="mo-rom" x1="48" y1="118" x2="106" y2="118"/>
+    <line class="mo-rom" x1="84" y1="104" x2="84" y2="150"/>
+    <line class="mo-rom" x1="50" y1="147" x2="84" y2="147"/>
+    <!-- corps assis contre le mur -->
+    <circle class="mo-head" cx="60" cy="72" r="8"/>
+    <line class="mo-body" x1="59.5" y1="80" x2="58" y2="84"/>
+    <line class="mo-body" x1="58" y1="84" x2="58" y2="118"/>
+    <!-- JAMBE LIBRE, tendue 15° au-dessus de l'horizontale -->
+    <line class="mo-limb" x1="58" y1="118" x2="83.11" y2="111.27"/>
+    <circle class="mo-joint" cx="83.11" cy="111.27" r="2.6"/>
+    <line class="mo-limb" x1="83.11" y1="111.27" x2="108.23" y2="104.54"/>
+    <circle class="mo-joint" cx="108.23" cy="104.54" r="2.6"/>
+    <line class="mo-limb" x1="108.23" y1="104.54" x2="114.01" y2="97.65"/>
+    <!-- JAMBE D'APPUI : rigoureusement celle du parent -->
+    <line class="mo-limb" x1="58" y1="118" x2="84" y2="118"/>
+    <line class="mo-limb" x1="84" y1="118" x2="84" y2="144"/>
+    <circle class="mo-joint" cx="58" cy="118" r="2.8"/>
+    <circle class="mo-joint" cx="84" cy="118" r="2.8"/>
+    <circle class="mo-joint" cx="84" cy="144" r="2.8"/>
+    <line class="mo-limb" x1="78" y1="150" x2="96" y2="150"/>
+    <line class="mo-limb" x1="84" y1="144" x2="79" y2="150"/>
+    <line class="mo-limb" x1="84" y1="144" x2="88" y2="150"/>
+    <!-- BRAS PENDANTS : les mains ne touchent pas la cuisse -->
+    <line class="mo-limb" x1="58" y1="84" x2="64" y2="98"/>
+    <line class="mo-limb" x1="64" y1="98" x2="70" y2="108"/>`,
+  muscles: [
+    { nom: "Quadriceps (isométrie, seul)",
+      svg: `<ellipse cx="71" cy="118" rx="10" ry="3.4"/>` },
+    { nom: "Fléchisseurs de hanche (jambe libre)",
+      svg: `<circle cx="66" cy="115" r="3.4"/>` }
   ],
   parts: []
 };
