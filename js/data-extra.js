@@ -1403,6 +1403,69 @@ const EXERCISES_TROUS = [
 EXERCISES.push(...EXERCISES_TROUS);
 
 /* =========================================================
+   La famille L-sit.
+
+   La bibliothèque n'avait que la version LESTÉE — c'est-à-dire la plus
+   dure des trois, et la seule qu'on ne fait jamais en premier. Les
+   deux formes qui la précèdent manquaient.
+
+   Ce qui les sépare n'est pas « plus ou moins dur » : c'est un couple
+   de flexion de hanche, calculable. Jambes tendues, les deux jambes
+   imposent 7,35 unités poids × longueur en permanence. Genoux repliés,
+   leur centre de masse se rapproche de la hanche et le couple tombe à
+   5,46 — soit 74 %, un quart de moins. C'est cette différence-là qui
+   fait du groupé une progression, et non une variante de confort.
+
+   (Les deux chiffres sortent du même modèle segmentaire que les schémas
+   animés, et sont mesurés sur les positions RÉELLEMENT dessinées : voir
+   les n° 146 et 147 de motion-ex.js, où la correction d'un tibia qui
+   traversait la barre a fait passer le second de 4,99 à 5,46.)
+   ========================================================= */
+const EXERCISES_LSIT = [
+  {
+    id: "l-sit-jambes-tendues",
+    nom: "L-sit jambes tendues",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "avance", type: "iso",
+    muscles: "Grand droit, fléchisseurs de hanche, quadriceps, triceps, grand dorsal (dépression scapulaire)",
+    description: "La forme de référence : assis entre deux barres parallèles, bras verrouillés qui poussent le corps vers le haut, bassin décollé, jambes tendues à l'horizontale. Un gainage en compression totale, tenu au temps.",
+    execution: [
+      "Mains sur les barres, bras verrouillés, épaules BASSES et éloignées des oreilles — c'est la moitié de l'exercice.",
+      "Pousse fort vers le sol pour décoller le bassin : les fesses ne traînent jamais.",
+      "Tends les jambes devant, genoux verrouillés, jusqu'à l'horizontale, pointes tendues.",
+      "Tiens en respirant : le temps sous tension EST l'exercice. Descends dès que les genoux fléchissent."
+    ],
+    erreurs: [
+      "Épaules qui remontent vers les oreilles : l'appui devient passif.",
+      "Genoux fléchis pour gagner de la hauteur — c'est alors un L-sit groupé, pas un L-sit tendu.",
+      "Bassin qui recule au lieu de rester sous les épaules.",
+      "Tenir en apnée : la position lâche d'un coup au lieu de se contrôler."
+    ],
+    videoQuery: "l-sit jambes tendues parallettes technique gainage"
+  },
+  {
+    id: "l-sit-groupe",
+    nom: "L-sit groupé (genoux repliés)",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "intermediaire", type: "iso",
+    muscles: "Grand droit, fléchisseurs de hanche, triceps, grand dorsal (dépression scapulaire)",
+    description: "La marche d'avant. Mêmes bras verrouillés, même bassin décollé, mais genoux repliés : le couple à tenir à la hanche tombe d'un quart. On y apprend la dépression scapulaire et le décollement du bassin avant d'y ajouter le levier des jambes.",
+    execution: [
+      "Mains sur les barres, bras verrouillés, épaules basses : la position d'appui est identique au L-sit tendu.",
+      "Pousse vers le sol jusqu'à décoller complètement le bassin.",
+      "Monte les genoux jusqu'à ce que les cuisses soient à l'horizontale, tibias à la verticale sous les genoux.",
+      "Quand tu tiens 30 s propres, tends une jambe, puis les deux : la progression se fait par le levier, pas par la durée seule."
+    ],
+    erreurs: [
+      "Bassin resté au sol : sans décollement, ce n'est plus l'exercice.",
+      "Cuisses sous l'horizontale, genoux qui pendent — le couple disparaît avec elles.",
+      "Épaules qui remontent vers les oreilles.",
+      "S'aider d'un balancement du buste pour lancer la position."
+    ],
+    videoQuery: "tuck l-sit genoux repliés parallettes progression technique"
+  }
+];
+EXERCISES.push(...EXERCISES_LSIT);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1410,7 +1473,15 @@ EXERCISES.push(...EXERCISES_TROUS);
 const EXERCISE_ALIASES = {
   "curl-marteau-triche": ["hammer cheat curl", "cheat curl", "curl triché"],
   "extension-lombaire-prisonnier": ["prisoner back extension", "back extension prisonnier", "hyperextension mains derrière la tête"],
-  "l-sit-leste": ["weighted l-sit hold", "l sit", "l-sit", "équerre lestée"],
+  /* « L-sit » tout court désignait la version LESTÉE, faute des deux
+     autres. Ce n'était pas anodin : un texte qui dit « L-sit » parle du
+     poids du corps, jamais d'un lest. Les noms nus reviennent donc à la
+     version tendue, et la lestée garde ce qui la nomme explicitement. */
+  "l-sit-leste": ["weighted l-sit hold", "weighted l sit", "équerre lestée", "l-sit lesté"],
+  "l-sit-jambes-tendues": ["l sit", "l-sit", "lsit", "full l-sit", "l sit hold",
+                           "équerre", "l-sit jambes tendues", "straight leg l-sit"],
+  "l-sit-groupe": ["tuck l-sit", "tuck l sit", "tuck sit", "l-sit groupé",
+                   "l sit genoux repliés", "équerre groupée", "tucked l-sit"],
   "developpe-couche-barre": ["bench press", "couché à la barre", "développé allongé", "barbell bench"],
   "developpe-couche-halteres": ["dumbbell bench press", "couché haltères"],
   "developpe-incline-halteres": ["incline dumbbell press", "incliné haltères"],
