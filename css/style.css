@@ -50,6 +50,27 @@ body {
   min-height: 100vh;
   /* espace pour la barre d'onglets mobile */
   padding-bottom: 84px;
+
+  /* PLUS DE ZOOM AU DOUBLE-APPUI.
+
+     En salle, on tape vite : valider une série, ＋15 s, un pas de
+     2,5 kg. Deux appuis rapprochés au même endroit, et le navigateur
+     zoome sur la page au lieu de compter le second appui.
+
+     LA MAUVAISE FAÇON DE LE CORRIGER serait `user-scalable=no` dans la
+     balise viewport : cela supprime AUSSI le zoom au pincement, dont
+     dépendent les personnes qui ont besoin d'agrandir le texte. iOS
+     l'ignore d'ailleurs depuis la version 10, précisément pour cette
+     raison.
+
+     `touch-action: manipulation` ne retire que le double-appui et les
+     gestes non standards. Le pincement, le défilement et le zoom
+     manuel continuent de fonctionner. La valeur effective étant
+     l'INTERSECTION de celles de l'élément et de ses ancêtres, la
+     poser ici couvre toute la page — et le `touch-action: none` de la
+     poignée de glissement reste prioritaire, puisqu'il est plus
+     restrictif. */
+  touch-action: manipulation;
 }
 
 /* Accessibilité : focus toujours visible */
