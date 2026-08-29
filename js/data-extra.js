@@ -1594,6 +1594,53 @@ const EXERCISES_STATIQUES = [
 EXERCISES.push(...EXERCISES_STATIQUES);
 
 /* =========================================================
+   La troisième marche de l'extension lombaire.
+
+   La bibliothèque avait le poids du corps (bras croisés) et la
+   position « prisonnier », mains derrière la tête. Il manquait la
+   version lestée, qui est la seule vraie surcharge des trois.
+
+   COMBIEN CHAQUE MARCHE AJOUTE, calculé comme moment autour de la
+   hanche, tronc à l'horizontale — c'est là que la demande est
+   maximale — avec les masses segmentaires standards et la géométrie
+   du schéma (tronc 32, hanche → tête 45) :
+
+       bras croisés sur la poitrine      14,30    100 %
+       mains derrière la tête            15,60    109 %
+       disque à 10 % du poids du corps   17,00    119 %
+       disque à 20 % du poids du corps   19,70    138 %
+       disque à 30 % du poids du corps   22,40    157 %
+
+   Déplacer les bras derrière la tête ne rajoute que 9 % : les bras
+   pèsent 10 % du corps et ne gagnent que 13 unités de bras de levier.
+   C'est une marche, pas une progression durable. Un disque, lui,
+   monte aussi haut qu'on veut — d'où cette fiche.
+   ========================================================= */
+const EXERCISES_LOMBAIRES = [
+  {
+    id: "extension-lombaire-lestee",
+    nom: "Extension lombaire lestée",
+    groupe: "lombaires", materiel: "machine", niveau: "avance", type: "iso",
+    muscles: "Érecteurs du rachis, grand fessier, ischio-jambiers",
+    description: "L'extension au banc à 45° avec un disque serré contre la poitrine. C'est la seule des trois versions qui se charge vraiment : passer les mains derrière la tête n'ajoute que 9 % au travail, un disque de 20 % du poids du corps en ajoute 38 %.",
+    execution: [
+      "Cale les cuisses sur le coussin, chevilles bloquées sous les rouleaux, disque serré contre la poitrine à deux mains.",
+      "Descends le buste par flexion de hanche, DOS DROIT : le rachis ne s'enroule pas, il pivote autour de la hanche.",
+      "Descends jusqu'à ce que le buste pende à la verticale, sans arrondir en bas.",
+      "Remonte jusqu'à l'alignement du corps et arrête-toi là : au-delà, c'est de l'hyper-extension, pas de l'amplitude."
+    ],
+    erreurs: [
+      "Dépasser l'alignement en haut — l'erreur la plus fréquente, et la seule qui blesse.",
+      "Arrondir le dos en bas pour gagner quelques centimètres.",
+      "Charger avant de tenir 15 répétitions propres au poids du corps.",
+      "Tenir le disque loin de la poitrine : le bras de levier change, la charge utile aussi."
+    ],
+    videoQuery: "weighted back extension banc 45 degrés disque poitrine technique"
+  }
+];
+EXERCISES.push(...EXERCISES_LOMBAIRES);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1622,6 +1669,9 @@ const EXERCISE_ALIASES = {
                          "hollow hold genoux repliés"],
   "wall-sit-une-jambe": ["single leg wall sit", "one leg wall sit", "chaise une jambe",
                          "wall sit unilatéral"],
+  "extension-lombaire-lestee": ["weighted back extension", "loaded back extension",
+                                "extension lombaire lestée", "hyperextension lestée",
+                                "back extension disque", "weighted hyperextension"],
   "developpe-couche-barre": ["bench press", "couché à la barre", "développé allongé", "barbell bench"],
   "developpe-couche-halteres": ["dumbbell bench press", "couché haltères"],
   "developpe-incline-halteres": ["incline dumbbell press", "incliné haltères"],

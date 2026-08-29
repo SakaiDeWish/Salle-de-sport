@@ -18624,3 +18624,96 @@ EXERCISE_MOTIONS["wall-sit-une-jambe"] = {
   ],
   parts: []
 };
+
+/* ─────────────────────────────────────────────────────────────
+   153. EXTENSION LOMBAIRE LESTÉE   (extension-lombaire-lestee)
+
+   MÊME MACHINE, MÊME PIVOT, MÊME AMPLITUDE que le n° de l'extension
+   au banc à 45° : coussin à 45°, rouleaux de chevilles, hanche en
+   (120 96), tronc de 32 pivotant de 0° à −135°, c'est-à-dire jusqu'à
+   la verticale vers le bas. Reprendre ce rig plutôt que d'en
+   redessiner un fait que les trois versions se superposent à l'écran,
+   ce qui est la vérité du mouvement : seule la charge change.
+
+   LE RACHIS NE S'ENROULE PAS, et le schéma ne montre donc aucune
+   courbure du dos — c'est tout l'enjeu de l'exercice, et c'était déjà
+   le parti pris du schéma parent.
+
+   OÙ SE POSE LE DISQUE, ET POURQUOI CE POINT. Centre en (102 86),
+   rayon 6,5. L'axe du tronc passe à 5,66 de ce centre : le disque
+   mord donc de 0,84 sur le tronc, ce qui est exactement ce qu'on
+   veut voir — un disque SERRÉ contre la poitrine, pas tenu devant.
+   La distinction n'est pas cosmétique : tenu à bout de bras, le même
+   disque produirait un tout autre moment, et la quatrième erreur de
+   la fiche porte là-dessus.
+
+   Les bras sont redessinés pour l'entourer, en gardant les longueurs
+   du parent : bras 12,20 jusqu'au coude (107,42 80,29), avant-bras
+   10,82 jusqu'à la main (102,52 89,94), qui tombe à 3,97 du centre du
+   disque — donc dessus. Le coude reste à 7,87, soit 1,37 hors du bord.
+
+   RIEN NE SE HEURTE EN BAS DE COURSE, et c'est le seul endroit où
+   c'était douteux : tourné de −135°, le disque arrive en
+   (125,66 115,80), à 10,00 de l'axe des jambes — 1,50 bord à bord une
+   fois les traits comptés — et à 10,00 du coussin. La tête passe à
+   11,00 du sol. Vérifié par rotation, pas à l'œil.
+
+   LES FLÈCHES SONT CONSERVÉES : contrairement aux maintiens, ce
+   mouvement a bien une phase concentrique et une phase excentrique.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["extension-lombaire-lestee"] = {
+  vb: "70 52 124 116",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Sur un banc à lombaires à 45°, cuisses calées et chevilles bloquées, un disque serré à deux mains contre la poitrine : le buste descend par flexion de hanche en gardant le dos droit, puis remonte jusqu'à l'alignement, sans aller au-delà.",
+  fixe: `
+    <line class="mo-ground" x1="94" y1="160" x2="188" y2="160"/>
+    <!-- coussin des cuisses, incliné à 45° -->
+    <line class="mo-pad" x1="126" y1="102" x2="148" y2="124"/>
+    <line class="mo-gear" x1="136" y1="114" x2="136" y2="160"/>
+    <line class="mo-gear" x1="164" y1="136" x2="164" y2="160"/>
+    <!-- rouleaux qui bloquent les chevilles : le second ancrage -->
+    <circle class="mo-mass" cx="152" cy="139" r="5"/>
+    <circle class="mo-mass" cx="166" cy="128" r="5"/>
+    <!-- jambes immobiles, plaquées sur le banc -->
+    <line class="mo-limb" x1="120" y1="96" x2="138.38" y2="114.38"/>
+    <circle class="mo-joint" cx="138.38" cy="114.38" r="2.6"/>
+    <line class="mo-limb" x1="138.38" y1="114.38" x2="156.77" y2="132.77"/>
+    <circle class="mo-joint" cx="120" cy="96" r="3.2"/>
+    <!-- LIGNE D'ALIGNEMENT : butée haute du mouvement, on ne la
+         dépasse pas. C'est la seule erreur de la liste qui blesse. -->
+    <line class="mo-rom" x1="150" y1="126" x2="84" y2="60"/>`,
+  muscles: [
+    { nom: "Grand fessier",
+      svg: `<circle cx="127" cy="101" r="5"/>` },
+    { nom: "Ischio-jambiers",
+      svg: `<ellipse cx="132" cy="102.4" rx="3" ry="10" transform="rotate(-45 132 102.4)"/>` }
+  ],
+  parts: [
+    {
+      /* TRONC + DISQUE : un seul segment RIGIDE pivotant autour de la
+         HANCHE. Le disque tourne AVEC le tronc — il est serré contre
+         lui, il ne pend pas. */
+      o: "120px 96px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-135deg)"], [52, "rotate(-135deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Érecteurs du rachis (isométrique)",
+      muscle: `<ellipse cx="110" cy="86" rx="3" ry="11" transform="rotate(-45 110 86)"/>`,
+      svg: `
+        <line class="mo-body" x1="120" y1="96" x2="97.37" y2="73.37"/>
+        <circle class="mo-head" cx="88.18" cy="64.18" r="8"/>
+        <!-- DISQUE serré contre la poitrine : il mord de 0,84 sur le
+             tronc, ce qui se voit et se veut. -->
+        <circle class="mo-mass" cx="102" cy="86" r="6.5"/>
+        <!-- BRAS qui l'entourent, longueurs du schéma parent -->
+        <line class="mo-limb" x1="97.37" y1="73.37" x2="107.42" y2="80.29"/>
+        <circle class="mo-joint" cx="107.42" cy="80.29" r="2.4"/>
+        <line class="mo-limb" x1="107.42" y1="80.29" x2="102.52" y2="89.94"/>
+        <circle class="mo-hand" cx="102.52" cy="89.94" r="2.8"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M180 122 L180 86 M175 94 L180 86 L185 94"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M180 86 L180 122 M175 114 L180 122 L185 114"/>` }
+  ]
+};
