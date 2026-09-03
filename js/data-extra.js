@@ -1718,6 +1718,83 @@ const EXERCISES_POMPES = [
 EXERCISES.push(...EXERCISES_POMPES);
 
 /* =========================================================
+   Les trois classiques qui manquaient encore.
+
+   Pistol squat, jumping jacks et muscle-up : trois mouvements que
+   tout le monde nomme et qu'aucune recherche ne trouvait.
+
+   Un mot sur les jumping jacks, parce que le classement est
+   discutable et qu'il vaut mieux le dire que le cacher : la base n'a
+   pas de groupe « cardio ». Ils sont rangés en ÉPAULES, parce que
+   c'est le deltoïde qui travaille le plus franchement — abduction
+   complète contre la gravité, à chaque répétition. Ce n'est pas pour
+   autant un exercice de renforcement, et la fiche le dit.
+   ========================================================= */
+const EXERCISES_CLASSIQUES = [
+  {
+    id: "pistol-squat",
+    nom: "Pistol squat (squat une jambe)",
+    groupe: "quadriceps", materiel: "poids-du-corps", niveau: "avance", type: "poly",
+    muscles: "Quadriceps, grand fessier, ischio-jambiers, adducteurs, gainage",
+    description: "Le squat complet sur une seule jambe, l'autre tendue devant. Tout le poids du corps sur un quadriceps, sur une amplitude plus profonde qu'un squat à deux jambes — et une exigence de mobilité de cheville que la force seule ne compense pas.",
+    execution: [
+      "Debout sur une jambe, l'autre tendue devant à l'horizontale, bras tendus devant en contrepoids.",
+      "Descends lentement en gardant le talon d'appui AU SOL : c'est la cheville qui décide de la profondeur, pas la cuisse.",
+      "Descends jusqu'à ce que la cuisse touche le mollet, sans que le dos s'arrondisse.",
+      "Remonte en poussant dans tout le pied. Fais le même nombre des deux côtés, en commençant par le côté faible."
+    ],
+    erreurs: [
+      "Talon qui décolle : la cheville manque de mobilité, et la descente devient une chute.",
+      "Genou qui part vers l'intérieur — l'erreur qui blesse.",
+      "Jambe libre qui touche le sol : ce n'est plus un pistol.",
+      "Vouloir la version complète avant de tenir la descente contrôlée sur une boîte."
+    ],
+    videoQuery: "pistol squat squat une jambe technique progression"
+  },
+  {
+    id: "jumping-jacks",
+    nom: "Jumping jacks",
+    groupe: "epaules", materiel: "poids-du-corps", niveau: "debutant", type: "poly",
+    muscles: "Deltoïdes moyens, mollets, adducteurs et abducteurs de hanche",
+    description: "Le mouvement d'échauffement le plus universel : sauts pieds joints / pieds écartés, bras qui montent et descendent sur les côtés. Ce n'est pas un exercice de renforcement — c'est une montée en température qui mobilise les épaules et les hanches dans toute leur amplitude.",
+    execution: [
+      "Debout, pieds joints, bras le long du corps.",
+      "Saute en écartant les pieds et en montant les bras jusqu'au-dessus de la tête, mains presque jointes.",
+      "Reviens du même geste, pieds joints et bras le long du corps.",
+      "Cherche le rythme régulier plutôt que la vitesse : 30 à 60 secondes suffisent à échauffer."
+    ],
+    erreurs: [
+      "Bras qui s'arrêtent à hauteur d'épaules : l'amplitude d'épaule est justement l'intérêt du mouvement.",
+      "Réception raide, genoux verrouillés — les chevilles et les genoux prennent tout.",
+      "Dos cambré quand les bras montent, faute de mobilité d'épaule.",
+      "En faire un exercice de force : ce n'en est pas un."
+    ],
+    videoQuery: "jumping jacks technique échauffement mouvement complet"
+  },
+  {
+    id: "muscle-up",
+    nom: "Muscle-up à la barre",
+    groupe: "dos", materiel: "poids-du-corps", niveau: "avance", type: "poly",
+    muscles: "Grand dorsal, grand pectoral, triceps, deltoïdes, gainage",
+    description: "Passer de la suspension à l'appui bras tendus au-dessus de la barre, en un seul mouvement. La traction n'en est que la moitié : le vrai obstacle est le PASSAGE, l'instant où les coudes remontent devant la barre et où le buste bascule par-dessus.",
+    execution: [
+      "Suspension bras tendus, prise pronation un peu plus large que les épaules, corps gainé.",
+      "Tire explosivement en amenant la poitrine AU NIVEAU de la barre, pas seulement le menton.",
+      "Bascule le buste vers l'avant et fais remonter les coudes devant la barre : c'est le passage.",
+      "Termine en poussant comme un dip, jusqu'aux bras tendus. Descends par le même chemin, sans te laisser tomber."
+    ],
+    erreurs: [
+      "Tirer seulement jusqu'au menton : il manque alors 15 cm pour que le passage soit possible.",
+      "Chercher à passer avec les bras avant que la poitrine soit assez haute.",
+      "Balancer les jambes pour compenser un manque de traction — le kipping cache le problème, il ne le règle pas.",
+      "Se laisser retomber en fin de série : c'est là que l'épaule paie."
+    ],
+    videoQuery: "muscle up barre fixe technique passage transition"
+  }
+];
+EXERCISES.push(...EXERCISES_CLASSIQUES);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1750,6 +1827,11 @@ const EXERCISE_ALIASES = {
      exercices DÉJÀ présents — « diamond push up » ou « bench dips »
      ne trouvaient rien alors que l'exercice existait sous son nom
      français. */
+  "pistol-squat": ["pistol squat", "squat une jambe", "single leg squat",
+                   "squat unilatéral", "pistol"],
+  "jumping-jacks": ["jumping jack", "jumping jacks", "jumping-jacks", "sauts étoile",
+                    "star jump", "écarts sautés"],
+  "muscle-up": ["muscle up", "muscle-up", "muscleup", "traction passage barre"],
   "pompes-genoux": ["knee push up", "knee push-up", "pompes genoux",
                     "pompes sur les genoux", "modified push up"],
   "pompes-inclinees": ["incline push up", "incline push-up", "pompes inclinées",

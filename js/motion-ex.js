@@ -18908,3 +18908,359 @@ EXERCISE_MOTIONS["pompes-inclinees"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M150 112 L150 92 M145 98 L150 92 L155 98"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   156. PISTOL SQUAT   (pistol-squat)
+
+   RIG DU SQUAT AU POIDS DU CORPS, INCHANGÉ AU POINT PRÈS : cheville
+   (120 138), genou (119,5 112), hanche (122 86,13), épaule
+   (120,88 54,15), et les mêmes rotations — tibia −23,9°, fémur
+   +122,38°, tronc −124,48°, bras +26°. Les deux schémas se
+   superposent donc entièrement, ce qui est vrai : le pistol EST un
+   squat, avec une jambe en moins au sol.
+
+   LA JAMBE LIBRE EST LA SEULE NOUVEAUTÉ, et elle se raccroche à un
+   détail déjà résolu par le parent. Les bras y reçoivent +26° pour
+   ANNULER la rotation du tronc (−23,9 + 122,38 − 124,48 = −26°) et
+   rester horizontaux tout du long, en contrepoids. La jambe libre a
+   exactement le même besoin : tendue devant, elle doit rester
+   horizontale pendant que la hanche descend. Même contre-rotation,
+   même origine — la hanche.
+
+   VÉRIFICATIONS. Fémur et tibia libres à 26,000. En bas, la hanche
+   arrive en (134,23 120,72) et la jambe libre part d'elle à
+   l'horizontale : le genou libre passe à 30,32 de la main et à 29,26
+   de la tête bord à bord, l'orteil reste 35,07 au-dessus du sol.
+   Rien ne se croise.
+
+   LE CADRE S'ÉLARGIT DE 84 À 116. Une jambe tendue devant sort du
+   cadre du squat, forcément. Choisir de la replier pour rentrer dans
+   la fenêtre serait laisser le dessin dicter l'anatomie.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["pistol-squat"] = {
+  vb: "56 26 116 132",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Debout sur une seule jambe, l'autre tendue devant à l'horizontale et les bras tendus devant en contrepoids : descente complète jusqu'à la flexion maximale du genou d'appui, puis remontée.",
+  fixe: `
+    <line class="mo-ground" x1="98" y1="150" x2="160" y2="150"/>
+    <line class="mo-limb" x1="112" y1="150" x2="134" y2="150"/>
+    <line class="mo-limb" x1="120" y1="138" x2="113" y2="150"/>
+    <circle class="mo-joint" cx="120" cy="138" r="2.8"/>`,
+  parts: [
+    {
+      o: "120px 138px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-23.9deg)"], [52, "rotate(-23.9deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `<line class="mo-limb" x1="120" y1="138" x2="119.5" y2="112"/>`,
+      children: [
+        {
+          o: "119.5px 112px",
+          k: [[0, "rotate(0deg)"], [45, "rotate(122.38deg)"], [52, "rotate(122.38deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps (seul)", "Grand fessier"],
+          muscle: `
+            <ellipse cx="117.3" cy="99" rx="3.4" ry="9" transform="rotate(5.5 117.3 99)"/>
+            <circle cx="125.5" cy="90" r="4.5"/>`,
+          svg: `
+            <circle class="mo-joint" cx="119.5" cy="112" r="2.8"/>
+            <line class="mo-limb" x1="119.5" y1="112" x2="122" y2="86.13"/>`,
+          children: [
+            {
+              o: "122px 86.13px",
+              k: [[0, "rotate(0deg)"], [45, "rotate(-124.48deg)"], [52, "rotate(-124.48deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="122" cy="86.13" r="2.8"/>
+                <line class="mo-body" x1="122" y1="86.13" x2="120.88" y2="54.15"/>
+                <circle class="mo-head" cx="119" cy="40" r="9"/>`,
+              children: [
+                {
+                  /* JAMBE LIBRE : +26°, la contre-rotation qui la garde
+                     HORIZONTALE pendant toute la descente — exactement
+                     le procédé des bras du schéma parent. */
+                  o: "122px 86.13px",
+                  k: [[0, "rotate(0deg)"], [45, "rotate(26deg)"], [52, "rotate(26deg)"],
+                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  muscleNom: "Fléchisseurs de hanche (jambe libre)",
+                  muscle: `<circle cx="114" cy="84" r="3.6"/>`,
+                  svg: `
+                    <line class="mo-limb" x1="122" y1="86.13" x2="96" y2="86.13"/>
+                    <circle class="mo-joint" cx="96" cy="86.13" r="2.6"/>
+                    <line class="mo-limb" x1="96" y1="86.13" x2="70" y2="86.13"/>
+                    <circle class="mo-joint" cx="70" cy="86.13" r="2.6"/>
+                    <line class="mo-limb" x1="70" y1="86.13" x2="63.11" y2="80.34"/>`
+                },
+                {
+                  /* BRAS : la contre-rotation d'origine, inchangée. */
+                  o: "120.88px 54.15px",
+                  k: [[0, "rotate(0deg)"], [45, "rotate(26deg)"], [52, "rotate(26deg)"],
+                      [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="120.88" y1="54.15" x2="108" y2="55"/>
+                    <circle class="mo-joint" cx="108" cy="55" r="2.4"/>
+                    <line class="mo-limb" x1="108" y1="55" x2="95" y2="56"/>
+                    <circle class="mo-hand" cx="95" cy="56" r="3"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M162 104 L162 64 M157 72 L162 64 L167 72"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M162 64 L162 104 M157 96 L162 104 L167 96"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   157. JUMPING JACKS   (jumping-jacks)
+
+   VUE DE FACE, rig des élévations latérales : tête (120 42) r10,
+   épaules (104 62) et (136 62), rachis jusqu'à la hanche (120 108).
+   L'abduction des bras ET des jambes appartient au plan frontal,
+   donc au plan de la feuille : tout se voit en vraie grandeur, aucun
+   raccourcissement à déclarer.
+
+   LES BRAS. Segment rigide épaule → main de 48,37. Au repos ils
+   pendent à 97,13° ; en haut la main est à −80° de l'épaule, soit
+   une rotation de −177,13°. Les deux mains finissent à 15,2 l'une de
+   l'autre et 17,64 au-dessus du crâne — presque jointes, comme dans
+   le mouvement réel.
+
+   LE DÉTAIL QUI OBLIGEAIT À MENTIR, ET COMMENT IL EST RÉGLÉ. Écarter
+   les jambes de 14° autour de la hanche raccourcit leur portée
+   verticale : les pieds remontent de 2,46 et se retrouvent EN L'AIR
+   alors que la position pieds écartés est une position posée. Deux
+   sorties possibles : dessiner des pieds qui flottent, ou abaisser le
+   corps de ces 2,46 — ce que fait d'ailleurs un vrai jumping jack,
+   puisqu'on est plus bas jambes écartées que jambes serrées. Le
+   tronc reçoit donc une translation de 2,46 vers le bas, et les pieds
+   retombent exactement sur le sol, à 150,00.
+
+   CE QUE CE SCHÉMA NE MONTRE PAS, ET L'ASSUME : le temps de vol. Le
+   saut lui-même n'est pas dessiné ; ce sont les deux positions et le
+   passage de l'une à l'autre. Dessiner une phase aérienne demanderait
+   d'inventer une hauteur de saut que rien ne fixe.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["jumping-jacks"] = {
+  vb: "44 8 152 152",
+  dur: 2.0,
+  phases: { con: [0, 40], ecc: [50, 90] },
+  alt: "Debout de face : les bras montent sur les côtés jusqu'au-dessus de la tête pendant que les pieds s'écartent, puis reviennent le long du corps pieds joints.",
+  fixe: `
+    <line class="mo-ground" x1="80" y1="150" x2="160" y2="150"/>`,
+  parts: [
+    {
+      /* TRONC : il descend de 2,46 quand les jambes s'écartent, ce qui
+         remet les pieds au sol. Tout le reste est accroché à lui. */
+      o: "120px 108px",
+      k: [[0, "translate(0px,0px)"], [40, "translate(0px,2.46px)"],
+          [50, "translate(0px,2.46px)"], [90, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      muscleNom: "Deltoïdes moyens",
+      muscle: `<circle cx="104" cy="62" r="5"/><circle cx="136" cy="62" r="5"/>`,
+      svg: `
+        <circle class="mo-head" cx="120" cy="42" r="10"/>
+        <line class="mo-body" x1="104" y1="62" x2="136" y2="62"/>
+        <line class="mo-body" x1="120" y1="52" x2="120" y2="108"/>
+        <circle class="mo-joint" cx="120" cy="108" r="2.8"/>`,
+      children: [
+        {
+          /* BRAS GAUCHE : −177,13°, du long du corps à au-dessus de la tête. */
+          o: "104px 62px",
+          k: [[0, "rotate(0deg)"], [40, "rotate(-177.13deg)"], [50, "rotate(-177.13deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="104" y1="62" x2="100" y2="86"/>
+            <circle class="mo-joint" cx="100" cy="86" r="2.4"/>
+            <line class="mo-limb" x1="100" y1="86" x2="98" y2="110"/>
+            <circle class="mo-hand" cx="98" cy="110" r="3"/>`
+        },
+        {
+          /* BRAS DROIT : miroir exact. */
+          o: "136px 62px",
+          k: [[0, "rotate(0deg)"], [40, "rotate(177.13deg)"], [50, "rotate(177.13deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="136" y1="62" x2="140" y2="86"/>
+            <circle class="mo-joint" cx="140" cy="86" r="2.4"/>
+            <line class="mo-limb" x1="140" y1="86" x2="142" y2="110"/>
+            <circle class="mo-hand" cx="142" cy="110" r="3"/>`
+        },
+        {
+          /* JAMBE GAUCHE : 14° d'abduction autour de la hanche. */
+          o: "120px 108px",
+          k: [[0, "rotate(0deg)"], [40, "rotate(14deg)"], [50, "rotate(14deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="120" y1="108" x2="117" y2="129"/>
+            <circle class="mo-joint" cx="117" cy="129" r="2.4"/>
+            <line class="mo-limb" x1="117" y1="129" x2="115" y2="150"/>`
+        },
+        {
+          /* JAMBE DROITE : miroir exact. */
+          o: "120px 108px",
+          k: [[0, "rotate(0deg)"], [40, "rotate(-14deg)"], [50, "rotate(-14deg)"],
+              [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="120" y1="108" x2="123" y2="129"/>
+            <circle class="mo-joint" cx="123" cy="129" r="2.4"/>
+            <line class="mo-limb" x1="123" y1="129" x2="125" y2="150"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M72 104 L58 60 M64 68 L58 60 L55 70 M168 104 L182 60 M176 68 L182 60 L185 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 60 L72 104 M65 96 L72 104 L75 94 M182 60 L168 104 M175 96 L168 104 L165 94"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   158. MUSCLE-UP À LA BARRE   (muscle-up)
+
+   MÊME PRINCIPE DE CHAÎNE QUE LES TRACTIONS, et c'est ce qui rend le
+   mouvement dessinable : tout est enraciné à LA MAIN, qui ne quitte
+   jamais la barre. Avant-bras autour de la main, bras autour du
+   coude, corps autour de l'épaule. Longueurs reprises telles quelles :
+   avant-bras 22,02, bras 21,97, soit 43,99 de la main à l'épaule bras
+   tendu.
+
+   CE QUE CETTE VUE NE PEUT PAS MONTRER, ET QUI A ÉTÉ RETIRÉ. Le
+   schéma est vu DE FACE, comme celui des tractions — c'est ce qui
+   permet de dessiner les deux bras. Or la bascule du buste au
+   passage est un mouvement SAGITTAL : de face, elle rentre dans la
+   feuille. Une première version la dessinait comme une inclinaison
+   de 38°, mesurée à −38,0° sur le rendu : de face, cela se lit comme
+   un penchement LATÉRAL, c'est-à-dire comme un défaut d'exécution et
+   non comme le geste. Le buste reste donc rigoureusement vertical aux
+   sept positions — vérifié à 0,00° partout.
+
+   CE QUI RESTE VISIBLE, ET SUFFIT. Le coude. Il part sous la main,
+   passe à sa hauteur exacte, puis remonte au-dessus de la barre :
+   c'est exactement ce que la fiche appelle le passage, et c'est
+   entièrement contenu dans le plan frontal.
+
+   POURQUOI SEPT IMAGES ET NON QUATRE. Le passage fait pivoter
+   l'avant-bras de 174° autour de la barre. Avec seulement les
+   positions de départ et d'arrivée, l'interpolation linéaire coupe
+   au plus court et fabrique une pose qui n'existe pas : épaule
+   projetée à x = 130, c'est-à-dire hors du corps. Le balayage est
+   donc découpé en angles d'avant-bras réels — 87°, 60°, 30°, 0°,
+   −30°, −60° — chacun résolu avec l'épaule contrainte à x = 104. Ce
+   ne sont pas des interpolations, ce sont des poses.
+
+       θ avant-bras   coude            épaule       tête / barre
+          87,26°     (87,05 97,99)   (104 84,01)      +6,0
+          60°        (97,01 95,07)   (104 74,24)     +15,8
+          30°        (105,07 87,01)  (104 65,06)     +24,9
+           0°        (108,02 76,00)  (104 54,40)     +35,6   coude À la barre
+         −30°        (105,07 64,99)  (104 43,05)     +47,0
+         −60°        (97,01 56,93)   (104 36,10)     +54,0   verrouillage
+
+   Au dernier, la distance main-épaule vaut 43,8 pour 43,99 bras
+   tendu : le coude est verrouillé sans qu'on ait eu à le décréter.
+
+   VUE DE FACE : la barre est tracée AVANT le corps, donc le corps
+   passe devant elle, comme en vrai.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["muscle-up"] = {
+  /* Cadre ouvert jusqu'à 0 en haut : au verrouillage la tête monte à
+     12,10 et venait chevaucher l'étiquette du schéma. 12 de marge. */
+  vb: "55 0 132 204",
+  dur: 4.6,
+  phases: { con: [0, 49], ecc: [58, 96] },
+  alt: "Suspendu à une barre fixe, le corps monte jusqu'à ce que la poitrine atteigne la barre, les coudes passent au-dessus de la barre, puis les bras se tendent en appui au-dessus.",
+  fixe: `
+    <line class="mo-bar3" x1="60" y1="76" x2="180" y2="76"/>
+    <line class="mo-gear" x1="66" y1="76" x2="66" y2="196"/>
+    <line class="mo-gear" x1="174" y1="76" x2="174" y2="196"/>`,
+  parts: [
+    {
+      /* AVANT-BRAS GAUCHE, enraciné à la MAIN (86 76) sur la barre.
+         C'est lui qui balaie les 174° du passage. */
+      o: "86px 76px",
+      k: [[0, "rotate(0deg)"], [14, "rotate(17.2deg)"], [21, "rotate(-10.1deg)"],
+          [28, "rotate(-40.1deg)"], [35, "rotate(-70.1deg)"], [42, "rotate(-100.1deg)"],
+          [49, "rotate(-130.1deg)"], [58, "rotate(-130.1deg)"],
+          [63, "rotate(-100.1deg)"], [68, "rotate(-70.1deg)"], [73, "rotate(-40.1deg)"],
+          [78, "rotate(-10.1deg)"], [84, "rotate(17.2deg)"],
+          [96, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      childrenFirst: true,
+      svg: `
+        <circle class="mo-hand" cx="86" cy="76" r="3.6"/>
+        <line class="mo-limb" x1="86" y1="76" x2="93.5" y2="96.7"/>
+        <circle class="mo-joint" cx="93.5" cy="96.7" r="2.5"/>`,
+      children: [
+        {
+          o: "93.5px 96.7px",
+          k: [[0, "rotate(0deg)"], [14, "rotate(-118.2deg)"], [21, "rotate(-122.8deg)"],
+              [28, "rotate(-114.2deg)"], [35, "rotate(-91.9deg)"], [42, "rotate(-54.2deg)"],
+              [49, "rotate(-2.8deg)"], [58, "rotate(-2.8deg)"],
+              [63, "rotate(-54.2deg)"], [68, "rotate(-91.9deg)"], [73, "rotate(-114.2deg)"],
+              [78, "rotate(-122.8deg)"], [84, "rotate(-118.2deg)"],
+              [96, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="98.75" cy="106.35" rx="3.2" ry="7" transform="rotate(-29 98.75 106.35)"/>`,
+          svg: `<line class="mo-limb" x1="93.5" y1="96.7" x2="104" y2="116"/>`,
+          children: [
+            {
+              /* CORPS : la somme des trois rotations vaut 0 à CHAQUE
+                 image. Le buste ne s'incline jamais — voir plus haut. */
+              o: "104px 116px",
+              k: [[0, "rotate(0deg)"], [14, "rotate(101.0deg)"], [21, "rotate(132.9deg)"],
+                  [28, "rotate(154.2deg)"], [35, "rotate(162.0deg)"], [42, "rotate(154.2deg)"],
+                  [49, "rotate(132.9deg)"], [58, "rotate(132.9deg)"],
+                  [63, "rotate(154.2deg)"], [68, "rotate(162.0deg)"], [73, "rotate(154.2deg)"],
+                  [78, "rotate(132.9deg)"], [84, "rotate(101.0deg)"],
+                  [96, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              muscleNom: "Grand dorsal",
+              muscle: `<ellipse cx="111" cy="132" rx="3.8" ry="11" transform="rotate(-9 111 132)"/>
+                       <ellipse cx="129" cy="132" rx="3.8" ry="11" transform="rotate(9 129 132)"/>`,
+              svg: `
+                <circle class="mo-head" cx="120" cy="102" r="10"/>
+                <line class="mo-body" x1="104" y1="116" x2="136" y2="116"/>
+                <line class="mo-body" x1="120" y1="114" x2="120" y2="158"/>
+                <line class="mo-body" x1="120" y1="158" x2="111" y2="194"/>
+                <line class="mo-body" x1="120" y1="158" x2="129" y2="194"/>`
+            }
+          ]
+        }
+      ]
+    },
+    {
+      /* AVANT-BRAS DROIT : miroir exact, main en (154 76). */
+      o: "154px 76px",
+      k: [[0, "rotate(0deg)"], [14, "rotate(-17.2deg)"], [21, "rotate(10.1deg)"],
+          [28, "rotate(40.1deg)"], [35, "rotate(70.1deg)"], [42, "rotate(100.1deg)"],
+          [49, "rotate(130.1deg)"], [58, "rotate(130.1deg)"],
+          [63, "rotate(100.1deg)"], [68, "rotate(70.1deg)"], [73, "rotate(40.1deg)"],
+          [78, "rotate(10.1deg)"], [84, "rotate(-17.2deg)"],
+          [96, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <circle class="mo-hand" cx="154" cy="76" r="3.6"/>
+        <line class="mo-limb" x1="154" y1="76" x2="146.5" y2="96.7"/>
+        <circle class="mo-joint" cx="146.5" cy="96.7" r="2.5"/>`,
+      children: [
+        {
+          o: "146.5px 96.7px",
+          k: [[0, "rotate(0deg)"], [14, "rotate(118.2deg)"], [21, "rotate(122.8deg)"],
+              [28, "rotate(114.2deg)"], [35, "rotate(91.9deg)"], [42, "rotate(54.2deg)"],
+              [49, "rotate(2.8deg)"], [58, "rotate(2.8deg)"],
+              [63, "rotate(54.2deg)"], [68, "rotate(91.9deg)"], [73, "rotate(114.2deg)"],
+              [78, "rotate(122.8deg)"], [84, "rotate(118.2deg)"],
+              [96, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="146.5" y1="96.7" x2="136" y2="116"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M166 140 L166 60 M161 68 L166 60 L171 68"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M166 60 L166 140 M161 132 L166 140 L171 132"/>` }
+  ]
+};
+
