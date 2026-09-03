@@ -18717,3 +18717,194 @@ EXERCISE_MOTIONS["extension-lombaire-lestee"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M180 86 L180 122 M175 114 L180 122 L185 114"/>` }
   ]
 };
+
+/* ─────────────────────────────────────────────────────────────
+   154. POMPES SUR LES GENOUX      (pompes-genoux)
+   155. POMPES INCLINÉES           (pompes-inclinees)
+
+   POURQUOI CES DEUX SCHÉMAS ONT DEMANDÉ UN CALCUL, ET NON UNE COPIE.
+
+   Le schéma des pompes tient parce que ses angles sont RÉSOLUS, pas
+   choisis : le corps pivote autour de l'orteil, et le bras puis
+   l'avant-bras tournent d'exactement ce qu'il faut pour que la main
+   ne bouge pas d'un pixel du sol. Changer l'inclinaison du corps
+   détruit cette solution. Recopier les angles du parent aurait donné
+   une main qui glisse ou un avant-bras qui s'allonge.
+
+   La cinématique inverse a donc été refaite pour les deux variantes,
+   avec les mêmes longueurs — bras 21,99, avant-bras 21,01, épaule à
+   main 42,00 bras tendu. Butée basse commune : coude à 90°, soit une
+   distance épaule-main de 30,41 et une descente de 11,59.
+
+   UN PIÈGE QUI A COÛTÉ UNE PREMIÈRE VERSION FAUSSE. La distance
+   épaule-main n'est PAS monotone quand le corps descend : elle
+   décroît, atteint un minimum, puis remonte. Une recherche par
+   bissection la traite comme monotone et converge sur la borne — elle
+   donnait un corps à −60° et un avant-bras étiré à 42,53 au lieu de
+   21,01. Corrigé par un balayage fin qui prend le PREMIER croisement,
+   seul physiquement atteignable. Les deux solutions ci-dessous ont un
+   avant-bras de 21,010 à chaque image clé, vérifié.
+
+   GENOUX. L'appui passe de l'orteil au genou. La chaîne épaule-genou
+   vaut 90,29 et le genou touche le sol : le corps se redresse à 27,72°
+   contre 19,29°. L'ÉPAULE ET LA MAIN NE BOUGENT PAS — (70 104) et
+   (70 146), exactement comme au parent — donc la chaîne du bras part
+   du même point, et les deux schémas se superposent du poignet à
+   l'épaule. Corps de 0 à −8,36°. Tibias au sol derrière le genou,
+   pieds relevés : ils ne tournent pas avec le corps et vivent donc
+   dans la partie fixe.
+
+   INCLINÉES. La main monte sur l'assise à 33,7 unités du sol, l'épaule
+   reste à sa verticale, et le corps se redresse à 36,53°. Corps de 0 à
+   −6,88° : l'amplitude angulaire est plus courte parce que le rayon
+   épaule-orteil (127,14) est plus long que le rayon épaule-genou.
+
+   CE QUE LE CALCUL A DÉMENTI. On attendait que l'incliné allège les
+   mains. Il ne l'allège pas : 66,3 % du poids au sol, 66,5 % sur la
+   chaise, 67,0 % sur un appui deux fois plus haut. Corps droit et bras
+   verticaux, le centre de masse et la base d'appui se raccourcissent
+   ensemble et leur rapport ne bouge pas. Le vrai mécanisme est
+   l'inclinaison du BRAS, qui quitte la verticale à mesure que l'appui
+   monte. Aucun pourcentage n'est donc annoncé sur cette fiche.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["pompes-genoux"] = {
+  vb: "40 78 172 78",
+  dur: 3.4,
+  phases: { ecc: [0, 44], con: [52, 80] },
+  alt: "Corps en ligne droite de la tête aux genoux, genoux au sol et tibias posés derrière, pieds relevés : le buste descend en bloc vers le sol puis repousse.",
+  fixe: `
+    <line class="mo-ground" x1="46" y1="146" x2="206" y2="146"/>
+    <!-- TIBIAS AU SOL, pieds relevés : ils ne tournent pas avec le
+         corps, le genou est le pivot. -->
+    <line class="mo-limb" x1="149.93" y1="146" x2="178.24" y2="146"/>
+    <line class="mo-limb" x1="178.24" y1="146" x2="173.97" y2="138.6"/>
+    <circle class="mo-joint" cx="149.93" cy="146" r="3"/>`,
+  parts: [
+    {
+      /* CORPS : rigide de la tête au GENOU (149,93 146), qui est
+         l'appui et donc le pivot. 0 → −8,36°. */
+      o: "149.93px 146px",
+      k: [[0, "rotate(0deg)"], [7.33, "rotate(-1.39deg)"], [14.67, "rotate(-2.79deg)"],
+          [22, "rotate(-4.18deg)"], [29.33, "rotate(-5.57deg)"], [36.67, "rotate(-6.97deg)"],
+          [44, "rotate(-8.36deg)"], [52, "rotate(-8.36deg)"],
+          [56.67, "rotate(-6.97deg)"], [61.33, "rotate(-5.57deg)"], [66, "rotate(-4.18deg)"],
+          [70.67, "rotate(-2.79deg)"], [75.33, "rotate(-1.39deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Grand pectoral", "Deltoïde antérieur"],
+      muscle: `<ellipse cx="80" cy="109" rx="11" ry="4.2" transform="rotate(27.7 80 109)"/>
+               <circle cx="71" cy="105" r="4.3"/>`,
+      svg: `
+        <circle class="mo-head" cx="58.8" cy="98.12" r="8"/>
+        <line class="mo-body" x1="66.35" y1="102.08" x2="124.87" y2="132.83"/>
+        <line class="mo-body" x1="124.87" y1="132.83" x2="149.93" y2="146"/>`,
+      children: [
+        {
+          /* BRAS autour de l'ÉPAULE (70 104) — le point du parent. */
+          o: "70px 104px",
+          k: [[0, "rotate(0deg)"], [7.33, "rotate(-8.77deg)"], [14.67, "rotate(-14.96deg)"],
+              [22, "rotate(-20.15deg)"], [29.33, "rotate(-24.80deg)"], [36.67, "rotate(-29.12deg)"],
+              [44, "rotate(-33.26deg)"], [52, "rotate(-33.26deg)"],
+              [56.67, "rotate(-29.12deg)"], [61.33, "rotate(-24.80deg)"], [66, "rotate(-20.15deg)"],
+              [70.67, "rotate(-14.96deg)"], [75.33, "rotate(-8.77deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="72" cy="114" rx="3.2" ry="7.5" transform="rotate(-12 72 114)"/>`,
+          svg: `
+            <line class="mo-limb" x1="70" y1="104" x2="74.6" y2="125.5"/>
+            <circle class="mo-joint" cx="74.6" cy="125.5" r="2.6"/>`,
+          children: [
+            {
+              /* AVANT-BRAS : la rotation qui garde la MAIN au sol. */
+              o: "74.6px 125.5px",
+              k: [[0, "rotate(0deg)"], [7.33, "rotate(17.91deg)"], [14.67, "rotate(30.43deg)"],
+                  [22, "rotate(40.73deg)"], [29.33, "rotate(49.74deg)"], [36.67, "rotate(57.86deg)"],
+                  [44, "rotate(65.35deg)"], [52, "rotate(65.35deg)"],
+                  [56.67, "rotate(57.86deg)"], [61.33, "rotate(49.74deg)"], [66, "rotate(40.73deg)"],
+                  [70.67, "rotate(30.43deg)"], [75.33, "rotate(17.91deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="74.6" y1="125.5" x2="70" y2="146"/>
+                <circle class="mo-hand" cx="70" cy="146" r="3.4"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M126 92 L126 112 M121 106 L126 112 L131 106"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M126 112 L126 92 M121 98 L126 92 L131 98"/>` }
+  ]
+};
+
+EXERCISE_MOTIONS["pompes-inclinees"] = {
+  vb: "44 50 152 106",
+  dur: 3.4,
+  phases: { ecc: [0, 44], con: [52, 80] },
+  alt: "Corps en ligne droite de la tête aux talons, incliné à 36 degrés, mains posées sur l'assise d'une chaise basse et pieds au sol : le buste descend vers le bord de l'assise puis repousse.",
+  fixe: `
+    <line class="mo-ground" x1="48" y1="146" x2="194" y2="146"/>
+    <!-- CHAISE BASSE : assise à 33,7 unités du sol, la main dessus.
+         Le corps passe 28,7 au-dessus du bord le plus proche. -->
+    <line class="mo-bar3" x1="60" y1="112.32" x2="94" y2="112.32"/>
+    <line class="mo-gear" x1="64" y1="112.32" x2="64" y2="146"/>
+    <line class="mo-gear" x1="90" y1="112.32" x2="90" y2="146"/>`,
+  parts: [
+    {
+      /* CORPS : rigide de la tête à l'orteil (178,16 146), le pivot.
+         0 → −6,88° : moins que sur les genoux, parce que le rayon est
+         plus long (127,14 contre 90,29) pour la même descente. */
+      o: "178.16px 146px",
+      k: [[0, "rotate(0deg)"], [7.33, "rotate(-1.15deg)"], [14.67, "rotate(-2.29deg)"],
+          [22, "rotate(-3.44deg)"], [29.33, "rotate(-4.59deg)"], [36.67, "rotate(-5.73deg)"],
+          [44, "rotate(-6.88deg)"], [52, "rotate(-6.88deg)"],
+          [56.67, "rotate(-5.73deg)"], [61.33, "rotate(-4.59deg)"], [66, "rotate(-3.44deg)"],
+          [70.67, "rotate(-2.29deg)"], [75.33, "rotate(-1.15deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Grand pectoral", "Deltoïde antérieur"],
+      muscle: `<ellipse cx="88" cy="79" rx="11" ry="4.2" transform="rotate(36.5 88 79)"/>
+               <circle cx="78" cy="72" r="4.3"/>`,
+      svg: `
+        <circle class="mo-head" cx="65.84" cy="62.79" r="8"/>
+        <line class="mo-body" x1="72.69" y1="67.87" x2="125.81" y2="107.22"/>
+        <line class="mo-body" x1="125.81" y1="107.22" x2="171.3" y2="140.92"/>
+        <line class="mo-body" x1="171.3" y1="140.92" x2="178.16" y2="146"/>`,
+      children: [
+        {
+          /* BRAS autour de l'ÉPAULE (76 70,32), à l'aplomb de la main. */
+          o: "76px 70.32px",
+          k: [[0, "rotate(0deg)"], [7.33, "rotate(-10.04deg)"], [14.67, "rotate(-17.39deg)"],
+              [22, "rotate(-23.74deg)"], [29.33, "rotate(-29.60deg)"], [36.67, "rotate(-35.21deg)"],
+              [44, "rotate(-40.71deg)"], [52, "rotate(-40.71deg)"],
+              [56.67, "rotate(-35.21deg)"], [61.33, "rotate(-29.60deg)"], [66, "rotate(-23.74deg)"],
+              [70.67, "rotate(-17.39deg)"], [75.33, "rotate(-10.04deg)"],
+              [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Triceps brachial",
+          muscle: `<ellipse cx="78.3" cy="81.07" rx="3.2" ry="7.5" transform="rotate(-12 78.3 81.07)"/>`,
+          svg: `
+            <line class="mo-limb" x1="76" y1="70.32" x2="80.6" y2="91.82"/>
+            <circle class="mo-joint" cx="80.6" cy="91.82" r="2.6"/>`,
+          children: [
+            {
+              /* AVANT-BRAS : la rotation qui garde la MAIN sur l'assise. */
+              o: "80.6px 91.82px",
+              k: [[0, "rotate(0deg)"], [7.33, "rotate(18.55deg)"], [14.67, "rotate(31.28deg)"],
+                  [22, "rotate(41.60deg)"], [29.33, "rotate(50.47deg)"], [36.67, "rotate(58.32deg)"],
+                  [44, "rotate(65.39deg)"], [52, "rotate(65.39deg)"],
+                  [56.67, "rotate(58.32deg)"], [61.33, "rotate(50.47deg)"], [66, "rotate(41.60deg)"],
+                  [70.67, "rotate(31.28deg)"], [75.33, "rotate(18.55deg)"],
+                  [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="80.6" y1="91.82" x2="76" y2="112.32"/>
+                <circle class="mo-hand" cx="76" cy="112.32" r="3.4"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 92 L150 112 M145 106 L150 112 L155 106"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M150 112 L150 92 M145 98 L150 92 L155 98"/>` }
+  ]
+};
