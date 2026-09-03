@@ -1641,6 +1641,83 @@ const EXERCISES_LOMBAIRES = [
 EXERCISES.push(...EXERCISES_LOMBAIRES);
 
 /* =========================================================
+   Les deux marches qui manquaient DEVANT les pompes.
+
+   La bibliothèque avait les pompes standard et tout ce qui vient
+   après — déclinées, diamant, piquées, en équilibre. Rien avant.
+   Or c'est là que la plupart des gens commencent, et c'est là que se
+   perdent ceux qui n'arrivent pas à en faire une propre.
+
+   CE QUE CHAQUE VARIANTE ALLÈGE, calculé sur la géométrie du schéma
+   avec les masses segmentaires standards :
+
+       pompes standard      66,3 % du poids sur les mains
+       sur les genoux       52,8 %   (80 % du standard)
+
+   Le modèle se valide tout seul : la littérature mesure 64 % et 49 %
+   sur plateformes de force, pour un rapport de 0,77 contre 0,80 ici.
+
+   POUR LES INCLINÉES, LE CALCUL DIT NON, ET IL FAUT LE DIRE. On
+   attendait une baisse ; il n'y en a pas. Corps droit et bras
+   verticaux, la part sur les mains reste la même quelle que soit la
+   hauteur de l'appui : 66,3 % au sol, 66,5 % sur une chaise, 67,0 %
+   sur un appui deux fois plus haut. Ce n'est pas une erreur de
+   construction — c'est un résultat géométrique, vérifié en balayant
+   les hauteurs : le centre de masse et la base d'appui se raccourcissent
+   ensemble, et leur rapport ne bouge pas.
+
+   Ce qui rend vraiment les inclinées plus faciles est ailleurs : plus
+   l'appui monte, plus le BRAS quitte la verticale, et moins la force
+   qu'il transmet a de composante verticale. À la limite, mains contre
+   un mur debout, les bras ne portent plus rien. C'est pourquoi la
+   fiche dit de commencer haut et de descendre l'appui — et non
+   d'annoncer un pourcentage qui serait faux.
+   ========================================================= */
+const EXERCISES_POMPES = [
+  {
+    id: "pompes-genoux",
+    nom: "Pompes sur les genoux",
+    groupe: "pectoraux", materiel: "poids-du-corps", niveau: "debutant", type: "poly",
+    muscles: "Pectoraux, triceps, deltoïdes antérieurs, gainage",
+    description: "Les pompes avec l'appui avancé aux genoux : 52,8 % du poids du corps sur les mains au lieu de 66,3 %, soit un cinquième de moins. Le geste ne change pas d'un degré — seul le levier raccourcit.",
+    execution: [
+      "Genoux au sol, chevilles croisées ou pieds relevés, mains un peu plus écartées que les épaules.",
+      "Aligne épaules, hanches et genoux : la ligne est plus courte que celle des pompes, elle doit rester aussi droite.",
+      "Descends la poitrine près du sol, coudes à environ 45° du buste.",
+      "Passe aux pompes complètes quand tu en tiens 12 propres sans que le bassin bouge."
+    ],
+    erreurs: [
+      "Bassin qui recule vers les talons : la ligne se casse et l'exercice disparaît.",
+      "Genoux trop près des mains, ce qui réduit encore le levier sans qu'on s'en aperçoive.",
+      "Amplitude partielle : descendre à mi-course ne prépare à rien.",
+      "Tête relevée au lieu de rester dans le prolongement du dos."
+    ],
+    videoQuery: "pompes sur les genoux technique débutant push up"
+  },
+  {
+    id: "pompes-inclinees",
+    nom: "Pompes inclinées (mains surélevées)",
+    groupe: "pectoraux", materiel: "poids-du-corps", niveau: "debutant", type: "poly",
+    muscles: "Pectoraux, triceps, deltoïdes antérieurs, gainage",
+    description: "Les pompes mains posées sur une chaise basse, un banc ou un rebord. Contrairement aux genoux, ce n'est pas la répartition du poids qui change : c'est l'angle du bras. Plus l'appui est haut, moins les bras portent — d'où une progression continue, en descendant l'appui.",
+    execution: [
+      "Mains sur une chaise basse ou un banc stable, un peu plus écartées que les épaules.",
+      "Recule les pieds jusqu'à ce que le corps forme une ligne droite de la tête aux talons.",
+      "Descends la poitrine vers le bord de l'appui, coudes à environ 45° du buste.",
+      "Pour progresser, baisse l'appui : chaise, puis marche d'escalier, puis sol. Le geste ne change jamais."
+    ],
+    erreurs: [
+      "Appui instable ou à roulettes — la première chose à vérifier avant la technique.",
+      "Bassin qui s'affaisse : la ligne du corps compte autant qu'aux pompes au sol.",
+      "Mains trop en avant des épaules, ce qui charge l'épaule au lieu du pectoral.",
+      "Rester sur la même hauteur des mois : l'appui est fait pour descendre."
+    ],
+    videoQuery: "pompes inclinées mains surélevées chaise banc technique"
+  }
+];
+EXERCISES.push(...EXERCISES_POMPES);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1669,6 +1746,21 @@ const EXERCISE_ALIASES = {
                          "hollow hold genoux repliés"],
   "wall-sit-une-jambe": ["single leg wall sit", "one leg wall sit", "chaise une jambe",
                          "wall sit unilatéral"],
+  /* Les deux nouvelles marches, et les alias qui manquaient à des
+     exercices DÉJÀ présents — « diamond push up » ou « bench dips »
+     ne trouvaient rien alors que l'exercice existait sous son nom
+     français. */
+  "pompes-genoux": ["knee push up", "knee push-up", "pompes genoux",
+                    "pompes sur les genoux", "modified push up"],
+  "pompes-inclinees": ["incline push up", "incline push-up", "pompes inclinées",
+                       "pompes mains surélevées", "pompes sur chaise", "chair push up",
+                       "elevated push up", "pompes sur banc"],
+  "pompes-diamant": ["diamond push up", "diamond push-up", "pompes serrées",
+                     "close grip push up", "pompes prise serrée"],
+  "pompes-declinees": ["decline push up", "decline push-up", "pompes pieds surélevés"],
+  "dips-banc": ["bench dips", "chair dips", "dips chaise", "dips sur chaise",
+                "dips sur banc", "tricep dips banc"],
+  "rowing-inverse": ["australian pull up", "inverted row", "body row", "tirage australien"],
   "extension-lombaire-lestee": ["weighted back extension", "loaded back extension",
                                 "extension lombaire lestée", "hyperextension lestée",
                                 "back extension disque", "weighted hyperextension"],
