@@ -590,6 +590,30 @@ textarea { min-height: 90px; resize: vertical; }
 .conseils-card h3 { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: 1.15rem; }
 .disclaimer { margin-top: 18px; color: var(--text-soft); font-size: 0.85rem; }
 
+/* Sous-ligne dans une cellule (RIR sous « séries × reps ») */
+.cell-sub { display: block; font-size: 0.78rem; color: var(--text-soft); font-weight: 400; }
+
+/* ---------- Volume hebdomadaire par muscle ---------- */
+.volume-card { margin-top: 18px; }
+.volume-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.volume-table td { padding: 7px 4px; vertical-align: middle; }
+.vol-nom { white-space: nowrap; color: var(--text-soft); width: 1%; padding-right: 10px; }
+.vol-val { width: 1%; padding-left: 10px; font-variant-numeric: tabular-nums; font-weight: 700; }
+.vol-bar-cell { position: relative; height: 16px; }
+.vol-bar {
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  height: 10px; border-radius: 5px; background: var(--green); min-width: 2px;
+}
+.vol-sous .vol-bar { background: var(--yellow); }
+.vol-haut .vol-bar { background: var(--accent-2); }
+.vol-sous .vol-val { color: var(--yellow); }
+/* repère vertical de la cible */
+.vol-cible {
+  position: absolute; top: 0; bottom: 0; width: 2px;
+  background: var(--text-soft); opacity: 0.55;
+}
+.volume-warn { margin-top: 12px; font-size: 0.85rem; color: var(--yellow); }
+
 /* ---------- Séance : setup ---------- */
 .setup-card { max-width: 640px; }
 .rest-setting {

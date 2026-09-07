@@ -376,3 +376,57 @@ function generateProgram(params) {
     conseils: scheme.conseils
   };
 }
+
+/* =========================================================
+   Volume hebdomadaire par muscle
+   -----------------------------------------------------------
+   La dose qui pilote l'hypertrophie est le nombre de séries
+   par semaine et par muscle (ACSM 2026, Baz-Valle 2022). On
+   le compte de façon FRACTIONNELLE : une série qui sollicite
+   un muscle en second (le triceps sur un développé) vaut 0,5.
+   ========================================================= */
+
+/* Muscles travaillés en second par un polyarticulaire donné (0,5 série
+   chacun). Approximation volontaire : l'isolation ne compte pas d'indirect. */
+const MUSCLE_INDIRECT = {
+  pectoraux:          ["triceps", "epaules"],
+  dos:                ["biceps"],
+  epaules:            ["triceps"],
+  quadriceps:         ["ischios-fessiers"],
+  "ischios-fessiers": ["lombaires", "quadriceps"]
+};
+
+/* Cible de séries hebdomadaires par muscle, selon le niveau. */
+const VOLUME_CIBLE = { debutant: 10, intermediaire: 14, avance: 18 };
+
+const MUSCLE_ORDRE = [
+  "pectoraux", "dos", "epaules", "biceps", "triceps",
+  "quadriceps", "ischios-fessiers", "mollets", "abdos", "lombaires"
+];
+
+/* Renvoie [{ groupe, direct, fractionnel, cible, statut }] pour un
+   programme. statut : "sous" (< 80 % de la cible), "ok", "haut" (> 160 %). */
+function weeklyVolumeByMuscle(pr) {
+  const cible = VOLUME_CIBLE[pr && pr.niveau] || VOLUME_CIBLE.intermediaire;
+  const direct = {}, indirect = {};
+  MUSCLE_ORDRE.forEach(g => { direct[g] = 0; indirect[g] = 0; });
+
+  for (const day of (pr && pr.days) || []) {
+    for (const l of day.exercices || []) {
+      const g = l.exercice && l.exercice.groupe;
+      const n = Number(l.series) || 0;
+      if (g != null && direct[g] != null) direct[g] += n;
+      const estPoly = (l.exercice && l.exercice.type) === "poly";
+      if (estPoly && g != null && MUSCLE_INDIRECT[g]) {
+        for (const s of MUSCLE_INDIRECT[g]) if (indirect[s] != null) indirect[s] += n * 0.5;
+      }
+    }
+  }
+
+  return MUSCLE_ORDRE.map(g => {
+    const fractionnel = Math.round((direct[g] + indirect[g]) * 2) / 2;
+    const statut = fractionnel < cible * 0.8 ? "sous"
+                 : fractionnel > cible * 1.6 ? "haut" : "ok";
+    return { groupe: g, direct: direct[g], fractionnel, cible, statut };
+  });
+}
