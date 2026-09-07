@@ -10,35 +10,44 @@ const GOAL_SCHEMES = {
   masse: {
     label: "Prise de masse musculaire",
     icone: "💪",
-    poly:  { series: 4, reps: "8-12",  repos: "90 s" },
-    iso:   { series: 3, reps: "10-15", repos: "60-75 s" },
+    // Repos long : un repos court réduit le volume-charge réalisable, et
+    // c'est lui qui porte l'hypertrophie (Schoenfeld 2016, Longo 2020).
+    poly:  { series: 4, reps: "8-12",  repos: "2-3 min" },
+    iso:   { series: 3, reps: "10-15", repos: "90 s" },
     conseils: [
       "Mange en léger surplus calorique (+250 à +400 kcal/jour) avec 1,8 à 2,2 g de protéines par kilo de poids de corps.",
       "Cherche la surcharge progressive : ajoute du poids ou des répétitions à chaque semaine si possible.",
       "Dors 7 à 9 h par nuit — c'est là que le muscle se construit.",
-      "Contrôle la phase négative (descente) sur 2-3 secondes pour maximiser la tension musculaire."
+      "Termine tes séries à 1-3 répétitions de l'échec. Aller jusqu'à l'échec à chaque série coûte plus de fatigue sans gain supplémentaire.",
+      "Prends des repos complets (2 à 3 min sur les gros mouvements) : c'est le volume que tu peux soulever qui construit le muscle, pas la course contre la montre."
     ]
   },
   force: {
     label: "Force maximale",
     icone: "🏋️",
-    poly:  { series: 5, reps: "3-6",   repos: "3 min" },
-    iso:   { series: 3, reps: "6-10",  repos: "90 s" },
+    poly:  { series: 5, reps: "3-6",   repos: "3-5 min" },
+    iso:   { series: 3, reps: "6-10",  repos: "2-3 min" },
     conseils: [
-      "Prends des repos longs (3 min et plus sur les gros mouvements) : la force exige une récupération complète entre les séries.",
+      "Prends des repos longs (3 à 5 min sur les gros mouvements) : la force exige une récupération complète entre les séries.",
       "Échauffe-toi avec des séries progressives avant tes séries de travail lourdes.",
       "La technique passe avant la charge : une répétition laide est une répétition qui ne compte pas.",
+      "Garde 2-4 répétitions en réserve sur les séries lourdes. La force se construit sur une large plage de proximité de l'échec, sans le payer en fatigue.",
       "Filme tes séries lourdes pour vérifier ta technique."
     ]
   },
   seche: {
     label: "Sèche / Perte de gras",
     icone: "🔥",
-    poly:  { series: 4, reps: "10-15", repos: "60 s" },
-    iso:   { series: 3, reps: "12-20", repos: "45 s" },
+    // Même entraînement qu'en prise de masse : en déficit, l'objectif est
+    // de CONSERVER le muscle, donc le stimulus doit être identique. À
+    // effort égal l'hypertrophie ne dépend pas de la plage de répétitions
+    // (Schoenfeld 2017) : il n'y a pas de « reps de définition ». La sèche
+    // se joue dans l'assiette et le cardio, pas dans le schéma de séries.
+    poly:  { series: 4, reps: "8-12",  repos: "2-3 min" },
+    iso:   { series: 3, reps: "10-15", repos: "90 s" },
     conseils: [
+      "L'entraînement est le même qu'en prise de masse : charges lourdes, mêmes séries et répétitions. C'est le déficit calorique qui fait perdre le gras.",
       "Crée un déficit calorique modéré (-300 à -500 kcal/jour) en gardant les protéines hautes (2 g/kg) pour préserver le muscle.",
-      "Garde des charges lourdes : c'est le déficit qui fait perdre le gras, pas les répétitions infinies.",
       "Ajoute 20-30 min de cardio modéré ou 10-15 min de HIIT après la séance ou les jours off.",
       "Vise 8 000 à 10 000 pas par jour pour augmenter la dépense sans fatigue supplémentaire."
     ]
@@ -46,8 +55,8 @@ const GOAL_SCHEMES = {
   forme: {
     label: "Remise en forme / Tonification",
     icone: "⚡",
-    poly:  { series: 3, reps: "10-15", repos: "60-75 s" },
-    iso:   { series: 2, reps: "12-15", repos: "60 s" },
+    poly:  { series: 3, reps: "8-12",  repos: "90 s" },
+    iso:   { series: 2, reps: "12-15", repos: "75 s" },
     conseils: [
       "La régularité bat l'intensité : mieux vaut 3 séances moyennes par semaine que 1 séance parfaite.",
       "Termine chaque séance par 5-10 min d'étirements ou de mobilité.",
@@ -185,12 +194,15 @@ function chooseSplit(jours, niveau, splitPref, repartition) {
       default: return ["push", "pull", "legs"];
     }
   }
-  // auto : full body quand la fréquence est basse ou le niveau débutant
+  // auto : full body quand la fréquence est basse ou le niveau débutant.
+  // À 3 séances, haut/bas plutôt que push/pull/legs : le PPL n'étale
+  // correctement le volume qu'à partir de 5-6 séances, sinon chaque
+  // muscle n'est travaillé qu'une fois par semaine.
   switch (jours) {
     case 2: return ["fullbody", "fullbody"];
     case 3: return niveau === "debutant"
       ? ["fullbody", "fullbody", "fullbody"]
-      : ["push", "pull", "legs"];
+      : ["upper", "lower", "upper"];
     case 4: return ["upper", "lower", "upper", "lower"];
     case 5: return ["push", "pull", "legs", "upper", "lower"];
     case 6: return ["push", "pull", "legs", "push", "pull", "legs"];
