@@ -32,6 +32,37 @@ function recallSet(exId, setIndex) {
   return (getLastWeights()[exId] || [])[setIndex] || null;
 }
 
+/* Suggestion de progression (double progression). Tant que toutes les
+   séries ne sont pas au haut de la fourchette, on garde la charge et on
+   ajoute des reps ; une fois le haut atteint partout, on monte la charge
+   (+2,5 kg haut du corps, +5 kg bas du corps) et on repart du bas de la
+   fourchette. Basé sur la dernière séance du même exercice, figée au
+   démarrage (ex.memoDepart) pour ne pas dériver en cours de séance. */
+const LOWER_BODY = new Set(["quadriceps", "ischios-fessiers", "mollets"]);
+
+function progressionHint(ex) {
+  if (!ex.target) return null;                       // séance libre : pas de cible
+  const m = String(ex.target).match(/(\d+)\s*[-–]\s*(\d+)\s*(s)?/);
+  if (!m || m[3]) return null;                       // pas de fourchette de reps (gainage en secondes)
+  const lo = +m[1], hi = +m[2];
+  const memo = (ex.memoDepart || getLastWeights()[ex.exId] || []).filter(s => s && s.reps != null);
+  if (!memo.length) {
+    return `Première fois : prends une charge qui te laisse 1 à 2 reps en réserve autour de ${lo} reps.`;
+  }
+  const charges = memo.map(s => s.poids).filter(v => v != null);
+  const charge = charges.length ? Math.max(...charges) : null;
+  const minReps = Math.min(...memo.map(s => s.reps));
+  const inc = LOWER_BODY.has(ex.groupe) ? 5 : 2.5;
+  if (minReps >= hi && charge != null) {
+    return `Dernière fois toutes les séries à ${hi} reps : passe à ${charge + inc} kg et repars de ${lo} reps.`;
+  }
+  const cible = Math.min(minReps + 1, hi);
+  if (charge != null) {
+    return `Dernière fois ${charge} kg. Garde la charge, vise ${cible} reps sur chaque série.`;
+  }
+  return `Garde ta charge, vise ${cible} reps sur chaque série.`;
+}
+
 /* Référence temporelle : figée pendant une pause */
 function nowRef() { return (live && live.pausedAt) ? live.pausedAt : Date.now(); }
 
@@ -279,6 +310,9 @@ function newLiveExercise(ex, target, restSec) {
     nom: ex.nom,
     groupe: ex.groupe,
     target: target || null,        // ex : "4 × 8-12"
+    // charges/reps de la dernière séance de cet exercice, figées ici pour
+    // que la suggestion de progression ne bouge pas en cours de séance
+    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps }),
     restSec: restSec || (ex.type ? smartRest(ex) : getDefaultRest()),
     restAuto: !restSec,
     sets: [],                      // { poids, reps, doneAt, restAfter }
@@ -961,6 +995,8 @@ function renderLiveExercises() {
         ${isCurrent && p.fini && nextUnfinished(i) != null
           ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
       </div>
+
+      ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
 
       ${ex.sets.length ? `
       <table class="sets-table">
@@ -2054,29 +2090,17 @@ function showSummary(r) {
         return;
       }
       const dure = summaryDiff === "dure";
+      /* Un ressenti global de séance est un signal faible et bruité : la
+         fatigue est locale et propre au jour. On ne modifie plus le volume
+         du programme entier ici. Le pilotage jour à jour se fait par la
+         suggestion de progression affichée sur chaque exercice pendant la
+         séance ; le volume hebdo se règle dans l'éditeur de programme. */
       zone.innerHTML = `
         <div class="adjust-card">
           <p>${dure
-            ? "Séance trop dure ? Je te propose de <strong>retirer 1 série</strong> sur les exercices polyarticulaires du programme, et de baisser tes charges d'environ 5 % la prochaine fois."
-            : "Trop facile ? Surcharge progressive : je te propose d'<strong>ajouter 1 série</strong> sur les polyarticulaires — et pense à monter les charges de ~2,5 kg quand toutes les reps passent proprement."}</p>
-          <button class="btn btn-primary btn-sm" id="apply-adjust">Appliquer au programme</button>
-          <p class="feedback" id="adjust-feedback"></p>
+            ? "Reprends la même charge à la prochaine séance, ou 5 % de moins sur les exercices qui t'ont posé problème. La suggestion de progression affichée sur chaque exercice te reproposera d'avancer dès que les séries repassent proprement."
+            : "Laisse la suggestion de progression faire son travail : elle te fait monter en reps puis en charge, exercice par exercice. Si c'est trop facile depuis plusieurs séances, ajoute une série sur un ou deux gros mouvements dans l'éditeur de programme."}</p>
         </div>`;
-      document.getElementById("apply-adjust").addEventListener("click", () => {
-        const pr = loadJSON(STORAGE_KEYS.program, null);
-        if (!pr) return;
-        let touched = 0;
-        for (const day of pr.days)
-          for (const l of day.exercices)
-            if (l.exercice.type === "poly") {
-              const next = l.series + (dure ? -1 : 1);
-              if (next >= 2 && next <= 5) { l.series = next; touched++; }
-            }
-        saveJSON(STORAGE_KEYS.program, pr);
-        document.getElementById("adjust-feedback").textContent =
-          `✓ Programme ajusté : ${touched} exercice(s) ${dure ? "allégé(s)" : "renforcé(s)"} d'une série.`;
-        if (typeof renderProgram === "function") renderProgram(pr);
-      });
     }));
   elSummary.querySelectorAll(".rpe-chip").forEach(c =>
     c.addEventListener("click", () => {

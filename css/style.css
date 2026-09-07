@@ -1602,6 +1602,19 @@ textarea { min-height: 90px; resize: vertical; }
 .last-hint strong { color: var(--accent-2); }
 .theme-epure .last-hint strong { color: var(--accent); }
 
+/* Suggestion de progression (double progression) */
+.progress-hint {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 0.85rem; line-height: 1.35;
+  margin: 10px 0 4px; padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+}
+.progress-hint svg { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--accent-2); }
+.theme-epure .progress-hint { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.theme-epure .progress-hint svg { color: var(--accent); }
+
 /* Mode compact : chrono seul, cartes à l'essentiel */
 .live-compact .live-chronos .chrono-block:not(.chrono-main) { display: none; }
 .live-compact .chrono-main .chrono-value { font-size: 2.1rem; }
