@@ -222,27 +222,59 @@ document.getElementById("import-program-file").addEventListener("change", e => {
   e.target.value = "";
 });
 
-/* ---------- Projection : vision d'ensemble des prochaines semaines ---------- */
+/* Plateau : pour chaque exercice du programme, on regarde ses dernières
+   apparitions dans l'historique. Si la meilleure charge de série n'a pas
+   progressé sur au moins 3 séances consécutives, l'exercice stagne. */
+function detectPlateaus(p) {
+  const history = loadJSON(STORAGE_KEYS.history, []);
+  const ids = new Set();
+  (p.days || []).forEach(d => (d.exercices || []).forEach(l => l.exercice && ids.add(l.exercice.id)));
+
+  const parEx = {};   // exId -> [{ date, best }] du plus ancien au plus récent
+  for (let k = history.length - 1; k >= 0; k--) {
+    for (const ex of history[k].exercises || []) {
+      if (!ids.has(ex.exId)) continue;
+      const best = Math.max(0, ...(ex.sets || []).map(s => (s.poids || 0)));
+      (parEx[ex.exId] = parEx[ex.exId] || []).push({ nom: ex.nom, best });
+    }
+  }
+
+  const plateaux = [];
+  for (const exId of Object.keys(parEx)) {
+    const serie = parEx[exId].slice(-4);
+    if (serie.length < 3) continue;
+    const recent = serie.slice(-3);
+    const ref = recent[0].best;
+    // aucune progression (voire régression) sur les 3 dernières séances
+    if (ref > 0 && recent.every(x => x.best <= ref)) plateaux.push(recent[0].nom || exId);
+  }
+  return plateaux;
+}
+
+/* ---------- Projection : repères pour les prochaines semaines ---------- */
 function renderProjection(p) {
   const weeks = [
-    { n: 1, type: "build", t: "Prise de repères" },
-    { n: 2, type: "build", t: "+2,5 kg ou +1 rep" },
-    { n: 3, type: "build", t: "+2,5 kg ou +1 rep" },
-    { n: 4, type: "deload", t: "Deload −40 %" },
-    { n: 5, type: "build", t: "Reprise, charges de S3" },
-    { n: 6, type: "build", t: "+2,5 kg ou +1 rep" },
-    { n: 7, type: "build", t: "Semaine intense" },
-    { n: 8, type: "deload", t: "Deload −40 %" }
+    { n: 1, t: "Prise de repères" },
+    { n: 2, t: "+2,5 kg ou +1 rep" },
+    { n: 3, t: "+2,5 kg ou +1 rep" },
+    { n: 4, t: "+2,5 kg ou +1 rep" },
+    { n: 5, t: "+2,5 kg ou +1 rep" },
+    { n: 6, t: "Décharge si tu stagnes", deload: true },
+    { n: 7, t: "+2,5 kg ou +1 rep" },
+    { n: 8, t: "+2,5 kg ou +1 rep" }
   ];
+  const plateaux = detectPlateaus(p);
   return `
     <div class="card">
-      <h3 class="panel-title">${icon("trend")} Les 8 prochaines semaines — ${esc(p.nom)}</h3>
-      <p class="video-hint">Surcharge progressive : quand toutes les séries passent proprement, monte la charge (~2,5 kg) ou ajoute une rep.
-        Toutes les 4 semaines, une <strong>semaine de décharge</strong> (mêmes mouvements, −40 % de volume) pour récupérer et repartir plus fort.
-        Ton bilan de fin de séance (« trop dur / trop facile ») ajuste ce plan automatiquement.</p>
+      <h3 class="panel-title">${icon("trend")} Repères pour les prochaines semaines — ${esc(p.nom)}</h3>
+      <p class="video-hint">Modèle indicatif, pas un plan figé. Surcharge progressive : quand toutes les séries
+        passent au RIR cible, monte la charge (~2,5 kg) ou ajoute une rep. Quand une charge stagne 2 à 3 séances
+        de suite, fais une <strong>semaine de décharge</strong> (mêmes mouvements, −40 % de volume) puis reprends.</p>
+      ${plateaux.length ? `<p class="proj-plateau">${icon("trend")} Charge stable depuis plusieurs séances sur :
+        <strong>${plateaux.map(esc).join(", ")}</strong>. Une semaine de décharge peut aider à repartir.</p>` : ""}
       <div class="proj-track">
         ${weeks.map(w => `
-          <div class="proj-week ${w.type === "deload" ? "proj-deload" : ""}">
+          <div class="proj-week ${w.deload ? "proj-deload" : ""}">
             <span class="proj-n">S${w.n}</span>
             <span class="proj-t">${w.t}</span>
           </div>`).join("")}

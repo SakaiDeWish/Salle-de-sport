@@ -590,6 +590,30 @@ textarea { min-height: 90px; resize: vertical; }
 .conseils-card h3 { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; font-size: 1.15rem; }
 .disclaimer { margin-top: 18px; color: var(--text-soft); font-size: 0.85rem; }
 
+/* Sous-ligne dans une cellule (RIR sous « séries × reps ») */
+.cell-sub { display: block; font-size: 0.78rem; color: var(--text-soft); font-weight: 400; }
+
+/* ---------- Volume hebdomadaire par muscle ---------- */
+.volume-card { margin-top: 18px; }
+.volume-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.volume-table td { padding: 7px 4px; vertical-align: middle; }
+.vol-nom { white-space: nowrap; color: var(--text-soft); width: 1%; padding-right: 10px; }
+.vol-val { width: 1%; padding-left: 10px; font-variant-numeric: tabular-nums; font-weight: 700; }
+.vol-bar-cell { position: relative; height: 16px; }
+.vol-bar {
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  height: 10px; border-radius: 5px; background: var(--green); min-width: 2px;
+}
+.vol-sous .vol-bar { background: var(--yellow); }
+.vol-haut .vol-bar { background: var(--accent-2); }
+.vol-sous .vol-val { color: var(--yellow); }
+/* repère vertical de la cible */
+.vol-cible {
+  position: absolute; top: 0; bottom: 0; width: 2px;
+  background: var(--text-soft); opacity: 0.55;
+}
+.volume-warn { margin-top: 12px; font-size: 0.85rem; color: var(--yellow); }
+
 /* ---------- Séance : setup ---------- */
 .setup-card { max-width: 640px; }
 .rest-setting {
@@ -1400,6 +1424,13 @@ textarea { min-height: 90px; resize: vertical; }
   min-height: 44px;
 }
 .proj-week.proj-deload { border-color: var(--accent); background: var(--accent-soft); }
+.proj-plateau {
+  margin: 12px 0 4px; padding: 9px 11px; border-radius: 8px;
+  font-size: 0.85rem; color: var(--text);
+  background: color-mix(in srgb, var(--yellow) 14%, transparent);
+  display: flex; align-items: flex-start; gap: 6px;
+}
+.proj-plateau svg { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--yellow); }
 .proj-n { font-family: var(--font-display); font-size: 1.05rem; }
 .proj-t { font-size: 0.68rem; color: var(--text-soft); font-weight: 600; line-height: 1.3; }
 
@@ -1601,6 +1632,19 @@ textarea { min-height: 90px; resize: vertical; }
 .last-hint { color: var(--text-soft); font-size: 0.8rem; margin-top: 10px; }
 .last-hint strong { color: var(--accent-2); }
 .theme-epure .last-hint strong { color: var(--accent); }
+
+/* Suggestion de progression (double progression) */
+.progress-hint {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 0.85rem; line-height: 1.35;
+  margin: 10px 0 4px; padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent-2) 12%, transparent);
+}
+.progress-hint svg { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--accent-2); }
+.theme-epure .progress-hint { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.theme-epure .progress-hint svg { color: var(--accent); }
 
 /* Mode compact : chrono seul, cartes à l'essentiel */
 .live-compact .live-chronos .chrono-block:not(.chrono-main) { display: none; }

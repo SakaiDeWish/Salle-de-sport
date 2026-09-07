@@ -550,6 +550,24 @@ programForm.addEventListener("submit", e => {
 
 /* Le programme s'affiche en « collection » de séances-cartes,
    avec durée estimée et nombre d'exercices */
+/* Tableau volume/muscle : barre remplie, repère vertical sur la cible du
+   muscle (réduite pour mollets/abdos/lombaires), débordement visible. */
+function renderVolumeTable(vol) {
+  const max = Math.max(...vol.map(v => Math.max(v.fractionnel, v.cible)), 1);
+  return `<table class="volume-table"><tbody>${vol.map(v => {
+    const pct = Math.min(100, (v.fractionnel / max) * 100);
+    const ciblePct = Math.min(100, (v.cible / max) * 100);
+    return `<tr class="vol-${v.statut}">
+      <td class="vol-nom">${LABELS.groupes[v.groupe]}</td>
+      <td class="vol-bar-cell">
+        <span class="vol-bar" style="width:${pct}%"></span>
+        <span class="vol-cible" style="left:${ciblePct}%" title="cible ${v.cible}"></span>
+      </td>
+      <td class="vol-val num">${v.fractionnel % 1 ? v.fractionnel.toFixed(1) : v.fractionnel}</td>
+    </tr>`;
+  }).join("")}</tbody></table>`;
+}
+
 function renderProgram(pr) {
   const materielLabels = {
     salle: "Salle de sport complète",
@@ -598,13 +616,31 @@ function renderProgram(pr) {
                     <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
                     ${l.prioritaire ? '<span class="tag tag-custom">Priorité</span>' : ""}
                   </td>
-                  <td class="num">${l.series} × ${esc(l.reps)}</td>
+                  <td class="num">${l.series} × ${esc(l.reps)}${l.rir ? `<span class="cell-sub">RIR ${esc(l.rir)}</span>` : ""}</td>
                   <td class="num">${esc(l.repos)}</td>
                 </tr>`).join("")}
             </tbody>
           </table>
         </div>`).join("")}
     </div>
+
+    ${typeof weeklyVolumeByMuscle === "function" ? (() => {
+      const vol = weeklyVolumeByMuscle(pr);
+      const cible = vol[0] ? vol[0].cible : 14;
+      const sous = vol.filter(v => v.statut === "sous").map(v => LABELS.groupes[v.groupe]);
+      return `
+      <div class="card volume-card">
+        ${typeof disclosure === "function" ? disclosure("prog.volume", {
+          summary: `<span class="disc-title">Volume hebdomadaire par muscle</span><span class="disc-meta">cible ~${cible} séries</span>`,
+          what: `C'est le nombre de séries par semaine et par muscle qui pilote la prise de muscle.
+            Une série qui sollicite un muscle en second (triceps sur un développé) compte pour une demie.
+            Le programme vise ~${cible} séries par muscle (moins pour mollets, abdos et lombaires) ;
+            le repère vertical marque la cible de chaque muscle. Ajuste dans l'éditeur si besoin.`,
+          detail: renderVolumeTable(vol)
+        }) : renderVolumeTable(vol)}
+        ${sous.length ? `<p class="volume-warn">Encore sous la cible : ${sous.join(", ")}. Ajoute 1 à 2 séries sur ces muscles dans l'éditeur.</p>` : ""}
+      </div>`;
+    })() : ""}
 
     <div class="card conseils-card">
       ${typeof disclosure === "function" ? disclosure("prog.conseils", {

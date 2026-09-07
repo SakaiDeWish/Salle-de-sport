@@ -10,35 +10,47 @@ const GOAL_SCHEMES = {
   masse: {
     label: "Prise de masse musculaire",
     icone: "💪",
-    poly:  { series: 4, reps: "8-12",  repos: "90 s" },
-    iso:   { series: 3, reps: "10-15", repos: "60-75 s" },
+    // Repos long : un repos court réduit le volume-charge réalisable, et
+    // c'est lui qui porte l'hypertrophie (Schoenfeld 2016, Longo 2020).
+    // RIR = répétitions en réserve à la fin de chaque série. Proche de
+    // l'échec pour l'hypertrophie, mais pas l'échec systématique
+    // (Refalo 2022, Robinson 2024).
+    poly:  { series: 4, reps: "8-12",  repos: "2-3 min", rir: "1-3" },
+    iso:   { series: 3, reps: "10-15", repos: "90 s",    rir: "1-3" },
     conseils: [
       "Mange en léger surplus calorique (+250 à +400 kcal/jour) avec 1,8 à 2,2 g de protéines par kilo de poids de corps.",
       "Cherche la surcharge progressive : ajoute du poids ou des répétitions à chaque semaine si possible.",
       "Dors 7 à 9 h par nuit — c'est là que le muscle se construit.",
-      "Contrôle la phase négative (descente) sur 2-3 secondes pour maximiser la tension musculaire."
+      "Termine tes séries à 1-3 répétitions de l'échec. Aller jusqu'à l'échec à chaque série coûte plus de fatigue sans gain supplémentaire.",
+      "Prends des repos complets (2 à 3 min sur les gros mouvements) : c'est le volume que tu peux soulever qui construit le muscle, pas la course contre la montre."
     ]
   },
   force: {
     label: "Force maximale",
     icone: "🏋️",
-    poly:  { series: 5, reps: "3-6",   repos: "3 min" },
-    iso:   { series: 3, reps: "6-10",  repos: "90 s" },
+    poly:  { series: 5, reps: "3-6",   repos: "3-5 min", rir: "2-4" },
+    iso:   { series: 3, reps: "6-10",  repos: "2-3 min", rir: "1-3" },
     conseils: [
-      "Prends des repos longs (3 min et plus sur les gros mouvements) : la force exige une récupération complète entre les séries.",
+      "Prends des repos longs (3 à 5 min sur les gros mouvements) : la force exige une récupération complète entre les séries.",
       "Échauffe-toi avec des séries progressives avant tes séries de travail lourdes.",
       "La technique passe avant la charge : une répétition laide est une répétition qui ne compte pas.",
+      "Garde 2-4 répétitions en réserve sur les séries lourdes. La force se construit sur une large plage de proximité de l'échec, sans le payer en fatigue.",
       "Filme tes séries lourdes pour vérifier ta technique."
     ]
   },
   seche: {
     label: "Sèche / Perte de gras",
     icone: "🔥",
-    poly:  { series: 4, reps: "10-15", repos: "60 s" },
-    iso:   { series: 3, reps: "12-20", repos: "45 s" },
+    // Même entraînement qu'en prise de masse : en déficit, l'objectif est
+    // de CONSERVER le muscle, donc le stimulus doit être identique. À
+    // effort égal l'hypertrophie ne dépend pas de la plage de répétitions
+    // (Schoenfeld 2017) : il n'y a pas de « reps de définition ». La sèche
+    // se joue dans l'assiette et le cardio, pas dans le schéma de séries.
+    poly:  { series: 4, reps: "8-12",  repos: "2-3 min", rir: "1-3" },
+    iso:   { series: 3, reps: "10-15", repos: "90 s",    rir: "1-3" },
     conseils: [
+      "L'entraînement est le même qu'en prise de masse : charges lourdes, mêmes séries et répétitions. C'est le déficit calorique qui fait perdre le gras.",
       "Crée un déficit calorique modéré (-300 à -500 kcal/jour) en gardant les protéines hautes (2 g/kg) pour préserver le muscle.",
-      "Garde des charges lourdes : c'est le déficit qui fait perdre le gras, pas les répétitions infinies.",
       "Ajoute 20-30 min de cardio modéré ou 10-15 min de HIIT après la séance ou les jours off.",
       "Vise 8 000 à 10 000 pas par jour pour augmenter la dépense sans fatigue supplémentaire."
     ]
@@ -46,8 +58,8 @@ const GOAL_SCHEMES = {
   forme: {
     label: "Remise en forme / Tonification",
     icone: "⚡",
-    poly:  { series: 3, reps: "10-15", repos: "60-75 s" },
-    iso:   { series: 2, reps: "12-15", repos: "60 s" },
+    poly:  { series: 3, reps: "8-12",  repos: "90 s", rir: "2-4" },
+    iso:   { series: 2, reps: "12-15", repos: "75 s", rir: "2-4" },
     conseils: [
       "La régularité bat l'intensité : mieux vaut 3 séances moyennes par semaine que 1 séance parfaite.",
       "Termine chaque séance par 5-10 min d'étirements ou de mobilité.",
@@ -71,6 +83,9 @@ const DAY_TEMPLATES = {
       { groupe: "dos", type: "poly" },
       { groupe: "epaules", type: "poly" },
       { groupe: "ischios-fessiers", type: "poly" },
+      { groupe: "mollets", type: "iso" },
+      { groupe: "biceps", type: "iso" },
+      { groupe: "triceps", type: "iso" },
       { groupe: "abdos", type: "iso" },
       { groupe: "lombaires", type: "iso" }
     ]
@@ -182,12 +197,15 @@ function chooseSplit(jours, niveau, splitPref, repartition) {
       default: return ["push", "pull", "legs"];
     }
   }
-  // auto : full body quand la fréquence est basse ou le niveau débutant
+  // auto : full body quand la fréquence est basse ou le niveau débutant.
+  // À 3 séances, haut/bas plutôt que push/pull/legs : le PPL n'étale
+  // correctement le volume qu'à partir de 5-6 séances, sinon chaque
+  // muscle n'est travaillé qu'une fois par semaine.
   switch (jours) {
     case 2: return ["fullbody", "fullbody"];
     case 3: return niveau === "debutant"
       ? ["fullbody", "fullbody", "fullbody"]
-      : ["push", "pull", "legs"];
+      : ["upper", "lower", "upper"];
     case 4: return ["upper", "lower", "upper", "lower"];
     case 5: return ["push", "pull", "legs", "upper", "lower"];
     case 6: return ["push", "pull", "legs", "push", "pull", "legs"];
@@ -214,6 +232,50 @@ function getAllExercises() {
   return EXERCISES.concat(custom);
 }
 
+/* Longueur musculaire sous charge. À entraînement égal, charger la position
+   allongée donne une hypertrophie égale ou supérieure (Kassiano 2023,
+   Pedrosa 2021, Wolf 2025) ; la position raccourcie seule est la moins
+   efficace. Liste tenue à part pour rester relisable : tout ce qui n'y
+   figure pas est considéré « neutre ». À compléter et corriger à l'usage. */
+const LONGUEUR_ALLONGEE = new Set([
+  // pectoraux
+  "ecarte-halteres", "ecarte-incline-halteres", "ecarte-poulie-basse", "pull-over",
+  "developpe-incline-halteres", "developpe-couche-halteres", "dips-pectoraux",
+  // dos
+  "tractions", "tractions-lestees", "tractions-supination", "tirage-vertical",
+  "tirage-bras-tendus", "rowing-haltere",
+  // épaules
+  "elevations-laterales-poulie", "elevation-laterale-egyptienne",
+  // biceps
+  "curl-incline",
+  // triceps
+  "extension-nuque-haltere", "extension-corde-nuque-poulie", "barre-au-front",
+  // quadriceps
+  "front-squat", "hack-squat", "sissy-squat", "fentes-bulgares", "squat-gobelet",
+  "presse-a-cuisses", "pistol-squat",
+  // ischios / fessiers
+  "souleve-terre-roumain", "souleve-terre-jambes-tendues", "good-morning",
+  "leg-curl-assis", "nordic-curl", "souleve-terre-unijambiste", "pull-through-poulie",
+  // mollets
+  "mollets-debout", "mollets-presse", "mollets-unijambiste", "mollets-assis",
+  // abdos
+  "releve-jambes-suspendu", "dragon-flag",
+  // lombaires
+  "extension-lombaire-banc", "hyperextension-inversee", "extension-lombaire-lestee"
+]);
+const LONGUEUR_RACCOURCIE = new Set([
+  "ecarte-poulie-vis-a-vis", "shrugs-halteres", "shrugs-barre",
+  "face-pull", "pec-deck-inverse", "oiseau-halteres",
+  "curl-concentration", "curl-spider", "curl-pupitre",
+  "kickback-triceps", "extension-un-bras-poulie", "extension-corde-poulie-haute",
+  "leg-extension", "wall-sit", "wall-sit-une-jambe",
+  "hip-thrust", "hip-thrust-machine", "hip-thrust-unilateral", "pont-fessier",
+  "frog-pumps", "kickback-fessier-poulie", "kickback-fessier-machine",
+  "donkey-kicks", "clamshell", "fire-hydrant",
+  "crunch", "crunch-poulie", "crunch-machine", "russian-twist",
+  "superman", "bird-dog"
+]);
+
 /* Sélectionne un exercice pour un créneau, en évitant les doublons du jour
    et en variant entre les séances de la semaine. */
 function pickExercise(slot, pool, usedToday, usedThisWeek) {
@@ -224,6 +286,12 @@ function pickExercise(slot, pool, usedToday, usedThisWeek) {
     let s = Math.random();
     if (e.type === slot.type) s += 2;                 // type préféré (poly/iso)
     if (!usedThisWeek.has(e.id)) s += 1;              // varier sur la semaine
+    // Le choix position allongée / raccourcie pèse surtout en isolation ;
+    // un polyarticulaire passe de toute façon par une grande amplitude.
+    if (e.type === "iso") {
+      if (LONGUEUR_ALLONGEE.has(e.id)) s += 1;
+      else if (LONGUEUR_RACCOURCIE.has(e.id)) s -= 0.6;
+    }
     return s;
   };
 
@@ -247,34 +315,62 @@ function generateProgram(params) {
     allowedMateriel.includes(e.materiel) && allowedNiveaux.includes(e.niveau)
   );
 
-  const usedThisWeek = new Set();
+  const usedThisWeek = new Set();      // ids déjà placés cette semaine
+  const couvertsSemaine = new Set();   // groupes ayant reçu ≥ 1 exercice cette semaine
+
+  // Tous les groupes que la semaine doit couvrir (union des modèles + priorité).
+  const groupesSemaine = new Set();
+  split.forEach(k => DAY_TEMPLATES[k].slots.forEach(s => groupesSemaine.add(s.groupe)));
+  if (priorite) groupesSemaine.add(priorite);
+
+  function buildEntry(ex) {
+    const p = scheme[ex.type === "poly" ? "poly" : "iso"];
+    return {
+      exercice: ex,
+      series: p.series,
+      reps: ex.id === "planche" ? "30-60 s" : p.reps,
+      repos: p.repos,
+      rir: ex.id === "planche" ? null : (p.rir || null),
+      prioritaire: ex.groupe === priorite
+    };
+  }
+
+  const dayTemplateKeys = [];
   const days = split.map((templateKey, i) => {
     const template = DAY_TEMPLATES[templateKey];
     const usedToday = new Set();
+    const budget = maxExos + (priorite ? 1 : 0);
+    dayTemplateKeys[i] = templateKey;
 
     // Priorité : insérer un créneau supplémentaire pour le point faible
     let slots = template.slots.slice();
-    if (priorite && slots.some(s => s.groupe === priorite)) {
-      slots = [{ groupe: priorite, type: "poly" }, ...slots];
-    } else if (priorite && (templateKey === "fullbody")) {
+    if (priorite && (slots.some(s => s.groupe === priorite) || templateKey === "fullbody")) {
       slots = [{ groupe: priorite, type: "poly" }, ...slots];
     }
 
-    const exercices = [];
+    // Un créneau par groupe d'abord (ordre du modèle), le volume en plus ensuite.
+    // Les groupes pas encore vus de la semaine passent devant : la couverture se
+    // répartit sur les séances au lieu de gonfler une seule séance.
+    const premierDuGroupe = [];
+    const supplement = [];
+    const vus = new Set();
     for (const slot of slots) {
-      if (exercices.length >= maxExos + (priorite ? 1 : 0)) break;
+      if (vus.has(slot.groupe)) supplement.push(slot);
+      else { vus.add(slot.groupe); premierDuGroupe.push(slot); }
+    }
+    premierDuGroupe.sort((a, b) =>
+      (couvertsSemaine.has(a.groupe) ? 1 : 0) - (couvertsSemaine.has(b.groupe) ? 1 : 0));
+    const ordered = premierDuGroupe.concat(supplement);
+
+    const exercices = [];
+    for (const slot of ordered) {
+      if (exercices.length >= budget) break;
       const ex = pickExercise(slot, pool, usedToday, usedThisWeek);
       if (!ex) continue;
       usedToday.add(ex.id);
       usedThisWeek.add(ex.id);
-      const p = scheme[ex.type === "poly" ? "poly" : "iso"];
-      exercices.push({
-        exercice: ex,
-        series: p.series,
-        reps: ex.id === "planche" ? "30-60 s" : p.reps,
-        repos: p.repos,
-        prioritaire: ex.groupe === priorite
-      });
+      couvertsSemaine.add(ex.groupe);
+      exercices.push(buildEntry(ex));
     }
 
     // un même bloc peut revenir plusieurs fois (haut/bas, répartition sur
@@ -289,6 +385,64 @@ function generateProgram(params) {
       exercices
     };
   });
+
+  // Rattrapage : un muscle attendu cette semaine et jamais placé est ajouté à
+  // la séance la moins chargée dont le modèle le contient. Léger dépassement du
+  // budget toléré plutôt que de sauter un muscle sur la semaine.
+  for (const groupe of groupesSemaine) {
+    if (couvertsSemaine.has(groupe)) continue;
+    const candidats = days
+      .map((d, idx) => ({ d, key: dayTemplateKeys[idx] }))
+      .filter(x => DAY_TEMPLATES[x.key].slots.some(s => s.groupe === groupe))
+      .sort((a, b) => a.d.exercices.length - b.d.exercices.length);
+    for (const { d } of candidats) {
+      const usedToday = new Set(d.exercices.map(e => e.exercice.id));
+      const ex = pickExercise({ groupe, type: "iso" }, pool, usedToday, usedThisWeek);
+      if (!ex) continue;
+      usedThisWeek.add(ex.id);
+      couvertsSemaine.add(ex.groupe);
+      d.exercices.push(buildEntry(ex));
+      break;
+    }
+  }
+
+  // Ajustement au volume cible : tant qu'un muscle est à 2 séries ou plus
+  // sous sa cible hebdomadaire, on ajoute un exercice (isolation de
+  // préférence) à la séance la moins chargée qui peut l'accueillir. Deux
+  // garde-fous : un plafond dur par séance (budget + 3) et un muscle qu'on
+  // n'arrive plus à placer est abandonné pour ne pas boucler.
+  const capParSeance = maxExos + (priorite ? 1 : 0) + 3;
+  const abandon = new Set();
+  for (let garde = 0; garde < 80; garde++) {
+    const vol = fractionalSetsByMuscle(days).total;
+    let cibleG = null, pireEcart = 1.9;
+    for (const g of MUSCLE_ORDRE) {
+      if (abandon.has(g)) continue;
+      const ecart = cibleMuscle(g, niveau) - (vol[g] || 0);
+      if (ecart > pireEcart) { pireEcart = ecart; cibleG = g; }
+    }
+    if (!cibleG) break;
+
+    const candidats = days
+      .map((d, idx) => ({ d, key: dayTemplateKeys[idx] }))
+      .filter(x => x.d.exercices.length < capParSeance &&
+        (x.key === "fullbody" || cibleG === priorite ||
+         DAY_TEMPLATES[x.key].slots.some(s => s.groupe === cibleG)))
+      .sort((a, b) => a.d.exercices.length - b.d.exercices.length);
+
+    let ajoute = false;
+    for (const { d } of candidats) {
+      const usedToday = new Set(d.exercices.map(e => e.exercice.id));
+      const ex = pickExercise({ groupe: cibleG, type: "iso" }, pool, usedToday, usedThisWeek)
+              || pickExercise({ groupe: cibleG, type: "poly" }, pool, usedToday, usedThisWeek);
+      if (!ex) continue;
+      usedThisWeek.add(ex.id);
+      d.exercices.push(buildEntry(ex));
+      ajoute = true;
+      break;
+    }
+    if (!ajoute) abandon.add(cibleG);
+  }
 
   return {
     prenom,
@@ -309,4 +463,74 @@ function generateProgram(params) {
     days,
     conseils: scheme.conseils
   };
+}
+
+/* =========================================================
+   Volume hebdomadaire par muscle
+   -----------------------------------------------------------
+   La dose qui pilote l'hypertrophie est le nombre de séries
+   par semaine et par muscle (ACSM 2026, Baz-Valle 2022). On
+   le compte de façon FRACTIONNELLE : une série qui sollicite
+   un muscle en second (le triceps sur un développé) vaut 0,5.
+   ========================================================= */
+
+/* Muscles travaillés en second par un polyarticulaire donné (0,5 série
+   chacun). Approximation volontaire : l'isolation ne compte pas d'indirect. */
+const MUSCLE_INDIRECT = {
+  pectoraux:          ["triceps", "epaules"],
+  dos:                ["biceps"],
+  epaules:            ["triceps"],
+  quadriceps:         ["ischios-fessiers"],
+  "ischios-fessiers": ["lombaires", "quadriceps"]
+};
+
+/* Cible de séries hebdomadaires par muscle, selon le niveau. */
+const VOLUME_CIBLE = { debutant: 10, intermediaire: 14, avance: 18 };
+
+const MUSCLE_ORDRE = [
+  "pectoraux", "dos", "epaules", "biceps", "triceps",
+  "quadriceps", "ischios-fessiers", "mollets", "abdos", "lombaires"
+];
+
+/* Petits muscles : cible réduite. Mollets, abdos et lombaires récupèrent
+   vite, reçoivent du travail indirect en masse, et on ne va pas alourdir
+   chaque séance de trois exercices de gainage pour coller à 18 séries. */
+const MUSCLE_FACTEUR_CIBLE = { mollets: 0.6, abdos: 0.6, lombaires: 0.5 };
+function cibleMuscle(groupe, niveau) {
+  const base = VOLUME_CIBLE[niveau] || VOLUME_CIBLE.intermediaire;
+  return Math.round(base * (MUSCLE_FACTEUR_CIBLE[groupe] || 1));
+}
+
+/* Séries hebdomadaires par muscle, comptage fractionnel (indirect = 0,5).
+   Renvoie un objet plat { groupe: nombre }. */
+function fractionalSetsByMuscle(days) {
+  const direct = {}, indirect = {};
+  MUSCLE_ORDRE.forEach(g => { direct[g] = 0; indirect[g] = 0; });
+  for (const day of days || []) {
+    for (const l of day.exercices || []) {
+      const g = l.exercice && l.exercice.groupe;
+      const n = Number(l.series) || 0;
+      if (g != null && direct[g] != null) direct[g] += n;
+      if ((l.exercice && l.exercice.type) === "poly" && g != null && MUSCLE_INDIRECT[g]) {
+        for (const s of MUSCLE_INDIRECT[g]) if (indirect[s] != null) indirect[s] += n * 0.5;
+      }
+    }
+  }
+  const out = {};
+  MUSCLE_ORDRE.forEach(g => { out[g] = Math.round((direct[g] + indirect[g]) * 2) / 2; });
+  return { total: out, direct };
+}
+
+/* Renvoie [{ groupe, direct, fractionnel, cible, statut }] pour un
+   programme. statut : "sous" (< 80 % de la cible), "ok", "haut" (> 160 %). */
+function weeklyVolumeByMuscle(pr) {
+  const niveau = pr && pr.niveau;
+  const { total, direct } = fractionalSetsByMuscle((pr && pr.days) || []);
+  return MUSCLE_ORDRE.map(g => {
+    const cible = cibleMuscle(g, niveau);
+    const fractionnel = total[g];
+    const statut = fractionnel < cible * 0.8 ? "sous"
+                 : fractionnel > cible * 1.6 ? "haut" : "ok";
+    return { groupe: g, direct: direct[g], fractionnel, cible, statut };
+  });
 }
