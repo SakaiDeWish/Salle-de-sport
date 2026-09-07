@@ -550,18 +550,18 @@ programForm.addEventListener("submit", e => {
 
 /* Le programme s'affiche en « collection » de séances-cartes,
    avec durée estimée et nombre d'exercices */
-/* Tableau volume/muscle : barre remplie jusqu'à la cible, débordement visible. */
+/* Tableau volume/muscle : barre remplie, repère vertical sur la cible du
+   muscle (réduite pour mollets/abdos/lombaires), débordement visible. */
 function renderVolumeTable(vol) {
-  const cible = vol[0] ? vol[0].cible : 14;
-  const max = Math.max(cible, ...vol.map(v => v.fractionnel)) || 1;
+  const max = Math.max(...vol.map(v => Math.max(v.fractionnel, v.cible)), 1);
   return `<table class="volume-table"><tbody>${vol.map(v => {
     const pct = Math.min(100, (v.fractionnel / max) * 100);
-    const ciblePct = Math.min(100, (cible / max) * 100);
+    const ciblePct = Math.min(100, (v.cible / max) * 100);
     return `<tr class="vol-${v.statut}">
       <td class="vol-nom">${LABELS.groupes[v.groupe]}</td>
       <td class="vol-bar-cell">
         <span class="vol-bar" style="width:${pct}%"></span>
-        <span class="vol-cible" style="left:${ciblePct}%"></span>
+        <span class="vol-cible" style="left:${ciblePct}%" title="cible ${v.cible}"></span>
       </td>
       <td class="vol-val num">${v.fractionnel % 1 ? v.fractionnel.toFixed(1) : v.fractionnel}</td>
     </tr>`;
@@ -634,10 +634,11 @@ function renderProgram(pr) {
           summary: `<span class="disc-title">Volume hebdomadaire par muscle</span><span class="disc-meta">cible ~${cible} séries</span>`,
           what: `C'est le nombre de séries par semaine et par muscle qui pilote la prise de muscle.
             Une série qui sollicite un muscle en second (triceps sur un développé) compte pour une demie.
-            Vise la fourchette autour de ${cible} séries ; ajuste dans l'éditeur de programme.`,
+            Le programme vise ~${cible} séries par muscle (moins pour mollets, abdos et lombaires) ;
+            le repère vertical marque la cible de chaque muscle. Ajuste dans l'éditeur si besoin.`,
           detail: renderVolumeTable(vol)
         }) : renderVolumeTable(vol)}
-        ${sous.length ? `<p class="volume-warn">Sous la cible : ${sous.join(", ")}. Ajoute 1 à 2 séries sur ces muscles dans l'éditeur.</p>` : ""}
+        ${sous.length ? `<p class="volume-warn">Encore sous la cible : ${sous.join(", ")}. Ajoute 1 à 2 séries sur ces muscles dans l'éditeur.</p>` : ""}
       </div>`;
     })() : ""}
 

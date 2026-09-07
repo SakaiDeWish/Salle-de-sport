@@ -406,6 +406,44 @@ function generateProgram(params) {
     }
   }
 
+  // Ajustement au volume cible : tant qu'un muscle est à 2 séries ou plus
+  // sous sa cible hebdomadaire, on ajoute un exercice (isolation de
+  // préférence) à la séance la moins chargée qui peut l'accueillir. Deux
+  // garde-fous : un plafond dur par séance (budget + 3) et un muscle qu'on
+  // n'arrive plus à placer est abandonné pour ne pas boucler.
+  const capParSeance = maxExos + (priorite ? 1 : 0) + 3;
+  const abandon = new Set();
+  for (let garde = 0; garde < 80; garde++) {
+    const vol = fractionalSetsByMuscle(days).total;
+    let cibleG = null, pireEcart = 1.9;
+    for (const g of MUSCLE_ORDRE) {
+      if (abandon.has(g)) continue;
+      const ecart = cibleMuscle(g, niveau) - (vol[g] || 0);
+      if (ecart > pireEcart) { pireEcart = ecart; cibleG = g; }
+    }
+    if (!cibleG) break;
+
+    const candidats = days
+      .map((d, idx) => ({ d, key: dayTemplateKeys[idx] }))
+      .filter(x => x.d.exercices.length < capParSeance &&
+        (x.key === "fullbody" || cibleG === priorite ||
+         DAY_TEMPLATES[x.key].slots.some(s => s.groupe === cibleG)))
+      .sort((a, b) => a.d.exercices.length - b.d.exercices.length);
+
+    let ajoute = false;
+    for (const { d } of candidats) {
+      const usedToday = new Set(d.exercices.map(e => e.exercice.id));
+      const ex = pickExercise({ groupe: cibleG, type: "iso" }, pool, usedToday, usedThisWeek)
+              || pickExercise({ groupe: cibleG, type: "poly" }, pool, usedToday, usedThisWeek);
+      if (!ex) continue;
+      usedThisWeek.add(ex.id);
+      d.exercices.push(buildEntry(ex));
+      ajoute = true;
+      break;
+    }
+    if (!ajoute) abandon.add(cibleG);
+  }
+
   return {
     prenom,
     objectif,
@@ -454,27 +492,43 @@ const MUSCLE_ORDRE = [
   "quadriceps", "ischios-fessiers", "mollets", "abdos", "lombaires"
 ];
 
-/* Renvoie [{ groupe, direct, fractionnel, cible, statut }] pour un
-   programme. statut : "sous" (< 80 % de la cible), "ok", "haut" (> 160 %). */
-function weeklyVolumeByMuscle(pr) {
-  const cible = VOLUME_CIBLE[pr && pr.niveau] || VOLUME_CIBLE.intermediaire;
+/* Petits muscles : cible réduite. Mollets, abdos et lombaires récupèrent
+   vite, reçoivent du travail indirect en masse, et on ne va pas alourdir
+   chaque séance de trois exercices de gainage pour coller à 18 séries. */
+const MUSCLE_FACTEUR_CIBLE = { mollets: 0.6, abdos: 0.6, lombaires: 0.5 };
+function cibleMuscle(groupe, niveau) {
+  const base = VOLUME_CIBLE[niveau] || VOLUME_CIBLE.intermediaire;
+  return Math.round(base * (MUSCLE_FACTEUR_CIBLE[groupe] || 1));
+}
+
+/* Séries hebdomadaires par muscle, comptage fractionnel (indirect = 0,5).
+   Renvoie un objet plat { groupe: nombre }. */
+function fractionalSetsByMuscle(days) {
   const direct = {}, indirect = {};
   MUSCLE_ORDRE.forEach(g => { direct[g] = 0; indirect[g] = 0; });
-
-  for (const day of (pr && pr.days) || []) {
+  for (const day of days || []) {
     for (const l of day.exercices || []) {
       const g = l.exercice && l.exercice.groupe;
       const n = Number(l.series) || 0;
       if (g != null && direct[g] != null) direct[g] += n;
-      const estPoly = (l.exercice && l.exercice.type) === "poly";
-      if (estPoly && g != null && MUSCLE_INDIRECT[g]) {
+      if ((l.exercice && l.exercice.type) === "poly" && g != null && MUSCLE_INDIRECT[g]) {
         for (const s of MUSCLE_INDIRECT[g]) if (indirect[s] != null) indirect[s] += n * 0.5;
       }
     }
   }
+  const out = {};
+  MUSCLE_ORDRE.forEach(g => { out[g] = Math.round((direct[g] + indirect[g]) * 2) / 2; });
+  return { total: out, direct };
+}
 
+/* Renvoie [{ groupe, direct, fractionnel, cible, statut }] pour un
+   programme. statut : "sous" (< 80 % de la cible), "ok", "haut" (> 160 %). */
+function weeklyVolumeByMuscle(pr) {
+  const niveau = pr && pr.niveau;
+  const { total, direct } = fractionalSetsByMuscle((pr && pr.days) || []);
   return MUSCLE_ORDRE.map(g => {
-    const fractionnel = Math.round((direct[g] + indirect[g]) * 2) / 2;
+    const cible = cibleMuscle(g, niveau);
+    const fractionnel = total[g];
     const statut = fractionnel < cible * 0.8 ? "sous"
                  : fractionnel > cible * 1.6 ? "haut" : "ok";
     return { groupe: g, direct: direct[g], fractionnel, cible, statut };
