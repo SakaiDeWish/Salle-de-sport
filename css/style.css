@@ -1424,6 +1424,13 @@ textarea { min-height: 90px; resize: vertical; }
   min-height: 44px;
 }
 .proj-week.proj-deload { border-color: var(--accent); background: var(--accent-soft); }
+.proj-plateau {
+  margin: 12px 0 4px; padding: 9px 11px; border-radius: 8px;
+  font-size: 0.85rem; color: var(--text);
+  background: color-mix(in srgb, var(--yellow) 14%, transparent);
+  display: flex; align-items: flex-start; gap: 6px;
+}
+.proj-plateau svg { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--yellow); }
 .proj-n { font-family: var(--font-display); font-size: 1.05rem; }
 .proj-t { font-size: 0.68rem; color: var(--text-soft); font-weight: 600; line-height: 1.3; }
 
