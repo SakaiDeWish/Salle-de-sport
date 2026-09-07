@@ -71,6 +71,9 @@ const DAY_TEMPLATES = {
       { groupe: "dos", type: "poly" },
       { groupe: "epaules", type: "poly" },
       { groupe: "ischios-fessiers", type: "poly" },
+      { groupe: "mollets", type: "iso" },
+      { groupe: "biceps", type: "iso" },
+      { groupe: "triceps", type: "iso" },
       { groupe: "abdos", type: "iso" },
       { groupe: "lombaires", type: "iso" }
     ]
@@ -247,34 +250,61 @@ function generateProgram(params) {
     allowedMateriel.includes(e.materiel) && allowedNiveaux.includes(e.niveau)
   );
 
-  const usedThisWeek = new Set();
+  const usedThisWeek = new Set();      // ids déjà placés cette semaine
+  const couvertsSemaine = new Set();   // groupes ayant reçu ≥ 1 exercice cette semaine
+
+  // Tous les groupes que la semaine doit couvrir (union des modèles + priorité).
+  const groupesSemaine = new Set();
+  split.forEach(k => DAY_TEMPLATES[k].slots.forEach(s => groupesSemaine.add(s.groupe)));
+  if (priorite) groupesSemaine.add(priorite);
+
+  function buildEntry(ex) {
+    const p = scheme[ex.type === "poly" ? "poly" : "iso"];
+    return {
+      exercice: ex,
+      series: p.series,
+      reps: ex.id === "planche" ? "30-60 s" : p.reps,
+      repos: p.repos,
+      prioritaire: ex.groupe === priorite
+    };
+  }
+
+  const dayTemplateKeys = [];
   const days = split.map((templateKey, i) => {
     const template = DAY_TEMPLATES[templateKey];
     const usedToday = new Set();
+    const budget = maxExos + (priorite ? 1 : 0);
+    dayTemplateKeys[i] = templateKey;
 
     // Priorité : insérer un créneau supplémentaire pour le point faible
     let slots = template.slots.slice();
-    if (priorite && slots.some(s => s.groupe === priorite)) {
-      slots = [{ groupe: priorite, type: "poly" }, ...slots];
-    } else if (priorite && (templateKey === "fullbody")) {
+    if (priorite && (slots.some(s => s.groupe === priorite) || templateKey === "fullbody")) {
       slots = [{ groupe: priorite, type: "poly" }, ...slots];
     }
 
-    const exercices = [];
+    // Un créneau par groupe d'abord (ordre du modèle), le volume en plus ensuite.
+    // Les groupes pas encore vus de la semaine passent devant : la couverture se
+    // répartit sur les séances au lieu de gonfler une seule séance.
+    const premierDuGroupe = [];
+    const supplement = [];
+    const vus = new Set();
     for (const slot of slots) {
-      if (exercices.length >= maxExos + (priorite ? 1 : 0)) break;
+      if (vus.has(slot.groupe)) supplement.push(slot);
+      else { vus.add(slot.groupe); premierDuGroupe.push(slot); }
+    }
+    premierDuGroupe.sort((a, b) =>
+      (couvertsSemaine.has(a.groupe) ? 1 : 0) - (couvertsSemaine.has(b.groupe) ? 1 : 0));
+    const ordered = premierDuGroupe.concat(supplement);
+
+    const exercices = [];
+    for (const slot of ordered) {
+      if (exercices.length >= budget) break;
       const ex = pickExercise(slot, pool, usedToday, usedThisWeek);
       if (!ex) continue;
       usedToday.add(ex.id);
       usedThisWeek.add(ex.id);
-      const p = scheme[ex.type === "poly" ? "poly" : "iso"];
-      exercices.push({
-        exercice: ex,
-        series: p.series,
-        reps: ex.id === "planche" ? "30-60 s" : p.reps,
-        repos: p.repos,
-        prioritaire: ex.groupe === priorite
-      });
+      couvertsSemaine.add(ex.groupe);
+      exercices.push(buildEntry(ex));
     }
 
     // un même bloc peut revenir plusieurs fois (haut/bas, répartition sur
@@ -289,6 +319,26 @@ function generateProgram(params) {
       exercices
     };
   });
+
+  // Rattrapage : un muscle attendu cette semaine et jamais placé est ajouté à
+  // la séance la moins chargée dont le modèle le contient. Léger dépassement du
+  // budget toléré plutôt que de sauter un muscle sur la semaine.
+  for (const groupe of groupesSemaine) {
+    if (couvertsSemaine.has(groupe)) continue;
+    const candidats = days
+      .map((d, idx) => ({ d, key: dayTemplateKeys[idx] }))
+      .filter(x => DAY_TEMPLATES[x.key].slots.some(s => s.groupe === groupe))
+      .sort((a, b) => a.d.exercices.length - b.d.exercices.length);
+    for (const { d } of candidats) {
+      const usedToday = new Set(d.exercices.map(e => e.exercice.id));
+      const ex = pickExercise({ groupe, type: "iso" }, pool, usedToday, usedThisWeek);
+      if (!ex) continue;
+      usedThisWeek.add(ex.id);
+      couvertsSemaine.add(ex.groupe);
+      d.exercices.push(buildEntry(ex));
+      break;
+    }
+  }
 
   return {
     prenom,
