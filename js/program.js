@@ -12,8 +12,11 @@ const GOAL_SCHEMES = {
     icone: "💪",
     // Repos long : un repos court réduit le volume-charge réalisable, et
     // c'est lui qui porte l'hypertrophie (Schoenfeld 2016, Longo 2020).
-    poly:  { series: 4, reps: "8-12",  repos: "2-3 min" },
-    iso:   { series: 3, reps: "10-15", repos: "90 s" },
+    // RIR = répétitions en réserve à la fin de chaque série. Proche de
+    // l'échec pour l'hypertrophie, mais pas l'échec systématique
+    // (Refalo 2022, Robinson 2024).
+    poly:  { series: 4, reps: "8-12",  repos: "2-3 min", rir: "1-3" },
+    iso:   { series: 3, reps: "10-15", repos: "90 s",    rir: "1-3" },
     conseils: [
       "Mange en léger surplus calorique (+250 à +400 kcal/jour) avec 1,8 à 2,2 g de protéines par kilo de poids de corps.",
       "Cherche la surcharge progressive : ajoute du poids ou des répétitions à chaque semaine si possible.",
@@ -25,8 +28,8 @@ const GOAL_SCHEMES = {
   force: {
     label: "Force maximale",
     icone: "🏋️",
-    poly:  { series: 5, reps: "3-6",   repos: "3-5 min" },
-    iso:   { series: 3, reps: "6-10",  repos: "2-3 min" },
+    poly:  { series: 5, reps: "3-6",   repos: "3-5 min", rir: "2-4" },
+    iso:   { series: 3, reps: "6-10",  repos: "2-3 min", rir: "1-3" },
     conseils: [
       "Prends des repos longs (3 à 5 min sur les gros mouvements) : la force exige une récupération complète entre les séries.",
       "Échauffe-toi avec des séries progressives avant tes séries de travail lourdes.",
@@ -43,8 +46,8 @@ const GOAL_SCHEMES = {
     // effort égal l'hypertrophie ne dépend pas de la plage de répétitions
     // (Schoenfeld 2017) : il n'y a pas de « reps de définition ». La sèche
     // se joue dans l'assiette et le cardio, pas dans le schéma de séries.
-    poly:  { series: 4, reps: "8-12",  repos: "2-3 min" },
-    iso:   { series: 3, reps: "10-15", repos: "90 s" },
+    poly:  { series: 4, reps: "8-12",  repos: "2-3 min", rir: "1-3" },
+    iso:   { series: 3, reps: "10-15", repos: "90 s",    rir: "1-3" },
     conseils: [
       "L'entraînement est le même qu'en prise de masse : charges lourdes, mêmes séries et répétitions. C'est le déficit calorique qui fait perdre le gras.",
       "Crée un déficit calorique modéré (-300 à -500 kcal/jour) en gardant les protéines hautes (2 g/kg) pour préserver le muscle.",
@@ -55,8 +58,8 @@ const GOAL_SCHEMES = {
   forme: {
     label: "Remise en forme / Tonification",
     icone: "⚡",
-    poly:  { series: 3, reps: "8-12",  repos: "90 s" },
-    iso:   { series: 2, reps: "12-15", repos: "75 s" },
+    poly:  { series: 3, reps: "8-12",  repos: "90 s", rir: "2-4" },
+    iso:   { series: 2, reps: "12-15", repos: "75 s", rir: "2-4" },
     conseils: [
       "La régularité bat l'intensité : mieux vaut 3 séances moyennes par semaine que 1 séance parfaite.",
       "Termine chaque séance par 5-10 min d'étirements ou de mobilité.",
@@ -277,6 +280,7 @@ function generateProgram(params) {
       series: p.series,
       reps: ex.id === "planche" ? "30-60 s" : p.reps,
       repos: p.repos,
+      rir: ex.id === "planche" ? null : (p.rir || null),
       prioritaire: ex.groupe === priorite
     };
   }

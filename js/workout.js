@@ -23,9 +23,9 @@ let expandedIndex = null;  // accordéon : seul cet exercice est déplié
 /* Mémoire des charges : ce que tu as mis la dernière fois pour la
    même combinaison (exercice, numéro de série) — pré-rempli ensuite. */
 function getLastWeights() { return loadJSON(STORAGE_KEYS.lastWeights, {}); }
-function rememberSet(exId, setIndex, poids, reps) {
+function rememberSet(exId, setIndex, poids, reps, rir) {
   const mem = getLastWeights();
-  (mem[exId] = mem[exId] || [])[setIndex] = { poids, reps };
+  (mem[exId] = mem[exId] || [])[setIndex] = { poids, reps, rir: rir ?? null };
   saveJSON(STORAGE_KEYS.lastWeights, mem);
 }
 function recallSet(exId, setIndex) {
@@ -34,10 +34,12 @@ function recallSet(exId, setIndex) {
 
 /* Suggestion de progression (double progression). Tant que toutes les
    séries ne sont pas au haut de la fourchette, on garde la charge et on
-   ajoute des reps ; une fois le haut atteint partout, on monte la charge
-   (+2,5 kg haut du corps, +5 kg bas du corps) et on repart du bas de la
-   fourchette. Basé sur la dernière séance du même exercice, figée au
-   démarrage (ex.memoDepart) pour ne pas dériver en cours de séance. */
+   ajoute des reps ; une fois le haut atteint partout ET sans finir à
+   l'échec, on monte la charge (+2,5 kg haut du corps, +5 kg bas du corps)
+   et on repart du bas de la fourchette. Le RIR cible de l'exercice
+   (ex.rir) est rappelé dans le message. Basé sur la dernière séance du
+   même exercice, figée au démarrage (ex.memoDepart) pour ne pas dériver
+   en cours de séance. */
 const LOWER_BODY = new Set(["quadriceps", "ischios-fessiers", "mollets"]);
 
 function progressionHint(ex) {
@@ -53,14 +55,28 @@ function progressionHint(ex) {
   const charge = charges.length ? Math.max(...charges) : null;
   const minReps = Math.min(...memo.map(s => s.reps));
   const inc = LOWER_BODY.has(ex.groupe) ? 5 : 2.5;
-  if (minReps >= hi && charge != null) {
-    return `Dernière fois toutes les séries à ${hi} reps : passe à ${charge + inc} kg et repars de ${lo} reps.`;
+  const rirs = memo.map(s => s.rir).filter(v => v != null);
+  const rirLo = ex.rir ? parseInt(String(ex.rir), 10) : NaN;
+  const rirCible = Number.isFinite(rirLo) ? rirLo : null;
+
+  if (minReps >= hi) {
+    // Haut de la fourchette atteint partout. On ne monte la charge que si
+    // ce n'était pas fait à l'échec : sinon on consolide d'abord.
+    if (rirs.length && Math.min(...rirs) <= 0) {
+      return `Dernière fois tu finissais à l'échec. Garde ${charge != null ? charge + " kg" : "la charge"} et refais ${hi} reps propres${rirCible ? ` en gardant ${rirCible} en réserve` : ""} avant de monter.`;
+    }
+    if (charge != null) {
+      return `Haut de la fourchette atteint partout : passe à ${charge + inc} kg et repars de ${lo} reps${rirCible ? ` (${ex.rir} en réserve)` : ""}.`;
+    }
+    return `Haut de la fourchette atteint : rends l'exercice plus dur (lest, variante) et repars de ${lo} reps.`;
   }
+
   const cible = Math.min(minReps + 1, hi);
+  const suffixe = rirCible ? `, en gardant ${rirCible} rep${rirCible > 1 ? "s" : ""} en réserve` : "";
   if (charge != null) {
-    return `Dernière fois ${charge} kg. Garde la charge, vise ${cible} reps sur chaque série.`;
+    return `Dernière fois ${charge} kg. Garde la charge, vise ${cible} reps sur chaque série${suffixe}.`;
   }
-  return `Garde ta charge, vise ${cible} reps sur chaque série.`;
+  return `Garde ta charge, vise ${cible} reps sur chaque série${suffixe}.`;
 }
 
 /* Référence temporelle : figée pendant une pause */
@@ -304,15 +320,16 @@ function clearLive() {
 }
 
 /* ---------- Démarrage ---------- */
-function newLiveExercise(ex, target, restSec) {
+function newLiveExercise(ex, target, restSec, rir) {
   return {
     exId: ex.id,
     nom: ex.nom,
     groupe: ex.groupe,
     target: target || null,        // ex : "4 × 8-12"
-    // charges/reps de la dernière séance de cet exercice, figées ici pour
+    rir: rir || null,              // RIR cible, ex : "1-3"
+    // charges/reps/rir de la dernière séance de cet exercice, figés ici pour
     // que la suggestion de progression ne bouge pas en cours de séance
-    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps }),
+    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir }),
     restSec: restSec || (ex.type ? smartRest(ex) : getDefaultRest()),
     restAuto: !restSec,
     sets: [],                      // { poids, reps, doneAt, restAfter }
@@ -551,7 +568,7 @@ function renderProgramDayButtons() {
       saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
       const day = program.days[parseInt(btn.dataset.day, 10)];
       const exercises = day.exercices.map(l =>
-        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null) // repos auto (smartRest)
+        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir) // repos auto (smartRest)
       );
       startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
     });
@@ -976,6 +993,7 @@ function renderLiveExercises() {
           <p class="day-focus live-ex-sub">
             ${LABELS.groupes[ex.groupe] || ""}
             ${ex.target ? " · " + esc(ex.target) : ""}
+            ${ex.rir ? " · RIR " + esc(ex.rir) : ""}
             · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
           </p>
           <p class="day-focus live-ex-recap">${esc(recap)}</p>
@@ -1000,7 +1018,7 @@ function renderLiveExercises() {
 
       ${ex.sets.length ? `
       <table class="sets-table">
-        <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>Repos</th></tr></thead>
+        <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>RIR</th><th>Repos</th></tr></thead>
         <tbody>
           ${ex.sets.map((s, j) => {
             /* En affichage réduit, seule la DERNIÈRE série reste visible.
@@ -1011,11 +1029,12 @@ function renderLiveExercises() {
             const editing = editingSet && editingSet.i === i && editingSet.j === j;
             if (editing) return `
               <tr class="set-editing">
-                <td colspan="4">
+                <td colspan="5">
                   <div class="set-edit-row">
                     <span class="set-edit-n">Série ${j + 1}</span>
                     <input type="number" inputmode="decimal" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
                     <input type="number" inputmode="numeric" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                    <input type="number" inputmode="numeric" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">
                     <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
                     <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
                     <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
@@ -1037,7 +1056,7 @@ function renderLiveExercises() {
             const noting = notingSet && notingSet.i === i && notingSet.j === j;
             if (noting) return `
               <tr class="set-editing">
-                <td colspan="4">
+                <td colspan="5">
                   <div class="set-note-row">
                     <span class="set-edit-n">Série ${j + 1}</span>
                     <input type="text" id="note-input" maxlength="100" class="set-note-input"
@@ -1057,10 +1076,11 @@ function renderLiveExercises() {
               <td>✔ ${j + 1}</td>
               <td>${s.poids != null ? s.poids : "—"}</td>
               <td>${s.reps}</td>
+              <td>${s.rir != null ? s.rir : "—"}</td>
               <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
             </tr>
             <tr class="set-note-line${der}">
-              <td colspan="4">
+              <td colspan="5">
                 <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
                   aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
                   s.note ? `💬 ${esc(s.note)}` : "＋ note"}</button>
@@ -1072,7 +1092,9 @@ function renderLiveExercises() {
 
       ${(() => {
         const mem = recallSet(ex.exId, ex.sets.length);
-        return mem ? `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong></p>` : "";
+        if (!mem) return "";
+        const rir = mem.rir != null ? ` · ${mem.rir} en réserve` : "";
+        return `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong>${rir}</p>`;
       })()}
       <!-- PAS-À-PAS. Les <input> restent la source de vérité : validateSet
            les lit toujours par leur id, et recallSet les pré-remplit comme
@@ -1092,6 +1114,12 @@ function renderLiveExercises() {
           <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
             value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
+        </div>
+        <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
+          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
+          <input type="number" inputmode="numeric" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
+            value="${(recallSet(ex.exId, ex.sets.length) || {}).rir ?? ""}">
+          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
         </div>
         <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
@@ -1211,13 +1239,15 @@ function saveSetEdit(i, j) {
   if (!set) return;
   const reps = parseInt(document.getElementById("ed-reps").value, 10);
   const poidsRaw = document.getElementById("ed-poids").value;
+  const rirRaw = (document.getElementById("ed-rir") || {}).value;
   if (!reps || reps < 1) { document.getElementById("ed-reps").focus(); return; }
   set.reps = reps;
   set.poids = poidsRaw === "" ? null : parseFloat(poidsRaw);
+  set.rir = rirRaw == null || rirRaw === "" ? null : Math.max(0, parseInt(rirRaw, 10));
   const note = document.getElementById("ed-note");
   if (note) set.note = note.value.trim().slice(0, NOTE_MAX);
   set.editedAt = Date.now();
-  rememberSet(ex.exId, j, set.poids, set.reps);   // la mémoire des charges suit
+  rememberSet(ex.exId, j, set.poids, set.reps, set.rir);   // la mémoire des charges suit
   editingSet = null;
   saveLive();
   renderLiveExercises();
@@ -1237,7 +1267,7 @@ function unvalidateSet(i, j) {
     elRestOverlay.classList.add("hidden");
   }
   // la mémoire des charges se recale sur les séries restantes
-  ex.sets.forEach((s, k) => rememberSet(ex.exId, k, s.poids, s.reps));
+  ex.sets.forEach((s, k) => rememberSet(ex.exId, k, s.poids, s.reps, s.rir));
   editingSet = null;
   saveLive();
   renderLiveExercises();
@@ -1277,7 +1307,7 @@ function swapExercise(i) {
   const inSession = new Set(live.exercises.map(e => e.exId));
   const alt = findAlternatives(ref, 5).find(a => !inSession.has(a.id));
   if (!alt) { alert("Pas d'alternative disponible pour cet exercice."); return; }
-  const fresh = newLiveExercise(alt, cur.target, null);
+  const fresh = newLiveExercise(alt, cur.target, null, cur.rir);
   if (cur.sets.length > 0) {
     if (!confirm(`Ajouter « ${alt.nom} » à la suite ? (les séries déjà validées de « ${cur.nom} » sont conservées)`)) return;
     live.exercises.splice(i + 1, 0, fresh);
@@ -1554,6 +1584,8 @@ function validateSet(i) {
   const ex = live.exercises[i];
   const reps = parseInt(document.getElementById("reps-" + i).value, 10);
   const poids = parseFloat(document.getElementById("poids-" + i).value);
+  const rirRaw = (document.getElementById("rir-" + i) || {}).value;
+  const rir = rirRaw == null || rirRaw === "" ? null : Math.max(0, parseInt(rirRaw, 10));
   if (!reps || reps < 1) {
     document.getElementById("reps-" + i).focus();
     return;
@@ -1570,9 +1602,9 @@ function validateSet(i) {
   if (!ex.startedAt) ex.startedAt = now;
   ex.endedAt = null;
 
-  const set = { poids: isNaN(poids) ? null : poids, reps, doneAt: now, restAfter: null, note: "" };
+  const set = { poids: isNaN(poids) ? null : poids, reps, rir, doneAt: now, restAfter: null, note: "" };
   ex.sets.push(set);
-  rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps); // mémoire (exo, série N)
+  rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps, set.rir); // mémoire (exo, série N)
   saveLive();
   renderLiveExercises();
 
@@ -2130,11 +2162,11 @@ function renderSessionDetail(r) {
     <div class="session-ex">
       <h4><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
       <table class="sets-table">
-        <thead><tr><th>Série</th><th>Poids</th><th>Reps</th><th>Repos pris</th></tr></thead>
+        <thead><tr><th>Série</th><th>Poids</th><th>Reps</th><th>RIR</th><th>Repos pris</th></tr></thead>
         <tbody>${ex.sets.map((s, j) => `
           <tr class="${s.note ? "set-noted" : ""}"><td>${j + 1}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td>
-          <td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
-          ${s.note ? `<tr class="set-note-line"><td colspan="4">💬 ${esc(s.note)}</td></tr>` : ""}`).join("")}
+          <td>${s.rir != null ? s.rir : "—"}</td><td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
+          ${s.note ? `<tr class="set-note-line"><td colspan="5">💬 ${esc(s.note)}</td></tr>` : ""}`).join("")}
         </tbody>
       </table>
     </div>`).join("")}</div>`;
