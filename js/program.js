@@ -232,6 +232,50 @@ function getAllExercises() {
   return EXERCISES.concat(custom);
 }
 
+/* Longueur musculaire sous charge. À entraînement égal, charger la position
+   allongée donne une hypertrophie égale ou supérieure (Kassiano 2023,
+   Pedrosa 2021, Wolf 2025) ; la position raccourcie seule est la moins
+   efficace. Liste tenue à part pour rester relisable : tout ce qui n'y
+   figure pas est considéré « neutre ». À compléter et corriger à l'usage. */
+const LONGUEUR_ALLONGEE = new Set([
+  // pectoraux
+  "ecarte-halteres", "ecarte-incline-halteres", "ecarte-poulie-basse", "pull-over",
+  "developpe-incline-halteres", "developpe-couche-halteres", "dips-pectoraux",
+  // dos
+  "tractions", "tractions-lestees", "tractions-supination", "tirage-vertical",
+  "tirage-bras-tendus", "rowing-haltere",
+  // épaules
+  "elevations-laterales-poulie", "elevation-laterale-egyptienne",
+  // biceps
+  "curl-incline",
+  // triceps
+  "extension-nuque-haltere", "extension-corde-nuque-poulie", "barre-au-front",
+  // quadriceps
+  "front-squat", "hack-squat", "sissy-squat", "fentes-bulgares", "squat-gobelet",
+  "presse-a-cuisses", "pistol-squat",
+  // ischios / fessiers
+  "souleve-terre-roumain", "souleve-terre-jambes-tendues", "good-morning",
+  "leg-curl-assis", "nordic-curl", "souleve-terre-unijambiste", "pull-through-poulie",
+  // mollets
+  "mollets-debout", "mollets-presse", "mollets-unijambiste", "mollets-assis",
+  // abdos
+  "releve-jambes-suspendu", "dragon-flag",
+  // lombaires
+  "extension-lombaire-banc", "hyperextension-inversee", "extension-lombaire-lestee"
+]);
+const LONGUEUR_RACCOURCIE = new Set([
+  "ecarte-poulie-vis-a-vis", "shrugs-halteres", "shrugs-barre",
+  "face-pull", "pec-deck-inverse", "oiseau-halteres",
+  "curl-concentration", "curl-spider", "curl-pupitre",
+  "kickback-triceps", "extension-un-bras-poulie", "extension-corde-poulie-haute",
+  "leg-extension", "wall-sit", "wall-sit-une-jambe",
+  "hip-thrust", "hip-thrust-machine", "hip-thrust-unilateral", "pont-fessier",
+  "frog-pumps", "kickback-fessier-poulie", "kickback-fessier-machine",
+  "donkey-kicks", "clamshell", "fire-hydrant",
+  "crunch", "crunch-poulie", "crunch-machine", "russian-twist",
+  "superman", "bird-dog"
+]);
+
 /* Sélectionne un exercice pour un créneau, en évitant les doublons du jour
    et en variant entre les séances de la semaine. */
 function pickExercise(slot, pool, usedToday, usedThisWeek) {
@@ -242,6 +286,12 @@ function pickExercise(slot, pool, usedToday, usedThisWeek) {
     let s = Math.random();
     if (e.type === slot.type) s += 2;                 // type préféré (poly/iso)
     if (!usedThisWeek.has(e.id)) s += 1;              // varier sur la semaine
+    // Le choix position allongée / raccourcie pèse surtout en isolation ;
+    // un polyarticulaire passe de toute façon par une grande amplitude.
+    if (e.type === "iso") {
+      if (LONGUEUR_ALLONGEE.has(e.id)) s += 1;
+      else if (LONGUEUR_RACCOURCIE.has(e.id)) s -= 0.6;
+    }
     return s;
   };
 
