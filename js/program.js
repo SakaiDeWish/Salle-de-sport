@@ -17,6 +17,10 @@ const GOAL_SCHEMES = {
     // (Refalo 2022, Robinson 2024).
     poly:  { series: 4, reps: "8-12",  repos: "2-3 min", rir: "1-3" },
     iso:   { series: 3, reps: "10-15", repos: "90 s",    rir: "1-3" },
+    // Excentrique freiné + concentrique explosif : la variable de tempo qui
+    // pèse sur l'hypertrophie (ACSM 2026, « How Slow Should You Go ? » 2025).
+    // La durée totale de répétition, elle, n'a pas d'effet (Schoenfeld 2015).
+    tempo: "2-3 s en descente, explosif en montée",
     conseils: [
       "Mange en léger surplus calorique (+250 à +400 kcal/jour) avec 1,8 à 2,2 g de protéines par kilo de poids de corps.",
       "Cherche la surcharge progressive : ajoute du poids ou des répétitions à chaque semaine si possible.",
@@ -30,6 +34,7 @@ const GOAL_SCHEMES = {
     icone: "🏋️",
     poly:  { series: 5, reps: "3-6",   repos: "3-5 min", rir: "2-4" },
     iso:   { series: 3, reps: "6-10",  repos: "2-3 min", rir: "1-3" },
+    tempo: "descente contrôlée, montée explosive",
     conseils: [
       "Prends des repos longs (3 à 5 min sur les gros mouvements) : la force exige une récupération complète entre les séries.",
       "Échauffe-toi avec des séries progressives avant tes séries de travail lourdes.",
@@ -48,6 +53,7 @@ const GOAL_SCHEMES = {
     // se joue dans l'assiette et le cardio, pas dans le schéma de séries.
     poly:  { series: 4, reps: "8-12",  repos: "2-3 min", rir: "1-3" },
     iso:   { series: 3, reps: "10-15", repos: "90 s",    rir: "1-3" },
+    tempo: "2-3 s en descente, explosif en montée",
     conseils: [
       "L'entraînement est le même qu'en prise de masse : charges lourdes, mêmes séries et répétitions. C'est le déficit calorique qui fait perdre le gras.",
       "Crée un déficit calorique modéré (-300 à -500 kcal/jour) en gardant les protéines hautes (2 g/kg) pour préserver le muscle.",
@@ -60,6 +66,7 @@ const GOAL_SCHEMES = {
     icone: "⚡",
     poly:  { series: 3, reps: "8-12",  repos: "90 s", rir: "2-4" },
     iso:   { series: 2, reps: "12-15", repos: "75 s", rir: "2-4" },
+    tempo: "descente contrôlée sur 2 s",
     conseils: [
       "La régularité bat l'intensité : mieux vaut 3 séances moyennes par semaine que 1 séance parfaite.",
       "Termine chaque séance par 5-10 min d'étirements ou de mobilité.",
@@ -197,15 +204,13 @@ function chooseSplit(jours, niveau, splitPref, repartition) {
       default: return ["push", "pull", "legs"];
     }
   }
-  // auto : full body quand la fréquence est basse ou le niveau débutant.
-  // À 3 séances, haut/bas plutôt que push/pull/legs : le PPL n'étale
-  // correctement le volume qu'à partir de 5-6 séances, sinon chaque
-  // muscle n'est travaillé qu'une fois par semaine.
+  // auto : full body tant que la fréquence est basse. À 2 ou 3 séances,
+  // le full body répartit le volume sur toute la semaine et donne à
+  // chaque muscle 2-3 stimulations ; un haut/bas ou un PPL concentrerait
+  // le déficit sur les jours en minorité (le bas du corps à 3 séances).
   switch (jours) {
     case 2: return ["fullbody", "fullbody"];
-    case 3: return niveau === "debutant"
-      ? ["fullbody", "fullbody", "fullbody"]
-      : ["upper", "lower", "upper"];
+    case 3: return ["fullbody", "fullbody", "fullbody"];
     case 4: return ["upper", "lower", "upper", "lower"];
     case 5: return ["push", "pull", "legs", "upper", "lower"];
     case 6: return ["push", "pull", "legs", "push", "pull", "legs"];
@@ -285,7 +290,8 @@ function pickExercise(slot, pool, usedToday, usedThisWeek) {
   const score = (e) => {
     let s = Math.random();
     if (e.type === slot.type) s += 2;                 // type préféré (poly/iso)
-    if (!usedThisWeek.has(e.id)) s += 1;              // varier sur la semaine
+    if (!usedThisWeek.has(e.id)) s += 1.5;            // varier les angles sur la semaine
+                                                      // (hypertrophie régionale)
     // Le choix position allongée / raccourcie pèse surtout en isolation ;
     // un polyarticulaire passe de toute façon par une grande amplitude.
     if (e.type === "iso") {
@@ -331,6 +337,7 @@ function generateProgram(params) {
       reps: ex.id === "planche" ? "30-60 s" : p.reps,
       repos: p.repos,
       rir: ex.id === "planche" ? null : (p.rir || null),
+      tempo: ex.id === "planche" ? null : (scheme.tempo || null),
       prioritaire: ex.groupe === priorite
     };
   }
@@ -408,10 +415,16 @@ function generateProgram(params) {
 
   // Ajustement au volume cible : tant qu'un muscle est à 2 séries ou plus
   // sous sa cible hebdomadaire, on ajoute un exercice (isolation de
-  // préférence) à la séance la moins chargée qui peut l'accueillir. Deux
-  // garde-fous : un plafond dur par séance (budget + 3) et un muscle qu'on
-  // n'arrive plus à placer est abandonné pour ne pas boucler.
+  // préférence) à la séance la moins chargée qui peut l'accueillir. Trois
+  // garde-fous : un plafond dur par séance (budget + 3), un plafond de
+  // ~8 séries par muscle et par séance (au-delà le rendement s'effondre,
+  // dose-réponse par séance 2025), et un muscle qu'on n'arrive plus à
+  // placer est abandonné pour ne pas boucler.
   const capParSeance = maxExos + (priorite ? 1 : 0) + 3;
+  const CAP_MUSCLE_SEANCE = 8;
+  const seriesDuGroupe = (d, g) => d.exercices
+    .filter(e => e.exercice.groupe === g)
+    .reduce((n, e) => n + (Number(e.series) || 0), 0);
   const abandon = new Set();
   for (let garde = 0; garde < 80; garde++) {
     const vol = fractionalSetsByMuscle(days).total;
@@ -426,6 +439,7 @@ function generateProgram(params) {
     const candidats = days
       .map((d, idx) => ({ d, key: dayTemplateKeys[idx] }))
       .filter(x => x.d.exercices.length < capParSeance &&
+        seriesDuGroupe(x.d, cibleG) < CAP_MUSCLE_SEANCE &&
         (x.key === "fullbody" || cibleG === priorite ||
          DAY_TEMPLATES[x.key].slots.some(s => s.groupe === cibleG)))
       .sort((a, b) => a.d.exercices.length - b.d.exercices.length);
@@ -484,7 +498,7 @@ const MUSCLE_INDIRECT = {
   "ischios-fessiers": ["lombaires", "quadriceps"]
 };
 
-/* Cible de séries hebdomadaires par muscle, selon le niveau. */
+/* Cible de séries hebdomadaires, niveau de référence (muscle « moyen »). */
 const VOLUME_CIBLE = { debutant: 10, intermediaire: 14, avance: 18 };
 
 const MUSCLE_ORDRE = [
@@ -492,10 +506,16 @@ const MUSCLE_ORDRE = [
   "quadriceps", "ischios-fessiers", "mollets", "abdos", "lombaires"
 ];
 
-/* Petits muscles : cible réduite. Mollets, abdos et lombaires récupèrent
-   vite, reçoivent du travail indirect en masse, et on ne va pas alourdir
-   chaque séance de trois exercices de gainage pour coller à 18 séries. */
-const MUSCLE_FACTEUR_CIBLE = { mollets: 0.6, abdos: 0.6, lombaires: 0.5 };
+/* La cible varie par muscle : les gros groupes (dos, quadriceps, ischios /
+   fessiers) tolèrent et exploitent un volume plus élevé, les petits
+   (bras, mollets, abdos, lombaires) plafonnent plus bas et reçoivent déjà
+   du travail indirect. Fenêtres tirées de Weightology 2025, Baz-Valle 2022. */
+const MUSCLE_FACTEUR_CIBLE = {
+  dos: 1.15, quadriceps: 1.15, "ischios-fessiers": 1.15,
+  pectoraux: 1, epaules: 1,
+  biceps: 0.85, triceps: 0.85,
+  mollets: 0.7, abdos: 0.7, lombaires: 0.55
+};
 function cibleMuscle(groupe, niveau) {
   const base = VOLUME_CIBLE[niveau] || VOLUME_CIBLE.intermediaire;
   return Math.round(base * (MUSCLE_FACTEUR_CIBLE[groupe] || 1));
@@ -533,4 +553,53 @@ function weeklyVolumeByMuscle(pr) {
                  : fractionnel > cible * 1.6 ? "haut" : "ok";
     return { groupe: g, direct: direct[g], fractionnel, cible, statut };
   });
+}
+
+/* Autorégulation du volume : à partir des données déjà collectées (RIR par
+   série, RPE de séance, progression des charges), on suggère par muscle
+   d'ajouter ou de retirer des séries la semaine prochaine. Suggestion
+   seulement, jamais appliquée d'office. Renvoie [{ groupe, sens, raison }]
+   avec sens = "plus" | "moins". */
+function autoregulationHints(pr) {
+  if (typeof loadJSON !== "function" || typeof STORAGE_KEYS === "undefined") return [];
+  const history = loadJSON(STORAGE_KEYS.history, []);
+  if (!history.length) return [];
+
+  const recentes = history.slice(0, 6);          // ~2 semaines
+  const parGroupe = {};                            // groupe -> { rirs:[], meilleures:{exId:[poids]} }
+  for (let k = recentes.length - 1; k >= 0; k--) {
+    for (const ex of recentes[k].exercises || []) {
+      const g = ex.groupe;
+      if (!g) continue;
+      const b = parGroupe[g] || (parGroupe[g] = { rirs: [], serie: {} });
+      for (const s of ex.sets || []) if (s && s.rir != null) b.rirs.push(s.rir);
+      const best = Math.max(0, ...(ex.sets || []).map(s => (s && s.poids) || 0));
+      (b.serie[ex.exId] = b.serie[ex.exId] || []).push(best);
+    }
+  }
+
+  const cibleRirLo = (() => {
+    const sc = GOAL_SCHEMES[pr && pr.objectif];
+    const m = sc && String(sc.poly.rir).match(/\d+/);
+    return m ? +m[0] : 1;
+  })();
+
+  const hints = [];
+  for (const g of MUSCLE_ORDRE) {
+    const b = parGroupe[g];
+    if (!b || b.rirs.length < 4) continue;
+    const rirMoyen = b.rirs.reduce((a, x) => a + x, 0) / b.rirs.length;
+    // stagnation : au moins un exercice du groupe suivi sur 3 séances sans progrès
+    const stagne = Object.values(b.serie).some(arr => {
+      const t = arr.slice(-3);
+      return t.length === 3 && t[0] > 0 && t.every(x => x <= t[0]);
+    });
+
+    if (stagne) {
+      hints.push({ groupe: g, sens: "moins", raison: "charges à l'arrêt depuis plusieurs séances : une semaine à volume réduit avant de repartir" });
+    } else if (rirMoyen >= cibleRirLo + 3) {
+      hints.push({ groupe: g, sens: "plus", raison: `tu gardes ${rirMoyen.toFixed(1)} reps en réserve en moyenne (cible ${cibleRirLo}-${cibleRirLo + 2}) : ajoute 1 à 2 séries` });
+    }
+  }
+  return hints;
 }

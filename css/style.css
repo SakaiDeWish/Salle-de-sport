@@ -613,6 +613,13 @@ textarea { min-height: 90px; resize: vertical; }
   background: var(--text-soft); opacity: 0.55;
 }
 .volume-warn { margin-top: 12px; font-size: 0.85rem; color: var(--yellow); }
+.volume-auto { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.volume-auto-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft); margin-bottom: 8px; }
+.volume-auto ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.volume-auto li { font-size: 0.85rem; line-height: 1.35; }
+.volume-auto .auto-plus { color: var(--green); }
+.volume-auto .auto-moins { color: var(--yellow); }
+.volume-auto li strong { color: var(--text); }
 
 /* ---------- Séance : setup ---------- */
 .setup-card { max-width: 640px; }
@@ -2090,7 +2097,10 @@ body { max-width: 100%; }
 .live-ex-tools { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }
 /* replié : on masque la ligne technique, on montre le récap */
 .live-ex-recap { display: none; font-weight: 600; }
-.live-ex-collapsed .live-ex-sub { display: none; }
+.live-ex-tempo { margin-top: 2px; font-size: 0.8rem; color: var(--accent-2); }
+.theme-epure .live-ex-tempo { color: var(--accent); }
+.live-ex-collapsed .live-ex-sub, .live-ex-collapsed .live-ex-tempo { display: none; }
+.live-compact .live-ex .live-ex-tempo { display: none; }
 .live-ex-collapsed .live-ex-recap { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .live-ex-body, .live-ex-chev { transition-duration: 0.01ms; }

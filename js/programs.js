@@ -254,22 +254,23 @@ function detectPlateaus(p) {
 /* ---------- Projection : repères pour les prochaines semaines ---------- */
 function renderProjection(p) {
   const weeks = [
-    { n: 1, t: "Prise de repères" },
+    { n: 1, t: "Charges de repère" },
     { n: 2, t: "+2,5 kg ou +1 rep" },
-    { n: 3, t: "+2,5 kg ou +1 rep" },
+    { n: 3, t: "+1 série sur les gros muscles" },
     { n: 4, t: "+2,5 kg ou +1 rep" },
-    { n: 5, t: "+2,5 kg ou +1 rep" },
-    { n: 6, t: "Décharge si tu stagnes", deload: true },
-    { n: 7, t: "+2,5 kg ou +1 rep" },
+    { n: 5, t: "+1 série sur les gros muscles" },
+    { n: 6, t: "Décharge −40 % de volume", deload: true },
+    { n: 7, t: "Reprise, charges de S4" },
     { n: 8, t: "+2,5 kg ou +1 rep" }
   ];
   const plateaux = detectPlateaus(p);
   return `
     <div class="card">
       <h3 class="panel-title">${icon("trend")} Repères pour les prochaines semaines — ${esc(p.nom)}</h3>
-      <p class="video-hint">Modèle indicatif, pas un plan figé. Surcharge progressive : quand toutes les séries
-        passent au RIR cible, monte la charge (~2,5 kg) ou ajoute une rep. Quand une charge stagne 2 à 3 séances
-        de suite, fais une <strong>semaine de décharge</strong> (mêmes mouvements, −40 % de volume) puis reprends.</p>
+      <p class="video-hint">Modèle indicatif, pas un plan figé. Deux leviers en parallèle : la <strong>charge</strong>
+        (quand toutes les séries passent au RIR cible, +2,5 kg ou +1 rep) et le <strong>volume</strong> (une série
+        de plus toutes les deux semaines sur le dos et les jambes, qui exploitent le plus le volume supplémentaire).
+        Après ~5 semaines, une décharge à −40 % de volume, ou plus tôt si une charge stagne 2 à 3 séances de suite.</p>
       ${plateaux.length ? `<p class="proj-plateau">${icon("trend")} Charge stable depuis plusieurs séances sur :
         <strong>${plateaux.map(esc).join(", ")}</strong>. Une semaine de décharge peut aider à repartir.</p>` : ""}
       <div class="proj-track">

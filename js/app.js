@@ -616,7 +616,7 @@ function renderProgram(pr) {
                     <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
                     ${l.prioritaire ? '<span class="tag tag-custom">Priorité</span>' : ""}
                   </td>
-                  <td class="num">${l.series} × ${esc(l.reps)}${l.rir ? `<span class="cell-sub">RIR ${esc(l.rir)}</span>` : ""}</td>
+                  <td class="num">${l.series} × ${esc(l.reps)}${l.rir ? `<span class="cell-sub">RIR ${esc(l.rir)}</span>` : ""}${l.tempo ? `<span class="cell-sub">${esc(l.tempo)}</span>` : ""}</td>
                   <td class="num">${esc(l.repos)}</td>
                 </tr>`).join("")}
             </tbody>
@@ -628,17 +628,21 @@ function renderProgram(pr) {
       const vol = weeklyVolumeByMuscle(pr);
       const cible = vol[0] ? vol[0].cible : 14;
       const sous = vol.filter(v => v.statut === "sous").map(v => LABELS.groupes[v.groupe]);
+      const auto = typeof autoregulationHints === "function" ? autoregulationHints(pr) : [];
       return `
       <div class="card volume-card">
         ${typeof disclosure === "function" ? disclosure("prog.volume", {
           summary: `<span class="disc-title">Volume hebdomadaire par muscle</span><span class="disc-meta">cible ~${cible} séries</span>`,
           what: `C'est le nombre de séries par semaine et par muscle qui pilote la prise de muscle.
             Une série qui sollicite un muscle en second (triceps sur un développé) compte pour une demie.
-            Le programme vise ~${cible} séries par muscle (moins pour mollets, abdos et lombaires) ;
-            le repère vertical marque la cible de chaque muscle. Ajuste dans l'éditeur si besoin.`,
+            Le programme vise ~${cible} séries par muscle (plus pour le dos et les jambes, moins pour
+            les bras, mollets, abdos et lombaires) ; le repère vertical marque la cible de chaque muscle.`,
           detail: renderVolumeTable(vol)
         }) : renderVolumeTable(vol)}
         ${sous.length ? `<p class="volume-warn">Encore sous la cible : ${sous.join(", ")}. Ajoute 1 à 2 séries sur ces muscles dans l'éditeur.</p>` : ""}
+        ${auto.length ? `<div class="volume-auto"><p class="volume-auto-title">D'après tes dernières séances</p><ul>${
+          auto.map(h => `<li class="auto-${h.sens}">${h.sens === "plus" ? "▲" : "▼"} <strong>${LABELS.groupes[h.groupe]}</strong> — ${esc(h.raison)}</li>`).join("")
+        }</ul></div>` : ""}
       </div>`;
     })() : ""}
 
