@@ -1,0 +1,2265 @@
+/* =========================================================
+   GymCoach — Séance en direct (style Nike Training Club)
+   Chronomètre global, chrono par exercice, minuteur de repos
+   avec anneau de progression, journal exact et historique.
+   Tous les temps sont basés sur des horodatages réels
+   (Date.now) : la précision ne dérive jamais.
+   ========================================================= */
+
+STORAGE_KEYS.live = "gymcoach.liveSession";
+STORAGE_KEYS.history = "gymcoach.history";
+STORAGE_KEYS.restDefault = "gymcoach.restDefault";
+STORAGE_KEYS.restSound = "gymcoach.restSound";
+STORAGE_KEYS.restVibrate = "gymcoach.restVibrate";
+STORAGE_KEYS.lastWeights = "gymcoach.lastWeights"; // { exId: [{poids, reps} par numéro de série] }
+
+let live = null;          // séance en cours
+let liveTimer = null;     // interval d'affichage
+let rest = null;          // { setRef, exName, startAt, targetSec, beeped }
+let restMinimized = false; // repos réduit dans la mini-barre
+let editingSet = null;     // { i, j } : série validée en cours de modification
+let expandedIndex = null;  // accordéon : seul cet exercice est déplié
+
+/* Mémoire des charges : ce que tu as mis la dernière fois pour la
+   même combinaison (exercice, numéro de série) — pré-rempli ensuite. */
+function getLastWeights() { return loadJSON(STORAGE_KEYS.lastWeights, {}); }
+function rememberSet(exId, setIndex, poids, reps, rir) {
+  const mem = getLastWeights();
+  (mem[exId] = mem[exId] || [])[setIndex] = { poids, reps, rir: rir ?? null };
+  saveJSON(STORAGE_KEYS.lastWeights, mem);
+}
+function recallSet(exId, setIndex) {
+  return (getLastWeights()[exId] || [])[setIndex] || null;
+}
+
+/* Suggestion de progression (double progression). Tant que toutes les
+   séries ne sont pas au haut de la fourchette, on garde la charge et on
+   ajoute des reps ; une fois le haut atteint partout ET sans finir à
+   l'échec, on monte la charge (+2,5 kg haut du corps, +5 kg bas du corps)
+   et on repart du bas de la fourchette. Le RIR cible de l'exercice
+   (ex.rir) est rappelé dans le message. Basé sur la dernière séance du
+   même exercice, figée au démarrage (ex.memoDepart) pour ne pas dériver
+   en cours de séance. */
+const LOWER_BODY = new Set(["quadriceps", "ischios-fessiers", "mollets"]);
+
+function progressionHint(ex) {
+  if (!ex.target) return null;                       // séance libre : pas de cible
+  const m = String(ex.target).match(/(\d+)\s*[-–]\s*(\d+)\s*(s)?/);
+  if (!m || m[3]) return null;                       // pas de fourchette de reps (gainage en secondes)
+  const lo = +m[1], hi = +m[2];
+  const memo = (ex.memoDepart || getLastWeights()[ex.exId] || []).filter(s => s && s.reps != null);
+  if (!memo.length) {
+    return `Première fois : prends une charge qui te laisse 1 à 2 reps en réserve autour de ${lo} reps.`;
+  }
+  const charges = memo.map(s => s.poids).filter(v => v != null);
+  const charge = charges.length ? Math.max(...charges) : null;
+  const minReps = Math.min(...memo.map(s => s.reps));
+  const inc = LOWER_BODY.has(ex.groupe) ? 5 : 2.5;
+  const rirs = memo.map(s => s.rir).filter(v => v != null);
+  const rirLo = ex.rir ? parseInt(String(ex.rir), 10) : NaN;
+  const rirCible = Number.isFinite(rirLo) ? rirLo : null;
+
+  if (minReps >= hi) {
+    // Haut de la fourchette atteint partout. On ne monte la charge que si
+    // ce n'était pas fait à l'échec : sinon on consolide d'abord.
+    if (rirs.length && Math.min(...rirs) <= 0) {
+      return `Dernière fois tu finissais à l'échec. Garde ${charge != null ? charge + " kg" : "la charge"} et refais ${hi} reps propres${rirCible ? ` en gardant ${rirCible} en réserve` : ""} avant de monter.`;
+    }
+    if (charge != null) {
+      return `Haut de la fourchette atteint partout : passe à ${charge + inc} kg et repars de ${lo} reps${rirCible ? ` (${ex.rir} en réserve)` : ""}.`;
+    }
+    return `Haut de la fourchette atteint : rends l'exercice plus dur (lest, variante) et repars de ${lo} reps.`;
+  }
+
+  const cible = Math.min(minReps + 1, hi);
+  const suffixe = rirCible ? `, en gardant ${rirCible} rep${rirCible > 1 ? "s" : ""} en réserve` : "";
+  if (charge != null) {
+    return `Dernière fois ${charge} kg. Garde la charge, vise ${cible} reps sur chaque série${suffixe}.`;
+  }
+  return `Garde ta charge, vise ${cible} reps sur chaque série${suffixe}.`;
+}
+
+/* Référence temporelle : figée pendant une pause */
+function nowRef() { return (live && live.pausedAt) ? live.pausedAt : Date.now(); }
+
+/* circonférence de l'anneau SVG (r = 88) */
+const RING_CIRC = 2 * Math.PI * 88;
+
+/* ---------- Utilitaires temps ---------- */
+function fmtClock(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  const mm = String(m).padStart(2, "0"), ss = String(sec).padStart(2, "0");
+  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+function fmtSec(sec) { return fmtClock(sec * 1000); }
+
+/* Convertit un repos de programme ("90 s", "3 min", "60-75 s") en secondes */
+function parseRestToSeconds(str) {
+  if (!str) return getDefaultRest();
+  const m = String(str).match(/(\d+)/);
+  if (!m) return getDefaultRest();
+  const n = parseInt(m[1], 10);
+  return /min/i.test(str) ? n * 60 : n;
+}
+
+function getDefaultRest() {
+  return loadJSON(STORAGE_KEYS.restDefault, 90);
+}
+
+/* Repos auto-adapté : type de mouvement (poly/iso) x objectif x niveau
+   de l'exercice. Force = long, sèche = court ; les gros mouvements
+   avancés gagnent +30 s. Toujours modifiable pendant le repos (±15 s). */
+const SMART_REST = {
+  force: { poly: 180, iso: 90 },
+  masse: { poly: 120, iso: 75 },
+  seche: { poly: 75,  iso: 45 },
+  forme: { poly: 90,  iso: 60 }
+};
+
+function smartRest(ex) {
+  const objectif = (loadJSON(STORAGE_KEYS.profil, null) || {}).objectif || "masse";
+  const table = SMART_REST[objectif] || SMART_REST.masse;
+  let s = table[ex.type === "poly" ? "poly" : "iso"];
+  if (ex.niveau === "avance" && ex.type === "poly") s += 30;
+  if (ex.niveau === "debutant" && ex.type !== "poly") s = Math.max(30, s - 15);
+  return s;
+}
+
+/* Signal de fin de repos (WebAudio, aucun fichier à charger).
+
+   UN SEUL coup, puis silence. La version précédente envoyait DEUX
+   impulsions de 880 Hz espacées de 250 ms et une vibration en trois
+   temps (200-100-200) : en salle, entre deux séries, c'était une
+   alarme. Ici : une sinusoïde de 1000 Hz pendant 260 ms, avec une
+   attaque de 15 ms et une extinction exponentielle — assez net pour
+   percer le bruit ambiant, assez court pour ne pas déranger le voisin.
+
+   L'attaque douce n'est pas cosmétique : un oscillateur démarré à plein
+   volume produit un claquement (discontinuité du signal) bien plus
+   agressif que le son lui-même.
+
+   Les deux canaux sont indépendamment désactivables dans les Réglages.
+   `force` sert au bouton « Tester le signal », qui doit sonner même
+   quand le son est coupé. */
+const REST_BEEP_HZ = 1000;
+const REST_BEEP_MS = 260;
+
+/* VOLUME DU BIP — réglable dans les Réglages, de 0 à 100 %.
+
+   Le curseur ne pilote pas l'amplitude directement. L'oreille perçoit le
+   volume à peu près comme la racine de l'amplitude : un curseur linéaire
+   sur l'amplitude paraît ne rien faire au début puis tout faire à la
+   fin. On élève donc la position au CARRÉ, ce qui rend la course du
+   doigt régulière à l'oreille.
+
+   Le maximum (0,45) vaut le double de l'ancien niveau fixe : dans une
+   salle bruyante, il fallait pouvoir monter, pas seulement descendre.
+   Par défaut le curseur est à 70 %, soit 0,45 × 0,70² = 0,22 — très
+   exactement le niveau d'avant. Personne ne verra son bip changer sans
+   l'avoir demandé. */
+const REST_BEEP_GAIN_MAX = 0.45;
+const REST_VOL_DEFAUT = 70;
+
+function restVolume() {
+  const v = parseInt(localStorage.getItem("gymcoach.restVolume"), 10);
+  return Number.isFinite(v) ? Math.min(100, Math.max(0, v)) : REST_VOL_DEFAUT;
+}
+function beepGain(pct) {
+  const p = (pct != null ? pct : restVolume()) / 100;
+  return REST_BEEP_GAIN_MAX * p * p;
+}
+
+/* UN SEUL contexte audio, débloqué au premier geste de l'utilisateur.
+
+   Deux raisons, et la seconde est la vraie.
+   1. Créer un AudioContext par bip fuit : les navigateurs en limitent le
+      nombre (souvent 6) et refusent les suivants — après quelques séries,
+      plus de son du tout.
+   2. Surtout : iOS/Safari démarre tout contexte à l'état « suspended » et
+      ne le débloque QUE pendant un geste utilisateur. Or le bip de fin de
+      repos survient précisément quand personne ne touche l'écran. Un
+      contexte créé à ce moment-là reste muet, définitivement. On le crée
+      donc au premier contact avec l'app — n'importe lequel — et on l'y
+      réveille avec un souffle à volume nul, inaudible mais suffisant pour
+      que le système considère l'audio comme autorisé. */
+let audioCtx = null;
+
+function audioContext() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!audioCtx) { try { audioCtx = new AC(); } catch { return null; } }
+  if (audioCtx.state === "suspended") { try { audioCtx.resume(); } catch { /* ignoré */ } }
+  return audioCtx;
+}
+
+(function debloqueAudio() {
+  const ouvrir = () => {
+    const ctx = audioContext();
+    if (!ctx) return;
+    try {                       // souffle à volume nul : inaudible, mais il « arme » iOS
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      g.gain.value = 0;
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + 0.01);
+    } catch { /* sans importance */ }
+    document.removeEventListener("pointerdown", ouvrir);
+    document.removeEventListener("keydown", ouvrir);
+  };
+  document.addEventListener("pointerdown", ouvrir, { once: false });
+  document.addEventListener("keydown", ouvrir, { once: false });
+})();
+
+function beep(force, volume) {
+  const sonOn = force || localStorage.getItem(STORAGE_KEYS.restSound) !== "0";
+  const vibOn = force || localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0";
+  const pic = beepGain(volume);
+  /* À 0 %, on ne fabrique aucun oscillateur : une rampe exponentielle
+     vers zéro n'existe pas, et un bip inaudible reste un bip payé. */
+  if (sonOn && pic > 0.0002) {
+    try {
+      const ctx = audioContext();
+      if (ctx) {
+        const t0 = ctx.currentTime, d = REST_BEEP_MS / 1000;
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(REST_BEEP_HZ, t0);
+        osc.connect(gain); gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(pic, t0 + 0.015);    // attaque 15 ms
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + d);     // extinction
+        osc.start(t0);
+        osc.stop(t0 + d + 0.02);
+        /* on ne ferme PAS le contexte : il resservira au bip suivant, et
+           le refermer redemanderait un geste utilisateur sur iOS. */
+      }
+    } catch { /* audio indisponible : silencieux, jamais bloquant */ }
+  }
+  if (vibOn) {
+    try { navigator.vibrate && navigator.vibrate(180); } catch { /* non supporté */ }
+  }
+}
+
+/* Vibration SEULE, sans le bip. Même interrupteur que le signal de fin
+   de repos : qui a coupé la vibration ne veut pas la retrouver
+   ailleurs sous un autre nom. */
+function vibre(motif) {
+  if (localStorage.getItem(STORAGE_KEYS.restVibrate) === "0") return;
+  try { navigator.vibrate && navigator.vibrate(motif); } catch { /* non supporté */ }
+}
+
+/* ==================== PRÉAVIS DE REPRISE ====================
+
+   Le bip de fin de repos arrive quand le repos est DÉJÀ fini : on se
+   remet en position après coup, et la série commence en retard sur le
+   chrono. Trois impulsions brèves AVANT la reprise laissent le temps
+   de se placer.
+
+   Elles se distinguent du signal final par leur durée, pas par leur
+   nombre : trois tapes de 45 ms, puis la vibration pleine de 180 ms.
+   C'est un décompte, pas une seconde alarme.
+
+   Ce préavis ne se rattrape jamais. tick() ne bat pas quand l'app est
+   en arrière-plan ; au réveil, le repos peut être terminé depuis une
+   minute. Prévenir alors d'une reprise déjà passée serait pire que se
+   taire — d'où la condition « il reste encore du temps ». */
+const REST_PREAVIS_S = 3;
+const REST_PREAVIS_MS = 45;
+
+/* ==================== EXERCICE QUI TRAÎNE ====================
+
+   « Plus long que la normale » suppose une normale. Ce n'est pas une
+   invention pour l'occasion : c'est le modèle qui sert déjà à estimer
+   la durée d'une séance (estimateDayMinutes) — 40 s d'effort par
+   série, plus le repos prescrit. Un exercice qui dépasse ce total a
+   pris plus de temps que ce que le programme prévoyait.
+
+   SANS PRESCRIPTION, PAS DE RAPPEL. En séance libre, aucune normale
+   n'existe : se fabriquer un seuil pour avoir quelque chose à dire
+   vaudrait moins que se taire. */
+const EFFORT_PAR_SERIE_S = 40;
+const DEBORD_VIB = [70, 110, 70];   // double impulsion : reconnaissable
+
+STORAGE_KEYS.exDeborde = "gymcoach.exDeborde";
+function debordOn() { return localStorage.getItem(STORAGE_KEYS.exDeborde) !== "0"; }
+
+/* ---------- Éléments ---------- */
+const elSetup = document.getElementById("seance-setup");
+const elLive = document.getElementById("seance-live");
+const elSummary = document.getElementById("seance-summary");
+const elLiveExercises = document.getElementById("live-exercises");
+const elRestOverlay = document.getElementById("rest-overlay");
+const elPicker = document.getElementById("picker");
+const defaultRestInput = document.getElementById("default-rest");
+
+/* ---------- Persistance de la séance en cours ---------- */
+function saveLive() { saveJSON(STORAGE_KEYS.live, live); }
+/* Fin de séance : DÉMONTAGE COMPLET, en un seul endroit.
+
+   Le bug corrigé ici : clearLive() ne faisait que `live = null`, et
+   finishSession() arrêtait le minuteur juste avant. Or c'est tick() qui
+   appelle updateMinibar(). Le minuteur arrêté, plus rien ne repeignait
+   la mini-barre : elle restait affichée avec son DERNIER texte, par
+   exemple « Repos 01:30 », alors que la séance était finie et que rest
+   valait déjà null. L'état interne était propre, l'écran mentait.
+
+   La leçon : une fonction qui s'appelle clearLive doit rendre vrai ce
+   que son nom affirme — plus aucune séance, donc plus rien à l'écran
+   qui prétende le contraire. Elle ferme donc AUSSI le minuteur, le
+   repos, la surcouche de repos et la mini-barre. Les deux sorties
+   (terminer et abandonner) passent par là, ce qui les empêche de
+   diverger comme elles avaient commencé à le faire. */
+function clearLive() {
+  localStorage.removeItem(STORAGE_KEYS.live);
+  live = null;
+  rest = null;
+  restMinimized = false;
+  if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+  if (elRestOverlay) elRestOverlay.classList.add("hidden");
+  updateMinibar();          // sans ça, la barre garde son dernier texte
+}
+
+/* ---------- Démarrage ---------- */
+function newLiveExercise(ex, target, restSec, rir, tempo) {
+  return {
+    exId: ex.id,
+    nom: ex.nom,
+    groupe: ex.groupe,
+    target: target || null,        // ex : "4 × 8-12"
+    rir: rir || null,              // RIR cible, ex : "1-3"
+    tempo: tempo || null,          // ex : "2-3 s en descente, explosif en montée"
+    // charges/reps/rir de la dernière séance de cet exercice, figés ici pour
+    // que la suggestion de progression ne bouge pas en cours de séance
+    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir }),
+    restSec: restSec || (ex.type ? smartRest(ex) : getDefaultRest()),
+    restAuto: !restSec,
+    sets: [],                      // { poids, reps, doneAt, restAfter }
+    startedAt: null,
+    endedAt: null
+  };
+}
+
+/* ==================== ÉCHAUFFEMENT ====================
+
+   L'échauffement était un chrono SÉPARÉ, lancé avant la séance depuis
+   l'écran de préparation, puis « consommé » au démarrage. Il est
+   maintenant une PHASE DE LA SÉANCE, et ce n'est pas qu'un
+   déplacement d'écran : ça change le calcul.
+
+   Avant : durée = (fin − début) + échauffement. Le temps
+   d'échauffement était ajouté DE L'EXTÉRIEUR, et rien ne garantissait
+   sa cohérence avec la fenêtre de la séance — on pouvait déclarer
+   vingt minutes d'échauffement sur une séance de quinze.
+
+   Maintenant : la séance démarre AVEC l'échauffement, donc
+   durée = fin − début, point. `echauffementMs` ne s'ajoute plus à
+   rien : il DÉCRIT une portion de cette durée. Un chiffre qui décrit
+   ne peut pas contredire le total.
+
+   La phase se termine de trois façons : le bouton, la validation de
+   la première série (personne ne pense au bouton une barre à la
+   main), ou la fin de séance.
+
+   RESTE DE L'ANCIEN MODÈLE : une clé « gymcoach.warmup » peut traîner
+   chez quelqu'un qui avait lancé un échauffement sans démarrer de
+   séance. On la récupère UNE FOIS au démarrage, en reculant d'autant
+   le début de séance — ce temps entre ainsi vraiment dans la fenêtre
+   au lieu de s'y ajouter par-dessus. */
+STORAGE_KEYS.warmup = "gymcoach.warmup";
+
+function warmupLegacyMs() {
+  const w = loadJSON(STORAGE_KEYS.warmup, null);
+  if (!w || typeof w !== "object") return 0;
+  const ms = (w.cumul || 0) + (w.startedAt ? Date.now() - w.startedAt : 0);
+  localStorage.removeItem(STORAGE_KEYS.warmup);
+  return Math.max(0, ms);
+}
+
+/* Échauffement en cours ? */
+function warmupOn() { return !!(live && live.echauffementDebut); }
+
+/* Temps d'échauffement à cet instant : figé une fois la phase close,
+   vivant tant qu'elle tourne. */
+function warmupMs() {
+  if (!live) return 0;
+  const base = live.echauffementMs || 0;
+  return live.echauffementDebut ? base + (nowRef() - live.echauffementDebut) : base;
+}
+
+/* Clôt la phase. Idempotent : appelé par le bouton, par la première
+   série validée et par la fin de séance, il ne doit rien accumuler
+   deux fois. */
+function endWarmup() {
+  if (!live || !live.echauffementDebut) return;
+  live.echauffementMs = (live.echauffementMs || 0) + (nowRef() - live.echauffementDebut);
+  live.echauffementDebut = null;
+  saveLive();
+  /* NE PAS appeler renderLiveExercises() ici. La phase d'échauffement
+     n'a aucune incidence sur les cartes d'exercice — et surtout, cette
+     fonction est appelée EN TÊTE de validateSet : re-rendre la liste
+     recréait les champs #poids-N / #reps-N, effaçant les valeurs
+     saisies juste avant que validateSet ne les lise. Résultat : plus
+     aucune série ne s'enregistrait. */
+  renderWarmupBand();
+  tick();
+}
+
+/* Relance la phase — pour qui a coupé trop tôt, ou s'échauffe de
+   nouveau avant un gros exercice. */
+function resumeWarmup() {
+  if (!live || live.echauffementDebut) return;
+  live.echauffementDebut = Date.now();
+  saveLive();
+  renderWarmupBand();
+  tick();
+}
+
+/* Bandeau d'échauffement, dans l'écran de séance. Il ne s'affiche que
+   pendant la phase : une fois close, le temps vit dans l'en-tête sous
+   « dont échauff. » et le bandeau disparaît au lieu d'encombrer. */
+function renderWarmupBand() {
+  const el = document.getElementById("warmup-band");
+  if (!el) return;
+  const on = warmupOn();
+  el.classList.toggle("hidden", !on);
+  if (!on) return;
+  el.innerHTML = `
+    <div class="wb-head">
+      <span class="wb-lab"><span class="wb-dot" aria-hidden="true">●</span> Échauffement en cours</span>
+      <span class="wb-val" id="wb-val">${fmtClock(warmupMs())}</span>
+    </div>
+    <div class="wb-actions">
+      <button class="btn btn-primary btn-sm" id="wb-done">Échauffement terminé</button>
+    </div>
+    <p class="wb-sub">Il s'arrête tout seul dès que tu valides ta première série.</p>`;
+  document.getElementById("wb-done").addEventListener("click", endWarmup);
+}
+
+/* ==================== ARRÊT AUTOMATIQUE ====================
+
+   Une séance oubliée reste ouverte indéfiniment et empoisonne tout ce
+   qui en dépend : la durée, le temps du mois, la moyenne par séance.
+   Au bout d'un certain temps sans rien valider, on la clôt.
+
+   DEUX SUBTILITÉS QUI DÉCIDENT DE LA JUSTESSE DU RÉSULTAT.
+
+   1. L'HEURE DE FIN N'EST PAS « MAINTENANT ».
+      Si tu oublies ta séance le mardi soir et rouvres l'app le jeudi,
+      clore à l'instant présent enregistrerait une séance de 40 heures
+      — soit exactement le mensonge qu'on cherche à éviter. On clôt à
+      la DERNIÈRE ACTIVITÉ RÉELLE : la dernière série validée, ou le
+      début de séance s'il n'y en a aucune.
+
+   2. LE MINUTEUR NE TOURNE PAS QUAND L'APP EST FERMÉE.
+      Un setInterval ne s'exécute pas dans une poche. Le cas le plus
+      fréquent — fermer l'app et revenir le lendemain — n'est donc PAS
+      couvert par une surveillance en direct. La vérification a lieu
+      aux deux moments : pendant que l'app tourne, ET au chargement
+      d'une séance reprise. */
+STORAGE_KEYS.autoStop = "gymcoach.autoStop";
+const AUTOSTOP_DEFAUT = 120;   // minutes
+
+function autoStopMin() {
+  const v = parseInt(localStorage.getItem(STORAGE_KEYS.autoStop), 10);
+  return Number.isFinite(v) && v >= 0 ? v : AUTOSTOP_DEFAUT;
+}
+
+/* Dernière activité réelle : la série validée la plus récente, ou à
+   défaut le début de la séance. La pause ne compte pas comme
+   activité — c'est justement l'état dans lequel on oublie. */
+function derniereActivite(l = live) {
+  if (!l) return 0;
+  let t = l.startedAt || 0;
+  for (const ex of l.exercises || [])
+    for (const st of ex.sets || [])
+      if (st.doneAt && st.doneAt > t) t = st.doneAt;
+  return t;
+}
+
+/* Séance périmée ? Renvoie l'heure de dernière activité, ou 0. */
+function seancePerimee(l = live) {
+  const min = autoStopMin();
+  if (!min || !l || l.endedAt) return 0;
+  const t = derniereActivite(l);
+  return (Date.now() - t) > min * 60000 ? t : 0;
+}
+
+/* Clôture d'une séance oubliée. Sans série validée il n'y a rien à
+   garder : on efface au lieu d'enregistrer une coquille vide. */
+function autoStopSession() {
+  if (!live) return;
+  const t = derniereActivite();
+  const aDesSeries = live.exercises.some(ex => ex.sets.length > 0);
+  if (!aDesSeries) {
+    clearLive();
+    showSetup();
+    toast(`Séance oubliée depuis plus de ${autoStopMin()} min : abandonnée, aucune série n'avait été validée.`);
+    return;
+  }
+  /* On fige l'horloge à la dernière activité AVANT d'appeler
+     finishSession, qui lit Date.now() : sans ça la séance durerait
+     jusqu'à l'instant de la découverte. */
+  live.autoStopAt = t;
+  finishSession(true);
+}
+
+function startSession(nom, exercises) {
+  live = {
+    nom,
+    startedAt: Date.now(),
+    endedAt: null,
+    pausedAt: null,   // séance en pause ?
+    pauseMs: 0,       // temps total passé en pause (exclu du chrono)
+    exercises,
+    currentIndex: exercises.length ? 0 : -1
+  };
+  /* Un éventuel échauffement de l'ancien modèle est reversé en
+     RECULANT le début de séance : le temps entre dans la fenêtre au
+     lieu de s'y ajouter par-dessus, et durée = fin − début reste vrai. */
+  const legacy = warmupLegacyMs();
+  if (legacy > 0) live.startedAt -= legacy;
+  live.echauffementMs = legacy;
+  /* La séance s'ouvre EN ÉCHAUFFEMENT. C'est le cas de très loin le
+     plus fréquent, et en sortir coûte un tap ; l'inverse — devoir
+     penser à le lancer — coûte l'oubli. */
+  live.echauffementDebut = Date.now();
+  ssApplyRemembered();
+  saveLive();
+  showLive();
+}
+
+/* Temps écoulé de la séance, ÉCHAUFFEMENT COMPRIS. Un seul endroit :
+   trois calculs recopiés à la main finissaient toujours par diverger. */
+function liveElapsed() {
+  if (!live) return 0;
+  /* Plus de « + echauffementMs » : la phase d'échauffement se déroule
+     ENTRE startedAt et maintenant. L'ajouter la compterait deux fois. */
+  return nowRef() - live.startedAt - (live.pauseMs || 0);
+}
+
+document.getElementById("start-free").addEventListener("click", () => {
+  saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
+  startSession("Séance libre", []);
+  openPicker();
+});
+
+function renderProgramDayButtons() {
+  const container = document.getElementById("program-day-buttons");
+  const program = loadJSON(STORAGE_KEYS.program, null);
+  if (!program) {
+    container.innerHTML = `<p class="video-hint">💡 Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
+    return;
+  }
+  /* Bouton « départ » (.btn-go) : la pastille d'accent s'étend et prend
+     tout le bouton, le libellé glisse et cède la place à une flèche.
+     Le libellé est écrit DEUX fois — une couche visible et une couche
+     de survol — d'où l'aria-hidden sur la seconde : sans lui, un
+     lecteur d'écran annoncerait chaque séance en double. */
+  container.innerHTML = program.days.map((d, i) => {
+    const lib = `${objIcon(program.objectif)} Lancer : Séance ${d.numero} — ${esc(d.titre)}`;
+    return `
+    <button class="btn btn-ghost btn-go start-day" data-day="${i}">
+      <span class="go-dot" aria-hidden="true"></span>
+      <span class="go-label">${lib}</span>
+      <span class="go-slide" aria-hidden="true">${lib} ${icon("arrow-right")}</span>
+    </button>`;
+  }).join("");
+  container.querySelectorAll(".start-day").forEach(btn => {
+    btn.addEventListener("click", () => {
+      saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
+      const day = program.days[parseInt(btn.dataset.day, 10)];
+      const exercises = day.exercices.map(l =>
+        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo) // repos auto (smartRest)
+      );
+      startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
+    });
+  });
+}
+
+/* ---------- Affichage de la séance en cours ---------- */
+function showLive() {
+  elSetup.classList.add("hidden");
+  elSummary.classList.add("hidden");
+  elLive.classList.remove("hidden");
+  elLive.classList.toggle("live-compact", localStorage.getItem("gymcoach.liveCompact") === "1");
+  // au retour sur la séance on repart en grand : le scroll pilotera ensuite
+  applyHeaderMin(false);
+  resetHdrScroll();
+  renderPauseState();
+  document.getElementById("live-title").textContent = live.nom;
+  renderWarmupBand();
+  renderLiveExercises();
+  if (liveTimer) clearInterval(liveTimer);
+  liveTimer = setInterval(tick, 250);
+  tick();
+}
+
+function totalRestMs() {
+  let total = 0;
+  for (const ex of live.exercises)
+    for (const s of ex.sets)
+      if (s.restAfter) total += s.restAfter * 1000;
+  if (rest) total += nowRef() - rest.startAt;
+  return total;
+}
+
+function setCount() {
+  return live.exercises.reduce((n, ex) => n + ex.sets.length, 0);
+}
+
+function exerciseElapsed(ex) {
+  if (!ex.startedAt) return 0;
+  return (ex.endedAt || nowRef()) - ex.startedAt;
+}
+
+/* ---------- Pause / reprise ---------- */
+function pauseSession() {
+  if (!live || live.pausedAt) return;
+  live.pausedAt = Date.now();
+  saveLive();
+  renderPauseState();
+}
+
+function resumeSession() {
+  if (!live || !live.pausedAt) return;
+  const d = Date.now() - live.pausedAt;
+  live.pauseMs = (live.pauseMs || 0) + d;
+  const cur = live.exercises[live.currentIndex];
+  if (cur && cur.startedAt && !cur.endedAt) cur.startedAt += d; // le chrono d'exo ignore la pause
+  if (rest) rest.startAt += d;                                   // le repos aussi
+  live.pausedAt = null;
+  saveLive();
+  renderPauseState();
+}
+
+function renderPauseState() {
+  const banner = document.getElementById("pause-banner");
+  const btn = document.getElementById("live-pause");
+  if (banner) banner.classList.toggle("hidden", !live || !live.pausedAt);
+  if (btn) btn.classList.toggle("hidden", !live || !!live.pausedAt);
+  tick();
+}
+
+/* Nombre de séries prescrites pour un exercice ("4 × 8-12" -> 4).
+   Retourne null pour une séance libre (aucune prescription). */
+function targetSetsOf(ex) {
+  if (!ex.target) return null;
+  const m = String(ex.target).match(/^\s*(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+/* Durée « normale » d'un exercice, en millisecondes. Zéro quand il n'y
+   a pas de prescription : l'absence de normale se dit par zéro, pas
+   par un chiffre par défaut. */
+function dureeNormaleMs(ex) {
+  const n = targetSetsOf(ex);
+  if (!n) return 0;
+  return n * (EFFORT_PAR_SERIE_S + (ex.restSec || 0)) * 1000;
+}
+
+/* Prévient UNE fois, et le retient dans la séance enregistrée : une
+   app rechargée ne doit pas re-signaler ce qu'elle a déjà signalé.
+   Le repère est posé même si le rappel est désactivé, sinon l'activer
+   en cours d'exercice déclencherait une alerte périmée. */
+function signaleDebordement(ex) {
+  if (!ex.startedAt || ex.endedAt || ex.debordVu) return;
+  const normale = dureeNormaleMs(ex);
+  if (!normale || exerciseElapsed(ex) <= normale) return;
+  ex.debordVu = true;
+  saveLive();
+  if (!debordOn()) return;
+  vibre(DEBORD_VIB);
+  toast(`« ${ex.nom} » dépasse les ${Math.round(normale / 60000)} min prévues. `
+      + `Simple repère : rien ne t'oblige à accélérer.`);
+}
+
+/* Séries restantes POUR UN EXERCICE (point 2).
+   Sur un programme préfabriqué on connaît la prescription ; en séance
+   libre il n'y a pas de cible, on compte simplement ce qui est fait. */
+function exerciseProgress(ex) {
+  const target = targetSetsOf(ex);
+  const done = ex.sets.length;
+  if (target == null) {
+    return { target: null, done, restant: null, fini: false,
+             texte: done ? `${done} série${done > 1 ? "s" : ""}` : "à démarrer" };
+  }
+  const restant = Math.max(0, target - done);
+  return {
+    target, done, restant, fini: restant === 0,
+    texte: restant === 0 ? "Terminé" : `${done}/${target} séries · ${restant} restante${restant > 1 ? "s" : ""}`
+  };
+}
+
+/* Prochain exercice dont les séries prescrites ne sont pas toutes faites */
+function nextUnfinished(from) {
+  if (!live) return null;
+  for (let k = 1; k <= live.exercises.length; k++) {
+    const i = (from + k) % live.exercises.length;
+    if (i === from) break;
+    if (!exerciseProgress(live.exercises[i]).fini) return i;
+  }
+  return null;
+}
+
+/* Ce qu'affiche l'en-tête : l'exercice EN COURS et sa progression à lui
+   (le total de séance a été remplacé par le détail par exercice).
+   `court` met la progression en premier : sur la pilule étroite, c'est
+   le nom de l'exercice qui doit être tronqué, pas le compteur. */
+function currentProgressText(court = false) {
+  if (!live || !live.exercises.length) return "";
+  const cur = live.exercises[Math.max(0, live.currentIndex)];
+  if (!cur) return "";
+  const p = exerciseProgress(cur);
+  const etat = p.target == null ? p.texte
+             : p.fini ? "terminé"
+             : `série ${p.done + 1}/${p.target}`;
+  return court ? `${etat} · ${cur.nom}` : `${cur.nom} · ${etat}`;
+}
+
+/* Progression : exercice courant + barre d'avancement de la séance */
+function updateProgress() {
+  const label = document.getElementById("live-progress-label");
+  const bar = document.getElementById("live-progress-bar");
+  if (!label || !bar || !live) return;
+  const total = live.exercises.length;
+  if (total === 0) { label.textContent = ""; bar.style.width = "0%"; return; }
+  const current = Math.min(Math.max(live.currentIndex, 0) + 1, total);
+  // avancement = part des séries prescrites déjà validées
+  let t = 0, d = 0;
+  for (const ex of live.exercises) {
+    const p = exerciseProgress(ex);
+    d += Math.min(p.done, p.target ?? p.done);
+    t += p.target ?? p.done;
+  }
+  /* Forme COURTE : « série 2/4 · Développé couché ». Le compteur passe
+     devant le nom parce que la ligne est tronquée sur une seule ligne en
+     mobile — c'est donc la fin qui disparaît, et il vaut mieux perdre le
+     nom de l'exercice, répété en entier sur sa carte juste en dessous,
+     que le numéro de série, qu'on ne lit nulle part ailleurs. */
+  label.innerHTML = `<strong class="prog-strong">${esc(currentProgressText(true))}</strong>
+    <span class="prog-dim">Exercice ${current}/${total}</span>`;
+  bar.style.width = (t ? Math.min(100, Math.round(d / t * 100)) : 0) + "%";
+
+  const pillLeft = document.getElementById("hdr-pill-left");
+  if (pillLeft) pillLeft.textContent = currentProgressText(true);
+}
+
+/* ---------- Point 1 · chrono collant qui se réduit au scroll ----------
+   Descente = état compact (pilule, chrono seul), remontée = état complet.
+   Seuil + anti-rebond pour ne pas clignoter sur un micro-scroll ; un tap
+   bascule manuellement puis l'automatisme reprend la main. */
+const HDR_SCROLL_THRESHOLD = 26;   // px parcourus dans un sens avant de réagir
+const HDR_MIN_SCROLL_Y = 90;       // en haut de page, jamais compact
+/* hdrRef = position de référence, remise à jour à chaque changement d'état
+   et « tirée » par les extrêmes atteints. Comparer à un point de référence
+   plutôt qu'à la frame précédente rend la bascule insensible aux
+   micro-oscillations du scroll (élastique, inertie, reflow). */
+let hdrRef = 0, hdrLastY = 0, hdrTicking = false, hdrManualUntil = 0, hdrLockUntil = 0;
+
+function headerMinimized() { return elLive.classList.contains("hdr-min"); }
+
+function applyHeaderMin(on) {
+  localStorage.setItem(STORAGE_KEYS.liveHeaderMin, on ? "1" : "0");
+  elLive.classList.toggle("hdr-min", on);
+  const btn = document.getElementById("live-hdr-toggle");
+  if (btn) {
+    btn.textContent = on ? "⌄" : "⌃";
+    btn.title = on ? "Agrandir le chrono" : "Réduire le chrono";
+  }
+  tick();
+}
+
+function resetHdrScroll() {
+  hdrRef = hdrLastY = window.scrollY || document.documentElement.scrollTop || 0;
+}
+
+function onLiveScroll() {
+  if (!live || elLive.classList.contains("hidden")) return;
+  const y = window.scrollY || document.documentElement.scrollTop;
+  const now = Date.now();
+
+  // après une bascule manuelle, ou pendant que le layout s'anime,
+  // on ne redéclenche pas (sinon la hauteur qui change se relance elle-même)
+  if (now < hdrManualUntil || now < hdrLockUntil) { hdrLastY = y; hdrRef = y; return; }
+
+  if (y <= HDR_MIN_SCROLL_Y) {                 // haut de page : toujours grand
+    if (headerMinimized()) { applyHeaderMin(false); hdrLockUntil = now + 260; }
+    hdrLastY = y; hdrRef = y;
+    return;
+  }
+  /* Page à peine plus haute que l'écran : réduire ne libérerait rien et
+     rendrait la page non scrollable, ce qui ferait osciller l'état. */
+  const marge = document.documentElement.scrollHeight - window.innerHeight;
+  if (!headerMinimized() && marge < 240) { hdrLastY = y; hdrRef = y; return; }
+
+  const min = headerMinimized();
+  // la référence suit l'extrême atteint dans l'état courant : en grand on
+  // retient le point le plus haut, en compact le point le plus bas
+  hdrRef = min ? Math.max(hdrRef, y) : Math.min(hdrRef, y);
+  const delta = y - hdrRef;
+  hdrLastY = y;
+
+  /* LE SCROLL NE PEUT QUE RÉDUIRE, JAMAIS RÉ-AGRANDIR.
+
+     La version précédente ré-ouvrait l'en-tête dès 26 px de remontée. À
+     l'usage c'est intenable : on relit une série au-dessus, on remonte de
+     trois centimètres, et la bande resurgit en plein milieu de l'écran
+     pile au moment où on regardait ailleurs. Un en-tête qui décide seul
+     de reprendre de la place est plus gênant qu'utile.
+
+     Désormais la remontée ne fait rien. L'en-tête se ré-ouvre par une
+     action VOULUE, et par trois chemins seulement : toucher la pilule,
+     toucher le bouton flottant de retour au chrono, ou arriver
+     réellement en haut de page (le cas traité plus haut, y <= 90) — et
+     là, c'est qu'on y allait exprès. */
+  if (!min && delta > HDR_SCROLL_THRESHOLD) {          // descente franche
+    applyHeaderMin(true); hdrRef = y; hdrLockUntil = now + 260;
+  }
+}
+
+window.addEventListener("scroll", () => {
+  if (hdrTicking) return;                       // une seule évaluation par frame
+  hdrTicking = true;
+  requestAnimationFrame(() => { hdrTicking = false; onLiveScroll(); });
+}, { passive: true });
+
+/* Bascule manuelle : on applique, puis l'automatique reprend après 1,2 s */
+function toggleHeaderManual(on) {
+  applyHeaderMin(on);
+  hdrManualUntil = Date.now() + 1200;
+  resetHdrScroll();
+}
+
+let autoStopCheck = 0;
+function tick() {
+  if (!live) return;
+  /* Surveillance de l'oubli. tick() bat toutes les 250 ms ; inutile de
+     recalculer aussi souvent, un passage toutes les 10 s suffit. */
+  if (Date.now() - autoStopCheck > 10000) {
+    autoStopCheck = Date.now();
+    if (seancePerimee()) {
+      const min = autoStopMin();
+      autoStopSession();
+      toast(`Séance close automatiquement : plus rien de validé depuis ${min} min. La durée s'arrête à ta dernière série.`);
+      return;
+    }
+  }
+  const clock = fmtClock(liveElapsed());
+  document.getElementById("chrono-session").textContent = clock;
+  const echMs = warmupMs();
+  const ech = document.getElementById("chrono-warmup");
+  if (ech) ech.textContent = fmtClock(echMs);
+  const echB = document.getElementById("chrono-warmup-block");
+  if (echB) echB.classList.toggle("hidden", !(echMs > 0));
+  const wbv = document.getElementById("wb-val");
+  if (wbv) wbv.textContent = fmtClock(echMs);
+  const pillChrono = document.getElementById("hdr-pill-chrono");
+  if (pillChrono) pillChrono.textContent = clock;
+  document.getElementById("chrono-rest-total").textContent = fmtClock(totalRestMs());
+  document.getElementById("live-set-count").textContent = setCount();
+
+  // chrono de l'exercice actif
+  live.exercises.forEach((ex, i) => {
+    const el = document.getElementById("ex-chrono-" + i);
+    if (el) el.textContent = fmtClock(exerciseElapsed(ex));
+    signaleDebordement(ex);
+  });
+
+  updateMinibar();
+
+  // minuteur de repos + anneau de progression
+  if (rest) {
+    const elapsed = (nowRef() - rest.startAt) / 1000;
+    const remaining = rest.targetSec - elapsed;
+    const cd = document.getElementById("rest-countdown");
+    const ring = document.getElementById("rest-ring");
+    if (remaining > 0) {
+      const s = Math.ceil(remaining);
+      cd.textContent = fmtSec(s);
+      cd.classList.remove("overtime");
+      /* Une tape par seconde sur les trois dernières, et une seule par
+         seconde : tick() bat quatre fois plus vite qu'elles. */
+      const preavis = s <= REST_PREAVIS_S;
+      cd.classList.toggle("preavis", preavis);
+      if (preavis && rest.preavis !== s) { rest.preavis = s; vibre(REST_PREAVIS_MS); }
+      if (ring) {
+        ring.classList.remove("ring-over");
+        // l'anneau se vide à mesure que le repos s'écoule
+        ring.style.strokeDashoffset = RING_CIRC * (1 - remaining / rest.targetSec);
+      }
+    } else {
+      if (!rest.beeped) { beep(); rest.beeped = true; }
+      cd.textContent = "+" + fmtSec(Math.floor(-remaining));
+      cd.classList.remove("preavis");
+      cd.classList.add("overtime");
+      if (ring) {
+        ring.classList.add("ring-over");
+        ring.style.strokeDashoffset = 0; // anneau plein, en rouge : dépassement
+      }
+    }
+  }
+}
+
+/* Mini-barre flottante : la séance te suit partout dans l'app
+   (pause, repos réduit, ou navigation sur un autre onglet). */
+function updateMinibar() {
+  const bar = document.getElementById("live-minibar");
+  if (!bar) return;
+  const onSeance = document.getElementById("view-seance").classList.contains("active");
+  const show = !!live && (!!live.pausedAt || !onSeance || (rest && restMinimized));
+  bar.classList.toggle("hidden", !show);
+  if (!show) return;
+  const chrono = fmtClock(liveElapsed());
+  let status = "Séance en cours";
+  if (live.pausedAt) status = "En pause";
+  else if (rest) {
+    const remaining = rest.targetSec - (nowRef() - rest.startAt) / 1000;
+    status = remaining > 0 ? "Repos " + fmtSec(Math.ceil(remaining)) : "Repos terminé !";
+  }
+  document.getElementById("mb-chrono").textContent = chrono;
+  document.getElementById("mb-status").textContent = status;
+}
+
+document.getElementById("live-minibar").addEventListener("click", () => {
+  activateView("seance");
+  if (live) {
+    showLive();
+    if (rest && restMinimized) { restMinimized = false; elRestOverlay.classList.remove("hidden"); }
+    if (live.pausedAt) resumeSession();
+  }
+});
+
+/* Assemble les cartes en enveloppant les membres d'un même super set
+   dans un bloc unique. Les membres sont adjacents par construction
+   (ssCreate les rapproche), donc un simple parcours suffit. */
+function ssAssemble(cartes) {
+  const out = [];
+  for (let i = 0; i < cartes.length; i++) {
+    const gid = live.exercises[i].ss;
+    if (!gid) { out.push(cartes[i]); continue; }
+    const membres = ssMembers(gid);
+    if (membres[0] !== i) continue;                  // déjà émis avec son groupe
+    const noms = membres.map(k => esc(live.exercises[k].nom));
+    const series = membres.map(k => {
+      const p = exerciseProgress(live.exercises[k]);
+      return p.target ? p.done + "/" + p.target : String(p.done);
+    });
+    const memo = ssIsRemembered(gid);
+    out.push(`<div class="ss-group" data-ss="${gid}">
+      <div class="ss-head">
+        <span class="ss-badge">⚡ Super set</span>
+        <span class="ss-flow">${noms.map((n, k) => n + " (" + series[k] + ")").join(" → ")}
+          · repos ${ssRest(gid)} s après la paire</span>
+        <span class="ss-actions">
+          <button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
+            memo ? "★ Mémorisé" : "☆ Mémoriser"}</button>
+          <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>
+        </span>
+      </div>
+      ${membres.map((k, r) => cartes[k] + (r < membres.length - 1
+        ? '<div class="ss-link">↓ enchaîne sans repos</div>' : "")).join("")}
+    </div>`);
+  }
+  return out.join("");
+}
+
+function renderLiveExercises() {
+  if (live.exercises.length === 0) {
+    elLiveExercises.innerHTML = `<div class="card empty-live">
+      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer. 💪</p>
+    </div>`;
+    updateProgress();
+    return;
+  }
+
+  // accordéon : un seul exercice déplié — celui en cours par défaut
+  if (expandedIndex == null || expandedIndex >= live.exercises.length)
+    expandedIndex = live.currentIndex;
+
+  const cartes = live.exercises.map((ex, i) => {
+    const isCurrent = i === live.currentIndex;
+    const open = i === expandedIndex;
+    const p = exerciseProgress(ex);
+    // ligne récapitulative de l'exercice replié : séries faites + charges
+    const poidsUtilises = [...new Set(ex.sets.map(s => s.poids).filter(v => v != null))];
+    const recap = ex.sets.length
+      ? `${ex.sets.length} série${ex.sets.length > 1 ? "s" : ""}${poidsUtilises.length
+          ? " · " + poidsUtilises.slice(0, 4).join(" / ") + " kg" : ""}`
+      : "aucune série";
+    return `
+    <div class="card live-ex ${isCurrent ? "live-ex-current" : ""} ${open ? "live-ex-open" : "live-ex-collapsed"} ${p.fini ? "live-ex-done" : ""}" data-i="${i}">
+      <button type="button" class="live-ex-head" data-toggle="${i}" aria-expanded="${open}">
+        <div class="live-ex-id">
+          <h3>${esc(ex.nom)}</h3>
+          <p class="day-focus live-ex-sub">
+            ${LABELS.groupes[ex.groupe] || ""}
+            ${ex.target ? " · " + esc(ex.target) : ""}
+            ${ex.rir ? " · RIR " + esc(ex.rir) : ""}
+            · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
+          </p>
+          ${ex.tempo ? `<p class="day-focus live-ex-tempo">Tempo : ${esc(ex.tempo)}</p>` : ""}
+          <p class="day-focus live-ex-recap">${esc(recap)}</p>
+        </div>
+        <div class="live-ex-right">
+          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? "✓ Terminé" : esc(p.texte)}</span>
+          <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
+          ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
+          <span class="live-ex-chev" aria-hidden="true">⌄</span>
+        </div>
+      </button>
+
+      <div class="live-ex-body"><div class="live-ex-body-inner">
+      <div class="live-ex-tools">
+        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
+        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
+        ${isCurrent && p.fini && nextUnfinished(i) != null
+          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
+      </div>
+
+      ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
+
+      ${ex.sets.length ? `
+      <table class="sets-table">
+        <thead><tr><th>Série</th><th>Poids (kg)</th><th>Reps</th><th>RIR</th><th>Repos</th></tr></thead>
+        <tbody>
+          ${ex.sets.map((s, j) => {
+            /* En affichage réduit, seule la DERNIÈRE série reste visible.
+               Ce marquage est explicite : la règle CSS s'appuyait avant
+               sur :last-child, ce qui a cessé d'être vrai le jour où
+               chaque série a gagné une ligne de note en dessous. */
+            const der = j === ex.sets.length - 1 ? " set-last" : "";
+            const editing = editingSet && editingSet.i === i && editingSet.j === j;
+            if (editing) return `
+              <tr class="set-editing">
+                <td colspan="5">
+                  <div class="set-edit-row">
+                    <span class="set-edit-n">Série ${j + 1}</span>
+                    <input type="number" inputmode="decimal" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
+                    <input type="number" inputmode="numeric" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                    <input type="number" inputmode="numeric" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">
+                    <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
+                    <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
+                    <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
+                  </div>
+                  <!-- La note vit ici aussi : on revient sur une série pour
+                       la corriger OU pour dire comment elle s'est passée,
+                       et rien n'oblige à deviner laquelle des deux avant
+                       d'ouvrir. -->
+                  <div class="set-edit-note">
+                    <input type="text" id="ed-note" maxlength="${NOTE_MAX}" class="set-note-input"
+                      placeholder="Note (facultatif) — ex : aidé sur les 2 dernières"
+                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
+                  </div>
+                  <div class="note-suggests">
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="ed-note">${esc(t)}</button>`).join("")}
+                  </div>
+                </td>
+              </tr>`;
+            const noting = notingSet && notingSet.i === i && notingSet.j === j;
+            if (noting) return `
+              <tr class="set-editing">
+                <td colspan="5">
+                  <div class="set-note-row">
+                    <span class="set-edit-n">Série ${j + 1}</span>
+                    <input type="text" id="note-input" maxlength="100" class="set-note-input"
+                      placeholder="Ex : aidé sur les 2 dernières, bien contrôlé…"
+                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
+                    <button class="btn btn-primary btn-sm note-save" data-i="${i}" data-j="${j}">OK</button>
+                    <button class="btn btn-ghost btn-sm note-cancel">Annuler</button>
+                  </div>
+                  <div class="note-suggests">
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="note-input">${esc(t)}</button>`).join("")}
+                  </div>
+                </td>
+              </tr>`;
+            return `
+            <tr class="set-row${s.note ? " set-noted" : ""}${der}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
+                title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
+              <td>✔ ${j + 1}</td>
+              <td>${s.poids != null ? s.poids : "—"}</td>
+              <td>${s.reps}</td>
+              <td>${s.rir != null ? s.rir : "—"}</td>
+              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
+            </tr>
+            <tr class="set-note-line${der}">
+              <td colspan="5">
+                <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
+                  aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
+                  s.note ? `💬 ${esc(s.note)}` : "＋ note"}</button>
+              </td>
+            </tr>`;
+          }).join("")}
+        </tbody>
+      </table>` : ""}
+
+      ${(() => {
+        const mem = recallSet(ex.exId, ex.sets.length);
+        if (!mem) return "";
+        const rir = mem.rir != null ? ` · ${mem.rir} en réserve` : "";
+        return `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong>${rir}</p>`;
+      })()}
+      <!-- PAS-À-PAS. Les <input> restent la source de vérité : validateSet
+           les lit toujours par leur id, et recallSet les pré-remplit comme
+           avant. Les boutons ± ne font qu'écrire dedans. En salle, la
+           charge bouge par paliers de 2,5 kg — deux taps valent mieux que
+           le clavier numérique avec les mains moites. Le champ reste
+           tapable pour une valeur inhabituelle. -->
+      <div class="set-form">
+        <div class="stepper" data-step="2.5" data-min="0">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg">−</button>
+          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
+            value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg">+</button>
+        </div>
+        <div class="stepper" data-step="1" data-min="1">
+          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
+          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
+            value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
+          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
+        </div>
+        <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
+          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
+          <input type="number" inputmode="numeric" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
+            value="${(recallSet(ex.exId, ex.sets.length) || {}).rir ?? ""}">
+          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
+        </div>
+        <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
+        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
+        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
+      </div>
+      </div></div><!-- /live-ex-body -->
+    </div>`;
+  });
+  elLiveExercises.innerHTML = ssAssemble(cartes);
+
+  /* Accordéon : ouvrir un exercice replie les autres (point 3) */
+  elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
+    head.addEventListener("click", () => {
+      const i = parseInt(head.dataset.toggle, 10);
+      expandedIndex = (expandedIndex === i) ? -1 : i;   // re-tap = tout replier
+      renderLiveExercises();
+    }));
+
+  elLiveExercises.querySelectorAll(".step-btn").forEach(btn =>
+    btn.addEventListener("click", () => stepValue(btn)));
+
+  elLiveExercises.querySelectorAll(".validate-set").forEach(btn =>
+    btn.addEventListener("click", () => validateSet(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".set-current, .go-next").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();                       // ne pas replier via l'en-tête
+      setCurrentExercise(parseInt(btn.dataset.i, 10));
+    }));
+  elLiveExercises.querySelectorAll(".remove-ex").forEach(btn =>
+    btn.addEventListener("click", () => removeExercise(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".swap-ex").forEach(btn =>
+    btn.addEventListener("click", () => swapExercise(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".ex-fiche").forEach(btn =>
+    btn.addEventListener("click", () => openExercise(btn.dataset.exid)));
+  /* NOTES DE SÉRIE. Le clic est capturé AVANT la ligne, qui ouvre sinon
+     l'édition poids/reps : les deux vivent dans la même cellule. */
+  elLiveExercises.querySelectorAll(".set-note-btn").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.preventDefault(); e.stopPropagation();
+      openSetNote(+btn.dataset.noteI, +btn.dataset.noteJ);
+    }, true));
+  elLiveExercises.querySelectorAll(".note-save").forEach(btn =>
+    btn.addEventListener("click", () => saveSetNote(+btn.dataset.i, +btn.dataset.j)));
+  elLiveExercises.querySelectorAll(".note-cancel").forEach(btn =>
+    btn.addEventListener("click", () => { notingSet = null; renderLiveExercises(); }));
+  elLiveExercises.querySelectorAll(".note-chip").forEach(chip =>
+    chip.addEventListener("click", () => {
+      /* Les mêmes puces servent au champ rapide et au champ de la fiche
+         d'édition ; chacune sait lequel elle remplit. */
+      const inp = document.getElementById(chip.dataset.cible || "note-input");
+      if (!inp) return;
+      const t = chip.textContent.trim();
+      inp.value = (inp.value ? inp.value.replace(/\s*$/, "") + ", " : "") + t;
+      inp.value = inp.value.slice(0, NOTE_MAX);
+      inp.focus();
+    }));
+  const noteInp = document.getElementById("note-input");
+  if (noteInp) noteInp.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); saveSetNote(notingSet.i, notingSet.j); }
+    if (e.key === "Escape") { notingSet = null; renderLiveExercises(); }
+  });
+  const edNote = document.getElementById("ed-note");
+  if (edNote) edNote.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); saveSetEdit(editingSet.i, editingSet.j); }
+    if (e.key === "Escape") { editingSet = null; renderLiveExercises(); }
+  });
+
+  elLiveExercises.querySelectorAll(".ss-break").forEach(btn =>
+    btn.addEventListener("click", () => ssBreak(btn.dataset.ss)));
+  elLiveExercises.querySelectorAll(".ss-memo").forEach(btn =>
+    btn.addEventListener("click", () =>
+      ssIsRemembered(btn.dataset.ss) ? ssForget(btn.dataset.ss) : ssRemember(btn.dataset.ss)));
+
+  /* Mode appairage : les cartes deviennent des cibles de sélection.
+     On capture le clic AVANT l'accordéon pour ne pas déplier au passage. */
+  if (ssPicking) {
+    elLiveExercises.classList.add("ss-picking");
+    elLiveExercises.querySelectorAll(".live-ex").forEach(carte => {
+      const i = parseInt(carte.dataset.i, 10);
+      if (ssPickFirst === i) carte.classList.add("ss-sel");
+      carte.addEventListener("click", e => {
+        e.preventDefault(); e.stopPropagation();
+        ssPickTap(i);
+      }, true);
+    });
+  } else {
+    elLiveExercises.classList.remove("ss-picking");
+  }
+
+  /* Série validée : un tap l'ouvre en édition (B2) */
+  elLiveExercises.querySelectorAll(".set-row").forEach(tr => {
+    const open = () => {
+      editingSet = { i: +tr.dataset.i, j: +tr.dataset.j };
+      renderLiveExercises();
+      const f = document.getElementById("ed-poids");
+      if (f) f.focus();
+    };
+    tr.addEventListener("click", open);
+    tr.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); open(); } });
+  });
+  elLiveExercises.querySelectorAll(".set-edit-cancel").forEach(b =>
+    b.addEventListener("click", () => { editingSet = null; renderLiveExercises(); }));
+  elLiveExercises.querySelectorAll(".set-edit-save").forEach(b =>
+    b.addEventListener("click", () => saveSetEdit(+b.dataset.i, +b.dataset.j)));
+  elLiveExercises.querySelectorAll(".set-unvalidate").forEach(b =>
+    b.addEventListener("click", () => unvalidateSet(+b.dataset.i, +b.dataset.j)));
+
+  updateProgress();
+}
+
+/* Modifier une série déjà validée : poids et reps.
+   Le volume, les stats et les records sont recalculés depuis l'historique,
+   donc corriger la série suffit — rien n'est stocké en double. */
+function saveSetEdit(i, j) {
+  const ex = live.exercises[i];
+  const set = ex && ex.sets[j];
+  if (!set) return;
+  const reps = parseInt(document.getElementById("ed-reps").value, 10);
+  const poidsRaw = document.getElementById("ed-poids").value;
+  const rirRaw = (document.getElementById("ed-rir") || {}).value;
+  if (!reps || reps < 1) { document.getElementById("ed-reps").focus(); return; }
+  set.reps = reps;
+  set.poids = poidsRaw === "" ? null : parseFloat(poidsRaw);
+  set.rir = rirRaw == null || rirRaw === "" ? null : Math.max(0, parseInt(rirRaw, 10));
+  const note = document.getElementById("ed-note");
+  if (note) set.note = note.value.trim().slice(0, NOTE_MAX);
+  set.editedAt = Date.now();
+  rememberSet(ex.exId, j, set.poids, set.reps, set.rir);   // la mémoire des charges suit
+  editingSet = null;
+  saveLive();
+  renderLiveExercises();
+  tick();
+}
+
+/* Dé-valider : la série disparaît (erreur de saisie, série non faite). */
+function unvalidateSet(i, j) {
+  const ex = live.exercises[i];
+  if (!ex || !ex.sets[j]) return;
+  if (!confirm(`Dé-valider la série ${j + 1} de « ${ex.nom} » ? Elle sera retirée de la séance.`)) return;
+  ex.sets.splice(j, 1);
+  // le repos en cours pointait peut-être sur cette série
+  if (rest && rest.setRef.exIndex === i && rest.setRef.setIndex >= j) {
+    rest = null;
+    restMinimized = false;
+    elRestOverlay.classList.add("hidden");
+  }
+  // la mémoire des charges se recale sur les séries restantes
+  ex.sets.forEach((s, k) => rememberSet(ex.exId, k, s.poids, s.reps, s.rir));
+  editingSet = null;
+  saveLive();
+  renderLiveExercises();
+  tick();
+}
+
+function setCurrentExercise(i) {
+  const now = Date.now();
+  const prev = live.exercises[live.currentIndex];
+  if (prev && prev.startedAt && !prev.endedAt) prev.endedAt = now;
+  live.currentIndex = i;
+  const ex = live.exercises[i];
+  if (!ex.startedAt) ex.startedAt = now;
+  else ex.endedAt = null; // on y revient : le chrono repart
+  expandedIndex = i;      // l'exercice précédent se replie tout seul (point 3)
+  saveLive();
+  renderLiveExercises();
+}
+
+function removeExercise(i) {
+  const ex = live.exercises[i];
+  if (ex.sets.length && !confirm(`Retirer « ${ex.nom} » et ses ${ex.sets.length} série(s) enregistrée(s) ?`)) return;
+  live.exercises.splice(i, 1);
+  if (live.currentIndex >= live.exercises.length) live.currentIndex = live.exercises.length - 1;
+  expandedIndex = live.currentIndex;
+  ssCleanup();
+  saveLive();
+  renderLiveExercises();
+}
+
+/* Remplacer un exercice par une alternative (même muscle, autre approche).
+   Si des séries sont déjà validées, l'alternative est ajoutée à la suite
+   pour ne pas fausser l'historique et les records. */
+function swapExercise(i) {
+  const cur = live.exercises[i];
+  const ref = allExercisesForUI().find(e => e.id === cur.exId) || cur;
+  const inSession = new Set(live.exercises.map(e => e.exId));
+  const alt = findAlternatives(ref, 5).find(a => !inSession.has(a.id));
+  if (!alt) { alert("Pas d'alternative disponible pour cet exercice."); return; }
+  const fresh = newLiveExercise(alt, cur.target, null, cur.rir, cur.tempo);
+  if (cur.sets.length > 0) {
+    if (!confirm(`Ajouter « ${alt.nom} » à la suite ? (les séries déjà validées de « ${cur.nom} » sont conservées)`)) return;
+    live.exercises.splice(i + 1, 0, fresh);
+  } else {
+    live.exercises.splice(i, 1, fresh);
+  }
+  saveLive();
+  renderLiveExercises();
+}
+
+/* ---------- Point 2 · NOTES DE SÉRIE ----------
+   Une série ne dit que des chiffres. « 85 kg × 5 » ne distingue pas la
+   série propre de celle où le partenaire a tiré sur les deux dernières
+   répétitions — et c'est pourtant la différence qui compte quand on
+   relit sa séance trois semaines plus tard.
+
+   La note est COURTE par construction : 100 caractères, et six
+   suggestions d'un tap qui couvrent les cas fréquents. Une note qu'on
+   met dix secondes à écrire entre deux séries ne sera jamais écrite. */
+const NOTE_MAX = 100;
+const NOTE_RAPIDES = ["difficile", "très facile", "aidé sur la fin",
+                      "bien contrôlé", "technique compromise", "distrait"];
+let notingSet = null;   // { i, j } : la série dont on édite la note
+
+function openSetNote(i, j) {
+  notingSet = { i, j };
+  editingSet = null;                 // les deux éditions s'excluent
+  expandedIndex = i;
+  renderLiveExercises();
+  const inp = document.getElementById("note-input");
+  if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+}
+
+function saveSetNote(i, j) {
+  const inp = document.getElementById("note-input");
+  if (!inp) return;
+  const ex = live.exercises[i];
+  if (ex && ex.sets[j]) ex.sets[j].note = inp.value.trim().slice(0, NOTE_MAX);
+  notingSet = null;
+  saveLive();
+  renderLiveExercises();
+}
+
+/* ---------- Point 2B · RÉCAPITULATIF AUTOMATIQUE ----------
+   Le récap ne devine RIEN. Il ne lit que les notes réellement écrites,
+   les range par thème, et rend la synthèse en français. S'il n'y a pas
+   de note, il le dit au lieu d'inventer un ressenti.
+
+   La détection est volontairement faite sur des RACINES et sans
+   accents : « aidé », « aide », « aidée » tombent toutes sur « aid ».
+   Une négation simple est reconnue (« pas difficile ») parce qu'elle
+   inverserait complètement le sens. */
+const NOTE_THEMES = [
+  { cle: "aide",    sig: "~", racines: ["aid", "assist", "spot", "partenaire", "soutenu"],
+    un: "une série avec aide", pl: "séries avec aide" },
+  { cle: "dur",     sig: "~", racines: ["difficil", "dur", "galer", "galère", "lourd", "echec", "échec", "limite"],
+    un: "une série difficile", pl: "séries difficiles" },
+  { cle: "facile",  sig: "+", racines: ["facil", "leger", "léger", "aisé", "aise", "confort"],
+    un: "une série facile", pl: "séries faciles" },
+  { cle: "propre",  sig: "+", racines: ["control", "contrôl", "propre", "solide", "maitris", "maîtris", "bien"],
+    un: "une série bien contrôlée", pl: "séries bien contrôlées" },
+  { cle: "tech",    sig: "!", racines: ["technique", "compromis", "degrad", "dégrad", "triche", "triché", "cass", "dos rond"],
+    un: "une série à la technique dégradée", pl: "séries à la technique dégradée" },
+  { cle: "gene",    sig: "!", racines: ["distrait", "bruit", "interrompu", "derang", "dérang", "attente", "occupe", "occupé", "presse", "pressé"],
+    un: "une perturbation", pl: "perturbations" },
+  { cle: "douleur", sig: "!", racines: ["douleur", "mal ", "gene", "gêne", "tirail", "pincement", "blocage"],
+    un: "une gêne signalée", pl: "gênes signalées" }
+];
+
+function sansAccents(t) {
+  return String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+/* Collecte les notes de la séance, avec l'exercice d'où elles viennent. */
+function collecteNotes(exercises) {
+  const out = [];
+  (exercises || []).forEach(ex => (ex.sets || []).forEach((st, j) => {
+    if (st.note && st.note.trim())
+      out.push({ ex: ex.nom, serie: j + 1, txt: st.note.trim() });
+  }));
+  return out;
+}
+
+function analyseNotes(exercises) {
+  const notes = collecteNotes(exercises);
+  const total = (exercises || []).reduce((n, ex) => n + (ex.sets || []).length, 0);
+  if (!notes.length) {
+    return { vide: true, nbNotes: 0, nbSeries: total, points: [],
+      texte: "Aucune note prise pendant cette séance. Ajoute une note sur une série "
+           + "(bouton ＋ note, sous chaque ligne) pour qu'un récapitulatif apparaisse ici." };
+  }
+  const compte = {}, exemples = {};
+  for (const n of notes) {
+    const t = sansAccents(n.txt);
+    for (const th of NOTE_THEMES) {
+      const trouve = th.racines.some(r => {
+        const i = t.indexOf(sansAccents(r));
+        if (i < 0) return false;
+        /* négation simple : « pas difficile », « sans aide » */
+        const avant = t.slice(Math.max(0, i - 12), i);
+        return !/\b(pas|sans|aucune?|jamais|plus)\s+\S*\s?$/.test(avant);
+      });
+      if (!trouve) continue;
+      compte[th.cle] = (compte[th.cle] || 0) + 1;
+      if (!exemples[th.cle]) exemples[th.cle] = n;
+    }
+  }
+  /* Chaque thème porte SES DEUX libellés, singulier et pluriel. Les
+     fabriquer par substitution donnait « 1 série difficiles ». */
+  const points = NOTE_THEMES.filter(th => compte[th.cle]).map(th => ({
+    sig: th.sig, n: compte[th.cle],
+    txt: compte[th.cle] > 1 ? compte[th.cle] + " " + th.pl : th.un,
+    ex: exemples[th.cle] ? exemples[th.cle].ex : ""
+  }));
+
+  /* Phrase de synthèse : le ton suit ce qui domine, sans surinterpréter. */
+  const n = c => compte[c] || 0;
+  const bon = n("propre") + n("facile");
+  const dur = n("aide") + n("dur");
+  const alerte = n("tech") + n("gene") + n("douleur");
+  let phrases = [];
+  if (bon > dur && bon) phrases.push("Séance bien contrôlée dans l'ensemble.");
+  else if (dur > bon && dur) phrases.push("Séance exigeante.");
+  else phrases.push("Séance contrastée.");
+  if (n("aide")) phrases.push(n("aide") > 1
+    ? "Plusieurs séries ont demandé de l'aide en fin de série."
+    : "Une série a demandé de l'aide en fin de série.");
+  if (n("dur") && !n("aide")) phrases.push("Des séries sont passées près de l'échec.");
+  if (n("facile")) phrases.push("Certaines charges sont devenues faciles — de quoi envisager d'augmenter.");
+  if (n("gene")) phrases.push(n("gene") > 1 ? "Séance interrompue à plusieurs reprises."
+                                            : "Une interruption en cours de séance.");
+  if (n("tech")) phrases.push("Attention à la technique sur la fin.");
+  if (n("douleur")) phrases.push("Une gêne a été signalée : à surveiller avant la prochaine séance.");
+  phrases.push(`${notes.length} note${notes.length > 1 ? "s" : ""} sur ${total} série${total > 1 ? "s" : ""}.`);
+
+  return { vide: false, nbNotes: notes.length, nbSeries: total, points,
+           texte: phrases.join(" "), notes };
+}
+
+/* ---------- Point 7 · SUPER SETS ----------
+   Deux exercices exécutés en paire, sans repos entre eux : A série 1 →
+   B série 1 → repos → A série 2 → B série 2 → repos…
+
+   L'appartenance est portée par l'exercice lui-même (`ex.ss`, un
+   identifiant de groupe) et NON par une liste d'indices. C'est
+   volontaire : retirer, remplacer ou réordonner un exercice décale tous
+   les indices, et une liste d'indices deviendrait fausse en silence.
+   Une propriété portée par l'objet suit l'objet.
+
+   Le repos du groupe est le PLUS LONG des deux : un super set ne se
+   récupère pas plus vite que son exercice le plus exigeant. */
+STORAGE_KEYS.supersets = "gymcoach.supersets";
+
+function ssMembers(gid) {
+  const out = [];
+  if (!gid || !live) return out;
+  live.exercises.forEach((e, i) => { if (e.ss === gid) out.push(i); });
+  return out;
+}
+
+/* Repos partagé : le plus long des membres, pas leur moyenne. */
+function ssRest(gid) {
+  return ssMembers(gid).reduce((a, i) => Math.max(a, live.exercises[i].restSec || 0), 0);
+}
+
+/* Un groupe réduit à un seul membre n'est plus un super set. */
+function ssCleanup() {
+  const compte = {};
+  live.exercises.forEach(e => { if (e.ss) compte[e.ss] = (compte[e.ss] || 0) + 1; });
+  live.exercises.forEach(e => { if (e.ss && compte[e.ss] < 2) delete e.ss; });
+}
+
+/* Crée le groupe et rend les deux exercices ADJACENTS : « s'enchaînent
+   immédiatement » doit être vrai dans la liste comme dans l'exécution. */
+function ssCreate(i, j) {
+  if (i === j) return;
+  const gid = "ss" + Date.now().toString(36);
+  const a = live.exercises[i], b = live.exercises[j];
+  a.ss = b.ss = gid;
+  if (j !== i + 1) {
+    live.exercises.splice(j, 1);
+    const pos = live.exercises.indexOf(a);
+    live.exercises.splice(pos + 1, 0, b);
+  }
+  live.currentIndex = live.exercises.indexOf(a);
+  expandedIndex = live.currentIndex;
+  ssCleanup(); saveLive(); renderLiveExercises();
+}
+
+function ssBreak(gid) {
+  live.exercises.forEach(e => { if (e.ss === gid) delete e.ss; });
+  saveLive(); renderLiveExercises();
+}
+
+/* Mémorisation : la paire est retenue par identifiants d'exercice et
+   réappliquée automatiquement aux séances suivantes. */
+function ssRemembered() { return loadJSON(STORAGE_KEYS.supersets, []); }
+function ssRemember(gid) {
+  const ids = ssMembers(gid).map(i => live.exercises[i].exId);
+  if (ids.length < 2) return;
+  const all = ssRemembered().filter(p => !(p[0] === ids[0] && p[1] === ids[1]));
+  all.push(ids);
+  saveJSON(STORAGE_KEYS.supersets, all);
+  renderLiveExercises();
+}
+function ssForget(gid) {
+  const ids = ssMembers(gid).map(i => live.exercises[i].exId);
+  saveJSON(STORAGE_KEYS.supersets, ssRemembered()
+    .filter(p => !(p[0] === ids[0] && p[1] === ids[1])));
+  renderLiveExercises();
+}
+function ssIsRemembered(gid) {
+  const ids = ssMembers(gid).map(i => live.exercises[i].exId);
+  return ids.length === 2 && ssRemembered().some(p => p[0] === ids[0] && p[1] === ids[1]);
+}
+
+/* Réapplique les paires mémorisées au démarrage d'une séance.
+
+   TOUT SE FAIT SUR DES RÉFÉRENCES D'OBJET, jamais sur des indices. Une
+   première version manipulait i et j : après avoir retiré B de la liste,
+   `live.exercises[i]` ne désignait plus A dès que B se trouvait AVANT lui
+   — les indices avaient glissé d'un cran. Résultat, les deux membres
+   étaient bien marqués du même groupe mais séparés par un exercice tiers,
+   et le super set ne s'enchaînait pas. C'est exactement la raison pour
+   laquelle l'appartenance elle-même est portée par l'objet (`ex.ss`) : un
+   indice cesse d'être vrai dès qu'on touche à la liste. */
+function ssApplyRemembered() {
+  if (!live) return;
+  for (const [idA, idB] of ssRemembered()) {
+    const exA = live.exercises.find(e => e.exId === idA && !e.ss);
+    if (!exA) continue;
+    const exB = live.exercises.find(e => e !== exA && e.exId === idB && !e.ss);
+    if (!exB) continue;
+    const gid = "ss" + Math.random().toString(36).slice(2, 8);
+    exA.ss = exB.ss = gid;
+    live.exercises.splice(live.exercises.indexOf(exB), 1);            // on retire B
+    live.exercises.splice(live.exercises.indexOf(exA) + 1, 0, exB);   // juste après A
+  }
+  ssCleanup();
+  if (live.currentIndex < 0 || live.currentIndex >= live.exercises.length)
+    live.currentIndex = live.exercises.length ? 0 : -1;
+}
+
+/* ---------- Validation d'une série + repos ---------- */
+/* Incrémente le champ visé d'un palier.
+   Trois précautions qui ne se voient pas mais qui comptent :
+   — un champ VIDE ne part pas de zéro mais du pas lui-même (+2,5 kg
+     sur un champ vide donne 2,5, pas 0) ;
+   — le minimum du groupe est respecté (les reps ne descendent pas
+     sous 1, le poids pas sous 0) ;
+   — l'arrondi passe par Math.round(x * 100) / 100 : 0.1 + 0.2 vaut
+     0.30000000000000004 en flottant, et une charge affichée
+     « 42.50000000000001 » aurait fini par arriver. */
+function stepValue(btn) {
+  const champ = document.getElementById(btn.dataset.target);
+  if (!champ) return;
+  const grp = btn.closest(".stepper");
+  const pas = parseFloat(grp.dataset.step) || 1;
+  const min = parseFloat(grp.dataset.min);
+  const delta = parseInt(btn.dataset.delta, 10) * pas;
+  const actuel = champ.value === "" ? null : parseFloat(champ.value);
+  let v = actuel === null || Number.isNaN(actuel)
+    ? (delta > 0 ? pas : min)
+    : actuel + delta;
+  if (Number.isFinite(min)) v = Math.max(min, v);
+  champ.value = String(Math.round(v * 100) / 100);
+  champ.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
+function validateSet(i) {
+  /* Personne ne pense au bouton « échauffement terminé » une barre à
+     la main. Valider une série le dit à sa place. */
+  if (warmupOn()) endWarmup();
+  const ex = live.exercises[i];
+  const reps = parseInt(document.getElementById("reps-" + i).value, 10);
+  const poids = parseFloat(document.getElementById("poids-" + i).value);
+  const rirRaw = (document.getElementById("rir-" + i) || {}).value;
+  const rir = rirRaw == null || rirRaw === "" ? null : Math.max(0, parseInt(rirRaw, 10));
+  if (!reps || reps < 1) {
+    document.getElementById("reps-" + i).focus();
+    return;
+  }
+  const now = Date.now();
+
+  // bascule d'exercice courant + chronos
+  if (live.currentIndex !== i) {
+    const prev = live.exercises[live.currentIndex];
+    if (prev && prev.startedAt && !prev.endedAt) prev.endedAt = now;
+    live.currentIndex = i;
+  }
+  expandedIndex = i;
+  if (!ex.startedAt) ex.startedAt = now;
+  ex.endedAt = null;
+
+  const set = { poids: isNaN(poids) ? null : poids, reps, rir, doneAt: now, restAfter: null, note: "" };
+  ex.sets.push(set);
+  rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps, set.rir); // mémoire (exo, série N)
+  saveLive();
+  renderLiveExercises();
+
+  /* SUPER SET : tant qu'on n'est pas sur le DERNIER exercice du groupe,
+     aucun repos — on bascule directement sur le partenaire. Le repos ne
+     s'ouvre qu'une fois la paire bouclée, et il dure le plus long des
+     deux repos, pas celui de l'exercice qu'on vient de finir. */
+  const membres = ex.ss ? ssMembers(ex.ss) : [];
+  const rang = membres.indexOf(i);
+  if (membres.length > 1 && rang > -1 && rang < membres.length - 1) {
+    const suivant = membres[rang + 1];
+    live.currentIndex = suivant;
+    expandedIndex = suivant;
+    const exSuiv = live.exercises[suivant];
+    if (!exSuiv.startedAt) exSuiv.startedAt = now;
+    exSuiv.endedAt = null;
+    saveLive();
+    renderLiveExercises();
+    tick();
+    return;                       // pas de minuteur : c'est tout l'intérêt
+  }
+
+  // lance le minuteur de repos
+  const cible = ex.ss ? ssRest(ex.ss) : ex.restSec;
+  rest = { setRef: { exIndex: i, setIndex: ex.sets.length - 1 }, exName: ex.nom, startAt: now, targetSec: cible, beeped: false };
+  restMinimized = false;
+  document.getElementById("rest-exercise-name").textContent = ex.ss
+    ? "Super set bouclé — repos " + cible + " s"
+    : ex.nom + " — série " + ex.sets.length + " terminée";
+  elRestOverlay.classList.remove("hidden");
+  /* Après un super set, la manche suivante repart sur le PREMIER membre. */
+  if (membres.length > 1) { live.currentIndex = membres[0]; expandedIndex = membres[0]; renderLiveExercises(); }
+  tick();
+}
+
+function endRest() {
+  if (!rest) return;
+  restMinimized = false;
+  const actual = Math.round((nowRef() - rest.startAt) / 1000);
+  const ex = live.exercises[rest.setRef.exIndex];
+  if (ex && ex.sets[rest.setRef.setIndex]) ex.sets[rest.setRef.setIndex].restAfter = actual;
+  rest = null;
+  elRestOverlay.classList.add("hidden");
+  saveLive();
+  renderLiveExercises();
+}
+
+document.getElementById("rest-resume").addEventListener("click", endRest);
+/* Réduire le repos : le compte continue dans la mini-barre, on peut
+   naviguer librement (fiche, historique, nutrition…) sans le perdre. */
+document.getElementById("rest-minimize").addEventListener("click", () => {
+  restMinimized = true;
+  elRestOverlay.classList.add("hidden");
+  tick();
+});
+document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; tick(); } });
+document.getElementById("rest-minus").addEventListener("click", () => { if (rest) { rest.targetSec = Math.max(5, rest.targetSec - 15); tick(); } });
+
+/* ---------- Sélecteur d'exercice ---------- */
+let pickerCallback = null; // si défini, le picker renvoie l'exercice choisi
+
+function openPicker(cb) {
+  pickerCallback = (typeof cb === "function") ? cb : null;
+  elPicker.classList.remove("hidden");
+  // le guidage de séance libre n'a pas de sens en mode sélection simple
+  document.querySelector(".picker-suggest").classList.toggle("hidden", !!pickerCallback);
+  const input = document.getElementById("picker-search");
+  input.value = "";
+  renderPickerList("");
+  if (!pickerCallback) renderSuggestions();
+  input.focus();
+}
+function closePicker() { elPicker.classList.add("hidden"); }
+
+function renderPickerList(query) {
+  const q = normalize(query.trim());
+  let list = allExercisesForUI().filter(ex => !q || exMatches(ex, q));
+  // favoris en tête du sélecteur (G1)
+  if (typeof favoritesFirst === "function") list = favoritesFirst(list);
+  list = list.slice(0, 40);
+  document.getElementById("picker-list").innerHTML = list.map(ex => `
+    <button class="picker-item" data-exid="${esc(ex.id)}">
+      <span>${typeof isFavorite === "function" && isFavorite(ex.id) ? '<span class="pick-fav">★</span> ' : ""}${esc(ex.nom)}</span>
+      <span class="tag">${LABELS.groupes[ex.groupe]}</span>
+    </button>`).join("") || `<p class="video-hint">Aucun exercice trouvé.</p>`;
+  document.querySelectorAll(".picker-item").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const ex = allExercisesForUI().find(e => e.id === btn.dataset.exid);
+      if (!ex) return;
+      if (pickerCallback) { const cb = pickerCallback; closePicker(); cb(ex); return; }
+      if (!live) return;
+      live.exercises.push(newLiveExercise(ex, null, getDefaultRest()));
+      if (live.currentIndex === -1) live.currentIndex = 0;
+      saveLive();
+      renderLiveExercises();
+      closePicker();
+    }));
+}
+
+/* Séance libre guidée : à partir des muscles cochés, propose un
+   enchaînement cohérent (polyarticulaires d'abord, isolation ensuite,
+   gainage pour finir) adapté au niveau et au matériel du profil. */
+const suggestState = new Set();
+
+function buildSuggestions() {
+  const profil = loadJSON(STORAGE_KEYS.profil, null) || {};
+  const levels = { debutant: ["debutant"], intermediaire: ["debutant", "intermediaire"],
+                   avance: ["debutant", "intermediaire", "avance"] }[profil.niveau] || null;
+  const equip = { salle: null, halteres: ["halteres", "poids-du-corps"],
+                  corps: ["poids-du-corps"] }[profil.materiel] ?? null;
+  const ok = e => (!levels || levels.includes(e.niveau)) && (!equip || equip.includes(e.materiel));
+  // favoris d'abord, puis les machines : dispo garantie, apprentissage sûr,
+  // et ça varie des barres déjà faites
+  const fav = (typeof getFavorites === "function") ? new Set(getFavorites()) : new Set();
+  const rank = e => (fav.has(e.id) ? 2 : 0) + (e.materiel === "machine" ? 1 : 0);
+  const pool = allExercisesForUI().filter(ok).sort((a, b) => rank(b) - rank(a));
+  // la liste reste stable même après ajout : les items ajoutés s'affichent cochés
+  const pick = (g, type, taken) =>
+    pool.find(e => e.groupe === g && e.type === type && !taken.has(e.id));
+
+  const taken = new Set();
+  const out = [];
+  for (const g of suggestState) {                     // 1. polyarticulaires
+    const e = pick(g, "poly", taken);
+    if (e) { taken.add(e.id); out.push(e); }
+  }
+  for (const g of suggestState) {                     // 2. isolation
+    const e = pick(g, "iso", taken);
+    if (e) { taken.add(e.id); out.push(e); }
+  }
+  if (suggestState.size && !suggestState.has("abdos")) {  // 3. gainage final
+    const e = pick("abdos", "iso", taken) || pick("abdos", "poly", taken);
+    if (e) out.push(e);
+  }
+  return out.slice(0, 8);
+}
+
+function renderSuggestions() {
+  const zone = document.getElementById("suggest-list");
+  if (suggestState.size === 0) { zone.innerHTML = ""; return; }
+  const sugg = buildSuggestions();
+  const inSession = new Set((live?.exercises || []).map(e => e.exId));
+  zone.innerHTML = `
+    <p class="video-hint">Enchaînement proposé (échauffe-toi 5-10 min avant) — chaque exercice s'ajoute d'un tap :</p>
+    ${sugg.map((e, i) => `
+      <button class="picker-item suggest-item ${inSession.has(e.id) ? "suggest-added" : ""}" data-exid="${esc(e.id)}">
+        <span>${i + 1}. ${esc(e.nom)}</span>
+        <span class="tag">${inSession.has(e.id) ? "✓ Ajouté" : e.type === "poly" ? "Polyarticulaire" : "Isolation"}</span>
+      </button>`).join("")}`;
+  zone.querySelectorAll(".suggest-item").forEach(b =>
+    b.addEventListener("click", () => {
+      const ex = allExercisesForUI().find(e => e.id === b.dataset.exid);
+      if (!ex || !live) return;
+      if (live.exercises.some(e => e.exId === ex.id)) {   // déjà là : on le retire
+        live.exercises = live.exercises.filter(e => e.exId !== ex.id);
+      } else {
+        live.exercises.push(newLiveExercise(ex, null, null));
+      }
+      if (live.currentIndex === -1 && live.exercises.length) live.currentIndex = 0;
+      if (live.currentIndex >= live.exercises.length) live.currentIndex = live.exercises.length - 1;
+      saveLive();
+      renderLiveExercises();
+      renderSuggestions();
+    }));
+}
+
+document.querySelectorAll("#suggest-groups .chip").forEach(chip =>
+  chip.addEventListener("click", () => {
+    const g = chip.dataset.g;
+    if (suggestState.has(g)) { suggestState.delete(g); chip.classList.remove("active"); }
+    else { suggestState.add(g); chip.classList.add("active"); }
+    renderSuggestions();
+  }));
+
+document.getElementById("picker-search").addEventListener("input", e => renderPickerList(e.target.value));
+document.getElementById("picker-close").addEventListener("click", closePicker);
+document.getElementById("picker-backdrop").addEventListener("click", closePicker);
+document.getElementById("live-add-ex").addEventListener("click", openPicker);
+
+/* ---------- Point 7 · appairage du super set ---------- */
+let ssPicking = false, ssPickFirst = null;
+
+function ssPickStart() {
+  if (!live || live.exercises.length < 2) {
+    alert("Ajoute au moins deux exercices à ta séance pour créer un super set.");
+    return;
+  }
+  ssPicking = true; ssPickFirst = null;
+  ssPickBar(true, "Touche le <strong>premier</strong> exercice du super set.");
+  renderLiveExercises();
+}
+
+function ssPickCancel() {
+  ssPicking = false; ssPickFirst = null;
+  ssPickBar(false);
+  renderLiveExercises();
+}
+
+function ssPickBar(on, msg) {
+  const bar = document.getElementById("ss-pick-bar");
+  if (!bar) return;
+  bar.classList.toggle("hidden", !on);
+  if (msg) document.getElementById("ss-pick-msg").innerHTML = msg;
+}
+
+function ssPickTap(i) {
+  if (!ssPicking) return;
+  if (live.exercises[i].ss) {          // déjà dans un groupe : on refuse
+    ssPickBar(true, "Cet exercice fait déjà partie d'un super set. Dissocie-le d'abord.");
+    return;
+  }
+  if (ssPickFirst == null) {
+    ssPickFirst = i;
+    ssPickBar(true, "Premier : <strong>" + esc(live.exercises[i].nom)
+      + "</strong>. Touche maintenant le <strong>second</strong>.");
+    renderLiveExercises();
+    return;
+  }
+  if (i === ssPickFirst) { ssPickFirst = null; ssPickStart(); return; }  // dé-sélection
+  const a = ssPickFirst;
+  ssPicking = false; ssPickFirst = null;
+  ssPickBar(false);
+  ssCreate(a, i);
+}
+
+document.getElementById("live-superset").addEventListener("click", () =>
+  ssPicking ? ssPickCancel() : ssPickStart());
+document.getElementById("ss-pick-cancel").addEventListener("click", ssPickCancel);
+
+/* ---------- Fin de séance ---------- */
+document.getElementById("live-pause").addEventListener("click", pauseSession);
+document.getElementById("pause-resume").addEventListener("click", resumeSession);
+/* Mode compact : chrono seul + cartes réduites à l'essentiel
+   (série / reps / poids / repos). Mémorisé. */
+document.getElementById("live-compact-toggle").addEventListener("click", () => {
+  const on = !elLive.classList.contains("live-compact");
+  elLive.classList.toggle("live-compact", on);
+  localStorage.setItem("gymcoach.liveCompact", on ? "1" : "0");
+});
+/* Bascule manuelle grand/compact — l'automatique au scroll reprend ensuite */
+document.getElementById("live-hdr-toggle").addEventListener("click", () => toggleHeaderManual(true));
+document.getElementById("hdr-pill-open").addEventListener("click", () => toggleHeaderManual(false));
+document.getElementById("hdr-pill-finish").addEventListener("click", () => finishSession());
+document.getElementById("live-finish").addEventListener("click", finishSession);
+document.getElementById("live-abort").addEventListener("click", () => {
+  if (!confirm("Abandonner la séance ? Rien ne sera enregistré.")) return;
+  clearLive();              // repos, minuteur, surcouche et mini-barre compris
+  showSetup();
+});
+
+function finishSession(auto = false) {
+  if (live && live.pausedAt) resumeSession(); // solde la pause avant de figer les temps
+  if (warmupOn()) endWarmup();               // idem pour l'échauffement encore ouvert
+  if (rest) endRest();
+  /* Clôture automatique : l'heure de fin est la DERNIÈRE ACTIVITÉ, pas
+     l'instant où on s'en aperçoit. Sinon une séance oubliée mardi et
+     découverte jeudi s'enregistrerait comme une séance de 40 heures. */
+  const now = (auto && live.autoStopAt) ? live.autoStopAt : Date.now();
+  const cur = live.exercises[live.currentIndex];
+  if (cur && cur.startedAt && !cur.endedAt) cur.endedAt = now;
+  live.endedAt = now;
+  if (liveTimer) clearInterval(liveTimer);
+
+  const program = loadJSON(STORAGE_KEYS.program, null);
+  const record = {
+    id: "seance-" + now,
+    nom: live.nom,
+    date: now,
+    /* DURÉE TOTALE = échauffement + temps de séance. C'est le sens
+       ordinaire de « combien de temps j'ai passé à m'entraîner », et
+       c'est ce que réclamaient les statistiques : sans l'échauffement,
+       le temps affiché était toujours faux, jamais d'une erreur
+       aléatoire mais d'un manque systématique. */
+    dureeMs: now - live.startedAt - (live.pauseMs || 0),
+    /* Borné à la durée : l'échauffement en est une PORTION, il ne peut
+       pas la dépasser. Sans cette borne, un échauffement laissé ouvert
+       pendant une pause pourrait afficher « 40 min dont 45 min ». */
+    echauffementMs: Math.min(live.echauffementMs || 0, now - live.startedAt - (live.pauseMs || 0)),
+    reposMs: totalRestMs(),
+    statut: "Terminée",
+    /* Toute séance — y compris libre — est rattachée au programme actif :
+       elle compte dans l'objectif hebdo, l'historique, le calendrier
+       et les stats, et peut devenir une séance récurrente (D2). */
+    programId: program ? (program.id || null) : null,
+    programNom: program ? (program.nom || program.objectifLabel || null) : null,
+    libre: !/^Séance \d+/.test(live.nom),
+    objectifLabel: program ? program.objectifLabel : null,
+    rpe: null,   // renseigné depuis l'écran de résumé
+    notes: "",
+    /* Marque la séance close par le minuteur d'oubli : sa fin est une
+       déduction, pas un geste. L'historique doit pouvoir le dire. */
+    autoClos: !!auto,
+    /* Récap automatique : calculé À LA FIN, une fois pour toutes, et
+       stocké tel quel. Le recalculer à l'affichage donnerait un texte
+       qui change quand l'analyseur évolue — un compte rendu daté ne
+       doit pas se réécrire tout seul. `recap` est la version que
+       l'utilisateur peut corriger ; `recapAuto` garde l'originale. */
+    recapAuto: null,
+    recap: "",
+    exercises: live.exercises
+      .filter(ex => ex.sets.length > 0)
+      .map(ex => ({
+        exId: ex.exId, nom: ex.nom, groupe: ex.groupe,
+        dureeMs: exerciseElapsed(ex),
+        sets: ex.sets
+      }))
+  };
+  record.recapAuto = analyseNotes(record.exercises);
+  record.recap = record.recapAuto.vide ? "" : record.recapAuto.texte;
+  record.nbSeries = record.exercises.reduce((n, e) => n + e.sets.length, 0);
+  record.volume = record.exercises.reduce((v, e) =>
+    v + e.sets.reduce((s, x) => s + (x.poids || 0) * x.reps, 0), 0);
+
+  if (record.nbSeries === 0) {
+    if (!confirm("Aucune série validée : terminer sans rien enregistrer ?")) {
+      live.endedAt = null;
+      if (cur) cur.endedAt = null;
+      liveTimer = setInterval(tick, 250);
+      return;
+    }
+    clearLive();
+    showSetup();
+    return;
+  }
+
+  const history = loadJSON(STORAGE_KEYS.history, []);
+  history.unshift(record);
+  saveJSON(STORAGE_KEYS.history, history);
+  clearLive();
+  showSummary(record);
+}
+
+/* Bloc de récapitulatif, réutilisé par l'écran de bilan et l'historique.
+   `editable` n'est vrai qu'à la fin de la séance : dans l'historique on
+   relit, on ne réécrit pas. */
+function recapHtml(r, editable) {
+  const a = r.recapAuto;
+  if (!a) return "";                    // séance d'avant cette version
+  const puces = (a.points || []).map(p => `
+    <li class="recap-pt recap-${p.sig === "+" ? "ok" : p.sig === "!" ? "warn" : "mid"}">
+      <span class="recap-sig" aria-hidden="true">${p.sig === "+" ? "✓" : p.sig === "!" ? "⚠" : "~"}</span>
+      <span>${esc(p.txt)}${p.ex ? ` <span class="recap-ex">· ${esc(p.ex)}</span>` : ""}</span>
+    </li>`).join("");
+  return `
+    <div class="card recap-card">
+      <p class="chrono-label">Récapitulatif de la séance</p>
+      ${a.vide
+        ? `<p class="recap-vide">${esc(a.texte)}</p>`
+        : `${editable
+             ? `<textarea id="recap-edit" class="recap-edit" rows="5" maxlength="400"
+                  aria-label="Récapitulatif de la séance, modifiable">${esc(r.recap || a.texte)}</textarea>
+                <p class="video-hint">Généré à partir de tes notes de série. Tu peux le corriger.</p>`
+             : `<p class="recap-txt">${esc(r.recap || a.texte)}</p>`}
+           ${puces ? `<ul class="recap-list">${puces}</ul>` : ""}
+           ${disclosure("recap.notes." + r.id, {
+             summary: `<span class="disc-meta">${a.nbNotes} note${a.nbNotes > 1 ? "s" : ""} sur ${a.nbSeries} série${a.nbSeries > 1 ? "s" : ""}</span>`,
+             label: "Notes",
+             detail: `<ul class="recap-notes">${(a.notes || []).map(n =>
+               `<li><strong>${esc(n.ex)}</strong> · série ${n.serie} — ${esc(n.txt)}</li>`).join("")}</ul>`
+           })}`}
+    </div>`;
+}
+
+/* Correction de l'échauffement APRÈS coup.
+   La durée totale est recomposée à chaque fois depuis la durée hors
+   échauffement — jamais incrémentée. Cinq corrections d'affilée ne
+   peuvent donc pas dériver, et remettre à 0 revient exactement au
+   temps de séance seul. */
+function renderWarmupFix(r) {
+  const el = document.getElementById("warmup-fix");
+  if (!el) return;
+  const ech = r.echauffementMs || 0;
+  const total = r.dureeMs || 0;
+  el.innerHTML = `
+    <div class="wf-head">
+      <span class="wf-lab">Dont échauffement</span>
+      <span class="wf-val" id="wf-val">${fmtClock(ech)}</span>
+    </div>
+    <div class="wf-row">
+      <button class="btn btn-ghost btn-sm" data-wf="-5" ${ech <= 0 ? "disabled" : ""}>− 5 min</button>
+      <button class="btn btn-ghost btn-sm" data-wf="-1" ${ech <= 0 ? "disabled" : ""}>− 1 min</button>
+      <button class="btn btn-ghost btn-sm" data-wf="1" ${ech >= total ? "disabled" : ""}>+ 1 min</button>
+      <button class="btn btn-ghost btn-sm" data-wf="5" ${ech >= total ? "disabled" : ""}>+ 5 min</button>
+    </div>
+    <p class="wf-sub">Corrige le partage si tu as coupé l'échauffement trop tôt ou trop tard.
+      La durée totale (${fmtClock(total)}) ne bouge pas : l'échauffement en est une portion.</p>`;
+  el.querySelectorAll("[data-wf]").forEach(b => b.addEventListener("click", () => {
+    /* CE QUI A CHANGÉ : l'échauffement ne s'AJOUTE plus à la durée, il
+       la DÉCOUPE. Corriger le partage ne peut donc pas allonger la
+       séance — et le curseur est borné à [0, durée] : déclarer trente
+       minutes d'échauffement sur une séance de vingt n'a aucun sens. */
+    const nouveau = Math.max(0, Math.min(total,
+      (r.echauffementMs || 0) + parseInt(b.dataset.wf, 10) * 60000));
+    r.echauffementMs = nouveau;
+    const h = getHistory();
+    const i = h.findIndex(s => s.id === r.id);
+    if (i >= 0) { h[i].echauffementMs = nouveau; setHistory(h); }
+    renderWarmupFix(r);
+  }));
+}
+
+function showSummary(r) {
+  elLive.classList.add("hidden");
+  elSetup.classList.add("hidden");
+  elSummary.classList.remove("hidden");
+  elSummary.innerHTML = `
+    <div class="card summary-card">
+      <p class="kicker">Séance terminée</p>
+      <h2>Bien joué ${icon("party")}</h2>
+      <p class="program-meta">${esc(r.nom)} · ${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
+      <div class="live-chronos summary-stats">
+        <div class="chrono-block"><span class="chrono-label">Durée totale</span><span class="chrono-value" id="sum-duree">${fmtClock(r.dureeMs)}</span></div>
+        <div class="chrono-block"><span class="chrono-label">Repos cumulé</span><span class="chrono-value">${fmtClock(r.reposMs)}</span></div>
+        <div class="chrono-block"><span class="chrono-label">Séries</span><span class="chrono-value">${r.nbSeries}</span></div>
+        <div class="chrono-block"><span class="chrono-label">Volume total</span><span class="chrono-value">${Math.round(r.volume)} kg</span></div>
+      </div>
+      <!-- Rattrapage de l'échauffement : le chrono d'avant-séance sert à
+           ceux qui y pensent, ce bloc à ceux qui n'y ont pas pensé. Sans
+           lui, oublier de lancer le chrono rendait la correction
+           impossible et la durée définitivement fausse. -->
+      <div class="warmup-fix" id="warmup-fix"></div>
+
+      ${r.libre && r.programNom ? `
+      <div class="adjust-card">
+        <p>Cette séance libre est déjà comptée dans <strong>${esc(r.programNom)}</strong>
+          (objectif de la semaine, calendrier, statistiques). Tu veux la refaire régulièrement ?</p>
+        <button class="btn btn-primary btn-sm" id="add-to-program">+ L'ajouter comme séance du programme</button>
+        <p class="feedback" id="add-to-program-feedback"></p>
+      </div>` : ""}
+
+      ${recapHtml(r, true)}
+
+      <!-- Bilan : difficulté -> proposition d'ajustement du programme -->
+      <div class="rpe-block">
+        <p class="chrono-label">La séance était…</p>
+        <div class="diff-row" id="summary-diff">
+          <button type="button" class="btn btn-ghost diff-btn" data-d="facile">Trop facile</button>
+          <button type="button" class="btn btn-ghost diff-btn" data-d="correcte">Correcte</button>
+          <button type="button" class="btn btn-ghost diff-btn" data-d="dure">Trop dure</button>
+        </div>
+        <div id="summary-adjust"></div>
+        <p class="chrono-label">Ressenti de la séance (RPE)</p>
+        <div class="rpe-row" id="summary-rpe">
+          ${Array.from({ length: 10 }, (_, i) => i + 1).map(n =>
+            `<button type="button" class="rpe-chip" data-rpe="${n}">${n}</button>`).join("")}
+        </div>
+        <textarea id="summary-notes" rows="2" placeholder="Notes libres (sensations, douleurs, contexte…)"></textarea>
+        <p class="feedback" id="summary-feel-feedback"></p>
+      </div>
+      ${renderSessionDetail(r)}
+      <button class="btn btn-primary btn-lg" id="summary-back">↩ Retour aux séances</button>
+    </div>`;
+
+  renderWarmupFix(r);
+
+  /* Séance libre -> séance récurrente du programme actif (D2) */
+  const addBtn = document.getElementById("add-to-program");
+  if (addBtn) addBtn.addEventListener("click", () => {
+    const pr = loadJSON(STORAGE_KEYS.program, null);
+    if (!pr) return;
+    const day = {
+      numero: pr.days.length + 1,
+      titre: r.nom,
+      focus: [...new Set(r.exercises.map(e => LABELS.groupes[e.groupe]))].slice(0, 4).join(" · "),
+      exercices: r.exercises.map(ex => {
+        const ref = allExercisesForUI().find(e => e.id === ex.exId) ||
+          { id: ex.exId, nom: ex.nom, groupe: ex.groupe, materiel: "halteres", niveau: "intermediaire", type: "iso" };
+        const reps = ex.sets.map(s => s.reps);
+        const lo = Math.min(...reps), hi = Math.max(...reps);
+        return {
+          exercice: { id: ref.id, nom: ref.nom, groupe: ref.groupe, materiel: ref.materiel,
+                      niveau: ref.niveau, type: ref.type, videoQuery: ref.videoQuery },
+          series: ex.sets.length,
+          reps: lo === hi ? String(lo) : `${lo}-${hi}`,
+          repos: (ref.type ? smartRest(ref) : getDefaultRest()) + " s",
+          note: "", superset: false, prioritaire: false
+        };
+      })
+    };
+    pr.days.push(day);
+    pr.jours = pr.days.length;
+    if (typeof setActiveProgram === "function") setActiveProgram(pr);
+    else saveJSON(STORAGE_KEYS.program, pr);
+    if (typeof renderProgram === "function") renderProgram(pr);
+    if (typeof renderProgramsPanel === "function") renderProgramsPanel();
+    addBtn.disabled = true;
+    document.getElementById("add-to-program-feedback").textContent =
+      `✓ Ajoutée à « ${pr.nom || "ton programme"} » comme séance ${day.numero}.`;
+  });
+
+  let summaryRpe = null;
+  let summaryDiff = null;
+  const saveFeel = () => {
+    const history = loadJSON(STORAGE_KEYS.history, []);
+    const rec = history.find(s => s.id === r.id);
+    if (!rec) return;
+    rec.rpe = summaryRpe;
+    rec.difficulte = summaryDiff;
+    rec.notes = document.getElementById("summary-notes").value.trim();
+    saveJSON(STORAGE_KEYS.history, history);
+  };
+
+  /* Difficulté -> proposition d'ajustement appliquée aux prochaines séances */
+  elSummary.querySelectorAll(".diff-btn").forEach(b =>
+    b.addEventListener("click", () => {
+      summaryDiff = b.dataset.d;
+      elSummary.querySelectorAll(".diff-btn").forEach(x =>
+        x.classList.toggle("btn-primary", x === b));
+      saveFeel();
+      const zone = document.getElementById("summary-adjust");
+      const program = loadJSON(STORAGE_KEYS.program, null);
+      if (!program || summaryDiff === "correcte") {
+        zone.innerHTML = summaryDiff === "correcte"
+          ? '<p class="video-hint">Parfait, on ne change rien : la difficulté est bien calibrée. 👌</p>' : "";
+        return;
+      }
+      const dure = summaryDiff === "dure";
+      /* Un ressenti global de séance est un signal faible et bruité : la
+         fatigue est locale et propre au jour. On ne modifie plus le volume
+         du programme entier ici. Le pilotage jour à jour se fait par la
+         suggestion de progression affichée sur chaque exercice pendant la
+         séance ; le volume hebdo se règle dans l'éditeur de programme. */
+      zone.innerHTML = `
+        <div class="adjust-card">
+          <p>${dure
+            ? "Reprends la même charge à la prochaine séance, ou 5 % de moins sur les exercices qui t'ont posé problème. La suggestion de progression affichée sur chaque exercice te reproposera d'avancer dès que les séries repassent proprement."
+            : "Laisse la suggestion de progression faire son travail : elle te fait monter en reps puis en charge, exercice par exercice. Si c'est trop facile depuis plusieurs séances, ajoute une série sur un ou deux gros mouvements dans l'éditeur de programme."}</p>
+        </div>`;
+    }));
+  elSummary.querySelectorAll(".rpe-chip").forEach(c =>
+    c.addEventListener("click", () => {
+      const v = parseInt(c.dataset.rpe, 10);
+      summaryRpe = (summaryRpe === v) ? null : v;
+      elSummary.querySelectorAll(".rpe-chip").forEach(x =>
+        x.classList.toggle("active", parseInt(x.dataset.rpe, 10) === summaryRpe));
+      saveFeel();
+      document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré ✓" : "";
+    }));
+  const recapEdit = document.getElementById("recap-edit");
+  if (recapEdit) recapEdit.addEventListener("change", () => {
+    const h = loadJSON(STORAGE_KEYS.history, []);
+    const rec = h.find(x => x.id === r.id);
+    if (rec) { rec.recap = recapEdit.value.trim().slice(0, 400); saveJSON(STORAGE_KEYS.history, h); }
+  });
+
+  document.getElementById("summary-notes").addEventListener("change", () => {
+    saveFeel();
+    document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées ✓";
+  });
+  document.getElementById("summary-back").addEventListener("click", showSetup);
+}
+
+function renderSessionDetail(r) {
+  return `<div class="session-detail">${r.exercises.map(ex => `
+    <div class="session-ex">
+      <h4><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
+      <table class="sets-table">
+        <thead><tr><th>Série</th><th>Poids</th><th>Reps</th><th>RIR</th><th>Repos pris</th></tr></thead>
+        <tbody>${ex.sets.map((s, j) => `
+          <tr class="${s.note ? "set-noted" : ""}"><td>${j + 1}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td>
+          <td>${s.rir != null ? s.rir : "—"}</td><td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
+          ${s.note ? `<tr class="set-note-line"><td colspan="5">💬 ${esc(s.note)}</td></tr>` : ""}`).join("")}
+        </tbody>
+      </table>
+    </div>`).join("")}</div>`;
+}
+
+/* ---------- Historique ---------- */
+function renderHistory() {
+  const container = document.getElementById("seance-history");
+  const history = loadJSON(STORAGE_KEYS.history, []);
+  if (history.length === 0) { container.innerHTML = ""; return; }
+  /* Aperçu des 3 dernières séances ; la gestion complète vit dans « Suivi » */
+  container.innerHTML = `
+    <h2>${icon("book")} Dernières séances</h2>
+    ${history.slice(0, 3).map(r => `
+      <div class="card history-item" data-id="${esc(r.id)}">
+        <div class="history-head">
+          <div>
+            <h3>${esc(r.nom)}</h3>
+            <p class="day-focus">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+              · ${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg de volume · repos ${fmtClock(r.reposMs)}</p>
+          </div>
+          <div class="history-actions">
+            <button class="btn btn-ghost btn-sm toggle-detail">Détails</button>
+            <button class="btn btn-danger-ghost btn-sm delete-session" title="Supprimer" aria-label="Supprimer la séance">${icon("trash")}</button>
+          </div>
+        </div>
+        <div class="history-detail hidden">${renderSessionDetail(r)}</div>
+      </div>`).join("")}
+    <button class="btn btn-ghost" id="history-see-all">Tout voir dans « Suivi » (${history.length})</button>`;
+
+  document.getElementById("history-see-all").addEventListener("click", () => {
+    activateView("suivi");
+    document.querySelector('.seg[data-panel="seances"]').click();
+  });
+
+  container.querySelectorAll(".toggle-detail").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const d = btn.closest(".history-item").querySelector(".history-detail");
+      d.classList.toggle("hidden");
+      btn.textContent = d.classList.contains("hidden") ? "Détails" : "Masquer";
+    }));
+  container.querySelectorAll(".delete-session").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const id = btn.closest(".history-item").dataset.id;
+      if (!confirm("Supprimer cette séance de l'historique ?")) return;
+      saveJSON(STORAGE_KEYS.history, loadJSON(STORAGE_KEYS.history, []).filter(r => r.id !== id));
+      renderHistory();
+    }));
+}
+
+/* ---------- Écran d'accueil séance ---------- */
+function showSetup() {
+  elLive.classList.add("hidden");
+  elSummary.classList.add("hidden");
+  elSetup.classList.remove("hidden");
+  defaultRestInput.value = getDefaultRest();
+  renderProgramDayButtons();
+  renderHistory();
+}
+
+/* Rafraîchit l'écran séance à chaque visite de l'onglet
+   (le programme a pu être généré ou modifié entre-temps) */
+document.querySelectorAll('.tab[data-view="seance"]').forEach(tab =>
+  tab.addEventListener("click", () => {
+    if (live) showLive();
+    else showSetup();
+  }));
+
+/* ---------- Initialisation ---------- */
+(function initWorkout() {
+  // dashoffset initial de l'anneau
+  const ring = document.getElementById("rest-ring");
+  if (ring) ring.style.strokeDasharray = RING_CIRC;
+
+  const saved = loadJSON(STORAGE_KEYS.live, null);
+  if (saved && saved.startedAt && !saved.endedAt) {
+    live = saved;
+    /* LE CAS QUI COMPTE VRAIMENT. Un setInterval ne tourne pas quand
+       l'app est fermée : la séance oubliée hier soir n'a été surveillée
+       par personne. C'est donc ICI, à la réouverture, que le rattrapage
+       a lieu — avant même d'afficher l'écran de séance. */
+    if (seancePerimee()) {
+      const min = autoStopMin();
+      autoStopSession();
+      toast(`Séance close automatiquement : plus rien de validé depuis ${min} min. La durée s'arrête à ta dernière série.`);
+      return;
+    }
+    // reprendre la séance interrompue (rafraîchissement de page)
+    activateView("seance");
+    showLive();
+  } else {
+    showSetup();
+  }
+})();
