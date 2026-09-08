@@ -57,19 +57,17 @@ function normalize(s) {
   return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 }
 
-/* Convertit un repos affiché ("90 s", "3 min", "60-75 s") en secondes
-   (copie locale : utilisée pour estimer la durée des séances) */
-function restToSecondsFR(str) {
-  const m = String(str || "").match(/(\d+)/);
-  if (!m) return 90;
-  const n = parseInt(m[1], 10);
-  return /min/i.test(str) ? n * 60 : n;
-}
-
-/* Durée estimée d'une séance : ~40 s d'effort par série + le repos prescrit */
+/* Durée estimée d'une séance. On réutilise l'estimateur de program.js
+   (échauffement + effort + repos + installation) pour que le chiffre
+   affiché corresponde à celui contre lequel le générateur a calé. */
 function estimateDayMinutes(day) {
-  let sec = 0;
-  for (const l of day.exercices) sec += l.series * (40 + restToSecondsFR(l.repos));
+  if (typeof dureeSeanceMinutes === "function") return dureeSeanceMinutes(day.exercices);
+  let sec = 8 * 60;
+  for (const l of day.exercices) {
+    const m = String(l.repos || "").match(/(\d+)/);
+    const rest = m ? (/min/i.test(l.repos) ? +m[1] * 60 : +m[1]) : 90;
+    sec += (Number(l.series) || 0) * (40 + rest) + 45;
+  }
   return Math.max(10, Math.round(sec / 60));
 }
 
@@ -537,7 +535,8 @@ programForm.addEventListener("submit", e => {
     materiel: document.getElementById("p-materiel").value,
     priorite: document.getElementById("p-priorite").value || null,
     split: splitPref,
-    repartition
+    repartition,
+    duree: parseInt(document.getElementById("p-duree").value, 10) || null
   };
   saveJSON(STORAGE_KEYS.profil, params);
   const program = generateProgram(params);
@@ -581,6 +580,7 @@ function renderProgram(pr) {
       <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
       <p class="program-meta">
         ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${pr.splitLabel ? pr.splitLabel + " · " : ""}${materielLabels[pr.materiel]}
+        ${pr.duree ? " · ~" + pr.duree + " min/séance" : ""}
         ${pr.priorite ? " · Priorité : " + LABELS.groupes[pr.priorite] : ""}
         · Généré le ${esc(pr.genereLe)}
       </p>
@@ -684,6 +684,7 @@ if (savedProfil) {
   document.getElementById("p-materiel").value = savedProfil.materiel;
   document.getElementById("p-priorite").value = savedProfil.priorite || "";
   document.getElementById("p-split").value = savedProfil.split || "auto";
+  if (savedProfil.duree) document.getElementById("p-duree").value = String(savedProfil.duree);
   if (savedProfil.repartition)
     for (const [k, id] of Object.entries(REPART_FIELDS))
       document.getElementById(id).value = savedProfil.repartition[k] || 0;

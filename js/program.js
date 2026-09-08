@@ -308,12 +308,44 @@ function pickExercise(slot, pool, usedToday, usedThisWeek) {
   return available[0];
 }
 
+/* Repos affiché ("90 s", "2-3 min", "60-75 s") en secondes. */
+function restToSecondsFR(str) {
+  const m = String(str || "").match(/(\d+)/);
+  if (!m) return 90;
+  const n = parseInt(m[1], 10);
+  return /min/i.test(str) ? n * 60 : n;
+}
+
+/* Durée estimée d'une séance : ~8 min d'échauffement, puis par exercice
+   ~40 s d'effort par série, le repos prescrit ENTRE les séries seulement
+   (pas après la dernière), et ~45 s d'installation. */
+function dureeSeanceMinutes(exercices) {
+  let sec = 8 * 60;
+  for (const l of exercices || []) {
+    const n = Number(l.series) || 0;
+    sec += n * 40 + Math.max(0, n - 1) * restToSecondsFR(l.repos) + 45;
+  }
+  return Math.max(10, Math.round(sec / 60));
+}
+
+/* Combien d'exercices tiennent dans le temps imparti, à partir d'un
+   exercice « moyen » de l'objectif (même modèle que dureeSeanceMinutes). */
+function capExosPourDuree(dureeMin, objectif) {
+  if (!dureeMin) return Infinity;
+  const sc = GOAL_SCHEMES[objectif] || GOAL_SCHEMES.masse;
+  const serieMoy = (sc.poly.series + sc.iso.series) / 2;
+  const reposMoy = (restToSecondsFR(sc.poly.repos) + restToSecondsFR(sc.iso.repos)) / 2;
+  const parExo = serieMoy * 40 + (serieMoy - 1) * reposMoy + 45;
+  return Math.max(3, Math.floor((dureeMin * 60 - 8 * 60) / parExo));
+}
+
 /* Génère le programme complet */
 function generateProgram(params) {
-  const { prenom, objectif, niveau, jours, materiel, priorite, split: splitPref, repartition } = params;
+  const { prenom, objectif, niveau, jours, materiel, priorite, split: splitPref, repartition, duree } = params;
   const scheme = GOAL_SCHEMES[objectif];
   const split = chooseSplit(jours, niveau, splitPref || "auto", repartition);
-  const maxExos = LEVEL_VOLUME[niveau];
+  const capDuree = capExosPourDuree(duree, objectif);
+  const maxExos = Math.min(LEVEL_VOLUME[niveau], capDuree);
 
   const allowedMateriel = EQUIPMENT_POOLS[materiel];
   const allowedNiveaux = LEVEL_POOLS[niveau];
@@ -420,7 +452,9 @@ function generateProgram(params) {
   // ~8 séries par muscle et par séance (au-delà le rendement s'effondre,
   // dose-réponse par séance 2025), et un muscle qu'on n'arrive plus à
   // placer est abandonné pour ne pas boucler.
-  const capParSeance = maxExos + (priorite ? 1 : 0) + 3;
+  // La passe d'ajustement peut dépasser un peu le budget d'exercices, mais
+  // pas le temps imparti par l'utilisateur : capDuree reste un plafond dur.
+  const capParSeance = Math.min(maxExos + (priorite ? 1 : 0) + 3, capDuree);
   const CAP_MUSCLE_SEANCE = 8;
   const seriesDuGroupe = (d, g) => d.exercices
     .filter(e => e.exercice.groupe === g)
@@ -467,6 +501,7 @@ function generateProgram(params) {
     jours: split.length,
     materiel,
     priorite,
+    duree: duree || null,
     split: splitPref || "auto",
     repartition: repartition || null,
     splitLabel: (splitPref === "fullbody") ? "Full body"
