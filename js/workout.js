@@ -320,13 +320,14 @@ function clearLive() {
 }
 
 /* ---------- Démarrage ---------- */
-function newLiveExercise(ex, target, restSec, rir) {
+function newLiveExercise(ex, target, restSec, rir, tempo) {
   return {
     exId: ex.id,
     nom: ex.nom,
     groupe: ex.groupe,
     target: target || null,        // ex : "4 × 8-12"
     rir: rir || null,              // RIR cible, ex : "1-3"
+    tempo: tempo || null,          // ex : "2-3 s en descente, explosif en montée"
     // charges/reps/rir de la dernière séance de cet exercice, figés ici pour
     // que la suggestion de progression ne bouge pas en cours de séance
     memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir }),
@@ -568,7 +569,7 @@ function renderProgramDayButtons() {
       saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
       const day = program.days[parseInt(btn.dataset.day, 10)];
       const exercises = day.exercices.map(l =>
-        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir) // repos auto (smartRest)
+        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo) // repos auto (smartRest)
       );
       startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
     });
@@ -996,6 +997,7 @@ function renderLiveExercises() {
             ${ex.rir ? " · RIR " + esc(ex.rir) : ""}
             · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
           </p>
+          ${ex.tempo ? `<p class="day-focus live-ex-tempo">Tempo : ${esc(ex.tempo)}</p>` : ""}
           <p class="day-focus live-ex-recap">${esc(recap)}</p>
         </div>
         <div class="live-ex-right">
@@ -1307,7 +1309,7 @@ function swapExercise(i) {
   const inSession = new Set(live.exercises.map(e => e.exId));
   const alt = findAlternatives(ref, 5).find(a => !inSession.has(a.id));
   if (!alt) { alert("Pas d'alternative disponible pour cet exercice."); return; }
-  const fresh = newLiveExercise(alt, cur.target, null, cur.rir);
+  const fresh = newLiveExercise(alt, cur.target, null, cur.rir, cur.tempo);
   if (cur.sets.length > 0) {
     if (!confirm(`Ajouter « ${alt.nom} » à la suite ? (les séries déjà validées de « ${cur.nom} » sont conservées)`)) return;
     live.exercises.splice(i + 1, 0, fresh);
