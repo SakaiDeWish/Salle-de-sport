@@ -278,9 +278,13 @@ function exerciseStats(exId) {
       seen = true;
       for (const s of ex.sets) {
         out.series++;
-        out.reps += s.reps;
-        out.volume += (s.poids || 0) * s.reps;
-        if (s.poids != null) {
+        out.reps += (s.reps || 0);
+        out.tempsTenu = (out.tempsTenu || 0) + (s.secondes || 0);
+        out.volume += (s.poids || 0) * (s.reps || 0);
+        /* Les paliers de charge n'ont de sens que pour ce qui se
+           compte en répétitions : un maintien n'entre pas dans ce
+           tableau, il a sa propre unité. */
+        if (s.reps && s.poids != null) {
           if (dayMax === null || s.poids > dayMax) dayMax = s.poids;
           if (!out.best || s.poids > out.best.poids ||
               (s.poids === out.best.poids && s.reps > out.best.reps))

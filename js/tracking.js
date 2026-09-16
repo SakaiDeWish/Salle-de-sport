@@ -123,7 +123,10 @@ function globalStats() {
       /* Répétitions totales : elles n'étaient pas comptées. Le volume seul
          ne les donne pas — 10 000 kg peuvent venir de 100 reps à 100 kg
          comme de 400 reps à 25 kg. */
-      for (const st of ex.sets) stats.reps += (st.reps || 0);
+      for (const st of ex.sets) {
+        stats.reps += (st.reps || 0);
+        stats.gainage = (stats.gainage || 0) + (st.secondes || 0);
+      }
     }
   // régularité : moyenne de séances/semaine depuis la première séance
   if (h.length) {
@@ -142,7 +145,10 @@ function computePRs() {
     for (const ex of r.exercises) {
       let max = null;
       for (const s of ex.sets)
-        if (s.poids != null && (!max || s.poids > max.poids)) max = { poids: s.poids, reps: s.reps };
+        /* Un maintien lesté a bien un poids, mais pas de répétitions :
+           le classer ici afficherait « 20 kg × null ». Les records de
+           charge ne concernent que ce qui se compte en reps. */
+        if (s.reps && s.poids != null && (!max || s.poids > max.poids)) max = { poids: s.poids, reps: s.reps };
       if (!max) continue;
       if (!byEx.has(ex.exId)) byEx.set(ex.exId, { nom: ex.nom, points: [], best: null });
       const e = byEx.get(ex.exId);
@@ -665,7 +671,9 @@ function openSessionModal(id, edit = false) {
             <div class="edit-set">
               <span class="edit-set-n">Série ${j + 1}</span>
               <input type="number" step="0.5" min="0" value="${s.poids ?? ""}" placeholder="kg" data-e="${i}" data-s="${j}" data-f="poids">
-              <input type="number" step="1" min="1" value="${s.reps}" placeholder="reps" data-e="${i}" data-s="${j}" data-f="reps">
+              ${s.secondes != null
+                ? `<input type="number" step="5" min="1" value="${s.secondes}" placeholder="secondes" data-e="${i}" data-s="${j}" data-f="secondes">`
+                : `<input type="number" step="1" min="1" value="${s.reps}" placeholder="reps" data-e="${i}" data-s="${j}" data-f="reps">`}
             </div>`).join("")}
         </div>`).join("")}
       <div class="program-actions">
@@ -692,11 +700,12 @@ function openSessionModal(id, edit = false) {
       sessionModalContent.querySelectorAll("input[data-f]").forEach(inp => {
         const set = rec.exercises[+inp.dataset.e].sets[+inp.dataset.s];
         if (inp.dataset.f === "poids") set.poids = inp.value === "" ? null : parseFloat(inp.value);
+        else if (inp.dataset.f === "secondes") set.secondes = Math.max(1, parseInt(inp.value, 10) || set.secondes);
         else set.reps = Math.max(1, parseInt(inp.value, 10) || set.reps);
       });
       // recalcul des agrégats après édition
       rec.nbSeries = rec.exercises.reduce((n, e) => n + e.sets.length, 0);
-      rec.volume = rec.exercises.reduce((v, e) => v + e.sets.reduce((s, x) => s + (x.poids || 0) * x.reps, 0), 0);
+      rec.volume = rec.exercises.reduce((v, e) => v + e.sets.reduce((s, x) => s + (x.poids || 0) * (x.reps || 0), 0), 0);
       setHistory(h);
       openSessionModal(id);
       renderSuivi();
@@ -714,6 +723,10 @@ function duplicateSession(id) {
   if (live && !confirm("Une séance est déjà en cours. La remplacer ?")) return;
   const exercises = r.exercises.map(ex => {
     const ref = allExercisesForUI().find(e => e.id === ex.exId) || { id: ex.exId, nom: ex.nom, groupe: ex.groupe };
+    if (ex.sets.every(s => s.secondes != null)) {
+      const t = ex.sets.map(s => s.secondes);
+      return newLiveExercise(ref, `${ex.sets.length} × ${Math.min(...t)}-${Math.max(...t)} s`, null);
+    }
     const reps = ex.sets.map(s => s.reps);
     return newLiveExercise(ref, `${ex.sets.length} × ${Math.min(...reps)}-${Math.max(...reps)}`, null); // repos auto
   });

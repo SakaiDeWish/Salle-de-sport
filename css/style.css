@@ -3376,3 +3376,30 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .imp-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .imp-cons { margin: 0; font-size: 0.88rem; line-height: 1.5; }
 .imp-cons-sub { margin: 0; font-size: 0.78rem; line-height: 1.45; color: var(--text-soft); }
+
+/* ---------- Chrono de maintien (exercices mesurés en temps) ----------
+   Le compteur doit être lisible du sol, en gainage, la tête à 30 cm
+   du tapis : d'où la taille de chiffre, largement au-dessus de celle
+   des champs de saisie qui l'entourent. */
+.hold-bloc {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+}
+.hold-val {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 8vw, 2.6rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 3.4em;
+}
+.hold-bloc .btn { flex: 1 1 auto; min-height: 48px; }
+/* En cours : le bloc se teinte, pour qu'on voie d'un coup d'œil que le
+   chrono TOURNE — un compteur qui avance ne se distingue pas d'un
+   compteur arrêté sur une photo, ni du coin de l'œil. */
+.hold-bloc.on { border-color: var(--accent); background: var(--card-hover); }
+.hold-bloc.on .hold-val { color: var(--accent-2); }
+.theme-epure .hold-bloc.on .hold-val { color: var(--accent); }
