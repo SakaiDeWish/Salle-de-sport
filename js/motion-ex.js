@@ -19264,3 +19264,20 @@ EXERCISE_MOTIONS["muscle-up"] = {
   ]
 };
 
+
+/* ═══════════════════════════════════════════════════════════════
+   UN MAINTIEN SE MESURE EN TEMPS, PAS EN RÉPÉTITIONS.
+
+   L'information existe déjà, et à un seul endroit : le champ
+   `isometrique` de ces schémas. Mais c'est la FICHE que l'écran de
+   séance consulte pour savoir quoi demander. On propage donc ici,
+   plutôt que de recopier `mesure: "temps"` à la main sur douze
+   exercices — où la deuxième copie finirait par diverger de la
+   première le jour où un treizième maintien s'ajoute.
+
+   Le `!e.mesure` laisse le dernier mot à la fiche : un exercice perso
+   peut déclarer sa propre mesure, elle ne sera pas écrasée.
+   ═══════════════════════════════════════════════════════════════ */
+EXERCISES.forEach(e => {
+  if (!e.mesure && (EXERCISE_MOTIONS[e.id] || {}).isometrique) e.mesure = "temps";
+});
