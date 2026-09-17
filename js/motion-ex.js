@@ -19281,3 +19281,500 @@ EXERCISE_MOTIONS["muscle-up"] = {
 EXERCISES.forEach(e => {
   if (!e.mesure && (EXERCISE_MOTIONS[e.id] || {}).isometrique) e.mesure = "temps";
 });
+
+/* ─────────────────────────────────────────────────────────────
+   159. EXTENSION MOLLETS À L'ÂNE   (mollets-ane)
+
+   RIG DES MOLLETS DEBOUT, INCHANGÉ DU SOL À LA HANCHE : cale en
+   (110 140), avant-pied pivot, cheville (118 135), genou (119 109),
+   hanche (120 83), et les mêmes rotations — pied −45°, jambe +45° en
+   contre-rotation exacte, si bien que le corps MONTE sans basculer.
+   Ce qui change commence à la hanche.
+
+   LE TRONC BASCULE À L'HORIZONTALE. Rotation mesurée : 268,21°, soit
+   −91,79°. Le tronc garde ses 32,00 et part vers l'avant ; la tête
+   suit son offset d'origine, tourné d'autant, et arrive en
+   (74,16 88,43) — plus BAS que l'épaule, ce qui est exactement ce
+   qu'on voit sur quelqu'un penché.
+
+   LES MAINS NE BOUGENT PAS, ET IL A FALLU LE RÉSOUDRE. La montée
+   déplace la cheville de (−5,88 −4,19), donc l'épaule aussi. Or les
+   mains sont posées sur un banc : elles doivent rester où elles sont.
+   Un bras dessiné dans le corps mobile les aurait fait monter de 4,19,
+   c'est-à-dire décoller du banc. Le bras est donc résolu aux deux
+   bouts, main fixée en (82,12 117,91) : il est tendu en haut de course
+   (39,10 pour 39,10 de portée) et fléchi en bas (35,40). Le coude
+   passe de (76,78 99,67) à (82,12 98,91), soit −33,94° au bras et
+   +50,28° à l'avant-bras.
+
+   POURQUOI CETTE VERSION EXISTE. Hanche fléchie, le gastrocnémien —
+   qui croise le genou ET la cheville — reste allongé d'un bout à
+   l'autre. Debout, il travaille raccourci. C'est le même muscle, pas
+   la même longueur.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["mollets-ane"] = {
+  vb: "60 60 120 110",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Buste penché à l'horizontale, mains en appui sur un banc, charge posée sur les hanches, avant-pieds sur une cale : montée complète sur la pointe des pieds, puis descente lente sous le niveau de la cale.",
+  fixe: `
+    <line class="mo-ground" x1="66" y1="158" x2="168" y2="158"/>
+    <!-- cale : son bord est le pivot, le talon passe dans le vide -->
+    <rect class="mo-gear" x="88" y="140" width="32" height="18" rx="2"/>
+    <line class="mo-pad" x1="88" y1="140" x2="120" y2="140"/>
+    <circle class="mo-pulley" cx="110" cy="140" r="4"/>
+    <!-- BANC D'APPUI : les mains y restent, c'est la contrainte qui a
+         imposé de résoudre le bras aux deux bouts. -->
+    <line class="mo-pad" x1="68" y1="117.91" x2="98" y2="117.91"/>
+    <line class="mo-gear" x1="74" y1="119" x2="74" y2="158"/>
+    <line class="mo-gear" x1="92" y1="119" x2="92" y2="158"/>`,
+  parts: [
+    {
+      /* PIED : rotation autour de l'appui d'AVANT-PIED. −45°. */
+      o: "110px 140px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-45deg)"], [40, "rotate(-45deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="110" y1="140" x2="130" y2="148"/>
+        <line class="mo-limb" x1="110" y1="140" x2="118" y2="135"/>`,
+      children: [
+        {
+          /* JAMBES + TRONC : contre-rotation exacte de +45°, rotation
+             absolue nulle — le corps monte sans basculer. */
+          o: "118px 135px",
+          k: [[0, "rotate(0deg)"], [32, "rotate(45deg)"], [40, "rotate(45deg)"],
+              [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: ["Gastrocnémien (allongé)", "Soléaire"],
+          muscle: `<ellipse cx="122.5" cy="120" rx="4" ry="11"/>
+                   <ellipse cx="121" cy="103" rx="3" ry="7"/>`,
+          svg: `
+            <circle class="mo-joint" cx="118" cy="135" r="2.8"/>
+            <line class="mo-limb" x1="118" y1="135" x2="119" y2="109"/>
+            <circle class="mo-joint" cx="119" cy="109" r="2.6"/>
+            <line class="mo-limb" x1="119" y1="109" x2="120" y2="83"/>
+            <circle class="mo-joint" cx="120" cy="83" r="2.8"/>
+            <!-- TRONC à l'horizontale, tête plus bas que l'épaule -->
+            <line class="mo-body" x1="120" y1="83" x2="88" y2="83"/>
+            <circle class="mo-head" cx="74.16" cy="88.43" r="9"/>
+            <!-- CHARGE sur les hanches : c'est là qu'elle se pose -->
+            <rect class="mo-mass" x="110" y="73" width="22" height="8" rx="2"/>`,
+          children: [
+            {
+              /* BRAS : résolu pour que la MAIN reste sur le banc. */
+              o: "88px 83px",
+              k: [[0, "rotate(0deg)"], [32, "rotate(-33.94deg)"], [40, "rotate(-33.94deg)"],
+                  [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="88" y1="83" x2="76.78" y2="99.67"/>
+                <circle class="mo-joint" cx="76.78" cy="99.67" r="2.5"/>`,
+              children: [
+                {
+                  o: "76.78px 99.67px",
+                  k: [[0, "rotate(0deg)"], [32, "rotate(50.28deg)"], [40, "rotate(50.28deg)"],
+                      [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+                  svg: `
+                    <line class="mo-limb" x1="76.78" y1="99.67" x2="82.12" y2="117.91"/>
+                    <circle class="mo-hand" cx="82.12" cy="117.91" r="3"/>`
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M152 148 L152 116 M147 124 L152 116 L157 124"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M152 116 L152 148 M147 140 L152 148 L157 140"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   160. EXTENSION TRICEPS ALLONGÉE AUX HALTÈRES
+        (extension-triceps-allongee-halteres)
+
+   MÊME TRAJET QUE LE BARRE AU FRONT, AU DEGRÉ PRÈS, et c'est le fond
+   de l'affaire : banc, coude en (74,2 76,3), avant-bras de 22,00, et
+   la même rotation de −90,47° qui amène la charge du plafond au front.
+   Seul l'INSTRUMENT change.
+
+   POURQUOI NE PAS DESSINER LES HALTÈRES PLUS BAS. Avec deux haltères
+   on peut descendre plus loin, de part et d'autre de la tête. Mais
+   « de part et d'autre » est une information LATÉRALE, et ce schéma
+   est vu de profil : elle rentrerait dans la feuille. Dessiner la
+   charge plus bas la ferait passer DANS le crâne — vérifié, à −105°
+   l'haltère arrive à 8,62 du centre de la tête pour 8 de rayon plus
+   6 de charge. Le trajet dessiné s'arrête donc au front, comme celui
+   de la barre, et c'est la fiche qui dit ce que le profil ne montre
+   pas.
+
+   CE QUI CHANGE VRAIMENT est ailleurs : chaque bras porte le sien,
+   donc le côté faible ne se cache plus ; et la prise neutre libère le
+   poignet que la barre droite contraint. Deux faits que la fiche
+   énonce et qu'aucun dessin de profil ne peut montrer.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["extension-triceps-allongee-halteres"] = {
+  vb: "38 42 116 116",
+  dur: 3.8,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur un banc, bras vers le plafond, un haltère dans chaque main en prise neutre : la charge descend vers le front par flexion des coudes, puis remonte par extension des triceps.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="152" x2="150" y2="152"/>
+    <line class="mo-pad" x1="44" y1="100" x2="140" y2="100"/>
+    <line class="mo-gear" x1="56" y1="102" x2="56" y2="152"/>
+    <line class="mo-gear" x1="130" y1="102" x2="130" y2="152"/>
+    <circle class="mo-head" cx="52.27" cy="92" r="8"/>
+    <line class="mo-body" x1="78" y1="98" x2="118" y2="100"/>
+    <line class="mo-body" x1="118" y1="100" x2="132" y2="124"/>
+    <line class="mo-body" x1="132" y1="124" x2="130" y2="152"/>
+    <line class="mo-limb" x1="78" y1="98" x2="74.2" y2="76.3"/>
+    <circle class="mo-joint" cx="74.2" cy="76.3" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M72.68 54.35 A22 22 0 0 0 52.27 78"/>`,
+  muscles: [
+    { nom: "Triceps (longue portion)",
+      svg: `<ellipse cx="78" cy="87" rx="3.2" ry="8" transform="rotate(-10 78 87)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : même pivot, même −90,47° que la barre. */
+      o: "74.2px 76.3px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-90.47deg)"], [52, "rotate(-90.47deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="74.2" y1="76.3" x2="72.68" y2="54.35"/>
+        <!-- HALTÈRE vu de profil : barre courte et deux masses, là où
+             le schéma de la barre montrait un disque de face. -->
+        <line class="mo-bar2" x1="66.8" y1="54.75" x2="78.56" y2="53.95"/>
+        <rect class="mo-mass" x="63.4" y="48.6" width="6" height="12" rx="2"/>
+        <rect class="mo-mass" x="77.9" y="47.6" width="6" height="12" rx="2"/>
+        <circle class="mo-hand" cx="72.68" cy="54.35" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M104 96 L104 60 M99 68 L104 60 L109 68"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M104 60 L104 96 M99 88 L104 96 L109 88"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   161. FARMER WALK   (farmer-walk)
+
+   UN PORT DE CHARGE EST UN MAINTIEN QUI AVANCE. Rien n'y monte ni n'y
+   descend : ce qui se passe, c'est une posture qui résiste. Le schéma
+   est donc marqué `isometrique`, comme la planche ou le L-sit — ce qui
+   a une conséquence utile au-delà du dessin : l'écran de séance le
+   mesure alors en TEMPS et non en répétitions, et propose son chrono.
+   C'est ce que fait tout le monde avec un farmer walk.
+
+   PAS DE FLÈCHES, donc : il n'y a ni phase concentrique ni phase
+   excentrique, seulement une durée. L'anneau de maintien la dit.
+
+   CE QUE LE DESSIN NE MONTRE PAS : la marche. Le pas est un mouvement
+   avant-arrière ; de face, il rentre dans la feuille. Dessiner un
+   balancement latéral pour « faire marcher » le bonhomme inventerait
+   précisément le défaut que la fiche demande d'éviter — « se pencher
+   d'un côté ». La position debout, chargée et droite, est la seule
+   chose que cette vue puisse dire honnêtement, et c'est aussi la seule
+   consigne qui compte.
+
+   Rig de la figure debout des élévations latérales : tête (120 42),
+   épaules (104 62) et (136 62), rachis jusqu'à la hanche (120 108),
+   jambes au sol en (110 150) et (130 150). Bras tendus le long du
+   corps, charge en bout.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["farmer-walk"] = {
+  vb: "60 22 120 140",
+  dur: 4,
+  isometrique: true,
+  maintien: "160 58",
+  alt: "Debout de face, une charge lourde dans chaque main, bras tendus le long du corps, épaules basses et buste droit : la position se tient en marchant.",
+  fixe: `
+    <line class="mo-ground" x1="76" y1="150" x2="164" y2="150"/>
+    <!-- APLOMB : le repère qui dit « ne penche pas ». C'est la seule
+         consigne que cette vue puisse vérifier. -->
+    <line class="mo-rom" x1="120" y1="30" x2="120" y2="154"/>
+    <!-- corps debout -->
+    <circle class="mo-head" cx="120" cy="42" r="10"/>
+    <line class="mo-body" x1="104" y1="62" x2="136" y2="62"/>
+    <line class="mo-body" x1="120" y1="52" x2="120" y2="108"/>
+    <line class="mo-body" x1="120" y1="108" x2="110" y2="150"/>
+    <line class="mo-body" x1="120" y1="108" x2="130" y2="150"/>
+    <!-- BRAS GAUCHE tendu, charge au bout -->
+    <line class="mo-limb" x1="104" y1="62" x2="100" y2="86"/>
+    <circle class="mo-joint" cx="100" cy="86" r="2.4"/>
+    <line class="mo-limb" x1="100" y1="86" x2="98" y2="110"/>
+    <circle class="mo-hand" cx="98" cy="110" r="3"/>
+    <line class="mo-bar2" x1="90" y1="110" x2="106" y2="110"/>
+    <rect class="mo-mass" x="86" y="103" width="6" height="16" rx="2"/>
+    <rect class="mo-mass" x="104" y="103" width="6" height="16" rx="2"/>
+    <!-- BRAS DROIT : miroir exact -->
+    <line class="mo-limb" x1="136" y1="62" x2="140" y2="86"/>
+    <circle class="mo-joint" cx="140" cy="86" r="2.4"/>
+    <line class="mo-limb" x1="140" y1="86" x2="142" y2="110"/>
+    <circle class="mo-hand" cx="142" cy="110" r="3"/>
+    <line class="mo-bar2" x1="134" y1="110" x2="150" y2="110"/>
+    <rect class="mo-mass" x="130" y="103" width="6" height="16" rx="2"/>
+    <rect class="mo-mass" x="148" y="103" width="6" height="16" rx="2"/>`,
+  muscles: [
+    { nom: "Trapèzes", svg: `<ellipse cx="112" cy="58" rx="7" ry="3.4"/><ellipse cx="128" cy="58" rx="7" ry="3.4"/>` },
+    { nom: "Avant-bras (grip)", svg: `<ellipse cx="99" cy="98" rx="2.8" ry="8"/><ellipse cx="141" cy="98" rx="2.8" ry="8"/>` },
+    { nom: "Gainage", svg: `<ellipse cx="120" cy="88" rx="5" ry="12"/>` }
+  ],
+  parts: []
+};
+
+/* ─────────────────────────────────────────────────────────────
+   162. CURL MARTEAU À LA CORDE   (curl-marteau-corde)
+
+   RIG DU CURL À LA POULIE BASSE, repris tel quel : corps de profil,
+   coude en (122 86) collé au flanc, rotation de +122,56° en sept pas,
+   et surtout le câble qui suit — c'est ce dernier qui demandait le
+   travail, et il était déjà fait.
+
+   LE CÂBLE N'EST PAS DÉCORATIF. Il part d'une poulie FIXE en
+   (72 146) et doit rester tendu jusqu'à la main qui, elle, décrit un
+   arc. D'où ses images clés à deux paramètres — une rotation ET une
+   échelle, jusqu'à 1,4464 — qui l'allongent et l'orientent à chaque
+   pas. Les reprendre à l'identique garantit qu'il ne se décroche pas.
+
+   CE QUI CHANGE : la corde à la place de la barre, et la prise neutre.
+   Deux extrémités libres au lieu d'une barre rigide, ce qui se voit
+   en fin de course lorsqu'on les écarte — le seul endroit où ce
+   schéma diffère de son parent.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["curl-marteau-corde"] = {
+  vb: "60 24 76 138",
+  dur: 3.8,
+  phases: { con: [0, 34], ecc: [42, 90] },
+  alt: "Debout de profil face à une poulie basse, corde en prise neutre, coudes collés au buste : les mains montent vers les épaules par la seule flexion des coudes, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="64" y1="156" x2="132" y2="156"/>
+    <line class="mo-gear" x1="68" y1="26" x2="68" y2="156"/>
+    <circle class="mo-pulley" cx="72" cy="146" r="5"/>
+    <circle class="mo-head" cx="114" cy="38" r="9"/>
+    <line class="mo-body" x1="117" y1="46" x2="120" y2="54"/>
+    <line class="mo-body" x1="120" y1="54" x2="124" y2="104"/>
+    <line class="mo-body" x1="124" y1="104" x2="122" y2="130"/>
+    <line class="mo-body" x1="122" y1="130" x2="118" y2="156"/>
+    <line class="mo-limb" x1="120" y1="54" x2="122" y2="86"/>
+    <circle class="mo-joint" cx="122" cy="86" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M118 111.69 A26 26 0 0 1 102.50 68.80"/>`,
+  muscles: [
+    { nom: "Brachial antérieur",
+      svg: `<ellipse cx="118.5" cy="80" rx="2.8" ry="6" transform="rotate(4 118.5 80)"/>` },
+    { nom: "Brachio-radial",
+      svg: `<ellipse cx="117" cy="97" rx="2.6" ry="7" transform="rotate(4 117 97)"/>` },
+    { nom: "Biceps brachial",
+      svg: `<ellipse cx="117.5" cy="68" rx="3.4" ry="9" transform="rotate(4 117.5 68)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation ET échelle, reprises du parent — c'est ce qui
+         le garde tendu de la poulie à la main tout du long. */
+      o: "72px 146px",
+      k: [[0, "rotate(0deg) scale(1)"], [5.67, "rotate(-8.31deg) scale(0.9193)"],
+          [11.33, "rotate(-18.34deg) scale(0.9180)"], [17, "rotate(-26.75deg) scale(0.9965)"],
+          [22.67, "rotate(-31.56deg) scale(1.1301)"], [28.33, "rotate(-32.92deg) scale(1.2882)"],
+          [34, "rotate(-31.73deg) scale(1.4464)"], [42, "rotate(-31.73deg) scale(1.4464)"],
+          [50, "rotate(-32.92deg) scale(1.2882)"], [58, "rotate(-31.56deg) scale(1.1301)"],
+          [66, "rotate(-26.75deg) scale(0.9965)"], [74, "rotate(-18.34deg) scale(0.9180)"],
+          [82, "rotate(-8.31deg) scale(0.9193)"], [90, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="72" y1="146" x2="118" y2="111.69"/>`
+    },
+    {
+      o: "122px 86px",
+      k: [[0, "rotate(0deg)"], [5.67, "rotate(20.43deg)"], [11.33, "rotate(40.85deg)"],
+          [17, "rotate(61.28deg)"], [22.67, "rotate(81.71deg)"], [28.33, "rotate(102.13deg)"],
+          [34, "rotate(122.56deg)"], [42, "rotate(122.56deg)"],
+          [50, "rotate(102.13deg)"], [58, "rotate(81.71deg)"], [66, "rotate(61.28deg)"],
+          [74, "rotate(40.85deg)"], [82, "rotate(20.43deg)"], [90, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="122" y1="86" x2="118" y2="111.69"/>
+        <!-- CORDE : deux brins libres au lieu d'une barre rigide -->
+        <line class="mo-cable" x1="118" y1="111.69" x2="111" y2="118"/>
+        <line class="mo-cable" x1="118" y1="111.69" x2="123" y2="119"/>
+        <circle class="mo-hand" cx="118" cy="111.69" r="3.2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 150 L100 126 M95 134 L100 126 L105 134"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M100 126 L100 150 M95 142 L100 150 L105 142"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   163. CRUNCH INVERSÉ   (crunch-inverse)
+
+   LE RIG DU CRUNCH, LES RÔLES ÉCHANGÉS. Là-bas, le bassin est plaqué
+   et c'est le buste qui s'enroule ; ici, le buste ne bouge plus d'un
+   point et c'est le BASSIN qui monte. Les deux schémas partagent donc
+   le sol, la ligne de contact lombaire et la tête — et divergent sur
+   ce qui porte l'animation. C'est la meilleure façon de montrer que
+   les deux exercices sont le même mouvement pris par l'autre bout.
+
+   POSITION DE DÉPART. Genoux à l'aplomb des hanches, cuisse verticale
+   de 26 et tibia horizontal de 26 : genou (120 98), cheville (146 98).
+   Pas jambes tendues — c'est la première erreur de la fiche, et le
+   schéma montre la version juste.
+
+   L'ENROULEMENT. 35° autour d'un point du bas du dos (108 124). Le
+   bassin passe de (120 124) à (117,83 117,12), soit 12,9 au-dessus du
+   sol : les fesses décollent VRAIMENT, ce qui est toute la différence
+   avec un simple balancement de jambes. Genou (102,92 95,82),
+   cheville (124,21 80,91) — le genou passe à 46,4 de la tête, rien ne
+   se croise.
+
+   LE CADRE MONTE. Celui du crunch s'arrête à 82 ; la cheville
+   enroulée atteint 80,91. Fenêtre ouverte jusqu'à 68.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["crunch-inverse"] = {
+  vb: "50 68 132 72",
+  dur: 3.4,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé sur le dos, genoux repliés au-dessus des hanches : le bassin s'enroule vers les côtes et les fesses décollent du sol, puis redescendent lentement.",
+  fixe: `
+    <line class="mo-ground" x1="56" y1="130" x2="178" y2="130"/>
+    <!-- BUSTE ET TÊTE : plaqués, ils ne bougent pas. C'est l'inverse
+         exact du crunch, où c'était eux qui s'enroulaient. -->
+    <circle class="mo-head" cx="64" cy="121" r="8"/>
+    <line class="mo-body" x1="76" y1="124" x2="108" y2="124"/>
+    <!-- bras à plat au sol, le long du corps -->
+    <line class="mo-limb" x1="78" y1="124" x2="92" y2="129"/>
+    <circle class="mo-hand" cx="92" cy="129" r="2.8"/>
+    <!-- repère : la portion de dos qui doit rester en contact -->
+    <line class="mo-rom" x1="76" y1="128" x2="108" y2="128"/>`,
+  muscles: [
+    { nom: "Transverse",
+      svg: `<ellipse cx="100" cy="120" rx="8" ry="3"/>` }
+  ],
+  parts: [
+    {
+      /* BASSIN + JAMBES : enroulement de 35° autour du bas du dos. */
+      o: "108px 124px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(-35deg)"], [40, "rotate(-35deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Grand droit (partie basse)",
+      muscle: `<ellipse cx="114" cy="114" rx="3.2" ry="9"/>`,
+      svg: `
+        <line class="mo-body" x1="108" y1="124" x2="120" y2="124"/>
+        <circle class="mo-joint" cx="120" cy="124" r="2.8"/>
+        <!-- cuisse VERTICALE, tibia HORIZONTAL : la position juste -->
+        <line class="mo-limb" x1="120" y1="124" x2="120" y2="98"/>
+        <circle class="mo-joint" cx="120" cy="98" r="2.6"/>
+        <line class="mo-limb" x1="120" y1="98" x2="146" y2="98"/>
+        <circle class="mo-joint" cx="146" cy="98" r="2.6"/>
+        <line class="mo-limb" x1="146" y1="98" x2="152" y2="103"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M138 118 L138 90 M133 98 L138 90 L143 98"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M138 90 L138 118 M133 110 L138 118 L143 110"/>` }
+  ]
+};
+
+/* ─────────────────────────────────────────────────────────────
+   164. FENTES LATÉRALES   (fentes-laterales)
+
+   VUE DE FACE, et il faut dire tout de suite ce que cela coûte.
+   L'écartement de la jambe appartient au plan frontal : il se voit en
+   vraie grandeur. La FLEXION du genou, elle, se fait dans le plan de
+   la jambe, qui est incliné — elle rentre donc en partie dans la
+   feuille.
+
+   LE RACCOURCISSEMENT EST DÉCLARÉ, PAS CACHÉ. La jambe fléchie mesure
+   42 (21 + 21) et n'occupe plus que 36 en projection : facteur 0,864,
+   soit un plan de jambe incliné de 27,3° hors du frontal. Le groupe du
+   fémur porte donc `scale(0.864)`, et le tibia en hérite — une seule
+   échelle pour les deux segments, puisque le rapport est le même. La
+   jambe tendue, elle, garde 21,0 par segment : facteur 0,972, presque
+   rien, parce qu'elle reste quasiment dans le plan.
+
+   Sans cette échelle il aurait fallu, soit dessiner un genou qui ne
+   plie pas, soit faire varier la longueur d'un os d'une image à
+   l'autre. Les deux mentent ; une échelle annoncée, non.
+
+   GÉOMÉTRIE. Debout : hanche (120 108), pieds (110 150) et (130 150).
+   Le pied gauche part à (88 150) ; le DROIT NE BOUGE PAS, ce qui est
+   la définition du pas de côté. La hanche est alors à l'intersection
+   des deux contraintes — 42 de la jambe tendue, 36 apparents de la
+   jambe fléchie — soit (103,43 117,47) : elle descend de 9,47 et se
+   décale de 16,57 vers la jambe qui plie. Genou fléchi en
+   (91,20 131,60), posé 5 en DEHORS de la ligne hanche-cheville : il
+   suit le pied, ce que la fiche demande et que l'erreur inverse
+   — genou qui rentre — contredit.
+   ───────────────────────────────────────────────────────────── */
+EXERCISE_MOTIONS["fentes-laterales"] = {
+  vb: "74 28 92 134",
+  dur: 4,
+  phases: { ecc: [0, 42], con: [50, 84] },
+  alt: "Debout de face, pieds écartés de la largeur des hanches : un grand pas sur le côté, la jambe du pas se plie pendant que l'autre reste tendue et son pied à plat, puis retour debout.",
+  fixe: `
+    <line class="mo-ground" x1="80" y1="150" x2="160" y2="150"/>
+    <!-- pied qui NE BOUGE PAS : c'est lui qui définit le pas -->
+    <line class="mo-limb" x1="124" y1="150" x2="138" y2="150"/>
+    <!-- pied du pas, à son point d'arrivée -->
+    <line class="mo-rom" x1="82" y1="154" x2="94" y2="154"/>`,
+  parts: [
+    {
+      /* CORPS : il descend de 9,47 et se décale de 16,57 vers la jambe
+         qui plie. Tout le reste est accroché à lui. */
+      o: "120px 108px",
+      k: [[0, "translate(0px,0px)"], [42, "translate(-16.57px,9.47px)"],
+          [50, "translate(-16.57px,9.47px)"], [84, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      muscleNom: ["Moyen fessier", "Adducteurs"],
+      muscle: `<circle cx="112" cy="106" r="4.5"/>
+               <ellipse cx="126" cy="122" rx="3" ry="9" transform="rotate(-20 126 122)"/>`,
+      svg: `
+        <circle class="mo-head" cx="120" cy="42" r="10"/>
+        <line class="mo-body" x1="104" y1="62" x2="136" y2="62"/>
+        <line class="mo-body" x1="120" y1="52" x2="120" y2="108"/>
+        <circle class="mo-joint" cx="120" cy="108" r="2.8"/>
+        <line class="mo-limb" x1="104" y1="62" x2="100" y2="86"/>
+        <line class="mo-limb" x1="100" y1="86" x2="98" y2="110"/>
+        <line class="mo-limb" x1="136" y1="62" x2="140" y2="86"/>
+        <line class="mo-limb" x1="140" y1="86" x2="142" y2="110"/>`,
+      children: [
+        {
+          /* JAMBE DU PAS : rotation + échelle 0,864, le raccourcissement
+             déclaré. Le tibia en hérite, et c'est voulu. */
+          o: "120px 108px",
+          k: [[0, "rotate(0deg) scale(1)"], [42, "rotate(27.5deg) scale(0.864)"],
+              [50, "rotate(27.5deg) scale(0.864)"], [84, "rotate(0deg) scale(1)"],
+              [100, "rotate(0deg) scale(1)"]],
+          muscleNom: "Quadriceps (jambe fléchie)",
+          muscle: `<ellipse cx="117" cy="119" rx="3.4" ry="9" transform="rotate(13 117 119)"/>`,
+          svg: `<line class="mo-limb" x1="120" y1="108" x2="115" y2="129"/>`,
+          children: [
+            {
+              o: "115px 129px",
+              k: [[0, "rotate(0deg)"], [42, "rotate(-31deg)"], [50, "rotate(-31deg)"],
+                  [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="115" cy="129" r="2.6"/>
+                <line class="mo-limb" x1="115" y1="129" x2="110" y2="150"/>`
+            }
+          ]
+        },
+        {
+          /* JAMBE TENDUE : presque dans le plan, 0,972. Elle reste
+             tendue — genou et cheville tournent du même angle. */
+          o: "120px 108px",
+          k: [[0, "rotate(0deg) scale(1)"], [42, "rotate(-25.8deg) scale(0.972)"],
+              [50, "rotate(-25.8deg) scale(0.972)"], [84, "rotate(0deg) scale(1)"],
+              [100, "rotate(0deg) scale(1)"]],
+          svg: `
+            <line class="mo-limb" x1="120" y1="108" x2="125" y2="129"/>
+            <circle class="mo-joint" cx="125" cy="129" r="2.6"/>
+            <line class="mo-limb" x1="125" y1="129" x2="130" y2="150"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M156 96 L156 128 M151 120 L156 128 L161 120"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M156 128 L156 96 M151 104 L156 96 L161 104"/>` }
+  ]
+};
