@@ -1795,6 +1795,143 @@ const EXERCISES_CLASSIQUES = [
 EXERCISES.push(...EXERCISES_CLASSIQUES);
 
 /* =========================================================
+   Six trous repérés en comptant, pas en devinant.
+
+   Recensement par groupe sur les 154 exercices : mollets 4, lombaires
+   6, biceps 11, triceps 11 — contre 29 pour ischios/fessiers et 24
+   pour les abdos. Et sur soixante mouvements courants testés par leur
+   nom, quarante-six ne répondaient à aucune recherche.
+
+   Ces six-là sont choisis à l'intersection des deux : un groupe maigre
+   ET un mouvement que tout le monde nomme. Rien d'exotique — le but
+   n'est pas d'allonger la liste, c'est de ne plus laisser quelqu'un
+   chercher « crunch inversé » pour rien.
+   ========================================================= */
+const EXERCISES_COMBLE = [
+  {
+    id: "mollets-ane",
+    nom: "Extension mollets à l'âne (donkey)",
+    groupe: "mollets", materiel: "machine", niveau: "intermediaire", type: "iso",
+    muscles: "Gastrocnémiens, soléaire",
+    description: "Buste penché à l'horizontale, charge sur les hanches, avant-pieds sur une cale. La hanche fléchie met le gastrocnémien en position allongée d'un bout à l'autre de la série — ce que la version debout ne fait pas, puisque le muscle y traverse deux articulations tendues.",
+    execution: [
+      "Avant-pieds sur la cale, talons dans le vide, jambes tendues.",
+      "Penche le buste jusqu'à l'horizontale, mains en appui devant, charge posée sur le bas du dos.",
+      "Monte sur la pointe des pieds le plus haut possible, marque une seconde en haut.",
+      "Redescends lentement jusqu'à sentir l'étirement sous le niveau de la cale."
+    ],
+    erreurs: [
+      "Genoux fléchis : le gastrocnémien se relâche et le soléaire prend tout.",
+      "Rebondir en bas au lieu de tenir l'étirement.",
+      "Amplitude écourtée en haut — c'est là que le mollet travaille le plus.",
+      "Dos rond : le bassin bascule et la charge glisse."
+    ],
+    videoQuery: "donkey calf raise mollets âne technique buste penché"
+  },
+  {
+    id: "extension-triceps-allongee-halteres",
+    nom: "Extension triceps allongée aux haltères",
+    groupe: "triceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
+    muscles: "Triceps (longue portion surtout)",
+    description: "Le barre au front, mais un haltère dans chaque main, paumes face à face. Deux différences qui comptent : chaque bras travaille seul, donc le plus faible ne se cache plus derrière l'autre ; et la prise neutre soulage le poignet et le coude, là où la barre droite les contraint.",
+    execution: [
+      "Allongé sur un banc plat, bras tendus à la verticale, paumes face à face.",
+      "Descends les haltères de part et d'autre du front en gardant les COUDES immobiles.",
+      "Arrête-toi quand l'avant-bras touche le biceps, sans laisser les coudes s'écarter.",
+      "Remonte par la seule extension des coudes, sans pousser des épaules."
+    ],
+    erreurs: [
+      "Coudes qui s'écartent ou qui avancent : ce n'est plus une extension, c'est un pull-over.",
+      "Charge trop lourde qui transforme le mouvement en développé.",
+      "Descendre derrière la tête, ce qui change l'exercice sans qu'on l'ait décidé.",
+      "Verrouiller violemment en haut."
+    ],
+    videoQuery: "extension triceps allongée haltères skull crusher dumbbell technique"
+  },
+  {
+    id: "farmer-walk",
+    nom: "Farmer walk (port de charge)",
+    groupe: "dos", materiel: "halteres", niveau: "debutant", type: "poly",
+    muscles: "Trapèzes, avant-bras et grip, gainage, moyen fessier, quadriceps",
+    description: "Marcher en portant lourd des deux mains. C'est un patron de mouvement que la bibliothèque n'avait pas du tout : tout le reste pousse, tire ou fléchit, celui-ci ne fait que RÉSISTER — à l'affaissement, à l'inclinaison, au lâcher de mains. Il se mesure en temps ou en distance, jamais en répétitions.",
+    execution: [
+      "Prends une charge dans chaque main, debout, bras le long du corps.",
+      "Redresse-toi : poitrine haute, épaules basses et en arrière, côtes fermées.",
+      "Marche à pas réguliers, sans te pencher d'un côté ni laisser le bassin partir.",
+      "Arrête-toi quand la POSTURE lâche, pas quand les mains lâchent."
+    ],
+    erreurs: [
+      "Épaules enroulées vers l'avant, dos rond : la charge est trop lourde.",
+      "Se pencher du côté le plus chargé quand les deux charges diffèrent.",
+      "Petits pas précipités qui font balancer les charges.",
+      "Continuer une fois la posture cassée — c'est là que le dos prend."
+    ],
+    videoQuery: "farmer walk port de charge technique gainage trapèzes"
+  },
+  {
+    id: "curl-marteau-corde",
+    nom: "Curl marteau à la corde",
+    groupe: "biceps", materiel: "poulie", niveau: "debutant", type: "iso",
+    muscles: "Brachial, brachio-radial, biceps",
+    description: "Le curl marteau, mais à la poulie basse avec une corde. La poulie garde une tension constante là où l'haltère la perd en haut de course, et la corde laisse les poignets libres de s'écarter en fin de mouvement.",
+    execution: [
+      "Debout face à la poulie basse, corde en prise neutre, coudes collés au buste.",
+      "Monte par la seule flexion des coudes, sans avancer les épaules.",
+      "En haut, écarte légèrement les extrémités de la corde pour finir la contraction.",
+      "Redescends lentement jusqu'à l'extension complète : la poulie tire encore, profites-en."
+    ],
+    erreurs: [
+      "Coudes qui partent vers l'avant, ce qui transforme la fin en élévation d'épaule.",
+      "Buste qui recule pour lancer la charge.",
+      "Lâcher la descente : c'est justement là que la poulie a l'avantage sur l'haltère.",
+      "Serrer la corde à s'en crisper les avant-bras avant que le biceps ne fatigue."
+    ],
+    videoQuery: "curl marteau corde poulie basse rope hammer curl technique"
+  },
+  {
+    id: "crunch-inverse",
+    nom: "Crunch inversé",
+    groupe: "abdos", materiel: "poids-du-corps", niveau: "debutant", type: "iso",
+    muscles: "Grand droit (partie basse), transverse",
+    description: "L'inverse du crunch : le buste reste au sol et c'est le BASSIN qui s'enroule vers les côtes. Le mouvement se fait par le bas du grand droit, et non par les fléchisseurs de hanche — à condition de ne pas se servir des jambes comme d'un balancier.",
+    execution: [
+      "Allongé sur le dos, mains à plat de chaque côté, genoux repliés au-dessus des hanches.",
+      "Enroule le bassin vers les côtes : ce sont les fesses qui décollent, pas seulement les pieds.",
+      "Marque un temps d'arrêt en haut, sans laisser le dos se cambrer.",
+      "Redescends lentement jusqu'à ce que les lombaires retouchent le sol."
+    ],
+    erreurs: [
+      "Lancer les jambes : l'élan fait le travail à la place des abdominaux.",
+      "Tendre les jambes, ce qui transfère tout sur les fléchisseurs de hanche.",
+      "Décoller les lombaires en bas de course.",
+      "Tirer sur la nuque pour s'aider."
+    ],
+    videoQuery: "crunch inversé reverse crunch technique abdos bas"
+  },
+  {
+    id: "fentes-laterales",
+    nom: "Fentes latérales",
+    groupe: "quadriceps", materiel: "poids-du-corps", niveau: "intermediaire", type: "poly",
+    muscles: "Quadriceps, grand fessier, moyen fessier, adducteurs",
+    description: "Le seul mouvement de jambes de la bibliothèque qui travaille DE CÔTÉ. Tout le reste — squats, fentes, presses — se passe dans le plan avant-arrière ; les adducteurs et le moyen fessier n'y sont sollicités qu'en stabilisateurs. Ici ils travaillent en amplitude.",
+    execution: [
+      "Debout, pieds écartés de la largeur des hanches, pointes vers l'avant.",
+      "Fais un grand pas sur le côté et plie CETTE jambe, l'autre restant tendue.",
+      "Descends en poussant les fesses en arrière, buste incliné mais dos droit, pied de la jambe tendue à plat.",
+      "Repousse avec la jambe fléchie pour revenir, puis alterne."
+    ],
+    erreurs: [
+      "Genou qui rentre vers l'intérieur sur la jambe fléchie.",
+      "Talon de la jambe tendue qui décolle : le pas était trop grand.",
+      "Dos rond, parce qu'on descend par les genoux au lieu de la hanche.",
+      "Pas trop court, qui ne donne aucune amplitude aux adducteurs."
+    ],
+    videoQuery: "fentes latérales lateral lunge technique adducteurs"
+  }
+];
+EXERCISES.push(...EXERCISES_COMBLE);
+
+/* =========================================================
    Noms alternatifs (FR + EN) : la recherche, le sélecteur
    et l'anti-doublon reconnaissent l'exercice sous tous
    ses noms. Complété par ex.alias sur les exos persos.
@@ -1827,6 +1964,18 @@ const EXERCISE_ALIASES = {
      exercices DÉJÀ présents — « diamond push up » ou « bench dips »
      ne trouvaient rien alors que l'exercice existait sous son nom
      français. */
+  "mollets-ane": ["donkey calf raise", "mollets âne", "extension mollets âne",
+                  "calf raise penché", "donkey calf"],
+  "extension-triceps-allongee-halteres": ["skull crusher haltères", "dumbbell skull crusher",
+                  "lying triceps extension", "extension triceps allongée", "barre au front haltères"],
+  "farmer-walk": ["farmer walk", "farmers walk", "port de charge", "marche du fermier",
+                  "loaded carry", "farmer carry"],
+  "curl-marteau-corde": ["rope hammer curl", "curl marteau corde", "curl corde poulie",
+                  "hammer curl poulie", "curl neutre poulie"],
+  "crunch-inverse": ["reverse crunch", "crunch inversé", "relevé de bassin",
+                  "crunch bas", "hip raise abdos"],
+  "fentes-laterales": ["lateral lunge", "fentes latérales", "side lunge",
+                  "fente côté", "cossack lunge"],
   "pistol-squat": ["pistol squat", "squat une jambe", "single leg squat",
                    "squat unilatéral", "pistol"],
   "jumping-jacks": ["jumping jack", "jumping jacks", "jumping-jacks", "sauts étoile",
