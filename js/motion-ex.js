@@ -632,6 +632,36 @@ EXERCISE_MOTIONS["developpe-couche-halteres"] = {
                barre qui descend.
    Vue de FACE : la prise large et la symétrie du geste ne se
                lisent pas de profil.
+
+   >>> UN DÉFAUT TROUVÉ EN MESURANT, ET CORRIGÉ <<<
+   La première version ne donnait que deux poses — suspendu et en
+   haut — et laissait l'interpolation faire le reste. Les deux poses
+   étaient justes : épaule à x = 104 au départ comme à l'arrivée.
+   Entre les deux, non. Mesuré image par image, l'épaule gauche
+   dérivait jusqu'à x = 115,1 à mi-traction, soit 11,1 unités
+   (18 cm) : le corps entier partait sur le côté puis revenait, et
+   le bras droit — dont la chaîne est indépendante — se détachait de
+   l'épaule droite de 22 unités au passage. Invisible aux deux
+   extrémités, grossier au milieu.
+
+   CORRECTION, MÊME MÉTHODE QU'AU MUSCLE-UP : quatre poses
+   intermédiaires RÉSOLUES au lieu d'interpolées, l'épaule contrainte
+   à x = 104 dans chacune.
+
+       hauteur d'épaule   avant-bras   bras (rel.)   coude
+             64,00            0,00°        0,00°     171,4°
+             59,25           18,71°      −43,11°     128,3°
+             54,50           25,70°      −64,13°     107,2°
+             45,00           30,28°      −93,45°      77,9°
+             35,50           23,33°     −113,27°      58,1°
+             26,07            2,02°     −122,72°      48,6°
+
+   Dérive résiduelle après correction : 0,62 unité (1 cm) contre
+   11,1 — et l'inclinaison du buste ne dépasse plus 0,01°. On y
+   apprend au passage ce que les deux poses cachaient : l'avant-bras
+   ne reste PAS dans l'axe, il balaie 30° et le coude sort jusqu'à
+   4 unités en dehors de la main. C'est le geste réel d'une prise
+   large ; c'est l'ancienne version qui le taisait.
    ========================================================= */
 EXERCISE_MOTIONS["tractions"] = {
   vb: "34 -2 172 154",
@@ -647,10 +677,14 @@ EXERCISE_MOTIONS["tractions"] = {
   parts: [
     {
       /* AVANT-BRAS GAUCHE : enraciné à la MAIN (86, 24), qui ne quitte
-         jamais la barre. +2° seulement : l'avant-bras reste presque dans
-         l'axe, c'est le bras et le corps qui font le travail. */
+         jamais la barre. Départ et arrivée à 2° près — mais ENTRE LES
+         DEUX il balaie jusqu'à 30°, et c'est ce balayage qui garde
+         l'épaule sur son aplomb (voir l'en-tête : la dérive latérale). */
       o: "86px 24px",
-      k: [[0, "rotate(0deg)"], [32, "rotate(2deg)"], [40, "rotate(2deg)"],
+      k: [[0, "rotate(0deg)"], [4, "rotate(18.71deg)"], [8, "rotate(25.7deg)"],
+          [16, "rotate(30.28deg)"], [24, "rotate(23.33deg)"], [32, "rotate(2.02deg)"],
+          [40, "rotate(2.02deg)"], [52, "rotate(23.33deg)"], [64, "rotate(30.28deg)"],
+          [76, "rotate(25.7deg)"], [82, "rotate(18.71deg)"],
           [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
       childrenFirst: true,
       svg: `
@@ -660,19 +694,29 @@ EXERCISE_MOTIONS["tractions"] = {
       children: [
         {
           /* BRAS GAUCHE : flexion du coude autour de (93.5, 44.7).
-             −122,7° fait passer le coude de tendu (~172°) à ~49°. */
+             −122,72° fait passer le coude de tendu (171,4°) à 48,6°.
+             Les positions intermédiaires ne sont pas interpolées : elles
+             sont RÉSOLUES, épaule contrainte à x = 104. */
           o: "93.5px 44.7px",
-          k: [[0, "rotate(0deg)"], [32, "rotate(-122.7deg)"], [40, "rotate(-122.7deg)"],
+          k: [[0, "rotate(0deg)"], [4, "rotate(-43.11deg)"], [8, "rotate(-64.13deg)"],
+              [16, "rotate(-93.45deg)"], [24, "rotate(-113.27deg)"], [32, "rotate(-122.72deg)"],
+              [40, "rotate(-122.72deg)"], [52, "rotate(-113.27deg)"], [64, "rotate(-93.45deg)"],
+              [76, "rotate(-64.13deg)"], [82, "rotate(-43.11deg)"],
               [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
           muscleNom: "Biceps brachial",
           muscle: `<ellipse cx="99" cy="54" rx="3.2" ry="6.5" transform="rotate(29 99 54)"/>`,
           svg: `<line class="mo-limb" x1="93.5" y1="44.7" x2="104" y2="64"/>`,
           children: [
             {
-              /* CORPS : contre-rotation de +120,7° autour de l'ÉPAULE gauche
-                 (104, 64) pour rester vertical pendant que le bras tourne. */
+              /* CORPS : contre-rotation autour de l'ÉPAULE gauche (104, 64)
+                 pour rester vertical pendant que le bras tourne. À chaque
+                 image, la somme des trois rotations vaut zéro : inclinaison
+                 résiduelle mesurée 0,01° sur toute la course. */
               o: "104px 64px",
-              k: [[0, "rotate(0deg)"], [32, "rotate(120.7deg)"], [40, "rotate(120.7deg)"],
+              k: [[0, "rotate(0deg)"], [4, "rotate(24.4deg)"], [8, "rotate(38.42deg)"],
+                  [16, "rotate(63.17deg)"], [24, "rotate(89.93deg)"], [32, "rotate(120.7deg)"],
+                  [40, "rotate(120.7deg)"], [52, "rotate(89.93deg)"], [64, "rotate(63.17deg)"],
+                  [76, "rotate(38.42deg)"], [82, "rotate(24.4deg)"],
                   [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
               muscleNom: "Grand dorsal",
               muscle: `<ellipse cx="111" cy="80" rx="3.8" ry="11" transform="rotate(-9 111 80)"/>
@@ -691,7 +735,10 @@ EXERCISE_MOTIONS["tractions"] = {
     {
       /* AVANT-BRAS DROIT : miroir exact, enraciné à la main (154, 24). */
       o: "154px 24px",
-      k: [[0, "rotate(0deg)"], [32, "rotate(-2deg)"], [40, "rotate(-2deg)"],
+      k: [[0, "rotate(0deg)"], [4, "rotate(-18.71deg)"], [8, "rotate(-25.7deg)"],
+          [16, "rotate(-30.28deg)"], [24, "rotate(-23.33deg)"], [32, "rotate(-2.02deg)"],
+          [40, "rotate(-2.02deg)"], [52, "rotate(-23.33deg)"], [64, "rotate(-30.28deg)"],
+          [76, "rotate(-25.7deg)"], [82, "rotate(-18.71deg)"],
           [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
       svg: `
         <circle class="mo-hand" cx="154" cy="24" r="3.6"/>
@@ -700,7 +747,10 @@ EXERCISE_MOTIONS["tractions"] = {
       children: [
         {
           o: "146.5px 44.7px",
-          k: [[0, "rotate(0deg)"], [32, "rotate(122.7deg)"], [40, "rotate(122.7deg)"],
+          k: [[0, "rotate(0deg)"], [4, "rotate(43.11deg)"], [8, "rotate(64.13deg)"],
+              [16, "rotate(93.45deg)"], [24, "rotate(113.27deg)"], [32, "rotate(122.72deg)"],
+              [40, "rotate(122.72deg)"], [52, "rotate(113.27deg)"], [64, "rotate(93.45deg)"],
+              [76, "rotate(64.13deg)"], [82, "rotate(43.11deg)"],
               [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
           muscle: `<ellipse cx="141" cy="54" rx="3.2" ry="6.5" transform="rotate(-29 141 54)"/>`,
           svg: `<line class="mo-limb" x1="146.5" y1="44.7" x2="136" y2="64"/>`
@@ -708,6 +758,49 @@ EXERCISE_MOTIONS["tractions"] = {
       ]
     }
   ],
+  /* SECONDE VUE — LE PROFIL, ET LA SEULE CHOSE QU'IL AJOUTE.
+     Instant choisi : celui où le centre de la tête atteint la hauteur de
+     la barre. C'est là que la contrainte mord, et elle est purement
+     sagittale — donc rigoureusement invisible de face.
+     Tête r = 10, barre r = 2 : le centre doit passer à 12 unités de
+     l'axe (19,6 cm à l'échelle de ce dessin, 110 unités pour 180 cm).
+     Un buste penché de 20° n'apporte que 14·sin 20° = 4,79 ; il manque
+     7,21, et ils ne peuvent venir que de l'épaule. Le plan du bras
+     bascule donc de 28,73° vers l'arrière, ce qui met l'épaule à
+     (112,79 37,16), soit 7,21 derrière la barre et 13,16 sous elle.
+     Le buste seul n'y suffirait pas : il faudrait 59° de bascule.
+     ÉQUILIBRE : centre de masse sous la barre, fractions de Winter
+     (tête 0,081, tronc 0,497, bras 0,100, jambes 0,322) → jambes à
+     2,3° de la verticale. La pose se referme sur elle-même. */
+  vue2: {
+    titre: "Vu de profil",
+    alt: "Vue de profil à l'instant où la tête atteint la hauteur de la barre : le buste est penché de 20° en arrière et l'épaule est reculée derrière la barre, ce qui écarte le crâne de 12 unités — en rouge pointillé, la tête d'un corps resté à l'aplomb, qui percute la barre.",
+    vb: "78 8 68 88",
+    legende: "De face, la traction est symétrique et le recul ne s'y voit pas. De profil : quand le crâne arrive à hauteur de barre, il doit en être à 20 cm, sinon il la percute — c'est le cercle rouge. Les 20° de buste n'en donnent que 8 ; les 12 restants viennent de l'épaule, qui recule derrière la barre. Le bras, vu bout à bout, n'occupe plus que 31 % de sa longueur : c'est le prix de cette vue, et pourquoi elle est figée. Jambes à 2° de la verticale — centre de masse sous la barre.",
+    svg: `
+      <!-- APLOMB DE LA BARRE -->
+      <line class="mo-rom" x1="120" y1="10" x2="120" y2="96"/>
+      <!-- BARRE vue bout à bout : un point, rien de plus -->
+      <circle class="mo-hub" cx="120" cy="24" r="3.4"/>
+      <!-- FAUTE : corps resté à l'aplomb, le crâne est DANS la barre -->
+      <circle class="mo-faute" cx="120" cy="24" r="10" fill="none"/>
+      <!-- CORPS, penché de 20° : tête, tronc, jambes -->
+      <circle class="mo-head" cx="108" cy="24" r="10"/>
+      <line class="mo-body" x1="112.79" y1="37.16" x2="126.47" y2="74.74"/>
+      <line class="mo-body" x1="126.47" y1="74.74" x2="125.03" y2="110.71"/>
+      <circle class="mo-joint" cx="126.47" cy="74.74" r="2.8"/>
+      <!-- BRAS : avant-bras presque de profil, bras vu en raccourci -->
+      <line class="mo-limb" x1="120" y1="24" x2="109.51" y2="43.14"/>
+      <circle class="mo-joint" cx="109.51" cy="43.14" r="2.5"/>
+      <line class="mo-limb" x1="109.51" y1="43.14" x2="112.79" y2="37.16"/>
+      <circle class="mo-hand" cx="120" cy="24" r="3.6"/>
+      <circle class="mo-joint" cx="112.79" cy="37.16" r="2.8"/>
+      <!-- cote du dégagement de tête, reportée en bas : en haut elle
+           passerait sur le crâne et sur le cercle de faute -->
+      <line class="mo-rom" x1="108" y1="88" x2="120" y2="88"/>
+      <line class="mo-rom" x1="108" y1="83" x2="108" y2="93"/>
+      <text class="mo-cote mo-cote-ok" font-size="7.2" x="80" y="91">20 cm</text>`
+  },
   arrows: [
     { phase: "con", svg: `<path class="mo-arr" d="M168 96 L168 58 M163 66 L168 58 L173 66"/>` },
     { phase: "ecc", svg: `<path class="mo-arr" d="M168 58 L168 96 M163 88 L168 96 L173 88"/>` }
@@ -2437,6 +2530,69 @@ EXERCISE_MOTIONS["squat-barre"] = {
       ]
     }
   ],
+  /* SECONDE VUE — DE FACE, ET CE QU'ELLE CORRIGE DU PROFIL.
+     Le profil résout l'équilibre (barre à l'aplomb du milieu du pied) ;
+     il est aveugle au plan frontal, là où se joue le valgus.
+     ÉCHELLE : 120,5 unités du sol au sommet du crâne pour 180 cm, soit
+     1,494 cm par unité.
+     CONSTRUCTION. Demi-écart des pieds 16, demi-bassin 7 ; le genou est
+     placé à l'APLOMB DU PIED, ce qui donne au fémur 9 unités de
+     composante latérale. Sur un fémur de 26, il reste 24,39 vers
+     l'avant : 20,25° d'abduction. Le tibia, lui, est vertical de face
+     (25,12) et laisse 6,71 vers l'arrière — le profil en dessine 6,73,
+     les deux vues concordent à 0,02 près.
+     CE QUE ÇA COÛTE AU PROFIL, ET QUI EST DÉCLARÉ ICI : l'animation
+     dessine le fémur entier, 25,99 d'avance de genou, quand la vérité
+     n'en donne que 24,39 — facteur 0,938. Ce raccourcissement VARIE
+     pendant la descente, donc il n'est pas animé : il est dit.
+     LA FAUTE. Genou tombé à l'aplomb de la hanche : 9 unités en dedans,
+     soit 13,4 cm. Le tibia projeté garde 25,12, ce qui descend le genou
+     de 1,67 ; le fémur n'occupe plus alors que 1,67 de face — il pointe
+     droit sur le spectateur. C'est pourquoi la faute est tracée par son
+     TIBIA : le fémur, de face, n'a plus rien à montrer. */
+  vue2: {
+    titre: "Vu de face",
+    alt: "Vue de face en position basse : genoux à l'aplomb des pieds, cuisses vues en raccourci — en rouge pointillé, le genou gauche tombé à l'aplomb de la hanche, 13 cm en dedans.",
+    vb: "68 60 104 96",
+    legende: "De profil on vérifie la barre ; le genou, lui, part sur le côté et le profil n'en dit rien. De face la cuisse pointe vers vous : 9 unités visibles sur 26 — et ce qui reste visible est justement ce qui compte, le genou suit-il le pied. En rouge, le genou tombé à l'aplomb de la hanche : 13 cm en dedans, c'est le valgus. Ces 20° d'abduction coûtent au profil 1,6 unité d'avance de genou.",
+    svg: `
+      <line class="mo-ground" x1="72" y1="150" x2="168" y2="150"/>
+      <!-- BARRE tracée AVANT le corps : la nuque passe devant elle -->
+      <line class="mo-bar3" x1="74" y1="77.28" x2="166" y2="77.28"/>
+      <rect class="mo-mass" x="74" y="66.3" width="7" height="22" rx="2"/>
+      <rect class="mo-mass" x="159" y="66.3" width="7" height="22" rx="2"/>
+      <!-- APLOMB DES PIEDS : le repère de cette vue. Tracé haut au-dessus
+           du genou, sans quoi la jambe le recouvre entièrement. -->
+      <line class="mo-rom" x1="104" y1="92" x2="104" y2="156"/>
+      <line class="mo-rom" x1="136" y1="92" x2="136" y2="156"/>
+      <!-- CORPS -->
+      <circle class="mo-head mo-head-solid" cx="120" cy="74.9" r="9"/>
+      <line class="mo-body" x1="104" y1="83.31" x2="136" y2="83.31"/>
+      <line class="mo-body" x1="120" y1="83.31" x2="120" y2="112.88"/>
+      <line class="mo-limb" x1="104" y1="83.31" x2="96" y2="77.28"/>
+      <line class="mo-limb" x1="136" y1="83.31" x2="144" y2="77.28"/>
+      <circle class="mo-hand" cx="96" cy="77.28" r="3"/>
+      <circle class="mo-hand" cx="144" cy="77.28" r="3"/>
+      <!-- BASSIN et CUISSES : 9 unités de fémur visibles sur 26 -->
+      <line class="mo-body" x1="113" y1="112.88" x2="127" y2="112.88"/>
+      <circle class="mo-joint" cx="113" cy="112.88" r="2.8"/>
+      <circle class="mo-joint" cx="127" cy="112.88" r="2.8"/>
+      <line class="mo-limb" x1="113" y1="112.88" x2="104" y2="112.88"/>
+      <line class="mo-limb" x1="127" y1="112.88" x2="136" y2="112.88"/>
+      <!-- TIBIAS verticaux, genou sur le pied -->
+      <line class="mo-limb" x1="104" y1="112.88" x2="104" y2="138"/>
+      <line class="mo-limb" x1="136" y1="112.88" x2="136" y2="138"/>
+      <circle class="mo-joint" cx="104" cy="112.88" r="2.6"/>
+      <circle class="mo-joint" cx="136" cy="112.88" r="2.6"/>
+      <line class="mo-limb" x1="104" y1="138" x2="104" y2="150"/>
+      <line class="mo-limb" x1="136" y1="138" x2="136" y2="150"/>
+      <line class="mo-limb" x1="97" y1="150" x2="111" y2="150"/>
+      <line class="mo-limb" x1="129" y1="150" x2="143" y2="150"/>
+      <!-- FAUTE : genou gauche à l'aplomb de la hanche -->
+      <line class="mo-faute" x1="113" y1="114.55" x2="104" y2="138"/>
+      <circle class="mo-faute-pt" cx="113" cy="114.55" r="3.2"/>
+      <text class="mo-cote mo-cote-faute" font-size="7.9" x="114" y="130">13 cm</text>`
+  },
   arrows: [
     { phase: "con", svg: `<path class="mo-arr" d="M152 96 L152 56 M147 64 L152 56 L157 64"/>` },
     { phase: "ecc", svg: `<path class="mo-arr" d="M152 56 L152 96 M147 88 L152 96 L157 88"/>` }
@@ -19137,7 +19293,9 @@ EXERCISE_MOTIONS["jumping-jacks"] = {
    de 38°, mesurée à −38,0° sur le rendu : de face, cela se lit comme
    un penchement LATÉRAL, c'est-à-dire comme un défaut d'exécution et
    non comme le geste. Le buste reste donc rigoureusement vertical aux
-   sept positions — vérifié à 0,00° partout.
+   sept positions — vérifié à 0,00° partout. Retirée de l'animation, la
+   bascule n'est pas perdue pour autant : elle est le sujet de la SECONDE
+   VUE, plus bas, où elle est FIGÉE et donc exacte.
 
    CE QUI RESTE VISIBLE, ET SUFFIT. Le coude. Il part sous la main,
    passe à sa hauteur exacte, puis remonte au-dessus de la barre :
@@ -19258,6 +19416,57 @@ EXERCISE_MOTIONS["muscle-up"] = {
       ]
     }
   ],
+  /* SECONDE VUE — LE PROFIL, C'EST-À-DIRE EXACTEMENT CE QUE L'ANIMATION
+     A DÛ RETIRER. L'en-tête le dit : la bascule du buste est sagittale,
+     de face elle se lirait comme un penchement latéral. Elle n'est donc
+     pas animée. Elle est dessinée ici, figée, où sa projection est
+     exacte.
+     ÉCHELLE : 102 unités du sol au sommet du crâne pour 180 cm, soit
+     1,765 cm par unité.
+     LA CONTRAINTE, ET ELLE EST GÉOMÉTRIQUE. Le buste ne peut pas
+     occuper la barre. Poitrine 22 cm d'épaisseur → 6,23 unités de
+     demi-épaisseur, plus 2 de rayon de barre : l'épaule doit passer à
+     8,23 unités DEVANT la barre au moment du passage.
+     CE QUE ÇA COÛTE À LA VUE DE FACE : ces 8,23 de profondeur amputent
+     le bras de sa projection frontale — 20,37 pour 21,97, facteur
+     0,927 — et l'épaule dessinée de face est donc 1,63 trop haute
+     (21,60 au lieu de 19,97 au-dessus du coude). Déclaré, pas animé.
+     LA POSE. Buste basculé de 38° — valeur du geste, choisie, tout le
+     reste en découle : hanche à (102,37 89,13), soit 17,6 DERRIÈRE la
+     barre et 13,1 sous elle ; tête à (136,85 45,00).
+     ET CE QUE LE CALCUL APPREND. Centre de masse (fractions de Winter :
+     tête 0,081, tronc 0,497, bras 0,100, jambes 0,322) :
+         jambes pendantes      → 6,24 unités derrière la barre
+         jambes à 50°          → 2,40
+         jambes à l'horizontale → 1,23
+     Aucune position de jambes ne le ramène sous la barre. Le passage
+     n'est PAS une position d'équilibre : il se traverse avec de
+     l'élan, il ne se tient pas. C'est la vue de profil qui le dit. */
+  vue2: {
+    titre: "Vu de profil",
+    alt: "Vue de profil au passage : l'épaule est passée 8 unités devant la barre, le buste bascule de 38° vers l'avant, la hanche est loin derrière la barre et les jambes se portent vers l'avant.",
+    vb: "96 30 60 82",
+    legende: "De face, la bascule du buste rentrerait dans la feuille — elle a donc été retirée de l'animation. La voici. Pour que le coude passe au-dessus de la barre, l'épaule doit d'abord passer 14 cm DEVANT elle : c'est l'épaisseur de la poitrine, rien d'autre. Le buste bascule alors de 38° et la hanche part 31 cm derrière la barre. Calcul du centre de masse : même jambes lancées à l'horizontale, il reste en arrière de la barre. Le passage se traverse avec de l'élan, il ne se tient pas.",
+    svg: `
+      <!-- APLOMB DE LA BARRE -->
+      <line class="mo-rom" x1="120" y1="34" x2="120" y2="108"/>
+      <!-- BARRE vue bout à bout : un cercle, pour qu'on la distingue de
+           la main qui la tient -->
+      <circle class="mo-plate-o" cx="120" cy="76" r="5.5"/>
+      <!-- CORPS : tête, buste à 38°, jambes portées vers l'avant -->
+      <circle class="mo-head" cx="136.85" cy="45" r="10"/>
+      <line class="mo-body" x1="128.23" y1="56.03" x2="102.37" y2="89.13"/>
+      <circle class="mo-joint" cx="102.37" cy="89.13" r="2.8"/>
+      <line class="mo-body" x1="102.37" y1="89.13" x2="136.2" y2="101.44"/>
+      <!-- BRAS : l'avant-bras, vu bout à bout, se réduit au point de la main -->
+      <line class="mo-limb" x1="120" y1="76" x2="128.23" y2="56.03"/>
+      <circle class="mo-joint" cx="128.23" cy="56.03" r="2.8"/>
+      <circle class="mo-hand" cx="120" cy="76" r="3.6"/>
+      <!-- cote du dégagement d'épaule, texte reporté à gauche de l'aplomb :
+           à droite il tomberait dans la tête -->
+      <line class="mo-rom" x1="120" y1="52" x2="128.23" y2="52"/>
+      <text class="mo-cote mo-cote-ok" font-size="6.8" x="99" y="54">14 cm</text>`
+  },
   arrows: [
     { phase: "con", svg: `<path class="mo-arr" d="M166 140 L166 60 M161 68 L166 60 L171 68"/>` },
     { phase: "ecc", svg: `<path class="mo-arr" d="M166 60 L166 140 M161 132 L166 140 L171 132"/>` }
@@ -19677,52 +19886,70 @@ EXERCISE_MOTIONS["crunch-inverse"] = {
 /* ─────────────────────────────────────────────────────────────
    164. FENTES LATÉRALES   (fentes-laterales)
 
-   VUE DE FACE, et il faut dire tout de suite ce que cela coûte.
-   L'écartement de la jambe appartient au plan frontal : il se voit en
-   vraie grandeur. La FLEXION du genou, elle, se fait dans le plan de
-   la jambe, qui est incliné — elle rentre donc en partie dans la
-   feuille.
+   CE SCHÉMA A ÉTÉ REFAIT, ET L'ERREUR VAUT D'ÊTRE DITE. La première
+   version portait une échelle de 0,864 sur la jambe fléchie, présentée
+   comme un raccourcissement de projection : « la jambe mesure 42 et
+   n'occupe plus que 36 ». C'était confondre deux choses. Une jambe qui
+   PLIE occupe moins de place sans qu'aucune projection n'intervienne —
+   42 est la longueur DÉPLOYÉE, pas celle d'un genou fléchi.
 
-   LE RACCOURCISSEMENT EST DÉCLARÉ, PAS CACHÉ. La jambe fléchie mesure
-   42 (21 + 21) et n'occupe plus que 36 en projection : facteur 0,864,
-   soit un plan de jambe incliné de 27,3° hors du frontal. Le groupe du
-   fémur porte donc `scale(0.864)`, et le tibia en hérite — une seule
-   échelle pour les deux segments, puisque le rapport est le même. La
-   jambe tendue, elle, garde 21,0 par segment : facteur 0,972, presque
-   rien, parce qu'elle reste quasiment dans le plan.
+   Mesuré sur le dessin livré : fémur 18,69, tibia 18,68, angle du genou
+   149,0°. Un genou à 149° n'est pas une fente, c'est un pas de côté.
+   L'échelle ne corrigeait pas une projection : elle compensait une
+   hanche placée trop haut et un pas trop court.
 
-   Sans cette échelle il aurait fallu, soit dessiner un genou qui ne
-   plie pas, soit faire varier la longueur d'un os d'une image à
-   l'autre. Les deux mentent ; une échelle annoncée, non.
+   GÉOMÉTRIE REFAITE, SANS AUCUNE ÉCHELLE. Le pas passe de 42 à 54, ce
+   qui laisse la hanche descendre. Elle se place alors à l'intersection
+   de deux contraintes : 43,00 de la jambe tendue — soit exactement
+   2 × 21,5, jambe droite — et 34,1 de la jambe fléchie. Résultat
+   (96,64 122,87), et tout tombe juste :
 
-   GÉOMÉTRIE. Debout : hanche (120 108), pieds (110 150) et (130 150).
-   Le pied gauche part à (88 150) ; le DROIT NE BOUGE PAS, ce qui est
-   la définition du pas de côté. La hanche est alors à l'intersection
-   des deux contraintes — 42 de la jambe tendue, 36 apparents de la
-   jambe fléchie — soit (103,43 117,47) : elle descend de 9,47 et se
-   décale de 16,57 vers la jambe qui plie. Genou fléchi en
-   (91,20 131,60), posé 5 en DEHORS de la ligne hanche-cheville : il
-   suit le pied, ce que la fiche demande et que l'erreur inverse
-   — genou qui rentre — contredit.
+       fémur 21,50   tibia 21,50   angle du genou 104,9°
+       genou en (75,89 128,50), soit 0,11 du pied : il le suit
+       tibia à 0,3° de la verticale
+
+   Aucun segment ne change de longueur d'une image à l'autre, et aucun
+   facteur n'est à déclarer.
+
+   CE QUE LA VUE DE FACE SUPPOSE, ET QU'ELLE DOIT DIRE. Elle dessine le
+   mouvement À PLAT : hanche dans le plan du dessin, recul nul. C'est une
+   convention, pas la réalité, et elle a un prix chiffrable. Avec les
+   20 cm de recul montrés par la seconde vue (9,33 unités), la pose
+   véritable en 3D est :
+
+       cheville (76 150 0)   hanche (96,64 122,87 −9,33)
+       genou    (78,14 128,61 0)   fémur = tibia = 21,50 (vérifié)
+       angle du genou RÉEL 110,6°
+
+   Projetée de face, cette pose donnerait un fémur de 19,37 — soit 0,901
+   de sa longueur — et un genou lu à 112,9°. L'animation, elle, dessine
+   le fémur entier et lit 104,9° : elle creuse la flexion d'environ 8°.
+   Ce raccourcissement VARIE au cours du mouvement (1,000 debout, 0,901
+   en bas) : « un raccourcissement variable ment », donc il n'est pas
+   animé — il est déclaré ici et montré par une image FIXE.
+
+   ÉCHELLE. Jambe dessinée 42 unités pour une jambe réelle de 90 cm, soit
+   2,143 cm par unité — le même étalon qu'au squat bulgare.
    ───────────────────────────────────────────────────────────── */
 EXERCISE_MOTIONS["fentes-laterales"] = {
-  vb: "74 28 92 134",
+  vb: "64 28 96 132",
   dur: 4,
   phases: { ecc: [0, 42], con: [50, 84] },
-  alt: "Debout de face, pieds écartés de la largeur des hanches : un grand pas sur le côté, la jambe du pas se plie pendant que l'autre reste tendue et son pied à plat, puis retour debout.",
+  vue: "Vu de face",
+  alt: "Debout de face, pieds écartés de la largeur des hanches : un grand pas sur le côté, la jambe du pas se plie à environ 105° pendant que l'autre reste tendue et son pied à plat, puis retour debout.",
   fixe: `
-    <line class="mo-ground" x1="80" y1="150" x2="160" y2="150"/>
+    <line class="mo-ground" x1="68" y1="150" x2="150" y2="150"/>
     <!-- pied qui NE BOUGE PAS : c'est lui qui définit le pas -->
     <line class="mo-limb" x1="124" y1="150" x2="138" y2="150"/>
-    <!-- pied du pas, à son point d'arrivée -->
-    <line class="mo-rom" x1="82" y1="154" x2="94" y2="154"/>`,
+    <!-- arrivée du pied du pas -->
+    <line class="mo-rom" x1="70" y1="154" x2="84" y2="154"/>`,
   parts: [
     {
-      /* CORPS : il descend de 9,47 et se décale de 16,57 vers la jambe
+      /* CORPS : il descend de 14,87 et se décale de 23,36 vers la jambe
          qui plie. Tout le reste est accroché à lui. */
       o: "120px 108px",
-      k: [[0, "translate(0px,0px)"], [42, "translate(-16.57px,9.47px)"],
-          [50, "translate(-16.57px,9.47px)"], [84, "translate(0px,0px)"],
+      k: [[0, "translate(0px,0px)"], [42, "translate(-23.36px,14.87px)"],
+          [50, "translate(-23.36px,14.87px)"], [84, "translate(0px,0px)"],
           [100, "translate(0px,0px)"]],
       muscleNom: ["Moyen fessier", "Adducteurs"],
       muscle: `<circle cx="112" cy="106" r="4.5"/>
@@ -19738,43 +19965,79 @@ EXERCISE_MOTIONS["fentes-laterales"] = {
         <line class="mo-limb" x1="140" y1="86" x2="142" y2="110"/>`,
       children: [
         {
-          /* JAMBE DU PAS : rotation + échelle 0,864, le raccourcissement
-             déclaré. Le tibia en hérite, et c'est voulu. */
+          /* JAMBE DU PAS : rotation seule. Fémur et tibia gardent 21,50
+             d'un bout à l'autre — plus aucune échelle. */
           o: "120px 108px",
-          k: [[0, "rotate(0deg) scale(1)"], [42, "rotate(27.5deg) scale(0.864)"],
-              [50, "rotate(27.5deg) scale(0.864)"], [84, "rotate(0deg) scale(1)"],
-              [100, "rotate(0deg) scale(1)"]],
+          k: [[0, "rotate(0deg)"], [42, "rotate(58deg)"], [50, "rotate(58deg)"],
+              [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
           muscleNom: "Quadriceps (jambe fléchie)",
           muscle: `<ellipse cx="117" cy="119" rx="3.4" ry="9" transform="rotate(13 117 119)"/>`,
-          svg: `<line class="mo-limb" x1="120" y1="108" x2="115" y2="129"/>`,
+          svg: `<line class="mo-limb" x1="120" y1="108" x2="113.77" y2="128.58"/>`,
           children: [
             {
-              o: "115px 129px",
-              k: [[0, "rotate(0deg)"], [42, "rotate(-31deg)"], [50, "rotate(-31deg)"],
+              o: "113.77px 128.58px",
+              k: [[0, "rotate(0deg)"], [42, "rotate(-63deg)"], [50, "rotate(-63deg)"],
                   [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
               svg: `
-                <circle class="mo-joint" cx="115" cy="129" r="2.6"/>
-                <line class="mo-limb" x1="115" y1="129" x2="110" y2="150"/>`
+                <circle class="mo-joint" cx="113.77" cy="128.58" r="2.6"/>
+                <line class="mo-limb" x1="113.77" y1="128.58" x2="112" y2="150"/>`
             }
           ]
         },
         {
-          /* JAMBE TENDUE : presque dans le plan, 0,972. Elle reste
-             tendue — genou et cheville tournent du même angle. */
+          /* JAMBE TENDUE : elle finit rigoureusement droite, 43,00 pour
+             2 × 21,50. */
           o: "120px 108px",
-          k: [[0, "rotate(0deg) scale(1)"], [42, "rotate(-25.8deg) scale(0.972)"],
-              [50, "rotate(-25.8deg) scale(0.972)"], [84, "rotate(0deg) scale(1)"],
-              [100, "rotate(0deg) scale(1)"]],
-          svg: `
-            <line class="mo-limb" x1="120" y1="108" x2="125" y2="129"/>
-            <circle class="mo-joint" cx="125" cy="129" r="2.6"/>
-            <line class="mo-limb" x1="125" y1="129" x2="130" y2="150"/>`
+          k: [[0, "rotate(0deg)"], [42, "rotate(-34deg)"], [50, "rotate(-34deg)"],
+              [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `<line class="mo-limb" x1="120" y1="108" x2="126.23" y2="128.58"/>`,
+          children: [
+            {
+              o: "126.23px 128.58px",
+              k: [[0, "rotate(0deg)"], [42, "rotate(-12.1deg)"], [50, "rotate(-12.1deg)"],
+                  [84, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <circle class="mo-joint" cx="126.23" cy="128.58" r="2.6"/>
+                <line class="mo-limb" x1="126.23" y1="128.58" x2="128" y2="150"/>`
+            }
+          ]
         }
       ]
     }
   ],
+  vue2: {
+    titre: "Vu de profil",
+    alt: "Vue de profil au point bas : la hanche est reculée de 20 cm derrière la cheville et le tibia est vertical, le tronc penché de 12° amenant l'épaule à l'aplomb du pied — en rouge pointillé, la faute qui consiste à plier par le genou en laissant la hanche à l'aplomb.",
+    legende: "Cuisse courte : normal. Vue de côté, une jambe écartée ne se projette plus qu'à 51 % — c'est le prix de cette vue, et c'est pour ça qu'elle est figée. Ce qu'elle seule montre : la hanche part 20 cm en arrière de la cheville, ce qui laisse le tibia vertical et l'épaule à l'aplomb du pied. En rouge, plier par le genou sans reculer la hanche : le genou passe 17 cm devant la cheville et le tibia se couche à 22°.",
+    vb: "90 42 84 120",
+    svg: `
+      <line class="mo-ground" x1="100" y1="150" x2="168" y2="150"/>
+      <!-- APLOMB DE LA CHEVILLE : la référence de la vue. Démarre sous la
+           tête pour ne pas la barrer, et passe pile par l'épaule. -->
+      <line class="mo-rom" x1="120" y1="72" x2="120" y2="156"/>
+      <!-- PIED, pointe vers l'avant (+x = avant) -->
+      <line class="mo-limb" x1="114" y1="150" x2="136" y2="150"/>
+      <!-- FAUTE : hanche restée à l'aplomb, genou qui part devant -->
+      <line class="mo-faute" x1="120" y1="122.87" x2="128.13" y2="130.21"/>
+      <line class="mo-faute" x1="128.13" y1="130.21" x2="120" y2="150"/>
+      <circle class="mo-faute-pt" cx="128.13" cy="130.21" r="3"/>
+      <text class="mo-cote mo-cote-faute" font-size="9.9" x="133" y="126">22°</text>
+      <!-- CORRECT : hanche reculée de 9,33 unités (20 cm), tibia vertical -->
+      <line class="mo-body" x1="110.67" y1="122.87" x2="120" y2="77.83"/>
+      <circle class="mo-head" cx="124.06" cy="58.24" r="10"/>
+      <circle class="mo-joint" cx="120" cy="77.83" r="2.8"/>
+      <line class="mo-limb" x1="110.67" y1="122.87" x2="120" y2="128.61"/>
+      <circle class="mo-joint" cx="120" cy="128.61" r="2.6"/>
+      <line class="mo-limb" x1="120" y1="128.61" x2="120" y2="150"/>
+      <circle class="mo-joint" cx="110.67" cy="122.87" r="2.8"/>
+      <!-- cote du recul de hanche, posée au ras du sol : c'est la seule
+           bande libre de ce dessin très vertical -->
+      <line class="mo-rom" x1="110.67" y1="146" x2="120" y2="146"/>
+      <text class="mo-cote mo-cote-ok" font-size="9.9" x="92" y="141">20 cm</text>`
+  },
   arrows: [
-    { phase: "ecc", svg: `<path class="mo-arr" d="M156 96 L156 128 M151 120 L156 128 L161 120"/>` },
-    { phase: "con", svg: `<path class="mo-arr" d="M156 128 L156 96 M151 104 L156 96 L161 104"/>` }
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 96 L150 128 M145 120 L150 128 L155 120"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M150 128 L150 96 M145 104 L150 96 L155 104"/>` }
   ]
 };
+
