@@ -203,6 +203,10 @@ body {
 }
 @media (min-width: 761px) {
   body { padding-bottom: 0; }
+  /* Bibliothèque et nutrition affichent une grille dense : sur grand
+     écran, la largeur de page standard (1160px) laisse trop de vide
+     de chaque côté pour ces deux vues précises. */
+  #view-bibliotheque, #view-nutrition { max-width: 1500px; }
 }
 
 /* ---------- Vues ---------- */
