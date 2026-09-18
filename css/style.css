@@ -203,10 +203,6 @@ body {
 }
 @media (min-width: 761px) {
   body { padding-bottom: 0; }
-  /* Bibliothèque et nutrition affichent une grille dense : sur grand
-     écran, la largeur de page standard (1160px) laisse trop de vide
-     de chaque côté pour ces deux vues précises. */
-  #view-bibliotheque, #view-nutrition { max-width: 1500px; }
 }
 
 /* ---------- Vues ---------- */
@@ -2362,6 +2358,27 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   font-size: 0.64rem; font-weight: 800; letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-soft); opacity: 0.6;
+}
+
+/* Bibliothèque et nutrition n'ont plus d'onglet dédié (voir shell.js) :
+   elles passent toujours par ce panneau, y compris sur PC. Or la bande
+   collée à droite (règle desktop générale sur .sheet-box, 430px) suffit
+   pour les réglages mais écrase une grille d'exercices ou des graphiques
+   de nutrition. shell.js pose .panel-wide uniquement pour ces deux vues :
+   on l'agrandit et on la centre, sans toucher au panneau Réglages ni aux
+   formulaires qui réutilisent le même #panel et restent la bande latérale. */
+@media (min-width: 761px) {
+  .panel-wide .sheet-box {
+    left: 50%; right: auto; top: 5vh; bottom: 5vh;
+    width: min(1280px, 92vw);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, 16px);
+    opacity: 0;
+    transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.24s ease;
+  }
+  .panel-wide.sheet-in .sheet-box { transform: translate(-50%, 0); opacity: 1; }
 }
 
 /* ---------- 3 · Contenu des réglages ---------- */

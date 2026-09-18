@@ -33,6 +33,10 @@ function openViewPanel(view, titre) {
 
   const el = panelEl();
   el.classList.remove("hidden");
+  /* Bibliothèque et nutrition sont des vues denses (grille, graphiques) :
+     elles seules reçoivent le panneau large et centré, les autres usages
+     de ce même panneau (réglages, formulaires) gardent la bande latérale. */
+  el.classList.toggle("panel-wide", view === "bibliotheque" || view === "nutrition");
   requestAnimationFrame(() => el.classList.add("sheet-in"));
   const scroll = el.querySelector(".sheet-scroll");
   if (scroll) scroll.scrollTop = 0;
@@ -76,6 +80,7 @@ function openHtmlPanel(titre, html) {
   document.getElementById("panel-title").textContent = titre;
   const el = panelEl();
   el.classList.remove("hidden");
+  el.classList.remove("panel-wide");
   requestAnimationFrame(() => el.classList.add("sheet-in"));
   const scroll = el.querySelector(".sheet-scroll");
   if (scroll) scroll.scrollTop = 0;
