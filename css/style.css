@@ -9,7 +9,8 @@
    Le thème A « ÉPURÉ » redéfinit ces variables plus bas.
    ========================================================= */
 :root, .theme-gamifie {
-  --bg: #141210;            /* charbon chaud, pas un noir d'écran */
+  --fs-label: 0.75rem;      /* plancher des libellés : 12 px */
+  --bg: #141210;           /* charbon chaud, pas un noir d'écran */
   --bg-soft: #1c1916;
   --card: #211d19;
   --card-hover: #282320;
@@ -188,7 +189,7 @@ body {
   border: none;
   color: var(--text-soft);
   font-family: var(--font-body);
-  font-size: 0.68rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   cursor: pointer;
   border-radius: var(--radius-sm);
@@ -359,7 +360,7 @@ body {
 
 .ex-card-info { margin-top: auto; }
 .ex-card-group {
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.16em;
@@ -389,7 +390,7 @@ body {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border);
   color: var(--text-soft);
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 999px;
@@ -397,7 +398,7 @@ body {
 .tag-custom { border-color: var(--accent); color: var(--accent-2); }
 
 .badge {
-  font-size: 0.68rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   padding: 5px 11px;
   border-radius: 999px;
@@ -568,7 +569,7 @@ textarea { min-height: 90px; resize: vertical; }
 .day-table th {
   text-align: left;
   color: var(--text-soft);
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: 0.12em;
   padding: 10px 8px;
@@ -647,7 +648,7 @@ textarea { min-height: 90px; resize: vertical; }
 .live-title-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .live-dot {
   color: var(--red);
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   letter-spacing: 0.18em;
   animation: pulse 1.6s infinite;
@@ -657,7 +658,7 @@ textarea { min-height: 90px; resize: vertical; }
 .live-chronos { display: flex; gap: clamp(16px, 5vw, 40px); flex-wrap: wrap; margin-top: 16px; align-items: flex-end; }
 .chrono-block { display: flex; flex-direction: column; }
 .chrono-label {
-  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.16em;
+  font-size: var(--fs-label); text-transform: uppercase; letter-spacing: 0.16em;
   color: var(--text-soft); font-weight: 700;
 }
 .chrono-value {
@@ -671,7 +672,7 @@ textarea { min-height: 90px; resize: vertical; }
 /* progression « Exercice X / Y » + barre */
 .live-progress { margin-top: 14px; }
 .progress-label {
-  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 800; text-transform: uppercase;
   letter-spacing: 0.16em; color: var(--text-soft);
 }
 .progress-track {
@@ -707,7 +708,7 @@ textarea { min-height: 90px; resize: vertical; }
 
 .sets-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 12px; }
 .sets-table th {
-  text-align: left; color: var(--text-soft); font-size: 0.68rem;
+  text-align: left; color: var(--text-soft); font-size: var(--fs-label);
   text-transform: uppercase; letter-spacing: 0.12em;
   padding: 8px; border-bottom: 1px solid var(--border);
 }
@@ -996,7 +997,7 @@ textarea { min-height: 90px; resize: vertical; }
 .goal-side { margin-left: auto; }
 .goal-adjust {
   display: flex; flex-direction: column; gap: 6px;
-  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--text-soft);
 }
 .goal-adjust input { max-width: 90px; }
@@ -1060,7 +1061,7 @@ textarea { min-height: 90px; resize: vertical; }
 .badge-tile.badge-ok:hover { transform: translateY(-3px); }
 .badge-ico { font-size: 1.6rem; }
 .badge-nom { font-weight: 800; font-size: 0.88rem; }
-.badge-desc { color: var(--text-soft); font-size: 0.74rem; }
+.badge-desc { color: var(--text-soft); font-size: var(--fs-label); }
 .badge-check {
   position: absolute; top: 10px; right: 10px;
   color: var(--accent-contrast); background: var(--accent);
@@ -1122,7 +1123,7 @@ textarea { min-height: 90px; resize: vertical; }
   margin-bottom: 4px;
   align-items: center;
 }
-.cal-dow { text-align: center; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; color: var(--text-soft); text-transform: uppercase; padding: 6px 0; }
+.cal-dow { text-align: center; font-size: var(--fs-label); font-weight: 800; letter-spacing: 0.1em; color: var(--text-soft); text-transform: uppercase; padding: 6px 0; }
 .cal-day {
   position: relative;
   aspect-ratio: 1;
@@ -1203,7 +1204,7 @@ textarea { min-height: 90px; resize: vertical; }
 .theme-epure .topbar { background: rgba(246, 241, 231, 0.88); }
 .theme-epure .bottom-nav { background: rgba(246, 241, 231, 0.94); }
 .theme-epure .bottom-nav .tab { font-size: 0.78rem; }
-.theme-epure .bottom-nav .tab.active { color: var(--accent); }
+.theme-epure .bottom-nav .tab.active { color: var(--accent-2); }
 
 /* cartes d'exercices : posters -> planches éditoriales claires */
 .theme-epure .ex-card,
@@ -1216,7 +1217,7 @@ textarea { min-height: 90px; resize: vertical; }
 .theme-epure .ex-card { min-height: 200px; }
 .theme-epure .ex-card::after { display: none; }
 .theme-epure .ex-card:hover { border-color: var(--accent); }
-.theme-epure .ex-card-group { color: var(--accent); }
+.theme-epure .ex-card-group { color: var(--accent-2); }
 
 /* badges de niveau : pleins et contrastés sur fond clair */
 .theme-epure .badge-debutant { background: #e5efe6; color: #205723; }
@@ -1240,7 +1241,7 @@ textarea { min-height: 90px; resize: vertical; }
 .theme-epure .chrono-main .chrono-value { color: var(--text); }
 .theme-epure .xp-level { color: var(--text); }
 .theme-epure .display .accent { color: var(--accent); }
-.theme-epure .kicker { color: var(--accent); }
+.theme-epure .kicker { color: var(--accent-2); }
 .theme-epure .ex-chrono { color: var(--text); }
 .theme-epure .spark polyline { stroke: var(--accent); }
 .theme-epure .spark circle { fill: var(--accent); }
@@ -1342,7 +1343,7 @@ textarea { min-height: 90px; resize: vertical; }
 
 /* Bottom nav : 6 items -> libellés compacts */
 @media (max-width: 400px) {
-  .bottom-nav .bn-label { font-size: 0.62rem; }
+  .bottom-nav .bn-label { font-size: var(--fs-label); }
 }
 
 /* =========================================================
@@ -1439,7 +1440,7 @@ textarea { min-height: 90px; resize: vertical; }
 }
 .proj-plateau svg { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--yellow); }
 .proj-n { font-family: var(--font-display); font-size: 1.05rem; }
-.proj-t { font-size: 0.68rem; color: var(--text-soft); font-weight: 600; line-height: 1.3; }
+.proj-t { font-size: var(--fs-label); color: var(--text-soft); font-weight: 600; line-height: 1.3; }
 
 /* Éditeur */
 .builder-box { max-width: 860px; }
@@ -1469,7 +1470,7 @@ textarea { min-height: 90px; resize: vertical; }
 .b-row-fields { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
 .b-row-fields label {
   display: flex; flex-direction: column; gap: 3px;
-  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--text-soft);
 }
 .b-row-fields input { min-height: 40px; padding: 8px 10px; width: 76px; }
@@ -1478,7 +1479,7 @@ textarea { min-height: 90px; resize: vertical; }
 .b-row-actions { display: flex; flex-direction: column; gap: 4px; }
 
 .btn-ic {
-  width: 34px; height: 34px;
+  width: 44px; height: 44px;
   display: inline-flex; align-items: center; justify-content: center;
   background: transparent;
   border: 1px solid var(--border);
@@ -1544,7 +1545,7 @@ textarea { min-height: 90px; resize: vertical; }
 }
 .theme-epure .streak-num { -webkit-text-stroke: 0; color: var(--accent); }
 .streak-cap {
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -1638,7 +1639,7 @@ textarea { min-height: 90px; resize: vertical; }
 /* Mémoire des charges */
 .last-hint { color: var(--text-soft); font-size: 0.8rem; margin-top: 10px; }
 .last-hint strong { color: var(--accent-2); }
-.theme-epure .last-hint strong { color: var(--accent); }
+.theme-epure .last-hint strong { color: var(--accent-2); }
 
 /* Suggestion de progression (double progression) */
 .progress-hint {
@@ -1686,7 +1687,7 @@ textarea { min-height: 90px; resize: vertical; }
 .motion-wrap svg { width: 100%; max-height: 150px; display: block; }
 .motion-tag {
   position: absolute; top: 10px; right: 12px;
-  font-size: 0.68rem; font-weight: 800; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 800; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--text-soft);
 }
 .mo-ground { stroke: var(--border); stroke-width: 2.5; stroke-linecap: round; }
@@ -1748,7 +1749,7 @@ body { font-size: 0.94rem; line-height: 1.55; }
 .display { font-size: clamp(2.3rem, 8.2vw, 4.4rem); }
 .theme-epure .display { font-size: clamp(2rem, 7vw, 3.9rem); }
 .display-sm { font-size: clamp(1.1rem, 3.2vw, 1.5rem); }
-.kicker { font-size: 0.68rem; letter-spacing: 0.18em; margin-bottom: 8px; }
+.kicker { font-size: var(--fs-label); letter-spacing: 0.18em; margin-bottom: 8px; }
 .hero { padding: 26px 0 16px; }
 .hero-sub { font-size: 0.9rem; margin-top: 10px; max-width: 52ch; }
 .panel-title { font-size: 0.98rem; margin-bottom: 10px; }
@@ -1759,12 +1760,12 @@ body { font-size: 0.94rem; line-height: 1.55; }
 .chip { font-size: 0.8rem; padding: 8px 13px; min-height: 40px; }
 .btn { font-size: 0.88rem; }
 .btn-lg { font-size: 0.95rem; padding: 14px 26px; min-height: 50px; margin-top: 14px; }
-.btn-sm { font-size: 0.79rem; padding: 7px 12px; min-height: 38px; }
+.btn-sm { font-size: 0.79rem; padding: 7px 12px; min-height: 44px; }
 .seg { font-size: 0.82rem; padding: 8px 14px; min-height: 40px; }
-.result-count { font-size: 0.72rem; margin-bottom: 12px; }
+.result-count { font-size: var(--fs-label); margin-bottom: 12px; }
 .day-focus, .video-hint, .goal-left, .xp-detail, .pr-best, .program-meta { font-size: 0.8rem; }
-.tag, .badge { font-size: 0.7rem; }
-.chrono-label { font-size: 0.64rem; }
+.tag, .badge { font-size: var(--fs-label); }
+.chrono-label { font-size: var(--fs-label); }
 .chrono-value { font-size: 1.5rem; }
 .ex-card h3 { font-size: 1rem; }
 .ex-card { min-height: 168px; }
@@ -1797,7 +1798,7 @@ body { font-size: 0.94rem; line-height: 1.55; }
 .disc-meta { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; }
 .disc-more {
   display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
-  color: var(--text-soft); font-size: 0.72rem; font-weight: 800;
+  color: var(--text-soft); font-size: var(--fs-label); font-weight: 800;
   text-transform: uppercase; letter-spacing: 0.08em;
 }
 .disc-chev { transition: transform 0.22s ease; font-size: 1rem; line-height: 1; }
@@ -1888,7 +1889,7 @@ body { max-width: 100%; }
 /* ---------- B3 · Reste à faire ---------- */
 .progress-label { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
 .prog-strong { color: var(--accent-2); font-size: 0.86rem; font-weight: 800; letter-spacing: 0.02em; }
-.theme-epure .prog-strong { color: var(--accent); }
+.theme-epure .prog-strong { color: var(--accent-2); }
 .prog-dim { color: var(--text-soft); font-size: 0.75rem; font-weight: 600; }
 
 /* ---------- C1 · Accès direct Programme / Nutrition ---------- */
@@ -1961,7 +1962,7 @@ body { max-width: 100%; }
 .type-chip {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 24px; height: 18px; padding: 0 5px; border-radius: 5px;
-  font-size: 0.64rem; font-weight: 800; letter-spacing: 0.04em;
+  font-size: var(--fs-label); font-weight: 800; letter-spacing: 0.04em;
   font-family: var(--font-body); vertical-align: middle;
 }
 .t-push   { background: var(--t-push);   color: var(--t-push-ink); }
@@ -1974,7 +1975,7 @@ body { max-width: 100%; }
 
 .type-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 12px 0 4px; }
 .tl-item { display: inline-flex; align-items: center; gap: 5px; }
-.tl-nom { font-size: 0.72rem; font-weight: 600; color: var(--text-soft); }
+.tl-nom { font-size: var(--fs-label); font-weight: 600; color: var(--text-soft); }
 
 /* Cellule du calendrier : numéro du jour en haut, pastille de type dessous
    et bien lisible — le mois se lit d'un coup d'œil sans rien ouvrir. */
@@ -1983,12 +1984,12 @@ body { max-width: 100%; }
   flex-direction: column; align-items: stretch; justify-content: flex-start;
   gap: 4px; padding: 5px 4px; aspect-ratio: auto; min-height: 56px;
 }
-.cal-num { font-size: 0.74rem; font-variant-numeric: tabular-nums; color: var(--text-soft); text-align: left; }
+.cal-num { font-size: var(--fs-label); font-variant-numeric: tabular-nums; color: var(--text-soft); text-align: left; }
 .cal-day.cal-has .cal-num, .cal-day.cal-today .cal-num { color: var(--text); font-weight: 800; }
 .cal-type {
   display: flex; align-items: center; justify-content: center; gap: 2px;
   width: 100%; min-height: 22px; padding: 2px 4px; border-radius: 6px;
-  font-size: 0.66rem; font-weight: 800; letter-spacing: 0.03em;
+  font-size: var(--fs-label); font-weight: 800; letter-spacing: 0.03em;
 }
 .cal-plus { font-size: 0.55rem; opacity: 0.8; }
 .cal-day.cal-has { border-color: var(--border); }
@@ -1996,7 +1997,7 @@ body { max-width: 100%; }
 @media (max-width: 560px) {
   .cal-grid { gap: 3px; grid-template-columns: repeat(7, 1fr) 30px; }
   .cal-day { min-height: 48px; padding: 3px 2px; }
-  .cal-num { font-size: 0.66rem; }
+  .cal-num { font-size: var(--fs-label); }
   .cal-type { font-size: 0.58rem; min-height: 18px; padding: 1px 2px; }
 }
 
@@ -2023,8 +2024,8 @@ body { max-width: 100%; }
 }
 .exs-val { font-family: var(--font-display); font-size: 1.15rem; color: var(--accent-2); }
 .theme-epure .exs-val { color: var(--text); font-weight: 600; }
-.exs-lab { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text); }
-.exs-help { font-size: 0.73rem; color: var(--text-soft); line-height: 1.45; }
+.exs-lab { font-size: var(--fs-label); font-weight: 800; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text); }
+.exs-help { font-size: var(--fs-label); color: var(--text-soft); line-height: 1.45; }
 
 /* ---------- Divers ---------- */
 .lib-bar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -2066,11 +2067,11 @@ body { max-width: 100%; }
 
 /* ---------- 2 · Séries restantes par exercice ---------- */
 .ex-sets {
-  font-size: 0.74rem; font-weight: 800; color: var(--accent-2);
+  font-size: var(--fs-label); font-weight: 800; color: var(--accent-2);
   background: var(--accent-soft); border-radius: 999px; padding: 3px 9px;
   white-space: nowrap;
 }
-.theme-epure .ex-sets { color: var(--accent); }
+.theme-epure .ex-sets { color: var(--accent-2); }
 .ex-sets-done { color: var(--green); background: transparent; border: 1px solid var(--green); }
 .theme-epure .ex-sets-done { color: var(--green); border-color: var(--green); }
 .live-ex-done { opacity: 0.82; }
@@ -2098,7 +2099,7 @@ body { max-width: 100%; }
 /* replié : on masque la ligne technique, on montre le récap */
 .live-ex-recap { display: none; font-weight: 600; }
 .live-ex-tempo { margin-top: 2px; font-size: 0.8rem; color: var(--accent-2); }
-.theme-epure .live-ex-tempo { color: var(--accent); }
+.theme-epure .live-ex-tempo { color: var(--accent-2); }
 .live-ex-collapsed .live-ex-sub, .live-ex-collapsed .live-ex-tempo { display: none; }
 .live-compact .live-ex .live-ex-tempo { display: none; }
 .live-ex-collapsed .live-ex-recap { display: block; }
@@ -2158,7 +2159,7 @@ body { max-width: 100%; }
 
 /* ---------- 5 · Répétitions par charge ---------- */
 .exs-cap {
-  font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 800; text-transform: uppercase;
   letter-spacing: 0.1em; color: var(--text-soft); margin: 12px 0 4px;
 }
 .rpw { display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
@@ -2170,7 +2171,7 @@ body { max-width: 100%; }
   border-radius: 0 4px 4px 0;                 /* extrémité arrondie, base ancrée */
   transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.rpw-val { font-size: 0.74rem; color: var(--text-soft); white-space: nowrap; }
+.rpw-val { font-size: var(--fs-label); color: var(--text-soft); white-space: nowrap; }
 .rpw-val strong { color: var(--text); font-variant-numeric: tabular-nums; }
 .rpw-sets { opacity: 0.8; }
 @media (max-width: 420px) { .rpw-sets { display: none; } }
@@ -2210,7 +2211,7 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
 }
 .mo-legend { display: flex; flex-wrap: wrap; gap: 4px 8px; }
 .mo-leg-item {
-  font-size: 0.66rem; font-weight: 700; color: var(--text-soft);
+  font-size: var(--fs-label); font-weight: 700; color: var(--text-soft);
   display: inline-flex; align-items: center; gap: 4px;
 }
 .mo-leg-item::before {
@@ -2221,7 +2222,7 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
 .mo-btn {
   background: var(--bg-soft); border: 1px solid var(--border); color: var(--text-soft);
   border-radius: 999px; min-width: 30px; height: 26px; padding: 0 8px;
-  font-size: 0.72rem; font-weight: 800; font-family: inherit; cursor: pointer;
+  font-size: var(--fs-label); font-weight: 800; font-family: inherit; cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 .mo-btn:hover { color: var(--accent-2); border-color: var(--accent); }
@@ -2230,7 +2231,7 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
 /* Repli générique : signalé, jamais présenté comme fidèle */
 .motion-tag-warn { color: var(--yellow); }
 .motion-cap-warn {
-  display: block; margin-top: 6px; font-size: 0.72rem; line-height: 1.45;
+  display: block; margin-top: 6px; font-size: var(--fs-label); line-height: 1.45;
   color: var(--text-soft); border-left: 2px solid var(--yellow); padding-left: 8px;
 }
 .motion-generique svg { opacity: 0.75; }
@@ -2263,7 +2264,7 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
    change — et le lecteur doit le voir, pas seulement le lire dans l'alt. */
 .motion-vue {
   position: absolute; top: 10px; left: 12px;
-  font-size: 0.64rem; font-weight: 800; text-transform: uppercase;
+  font-size: var(--fs-label); font-weight: 800; text-transform: uppercase;
   letter-spacing: 0.09em; color: var(--bg); background: var(--accent);
   padding: 2px 7px; border-radius: 999px;
 }
@@ -2355,7 +2356,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .access-hint {
   margin-left: auto;
   align-self: center;
-  font-size: 0.64rem; font-weight: 800; letter-spacing: 0.1em;
+  font-size: var(--fs-label); font-weight: 800; letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-soft); opacity: 0.6;
 }
@@ -2598,13 +2599,10 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
      pousser le reste à la ligne. */
   .live-title-actions .live-dot { display: none; }
 
-  /* Nom de l'exercice en cours : une ligne, tronquée. Il est répété en
-     entier sur la carte de l'exercice, juste en dessous. */
+  /* Le compteur « Exercice X/Y » passe à la ligne plutôt que d'être coupé :
+     c'est la seule progression lisible en séance. */
   .live-progress { margin-top: 10px; }
-  .progress-label {
-    flex-wrap: nowrap; gap: 0 8px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
+  .progress-label { flex-wrap: wrap; gap: 2px 8px; }
   .live-chronos { margin-top: 12px; gap: 14px; }
 }
 
@@ -2643,7 +2641,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 /* Rappel d'une ligne, affiché seulement pour les stats déjà consultées. */
 .stat-rappel {
   display: block; margin-top: 6px;
-  font-size: 0.72rem; line-height: 1.35;
+  font-size: var(--fs-label); line-height: 1.35;
   font-weight: 400; letter-spacing: 0;
   text-transform: none;
   color: var(--text-soft); opacity: 0.85;
@@ -2653,7 +2651,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .si-card { margin-bottom: 10px; padding: 12px 14px; }
 .si-lab {
   margin: 0 0 5px;
-  font-size: 0.64rem; font-weight: 800; letter-spacing: 0.14em;
+  font-size: var(--fs-label); font-weight: 800; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--text-soft);
 }
 .si-txt { margin: 0; font-size: 0.92rem; line-height: 1.5; }
@@ -2958,7 +2956,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   flex: 0 0 auto;
   width: 18px;
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.9;
@@ -2971,7 +2969,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   flex: 0 0 auto;
   width: 18px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   line-height: 1.8;
   color: var(--red);
@@ -3107,7 +3105,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-label);
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1.4;
@@ -3160,7 +3158,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
    l'avancement des badges en rouge. D'où « badge-compte ». */
 .badge-compte {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
+  font-size: var(--fs-label);
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--text-soft);
@@ -3179,7 +3177,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .badge-next strong { color: var(--accent-2); }
 .badge-next-n {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-label);
   letter-spacing: 0.02em;
   color: var(--text-soft);
 }
@@ -3203,7 +3201,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .wb-lab {
   display: flex; align-items: center; gap: 8px;
   font-family: var(--font-mono);
-  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+  font-size: var(--fs-label); font-weight: 600; letter-spacing: 0.04em;
   text-transform: uppercase; color: var(--text);
 }
 .wb-dot { color: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
@@ -3270,7 +3268,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
 .imp-tag {
-  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600;
+  font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 600;
   letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--red); border: 1px solid var(--red);
   border-radius: var(--radius-sm); padding: 2px 7px; white-space: nowrap;
@@ -3298,7 +3296,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
    pas les exécuter comme telles — le repère dit au moins qu'elles vont
    ensemble, plutôt que de laisser croire à deux exercices séparés. */
 .imp-ss {
-  font-family: var(--font-mono); font-size: 0.66rem; font-weight: 700;
+  font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--bg); background: var(--accent);
   border-radius: var(--radius-sm); padding: 2px 6px; white-space: nowrap;
@@ -3312,7 +3310,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .imp-sets-edit { display: flex; flex-wrap: wrap; gap: 10px; }
 .imp-sets-edit label {
   display: flex; flex-direction: column; gap: 4px;
-  font-size: 0.74rem; font-weight: 700; color: var(--text-soft);
+  font-size: var(--fs-label); font-weight: 700; color: var(--text-soft);
   text-transform: uppercase; letter-spacing: 0.05em;
 }
 .imp-sets-edit input {
@@ -3332,7 +3330,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   font-size: 0.8rem; line-height: 1.5; color: var(--text-soft);
 }
 .fx-flag {
-  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600;
+  font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 600;
   letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--yellow); border: 1px solid var(--yellow);
   border-radius: var(--radius-sm); padding: 2px 7px; margin-left: 6px;
