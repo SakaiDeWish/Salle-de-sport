@@ -599,7 +599,33 @@ function renderNutriResult(d) {
         <p class="disclaimer">⚠️ Estimations générales, pas une prescription. Pas de restriction sévère : en cas de doute, d'antécédents médicaux ou de troubles alimentaires, parles-en à un médecin ou un(e) diététicien(ne).</p>`
       })}
     </div>
+
+    <div class="card">
+      <h3 class="panel-title">Partager mes besoins</h3>
+      <p class="disc-what">Envoie tes cibles et tes 12 dernières pesées par mail, par exemple
+        à l'outil qui prépare tes menus.</p>
+      <button type="button" class="btn btn-ghost" id="nutri-export">Envoyer par mail</button>
+    </div>
   `;
+
+  /* L'adresse n'est pas dans le code (dépôt public) : demandée une fois,
+     puis gardée sur l'appareil. */
+  document.getElementById("nutri-export").addEventListener("click", () => {
+    let dest = localStorage.getItem("gymcoach.exportMail");
+    if (!dest) {
+      dest = prompt("Adresse qui reçoit l'export (retenue pour les prochaines fois) :");
+      if (!dest) return;
+      localStorage.setItem("gymcoach.exportMail", dest.trim());
+    }
+    const data = {
+      gymcoachExport: 1,
+      date: new Date().toISOString().slice(0, 10),
+      profil: d,
+      cibles: { kcal: cible, proteines_g: protG, lipides_g: lipG, glucides_g: glucG },
+      poids: loadJSON(STORAGE_KEYS.weights, []).slice(-12)
+    };
+    location.href = `mailto:${dest.trim()}?subject=${encodeURIComponent("GymCoach : export nutrition")}&body=${encodeURIComponent(JSON.stringify(data))}`;
+  });
 }
 
 document.querySelectorAll('.tab[data-view="nutrition"]').forEach(t =>
