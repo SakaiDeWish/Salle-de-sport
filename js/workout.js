@@ -381,6 +381,12 @@ function clearLive() {
   restMinimized = false;
   if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
   if (elRestOverlay) elRestOverlay.classList.add("hidden");
+  /* Même raison que ci-dessus, pour les deux modes d'édition de liste :
+     sans séance, ni l'appairage ni la réorganisation n'ont de carte à
+     toucher, et leur barre resterait affichée par-dessus l'écran suivant
+     en proposant une action devenue impossible. */
+  reordering = false; reorderBar(false);
+  ssPicking = false; ssPickFirst = null; ssPickBar(false);
   updateMinibar();          // sans ça, la barre garde son dernier texte
 }
 
@@ -1022,9 +1028,14 @@ function ssAssemble(cartes) {
         <span class="ss-flow">${noms.map((n, k) => n + " (" + series[k] + ")").join(" → ")}
           · repos ${ssRest(gid)} s après la paire</span>
         <span class="ss-actions">
-          <button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
-            memo ? "★ Mémorisé" : "☆ Mémoriser"}</button>
-          <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>
+          ${reordering
+            ? moveButtons(membres[0], "blk",
+                blocIndex(membres[0]) > 0,
+                blocIndex(membres[0]) < reorderBlocks().length - 1,
+                "le super set", "Le groupe entier")
+            : `<button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
+                 memo ? "★ Mémorisé" : "☆ Mémoriser"}</button>
+               <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>`}
         </span>
       </div>
       ${membres.map((k, r) => cartes[k] + (r < membres.length - 1
@@ -1049,7 +1060,9 @@ function renderLiveExercises() {
 
   const cartes = live.exercises.map((ex, i) => {
     const isCurrent = i === live.currentIndex;
-    const open = i === expandedIndex;
+    /* En réorganisation, TOUT est replié : on déplace en voyant la liste,
+       pas en voyant un formulaire de série. */
+    const open = !reordering && i === expandedIndex;
     const p = exerciseProgress(ex);
     // ligne récapitulative de l'exercice replié : séries faites + charges
     /* Mesuré en temps ou en répétitions : la question se pose une fois
@@ -1084,6 +1097,7 @@ function renderLiveExercises() {
           <span class="live-ex-chev" aria-hidden="true">⌄</span>
         </div>
       </button>
+      ${reordering ? moveStrip(i) : ""}
 
       <div class="live-ex-body"><div class="live-ex-body-inner">
       <div class="live-ex-tools">
@@ -1306,6 +1320,17 @@ function renderLiveExercises() {
     if (e.key === "Enter") { e.preventDefault(); saveSetEdit(editingSet.i, editingSet.j); }
     if (e.key === "Escape") { editingSet = null; renderLiveExercises(); }
   });
+
+  /* Flèches de réorganisation. Elles vivent HORS du bouton d'en-tête —
+     un bouton dans un bouton n'est pas du HTML valide — mais un clic qui
+     remonterait jusqu'à la carte replierait l'accordéon au passage. */
+  elLiveExercises.classList.toggle("reordering", reordering);
+  elLiveExercises.querySelectorAll(".mv").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.preventDefault(); e.stopPropagation();
+      const i = +btn.dataset.i, d = +btn.dataset.dir;
+      btn.dataset.mv === "in" ? moveInGroup(i, d) : moveBlock(i, d);
+    }));
 
   elLiveExercises.querySelectorAll(".ss-break").forEach(btn =>
     btn.addEventListener("click", () => ssBreak(btn.dataset.ss)));
@@ -1968,9 +1993,169 @@ function ssPickTap(i) {
   ssCreate(a, i);
 }
 
-document.getElementById("live-superset").addEventListener("click", () =>
-  ssPicking ? ssPickCancel() : ssPickStart());
+document.getElementById("live-superset").addEventListener("click", () => {
+  if (reordering) reorderStop();
+  ssPicking ? ssPickCancel() : ssPickStart();
+});
 document.getElementById("ss-pick-cancel").addEventListener("click", ssPickCancel);
+
+/* ==================== RÉORGANISER LA SÉANCE ====================
+
+   L'ordre d'une séance ne survit pas toujours à la salle : le banc est
+   pris, la cage est occupée, on garde le mouvement mais on le repousse.
+   Jusqu'ici il fallait retirer l'exercice et le rajouter — ce qui perdait
+   ses séries déjà validées.
+
+   UN MODE, PAS DES FLÈCHES PARTOUT. Deux boutons de plus sur chaque
+   carte, en permanence, c'est deux occasions de plus de se tromper de
+   cible entre deux séries. La réorganisation est donc un MODE, comme
+   l'appairage du super set : on y entre, les cartes se replient toutes,
+   on déplace, on en sort. Les deux modes s'excluent.
+
+   >>> CE QU'ON DÉPLACE, C'EST UN BLOC <<<
+   Un super set tient sa promesse — « s'enchaîne sans repos » — par
+   l'ADJACENCE de ses membres : ssCreate va jusqu'à déplacer le second
+   exercice pour l'obtenir. Laisser une flèche faire sortir un membre du
+   groupe casserait cette promesse en silence. L'unité de déplacement est
+   donc le bloc : un exercice seul, ou un groupe entier. À l'intérieur
+   d'un groupe, les flèches échangent deux membres SANS jamais franchir
+   la frontière du bloc. Dans les deux cas l'adjacence est préservée par
+   construction, pas par vigilance.
+
+   >>> LES INDICES MENTENT DÈS QU'ON TOUCHE À LA LISTE <<<
+   La leçon est déjà écrite plus haut, à ssApplyRemembered, et elle vaut
+   ici mot pour mot. Quatre repères de l'écran sont des indices —
+   l'exercice en cours, celui qui est déplié, le maintien en cours d'une
+   part, la série en cours d'édition d'autre part. Réordonner sans les
+   retraduire ferait pointer « en cours » sur un autre exercice et
+   attribuerait un chrono de gainage au voisin. appliqueOrdre() les
+   capture donc par RÉFÉRENCE D'OBJET avant, et les retrouve après. Les
+   deux repères de saisie (édition, note) ne sont pas retraduits mais
+   ANNULÉS : on ne réordonne pas en plein milieu d'une correction. */
+let reordering = false;
+
+/* Découpe la séance en blocs déplaçables : [début, fin] inclus. */
+function reorderBlocks() {
+  const out = [];
+  if (!live) return out;
+  for (let i = 0; i < live.exercises.length; i++) {
+    const gid = live.exercises[i].ss;
+    if (!gid) { out.push([i, i]); continue; }
+    let j = i;
+    while (j + 1 < live.exercises.length && live.exercises[j + 1].ss === gid) j++;
+    out.push([i, j]);
+    i = j;
+  }
+  return out;
+}
+
+/* Rang du bloc qui contient l'exercice i (−1 s'il n'y en a pas). */
+function blocIndex(i) {
+  return reorderBlocks().findIndex(([a, z]) => i >= a && i <= z);
+}
+
+/* Pose un nouvel ordre et retraduit tous les repères. */
+function appliqueOrdre(nouvel) {
+  const courant  = live.exercises[live.currentIndex] || null;
+  const deplie   = expandedIndex >= 0 ? live.exercises[expandedIndex] : null;
+  const maintenu = live.holdStart ? live.exercises[live.holdIndex] : null;
+  live.exercises = nouvel;
+  const pos = o => { const k = live.exercises.indexOf(o); return k < 0 ? null : k; };
+  live.currentIndex = courant ? (pos(courant) ?? 0) : 0;
+  if (maintenu) {
+    const k = pos(maintenu);
+    if (k == null) { live.holdStart = null; live.holdIndex = null; }
+    else live.holdIndex = k;
+  }
+  expandedIndex = deplie ? (pos(deplie) ?? -1) : -1;
+  editingSet = null; notingSet = null;
+  saveLive();
+  renderLiveExercises();
+}
+
+/* Déplace le bloc qui contient i d'un cran vers le haut (-1) ou le bas. */
+function moveBlock(i, dir) {
+  const blocs = reorderBlocks();
+  const b = blocIndex(i);
+  const c = b + dir;
+  if (b < 0 || c < 0 || c >= blocs.length) return;
+  const seg = ([a, z]) => live.exercises.slice(a, z + 1);
+  const nouvel = [];
+  blocs.forEach((bl, k) => {
+    if (k === b) return;                         // le bloc déplacé se repose ailleurs
+    if (k === c && dir < 0) nouvel.push(...seg(blocs[b]));
+    nouvel.push(...seg(bl));
+    if (k === c && dir > 0) nouvel.push(...seg(blocs[b]));
+  });
+  vibre(12);
+  appliqueOrdre(nouvel);
+}
+
+/* Échange deux membres D'UN MÊME super set. La condition `a.ss === b.ss`
+   n'est pas une précaution de plus : c'est elle qui interdit à un membre
+   de sortir du groupe par les flèches. */
+function moveInGroup(i, dir) {
+  const j = i + dir;
+  const a = live.exercises[i], b = live.exercises[j];
+  if (!a || !b || !a.ss || a.ss !== b.ss) return;
+  const nouvel = live.exercises.slice();
+  nouvel[i] = b; nouvel[j] = a;
+  vibre(12);
+  appliqueOrdre(nouvel);
+}
+
+/* Les deux flèches d'une carte. Un exercice seul déplace son bloc ; un
+   membre de super set se déplace à l'intérieur du sien — le groupe
+   entier, lui, se déplace depuis son en-tête. */
+function moveStrip(i) {
+  const ex = live.exercises[i];
+  const dedans = !!ex.ss;
+  const membres = dedans ? ssMembers(ex.ss) : [i];
+  const rang = membres.indexOf(i);
+  const b = blocIndex(i);
+  const haut = dedans ? rang > 0 : b > 0;
+  const bas  = dedans ? rang < membres.length - 1 : b < reorderBlocks().length - 1;
+  return moveButtons(i, dedans ? "in" : "blk", haut, bas, ex.nom,
+    dedans ? "Dans le super set" : "");
+}
+
+function moveButtons(i, quoi, haut, bas, nom, lbl) {
+  return `<div class="live-ex-move">
+    ${lbl ? `<span class="live-ex-move-lbl">${esc(lbl)}</span>` : ""}
+    <button type="button" class="btn btn-ghost btn-sm mv" data-i="${i}" data-mv="${quoi}"
+      data-dir="-1" ${haut ? "" : "disabled"} aria-label="Monter ${esc(nom)}">▲</button>
+    <button type="button" class="btn btn-ghost btn-sm mv" data-i="${i}" data-mv="${quoi}"
+      data-dir="1" ${bas ? "" : "disabled"} aria-label="Descendre ${esc(nom)}">▼</button>
+  </div>`;
+}
+
+function reorderBar(on) {
+  const bar = document.getElementById("reorder-bar");
+  if (bar) bar.classList.toggle("hidden", !on);
+}
+
+function reorderStart() {
+  if (!live || live.exercises.length < 2) {
+    alert("Il faut au moins deux exercices pour changer l'ordre.");
+    return;
+  }
+  if (ssPicking) ssPickCancel();
+  reordering = true;
+  editingSet = null; notingSet = null;
+  reorderBar(true);
+  renderLiveExercises();
+}
+
+function reorderStop() {
+  reordering = false;
+  reorderBar(false);
+  expandedIndex = live ? live.currentIndex : -1;
+  renderLiveExercises();
+}
+
+document.getElementById("live-reorder").addEventListener("click", () =>
+  reordering ? reorderStop() : reorderStart());
+document.getElementById("reorder-done").addEventListener("click", reorderStop);
 
 /* ---------- Fin de séance ---------- */
 document.getElementById("live-pause").addEventListener("click", pauseSession);

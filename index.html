@@ -430,6 +430,7 @@
       <div class="program-actions live-actions-flow">
         <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
         <button class="btn btn-ghost" id="live-superset">⚡ Super set</button>
+        <button class="btn btn-ghost" id="live-reorder">↕ Ordre</button>
         <button class="btn btn-primary" id="live-finish">Terminer</button>
         <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
       </div>
@@ -438,6 +439,13 @@
       <div id="ss-pick-bar" class="ss-pick-bar hidden">
         <span id="ss-pick-msg">Touche le <strong>premier</strong> exercice du super set.</span>
         <button class="btn btn-ghost btn-sm" id="ss-pick-cancel">Annuler</button>
+      </div>
+      <!-- Barre de réorganisation : même principe que celle du super set.
+           Les cartes se replient toutes et chacune porte ses deux flèches. -->
+      <div id="reorder-bar" class="ss-pick-bar hidden">
+        <span>Déplace les exercices avec <strong>▲</strong> et <strong>▼</strong>.
+          Un super set se déplace d'un bloc.</span>
+        <button class="btn btn-primary btn-sm" id="reorder-done">Terminé</button>
       </div>
 
       <div id="live-exercises"></div>

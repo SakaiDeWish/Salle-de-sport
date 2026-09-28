@@ -2531,6 +2531,30 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   font-size: 0.86rem;
 }
 
+/* ---------- Réorganisation de la séance ----------
+   Les flèches sont posées SOUS l'en-tête et non dedans : l'en-tête est
+   lui-même un <button>, et un bouton n'en contient pas un autre. Une
+   bande à part évite aussi qu'une flèche tombe sous le pouce au moment
+   où l'on visait le titre pour déplier. */
+.live-ex-move {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  margin-top: 6px; padding-top: 6px;
+  border-top: 1px dashed var(--border);
+}
+.live-ex-move-lbl {
+  margin-right: auto;
+  font-size: 0.78rem; font-weight: 700; color: var(--text-soft);
+}
+/* Cible confortable : on réordonne debout, entre deux séries. */
+.live-ex-move .btn { min-width: 46px; min-height: 40px; font-size: 1rem; line-height: 1; }
+.live-ex-move .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.reordering .live-ex { outline: 2px dashed var(--border); outline-offset: 2px; }
+.reordering .live-ex-chev, .reordering .ex-chrono { display: none; }
+.reordering .ss-group { outline: 2px dashed var(--accent); outline-offset: 4px; }
+/* Dans l'en-tête d'un super set, la bande n'a plus rien à séparer :
+   elle y est déjà sur sa propre ligne. */
+.ss-actions .live-ex-move { width: 100%; margin-top: 0; padding-top: 0; border-top: none; }
+
 /* ---------- Seconde vue statique ----------
    Même carte que le schéma animé, sans contrôles : rien ne bouge, donc
    rien à mettre en pause. Sa légende est une phrase, pas une liste de
