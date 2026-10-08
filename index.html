@@ -644,11 +644,18 @@
   </div>
 
   <!-- Bouton RÉGLAGES : remplace la bascule de thème de la barre du haut,
-       qui disparaît sur mobile (point 3). Discret, ancré en bas à droite
-       au-dessus de la barre d'onglets, il ne recouvre aucun contenu et
-       s'efface dès qu'une séance est en cours (la mini-barre prend la place). -->
-  <button id="settings-fab" class="settings-fab" aria-label="Réglages : thème, son de repos">
-    <span class="sf-ico" id="settings-fab-ico" aria-hidden="true">◐</span>
+       qui disparaît sur mobile (point 3). Ancré en bas à droite au-dessus
+       de la barre d'onglets.
+       >>> IL A LONGTEMPS PORTÉ UNE LUNE <<< En héritant de la bascule de
+       thème, il en avait gardé le glyphe : ☾ en sombre, ☀ en clair. Sur
+       un téléphone, où la barre du haut n'existe pas, c'était la SEULE
+       porte d'entrée des réglages — et elle annonçait « jour/nuit », pas
+       « réglages ». Elle porte maintenant un engrenage ET le mot, parce
+       qu'une icône seule laisse encore deviner. Le choix du thème, lui,
+       n'a pas bougé : il est dans le panneau. -->
+  <button id="settings-fab" class="settings-fab" aria-label="Réglages : thème, son de repos, version installée">
+    <span class="sf-ico" aria-hidden="true">⚙</span>
+    <span class="sf-lab">Réglages</span>
   </button>
 
   <!-- Mini-barre : la séance en cours te suit dans toute l'app -->
