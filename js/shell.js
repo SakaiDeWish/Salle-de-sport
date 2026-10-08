@@ -149,7 +149,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v43";
+const APP_VERSION = "v44";
 
 function settingsHtml() {
   const t = currentTheme();

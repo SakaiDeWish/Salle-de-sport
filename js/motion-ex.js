@@ -8000,6 +8000,13 @@ EXERCISE_MOTIONS["rowing-menton"] = {
        CONVERGENTS, qui reproduisent le rapprochement des
        haltères. Le schéma dessine la version à rails
        rectilignes, la plus répandue, et le dit.
+       >>> CETTE RÉSERVE A MAINTENANT SON PROPRE SCHÉMA <<<
+       La machine convergente est le schéma 165
+       (developpe-epaules-convergent), bâti sur CE cadre exact —
+       mêmes épaules, mêmes longueurs de segments, même poignée
+       de départ — pour que les deux se comparent unité par
+       unité. Toute la différence entre eux est l'inclinaison du
+       trajet : 0° ici, 15° là.
    Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
    Distinction : ≠ développé haltères assis (charge libre, mains
                convergentes, stabilisateurs sollicités) ;
@@ -20041,3 +20048,260 @@ EXERCISE_MOTIONS["fentes-laterales"] = {
   ]
 };
 
+
+/* =========================================================
+   165. DÉVELOPPÉ ÉPAULES, MACHINE CONVERGENTE
+        (developpe-epaules-convergent)
+   -----------------------------------------------------------
+   Position  : ASSIS dos plaqué, poignées à hauteur d'OREILLES,
+               coudes bas et écartés, avant-bras verticaux.
+   Matériel  : machine à bras CONVERGENTS, dite iso-latérale :
+               deux leviers INDÉPENDANTS, chacun sa charge, dont
+               les poignées se rapprochent en montant.
+   Mobiles   : ÉPAULE et COUDE.
+   Fixes     : bassin et dos, plaqués au dossier.
+   Vue de FACE : le rapprochement vit dans le plan frontal.
+   >>> POURQUOI LE RAIL DESSINÉ EST DROIT, ET POURQUOI C'EST
+       EXACT <<< Sur la machine, le bras tourne autour d'un axe
+       de pivot. Si cet axe était purement transversal, la
+       poignée décrirait un arc dans le plan sagittal et ne se
+       rapprocherait pas d'une unité : c'est la machine à rails
+       verticaux (schéma 72). Sur une convergente, l'axe est
+       incliné de BÊTA autour de l'axe sagittal. Le plan de
+       rotation contient alors la direction (−sin BÊTA, cos
+       BÊTA, 0) et la direction avant-arrière ; sa PROJECTION
+       FRONTALE est donc une DROITE, inclinée de BÊTA sur la
+       verticale. Le rail droit et incliné du schéma n'est pas
+       une approximation de l'arc : c'est son ombre frontale
+       exacte. L'arc, lui, est tout entier dans la profondeur,
+       invisible de face — et c'est dit ici plutôt que suggéré.
+       C'est aussi pourquoi il n'y a pas de seconde vue de
+       profil : le rayon de l'arc et la place du pivot changent
+       d'une machine à l'autre, et il faudrait les inventer.
+   >>> D'OÙ VIENT BÊTA = 15° <<< Aucun fabricant ne publie
+       l'angle de convergence de ses bras. Deux repères
+       accessibles : un brevet de développé épaules convergent
+       donne un angle inclus de 150° (fourchette 135–165°), ce
+       qui fait 15° par côté si on lit ces 150° comme l'angle
+       entre les deux trajets ; et une machine du commerce
+       annonce 20° par côté. On dessine donc 15°, la borne basse
+       de 15–20°, et on l'écrit ici au lieu de le faire passer
+       pour une mesure.
+   GÉOMÉTRIE (calculée) — cadre repris À L'IDENTIQUE du schéma
+   72 pour que les deux se comparent unité par unité : épaule
+   gauche (104,70), bras 30, avant-bras 27, poignée de départ
+   (74,46 ; 48,21), coude de départ 80,0°. Rail incliné de 15° ;
+   course arrêtée quand le coude atteint 165°, soit 31,61 unités
+   de course, six intervalles, IK à chacun :
+     poignée (74.46,48.21) -> (82.64,17.68)
+     coude   80,0 -> 86,0 -> 94,0 -> 104,0 -> 116,7 -> 133,7 -> 165,0
+     bras    +0 -> 9,89 -> 19,80 -> 29,87 -> 40,45 -> 52,43 -> 70,69°
+     av-bras +0 -> −6,02 -> −13,97 -> −24,01 -> −36,69 -> −53,66 -> −85,01°
+   Écart max entre les poses IK et ce que produisent réellement
+   les rotations enchaînées du CSS : 0,0000 unité.
+   >>> CE QUE LE RAPPROCHEMENT CHANGE, MESURÉ <<<
+     • montée de la poignée 30,53 contre 26,39 au schéma 72,
+       pour le MÊME intervalle de coude (80° -> 165°) : +15,7 %.
+       Le trajet rentrant ramène la main vers l'aplomb de
+       l'épaule, il faut donc monter plus haut pour tendre
+       autant le coude ;
+     • écart entre poignées 91,08 -> 74,72, soit 18 % de
+       fermeture (zéro au schéma 72, 73 % aux haltères) ;
+     • en fin de course, l'axe épaule-main est à 22,2° de la
+       verticale contre 31,5° : 9,3° de moins, c'est-à-dire un
+       bras plus proche du vrai au-dessus de la tête.
+   >>> CE QUI EST PUBLIABLE ET CE QUI NE L'EST PAS <<<
+       Ce cadre dessine l'humérus à PLEINE longueur dans le plan
+       frontal, comme les schémas 15 et 72. C'est une
+       idéalisation : en vrai le bras pousse dans le plan de
+       l'omoplate, à ~33° en avant, donc raccourci à l'écran.
+       Conséquence, l'écartement dessiné des poignées — 91
+       unités, soit un mètre — n'est PAS une cote de machine :
+       une convergente a ses poignées vers 58 cm. Les deux
+       chiffres ci-dessus ont donc été refaits avec l'humérus
+       raccourci à 30 × cos 33° = 25,2 : la fermeture passe de
+       18,0 à 17,8 % et l'écart d'angle final de 9,3 à 8,8°.
+       Ces deux-là tiennent, ce sont des RAPPORTS ; l'écartement
+       absolu des mains, non, et il n'est donc affiché nulle
+       part en centimètres.
+   Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
+   Distinction : ≠ schéma 72, machine à rails verticaux (0° de
+               convergence, bras reliés à un même chariot) ;
+               ≠ schéma 15, haltères assis (trajet LIBRE, 40°
+               de rapprochement, stabilisateurs sollicités) ;
+               ≠ développé militaire debout (gainage).
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-epaules-convergent"] = {
+  vb: "52 8 138 158",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Vu de face, assis dos au dossier dans une machine à bras convergents : les poignées montent depuis la hauteur des oreilles jusqu'aux bras presque tendus en se rapprochant l'une de l'autre, chacune sur un rail incliné de 15° vers l'axe du corps, puis redescendent.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="160" x2="188" y2="160"/>
+    <!-- DEUX bâtis séparés, chacun sa charge : sur une machine
+         iso-latérale, rien ne relie les deux bras. Pas de traverse. -->
+    <line class="mo-gear" x1="58" y1="24" x2="58" y2="160"/>
+    <line class="mo-gear" x1="182" y1="24" x2="182" y2="160"/>
+    <rect class="mo-mass" x="55" y="124" width="6" height="22" rx="2"/>
+    <rect class="mo-mass" x="179" y="124" width="6" height="22" rx="2"/>
+    <!-- RAILS INCLINÉS de 15° : la projection frontale exacte du trajet
+         imposé. C'est tout ce qui sépare cette machine du schéma 72. -->
+    <line class="mo-gear" x1="73.42" y1="52.07" x2="83.93" y2="12.85"/>
+    <line class="mo-gear" x1="166.58" y1="52.07" x2="156.07" y2="12.85"/>
+    <!-- APLOMBS, en pointillé : ce que ferait un rail VERTICAL, parti du
+         même point. L'écart entre les deux lignes EST la convergence. -->
+    <line class="mo-rom" x1="74.46" y1="48.21" x2="74.46" y2="13"/>
+    <line class="mo-rom" x1="165.54" y1="48.21" x2="165.54" y2="13"/>
+    <!-- siège et dossier -->
+    <rect class="mo-gear" x="108" y="62" width="24" height="62" rx="4"/>
+    <line class="mo-pad" x1="100" y1="124" x2="140" y2="124"/>
+    <line class="mo-gear" x1="120" y1="124" x2="120" y2="160"/>
+    <!-- corps assis de face, dos plaqué -->
+    <circle class="mo-head" cx="120" cy="50" r="10"/>
+    <line class="mo-body" x1="104" y1="70" x2="136" y2="70"/>
+    <line class="mo-body" x1="120" y1="60" x2="120" y2="116"/>
+    <line class="mo-body" x1="120" y1="116" x2="112" y2="160"/>
+    <line class="mo-body" x1="120" y1="116" x2="128" y2="160"/>
+    <!-- REPÈRE : hauteur d'oreilles, le point bas que le réglage du siège
+         respecte ou non -->
+    <line class="mo-rom" x1="88" y1="48.21" x2="100" y2="48.21"/>
+    <line class="mo-rom" x1="140" y1="48.21" x2="152" y2="48.21"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="104" cy="70" r="5.5"/><circle cx="136" cy="70" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* POIGNÉE GAUCHE : translation le long du rail incliné — elle monte
+         de 30,53 ET rentre de 8,18. Les deux poignées sont des parts
+         SÉPARÉES, puisqu'elles vont en sens contraire en x. */
+      k: [[0, "translate(0px,0px)"], [5.33, "translate(1.36px,-5.09px)"],
+          [10.67, "translate(2.73px,-10.18px)"], [16, "translate(4.09px,-15.27px)"],
+          [21.33, "translate(5.45px,-20.35px)"], [26.67, "translate(6.82px,-25.44px)"],
+          [32, "translate(8.18px,-30.53px)"], [40, "translate(8.18px,-30.53px)"],
+          [48, "translate(6.82px,-25.44px)"], [56, "translate(5.45px,-20.35px)"],
+          [64, "translate(4.09px,-15.27px)"], [72, "translate(2.73px,-10.18px)"],
+          [80, "translate(1.36px,-5.09px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `<line class="mo-bar2" x1="68" y1="48.21" x2="81" y2="48.21"/>`
+    },
+    {
+      /* POIGNÉE DROITE : même course, x opposé. */
+      k: [[0, "translate(0px,0px)"], [5.33, "translate(-1.36px,-5.09px)"],
+          [10.67, "translate(-2.73px,-10.18px)"], [16, "translate(-4.09px,-15.27px)"],
+          [21.33, "translate(-5.45px,-20.35px)"], [26.67, "translate(-6.82px,-25.44px)"],
+          [32, "translate(-8.18px,-30.53px)"], [40, "translate(-8.18px,-30.53px)"],
+          [48, "translate(-6.82px,-25.44px)"], [56, "translate(-5.45px,-20.35px)"],
+          [64, "translate(-4.09px,-15.27px)"], [72, "translate(-2.73px,-10.18px)"],
+          [80, "translate(-1.36px,-5.09px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `<line class="mo-bar2" x1="159" y1="48.21" x2="172" y2="48.21"/>`
+    },
+    {
+      /* BRAS GAUCHE : rotation autour de l'ÉPAULE (104,70), +70,69° —
+         contre +61,39° au schéma 72, parce que la main finit plus haut. */
+      o: "104px 70px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(9.89deg)"], [10.67, "rotate(19.8deg)"],
+          [16, "rotate(29.87deg)"], [21.33, "rotate(40.45deg)"], [26.67, "rotate(52.43deg)"],
+          [32, "rotate(70.69deg)"], [40, "rotate(70.69deg)"], [48, "rotate(52.43deg)"],
+          [56, "rotate(40.45deg)"], [64, "rotate(29.87deg)"], [72, "rotate(19.8deg)"],
+          [80, "rotate(9.89deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="90" cy="76" rx="7" ry="3.2" transform="rotate(10 90 76)"/>`,
+      svg: `
+        <line class="mo-limb" x1="104" y1="70" x2="74.46" y2="75.21"/>
+        <circle class="mo-joint" cx="74.46" cy="75.21" r="2.6"/>`,
+      children: [
+        {
+          o: "74.46px 75.21px",
+          k: [[0, "rotate(0deg)"], [5.33, "rotate(-6.02deg)"], [10.67, "rotate(-13.97deg)"],
+              [16, "rotate(-24.01deg)"], [21.33, "rotate(-36.69deg)"], [26.67, "rotate(-53.66deg)"],
+              [32, "rotate(-85.01deg)"], [40, "rotate(-85.01deg)"], [48, "rotate(-53.66deg)"],
+              [56, "rotate(-36.69deg)"], [64, "rotate(-24.01deg)"], [72, "rotate(-13.97deg)"],
+              [80, "rotate(-6.02deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="74.46" y1="75.21" x2="74.46" y2="48.21"/>
+            <circle class="mo-hand" cx="74.46" cy="48.21" r="3.2"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir exact autour de x=120. */
+      o: "136px 70px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(-9.89deg)"], [10.67, "rotate(-19.8deg)"],
+          [16, "rotate(-29.87deg)"], [21.33, "rotate(-40.45deg)"], [26.67, "rotate(-52.43deg)"],
+          [32, "rotate(-70.69deg)"], [40, "rotate(-70.69deg)"], [48, "rotate(-52.43deg)"],
+          [56, "rotate(-40.45deg)"], [64, "rotate(-29.87deg)"], [72, "rotate(-19.8deg)"],
+          [80, "rotate(-9.89deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscle: `<ellipse cx="150" cy="76" rx="7" ry="3.2" transform="rotate(-10 150 76)"/>`,
+      svg: `
+        <line class="mo-limb" x1="136" y1="70" x2="165.54" y2="75.21"/>
+        <circle class="mo-joint" cx="165.54" cy="75.21" r="2.6"/>`,
+      children: [
+        {
+          o: "165.54px 75.21px",
+          k: [[0, "rotate(0deg)"], [5.33, "rotate(6.02deg)"], [10.67, "rotate(13.97deg)"],
+              [16, "rotate(24.01deg)"], [21.33, "rotate(36.69deg)"], [26.67, "rotate(53.66deg)"],
+              [32, "rotate(85.01deg)"], [40, "rotate(85.01deg)"], [48, "rotate(53.66deg)"],
+              [56, "rotate(36.69deg)"], [64, "rotate(24.01deg)"], [72, "rotate(13.97deg)"],
+              [80, "rotate(6.02deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="165.54" y1="75.21" x2="165.54" y2="48.21"/>
+            <circle class="mo-hand" cx="165.54" cy="48.21" r="3.2"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de face, fin de course",
+    alt: "Vue de face en fin de course, les deux machines côte à côte sur le même corps : à gauche le bras de la machine convergente, dont la poignée a suivi un rail incliné et termine à 22° de l'aplomb de l'épaule ; à droite le bras de la machine à rails verticaux, qui termine à 31°.",
+    legende: "Même corps, même coude tendu à 165°, deux machines : à GAUCHE la convergente, rail incliné, à DROITE celle à rails verticaux (schéma 72). Le trajet rentrant finit 9° plus près de l'aplomb de l'épaule — 22° contre 31° — c'est-à-dire plus près du vrai au-dessus de la tête. Un angle dans le plan frontal, lui, ne dépend pas de la longueur à laquelle on dessine les bras : c'est pour ça que ce sont des angles qui sont cotés ici, et pas des centimètres.",
+    /* Deux marges ont été ACHETÉES dans le viewBox, chacune pour une
+       raison mesurée :
+       • en haut, 23 unités de vide (le dessin commence à y=12,85 pour un
+         viewBox qui démarre à −10). Le badge de vue est posé en haut à
+         gauche, en pixels, par-dessus le SVG : sans cette marge il
+         recouvre la main gauche et la cote 22°, ce qu'un premier rendu a
+         montré ;
+       • à gauche et à droite, deux bandes libres pour les cotes. Un
+         premier essai les plaçait DANS l'angle : 22° d'ouverture ne
+         laissent pas la place d'écrire « 22° » — il aurait fallu un
+         rayon de 44 unités pour que le texte y tienne.
+       La hauteur est ce qui limite le SVG à l'écran (170 px), donc la
+       largeur en trop ne coûte rien ; la hauteur en trop, si. */
+    vb: "45 -10 150 130",
+    svg: `
+      <line class="mo-pad" x1="104" y1="108" x2="136" y2="108"/>
+      <line class="mo-gear" x1="120" y1="108" x2="120" y2="116"/>
+      <!-- corps de face, immobile et commun aux deux moitiés -->
+      <circle class="mo-head" cx="120" cy="50" r="10"/>
+      <line class="mo-body" x1="104" y1="70" x2="136" y2="70"/>
+      <line class="mo-body" x1="120" y1="60" x2="120" y2="104"/>
+      <!-- aplombs d'épaule : le premier côté de chaque angle. Le second
+           côté, c'est le bras lui-même : le coude s'écarte si peu de la
+           corde épaule-main qu'une ligne d'axe en plus ne ferait que
+           doubler le membre. -->
+      <line class="mo-rom" x1="104" y1="26" x2="104" y2="70"/>
+      <line class="mo-rom" x1="136" y1="26" x2="136" y2="70"/>
+      <path class="mo-rom" fill="none" d="M104 30 A40 40 0 0 0 88.88 32.96"/>
+      <path class="mo-rom" fill="none" d="M136 30 A40 40 0 0 1 156.89 35.89"/>
+      <text class="mo-cote mo-cote-ok" font-size="10.7" text-anchor="end" x="72" y="37">22°</text>
+      <text class="mo-cote" font-size="10.7" text-anchor="start" x="168" y="37">31°</text>
+      <!-- GAUCHE : machine CONVERGENTE, rail incliné de 15° -->
+      <line class="mo-gear" x1="78" y1="34.69" x2="83.93" y2="12.85"/>
+      <line class="mo-limb" x1="104" y1="70" x2="89.31" y2="43.84"/>
+      <circle class="mo-joint" cx="89.31" cy="43.84" r="2.6"/>
+      <line class="mo-limb" x1="89.31" y1="43.84" x2="82.64" y2="17.68"/>
+      <circle class="mo-hand" cx="82.64" cy="17.68" r="3.2"/>
+      <!-- DROITE : machine à RAILS VERTICAUX, même corps, même coude -->
+      <line class="mo-gear" x1="165.54" y1="36" x2="165.54" y2="13"/>
+      <line class="mo-limb" x1="136" y1="70" x2="154.72" y2="46.56"/>
+      <circle class="mo-joint" cx="154.72" cy="46.56" r="2.6"/>
+      <line class="mo-limb" x1="154.72" y1="46.56" x2="165.54" y2="21.82"/>
+      <circle class="mo-hand" cx="165.54" cy="21.82" r="3.2"/>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M66 124 L75.3 89.2 M77.8 99.18 L75.3 89.2 L68.14 96.6"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M75.3 89.2 L66 124 M73.16 116.6 L66 124 L63.5 114.02"/>` }
+  ]
+};
