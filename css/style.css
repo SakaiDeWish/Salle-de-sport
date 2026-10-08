@@ -2311,9 +2311,9 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
   right: 14px;
   bottom: calc(74px + env(safe-area-inset-bottom));
   z-index: 65;
-  width: 42px; height: 42px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 50%;
+  min-height: 44px; padding: 0 14px;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--bg-soft);
   color: var(--text-soft);
@@ -2324,6 +2324,10 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
   transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
+/* Le mot à côté de l'engrenage : 44 px de haut, c'est la cible tactile
+   recommandée, et le libellé fait passer le bouton de « devinable » à
+   « lisible ». Il reste calé à droite, au-dessus de la barre d'onglets. */
+.sf-lab { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em; }
 .settings-fab:hover { color: var(--text); transform: translateY(-1px); }
 body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 @media (min-width: 761px) { .settings-fab { bottom: 20px; } }
@@ -2400,6 +2404,13 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   gap: 14px; padding: 9px 0;
 }
 .set-card .set-check { cursor: pointer; }
+/* Une ligne de réglage met son contrôle à droite du libellé. Un bouton au
+   libellé long n'y tient pas : à 390 px de large, « Recharger la dernière
+   version » recevait 90 px, se repliait sur trois lignes et le rayon de
+   999 px en faisait une pastille ronde illisible. Il prend donc toute une
+   ligne à lui. */
+.set-card .set-row-bouton { flex-wrap: wrap; }
+.set-card .set-row-bouton .btn { flex: 1 0 100%; }
 .set-lab { display: flex; flex-direction: column; gap: 2px; font-weight: 600; }
 .set-sub { font-size: 0.82rem; font-weight: 400; color: var(--text-soft); }
 .set-check input { width: 22px; height: 22px; accent-color: var(--accent); }

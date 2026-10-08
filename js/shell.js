@@ -125,8 +125,10 @@ function applyTheme(theme) {
   localStorage.setItem("gymcoach.theme", theme);
   const lab = document.getElementById("theme-toggle-label");
   if (lab) lab.textContent = theme === "gamifie" ? "Épuré" : "Gamifié";
-  const ico = document.getElementById("settings-fab-ico");
-  if (ico) ico.textContent = theme === "gamifie" ? "☾" : "☀";
+  /* Le bouton des réglages ne change plus de glyphe avec le thème : il
+     portait ☾ ou ☀ et se lisait donc comme une bascule jour/nuit, alors
+     qu'il ouvre tous les réglages — et que sur téléphone c'est le seul
+     accès. Il porte un engrenage fixe. */
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", theme === "gamifie" ? "#0a0a0b" : "#f6f1e7");
 }
@@ -149,7 +151,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v44";
+const APP_VERSION = "v45";
 
 function settingsHtml() {
   const t = currentTheme();
@@ -220,7 +222,7 @@ function settingsHtml() {
           <span class="set-sub" id="set-version-sub">Celle qui tourne en ce moment sur cet appareil.</span></span>
         <span class="set-version" id="set-version">${esc(APP_VERSION)}</span>
       </div>
-      <div class="set-row">
+      <div class="set-row set-row-bouton">
         <span class="set-lab">Mise à jour
           <span class="set-sub">Une app ajoutée à l'écran d'accueil peut garder son ancien
             code tant qu'elle n'a pas rechargé sa page.</span></span>
