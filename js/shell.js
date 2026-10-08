@@ -131,6 +131,26 @@ function applyTheme(theme) {
   if (meta) meta.setAttribute("content", theme === "gamifie" ? "#0a0a0b" : "#f6f1e7");
 }
 
+/* ==================== NUMÉRO DE VERSION ====================
+
+   « Est-ce que j'ai bien la nouvelle version ? » n'avait aucune réponse
+   depuis le téléphone : rien, nulle part, ne disait ce qui tournait. Or
+   une app installée sur l'écran d'accueil peut rester des jours sans
+   jamais recharger sa page — le service worker se met à jour, le code
+   DÉJÀ CHARGÉ ne change pas, et une fonctionnalité livrée reste
+   invisible sans que personne puisse le constater.
+
+   Ce numéro est porté par le CODE DE LA PAGE. Affiché dans Réglages, il
+   dit donc ce qui tourne vraiment, pas ce qui est publié : s'il est en
+   retard sur le site, c'est la preuve que la page est périmée. C'est
+   précisément ce qu'on veut pouvoir lire.
+
+   >>> À BUMPER AVEC `CACHE` DANS sw.js — les deux vont par paire <<<
+   Et leur désaccord n'est pas un risque, c'est le capteur : quand le
+   service worker actif annonce une version différente de celle-ci, la
+   page est en retard sur lui, et l'app le dit (voir tracking.js). */
+const APP_VERSION = "v43";
+
 function settingsHtml() {
   const t = currentTheme();
   return `
@@ -195,6 +215,17 @@ function settingsHtml() {
 
     <div class="card set-card">
       <h3 class="set-h">À propos</h3>
+      <div class="set-row">
+        <span class="set-lab">Version installée
+          <span class="set-sub" id="set-version-sub">Celle qui tourne en ce moment sur cet appareil.</span></span>
+        <span class="set-version" id="set-version">${esc(APP_VERSION)}</span>
+      </div>
+      <div class="set-row">
+        <span class="set-lab">Mise à jour
+          <span class="set-sub">Une app ajoutée à l'écran d'accueil peut garder son ancien
+            code tant qu'elle n'a pas rechargé sa page.</span></span>
+        <button class="btn btn-ghost btn-sm" id="set-maj">Recharger la dernière version</button>
+      </div>
       <p class="set-sub">GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute,
         consulte un professionnel de santé.</p>
     </div>`;
@@ -248,6 +279,32 @@ function openSettings() {
   const as = document.getElementById("set-autostop");
   if (as) as.addEventListener("change", () =>
     localStorage.setItem(STORAGE_KEYS.autoStop, as.value));
+
+  /* MISE À JOUR MANUELLE. Le rechargement seul ne suffit pas toujours :
+     si un service worker plus récent attend son tour, il faut d'abord le
+     laisser prendre la main. On lui demande donc de s'installer, puis on
+     recharge — et au pire, on recharge quand même. */
+  const maj = document.getElementById("set-maj");
+  if (maj) maj.addEventListener("click", async () => {
+    maj.disabled = true;
+    maj.textContent = "Recherche…";
+    try {
+      const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+      if (reg) { await reg.update(); if (reg.waiting) reg.waiting.postMessage({ type: "skip" }); }
+    } catch { /* hors ligne : le rechargement reste utile */ }
+    location.reload();
+  });
+
+  /* Compare ce que la PAGE exécute avec ce que le service worker ACTIF
+     a mis en cache. Un écart signifie que la page est restée sur
+     l'ancien code — c'est le cas « je ne vois pas le changement ». */
+  versionDuServiceWorker().then(v => {
+    const sub = document.getElementById("set-version-sub");
+    if (!sub || !v) return;
+    if (v === APP_VERSION) { sub.textContent = "À jour — c'est la dernière version publiée."; return; }
+    sub.innerHTML = `Une version plus récente (<strong>${esc(v)}</strong>) est déjà
+      téléchargée : recharge pour l'utiliser.`;
+  });
 }
 
 document.getElementById("settings-fab").addEventListener("click", openSettings);

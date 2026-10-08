@@ -1,7 +1,13 @@
 /* GymCoach — service worker : RÉSEAU D'ABORD, cache en secours.
    En ligne : le site est toujours à jour (chaque réponse rafraîchit le cache).
-   Hors ligne : tout est servi depuis le cache (usage en salle). */
-const CACHE = "gymcoach-v42";
+   Hors ligne : tout est servi depuis le cache (usage en salle).
+
+   >>> CE NUMÉRO VA PAR PAIRE AVEC APP_VERSION, dans js/shell.js <<<
+   L'un vit dans le service worker, l'autre dans la page. Les tenir
+   ensemble n'est pas qu'une discipline d'écriture : leur ÉCART est ce
+   qui permet à l'app de détecter qu'une page tourne encore sur l'ancien
+   code pendant qu'un service worker plus récent a déjà pris la main. */
+const CACHE = "gymcoach-v43";
 const ASSETS = [
   "./",
   "index.html",
@@ -36,6 +42,16 @@ self.addEventListener("activate", e => {
       Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
+});
+
+/* Deux questions que la page peut poser :
+   — « quelle version es-tu ? », pour la comparer à la sienne ;
+   — « passe devant tout de suite », quand l'utilisateur demande la mise
+     à jour depuis les Réglages et qu'une version attend son tour. */
+self.addEventListener("message", e => {
+  const t = e.data && e.data.type;
+  if (t === "version" && e.ports && e.ports[0]) e.ports[0].postMessage(CACHE.replace("gymcoach-", ""));
+  if (t === "skip") self.skipWaiting();
 });
 
 self.addEventListener("fetch", e => {

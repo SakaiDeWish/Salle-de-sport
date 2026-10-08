@@ -3259,8 +3259,24 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
   transition: opacity 0.22s ease, transform 0.22s ease;
 }
 .toast.on { opacity: 1; transform: translate(-50%, 0); }
+/* Toast ACTIONNABLE : il ne se contente pas d'informer, il attend un
+   tap. L'accent et le curseur le disent, la bordure pleine aussi. */
+.toast-action {
+  cursor: pointer;
+  border-color: var(--accent);
+  border-style: solid;
+  font-weight: 700;
+}
 @media (prefers-reduced-motion: reduce) {
   .toast { transition: opacity 0.22s ease; }
+}
+
+/* Numéro de version dans les Réglages : lu, jamais saisi. */
+.set-version {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.05rem;
+  color: var(--accent-2);
 }
 
 /* Menu déroulant dans les réglages : le <select> hérite du style
