@@ -320,6 +320,24 @@ const EXERCISES_EXTRA = [
     videoQuery: "développé épaules machine technique"
   },
   {
+    id: "developpe-epaules-convergent",
+    nom: "Développé épaules machine convergente",
+    groupe: "epaules", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Deltoïdes antérieur et moyen, triceps",
+    description: "Le développé guidé dont les poignées se rapprochent en montant : au lieu d'un rail vertical, chaque bras suit un arc incliné vers l'axe du corps, plus proche du trajet naturel de l'épaule. Les deux bras sont indépendants.",
+    execution: [
+      "Règle le siège pour que les poignées soient à hauteur d'oreilles, coudes sous les poignets.",
+      "Pousse vers le haut en laissant les poignées se rapprocher : c'est la machine qui impose ce trajet, ne le contrarie pas.",
+      "Redescends lentement jusqu'à la hauteur d'oreilles, sans laisser les charges claquer."
+    ],
+    erreurs: [
+      "Siège trop bas : la poignée démarre au-dessus des oreilles et le bas de l'amplitude disparaît.",
+      "Pousser plus fort d'un côté : les bras étant indépendants, le déséquilibre ne se voit pas.",
+      "Verrouiller les coudes d'un coup en haut."
+    ],
+    videoQuery: "converging shoulder press machine technique épaules"
+  },
+  {
     id: "pec-deck-inverse",
     nom: "Pec-deck inversé (reverse fly)",
     groupe: "epaules", materiel: "machine", niveau: "debutant", type: "iso",
@@ -2111,6 +2129,8 @@ const EXERCISE_ALIASES = {
   "elevations-laterales-poulie": ["cable lateral raise"],
   "rowing-menton": ["upright row", "tirage menton"],
   "developpe-epaules-machine": ["machine shoulder press", "développé épaules guidé"],
+  "developpe-epaules-convergent": ["converging shoulder press", "iso-lateral shoulder press",
+                                   "développé épaules convergent", "machine convergente épaules"],
   "pec-deck-inverse": ["reverse pec deck", "rear delt machine"],
   "gainage-lateral": ["side plank"],
   "hollow-hold": ["hollow body hold"],
