@@ -857,7 +857,65 @@ function renderCalDayDetail(sessions) {
     b.addEventListener("click", () => openSessionModal(b.dataset.id)));
 }
 
-/* ---------- Service worker (PWA hors-ligne) ---------- */
+/* ---------- Service worker (PWA hors-ligne) ----------
+
+   L'enregistrement seul ne suffisait pas. Une app ajoutée à l'écran
+   d'accueil n'est pas rechargée quand on la rouvre depuis le sélecteur
+   d'applications : le service worker se met à jour en silence, mais la
+   page continue d'exécuter le JavaScript chargé des jours plus tôt. Une
+   fonctionnalité livrée restait donc invisible, sans rien à l'écran qui
+   permette de s'en apercevoir.
+
+   Trois ajouts, tous passifs : on CHERCHE une mise à jour à l'ouverture
+   et à chaque retour au premier plan ; on PRÉVIENT quand il y en a une ;
+   on ne recharge JAMAIS tout seul — recharger sous le pouce de quelqu'un
+   au milieu d'une série serait pire que le défaut qu'on corrige. */
+function versionDuServiceWorker() {
+  return new Promise(resolve => {
+    const sw = navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (!sw || typeof MessageChannel === "undefined") return resolve(null);
+    const canal = new MessageChannel();
+    const stop = setTimeout(() => resolve(null), 1500);
+    canal.port1.onmessage = e => { clearTimeout(stop); resolve(e.data); };
+    try { sw.postMessage({ type: "version" }, [canal.port2]); }
+    catch { clearTimeout(stop); resolve(null); }
+  });
+}
+
+let majAnnoncee = false;
+function annonceMaj() {
+  if (majAnnoncee) return;
+  majAnnoncee = true;
+  toast("Nouvelle version disponible — touche ici pour recharger", 60000);
+  const t = document.getElementById("toast");
+  if (!t) return;
+  t.classList.add("toast-action");
+  t.addEventListener("click", () => location.reload(), { once: true });
+}
+
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  navigator.serviceWorker.register("sw.js").catch(() => { /* hors ligne / non supporté */ });
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    const cherche = () => { try { reg.update(); } catch { /* hors ligne */ } };
+    cherche();
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) cherche(); });
+    /* Une version est téléchargée et attend : on le dit, sans l'imposer. */
+    if (reg.waiting && navigator.serviceWorker.controller) annonceMaj();
+    reg.addEventListener("updatefound", () => {
+      const neuf = reg.installing;
+      if (!neuf) return;
+      neuf.addEventListener("statechange", () => {
+        if (neuf.state === "installed" && navigator.serviceWorker.controller) annonceMaj();
+      });
+    });
+  }).catch(() => { /* hors ligne / non supporté */ });
+
+  /* Le cas le plus traître : le service worker a DÉJÀ pris la main et
+     sert du neuf, pendant que cette page-ci exécute encore l'ancien
+     code. Rien ne le signalait. La comparaison des deux numéros le
+     révèle — c'est à ça que sert leur duplication. */
+  navigator.serviceWorker.addEventListener("controllerchange", annonceMaj);
+  window.addEventListener("load", () => setTimeout(() =>
+    versionDuServiceWorker().then(v => {
+      if (v && typeof APP_VERSION !== "undefined" && v !== APP_VERSION) annonceMaj();
+    }), 1200));
 }
