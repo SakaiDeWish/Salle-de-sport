@@ -338,6 +338,25 @@ const EXERCISES_EXTRA = [
     videoQuery: "converging shoulder press machine technique épaules"
   },
   {
+    id: "developpe-militaire-guide",
+    nom: "Développé militaire assis à la machine guidée",
+    groupe: "epaules", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Deltoïdes antérieur et moyen, triceps",
+    description: "Le développé au-dessus de la tête avec une barre montée sur rails verticaux : assis, dos plaqué, rien à équilibrer. En échange, la barre ne peut pas reculer au-dessus de la tête comme le fait une barre libre — elle reste devant le visage d'un bout à l'autre.",
+    execution: [
+      "Règle le dossier presque vertical et place le banc pour que la barre descende devant le visage, à quelques centimètres du nez.",
+      "Prise pronation un peu plus large que les épaules, coudes sous la barre, puis déverrouille-la du rail.",
+      "Descends jusqu'au menton et pousse à la verticale : ne cherche pas à ramener la barre au-dessus de la tête, le rail ne le permet pas.",
+      "Incliner le dossier d'environ 20° rapproche la barre de l'aplomb de l'épaule — son bras de levier passe de 22 à 13 cm, mais le haut des pectoraux prend alors une part du travail."
+    ],
+    erreurs: [
+      "Banc mal placé : trop en arrière la barre racle le visage, trop en avant l'épaule part en flexion extrême.",
+      "Cambrer le bas du dos pour aider — le dossier est là pour l'en empêcher.",
+      "Croire que bras tendus est un repos : la barre reste devant l'épaule, le deltoïde ne relâche jamais."
+    ],
+    videoQuery: "développé militaire assis machine guidée smith technique épaules"
+  },
+  {
     id: "pec-deck-inverse",
     nom: "Pec-deck inversé (reverse fly)",
     groupe: "epaules", materiel: "machine", niveau: "debutant", type: "iso",
@@ -2131,6 +2150,9 @@ const EXERCISE_ALIASES = {
   "developpe-epaules-machine": ["machine shoulder press", "développé épaules guidé"],
   "developpe-epaules-convergent": ["converging shoulder press", "iso-lateral shoulder press",
                                    "développé épaules convergent", "machine convergente épaules"],
+  "developpe-militaire-guide": ["smith machine shoulder press", "smith machine overhead press",
+                                "développé militaire guidé", "développé épaules barre guidée",
+                                "military press smith"],
   "pec-deck-inverse": ["reverse pec deck", "rear delt machine"],
   "gainage-lateral": ["side plank"],
   "hollow-hold": ["hollow body hold"],

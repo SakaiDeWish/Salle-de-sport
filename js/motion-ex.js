@@ -20305,3 +20305,196 @@ EXERCISE_MOTIONS["developpe-epaules-convergent"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M75.3 89.2 L66 124 M73.16 116.6 L66 124 L63.5 114.02"/>` }
   ]
 };
+
+/* =========================================================
+   166. DÉVELOPPÉ MILITAIRE ASSIS À LA MACHINE GUIDÉE
+        (developpe-militaire-guide)
+   -----------------------------------------------------------
+   Position  : ASSIS, dossier quasi vertical, dos plaqué, pieds
+               au sol. Barre montée sur RAILS VERTICAUX, prise
+               pronation un peu plus large que les épaules.
+   Mobiles   : ÉPAULE et COUDE.
+   Fixes     : tronc et bassin, tenus par le dossier ; jambes.
+               Pas de gainage debout, pas d'impulsion : c'est
+               exactement ce que le banc retire au mouvement.
+   Vue de PROFIL : le trajet de la barre vit dans le plan
+   sagittal. De face, on ne verrait rien de ce qui suit.
+   >>> CE QUE LE RAIL INTERDIT, CHIFFRÉ <<< Une barre LIBRE ne
+       monte pas droit : elle part devant les clavicules, passe
+       devant le visage, puis RECULE pour finir à l'aplomb de
+       l'épaule. Dans le cadre du schéma 13, elle va de 16 unités
+       devant l'épaule à 2 unités derrière — 18 unités de recul,
+       soit 29 cm. Un rail vertical en autorise ZÉRO. La barre
+       choisit donc une seule position d'avant en arrière, et la
+       garde du début à la fin.
+   >>> CE QUI FIXE CETTE POSITION : LE NEZ <<< et pas autre
+       chose. La barre doit descendre devant le visage sans le
+       toucher. C'est pour cela que CE schéma ne dessine pas la
+       tête comme les autres : le schéma 13 lui donne un rond de
+       r=9, soit 29 cm de profondeur de crâne — une tête de
+       silhouette. Ici la tête n'est pas un décor, c'est la butée
+       qui décide de tout ; elle est donc dessinée à sa
+       profondeur réelle, 19 cm (r=6,5), l'oreille à l'aplomb de
+       l'épaule à 2 unités près. Le nez tombe alors 8,5 unités
+       (13,7 cm) devant l'épaule, et la barre 5,5 unités plus
+       loin : 14 unités, soit 22,5 cm devant l'épaule.
+   >>> ET LA BARRE EST DESSINÉE COMME UNE BARRE <<< Le schéma 13
+       dessine un DISQUE (r=7,5) parce que, debout, rien ne se
+       joue à cet endroit. Ici si : un disque de 24 cm de rayon
+       posé à côté du visage ferait croire que la barre frôle la
+       joue, alors que les disques sont à 60 cm sur les côtés,
+       hors du plan de coupe. Ce que ce plan traverse, c'est la
+       BARRE — 2,8 cm de diamètre. Elle est donc dessinée en
+       petit. Sans cela, la garde au nez aurait été mesurée sur
+       un objet qui n'est pas là.
+   GÉOMÉTRIE (calculée) — mêmes segments que le schéma 13, bras
+   L1=20, avant-bras L2=22 ; l'épaule descend de 10 unités
+   puisqu'on est assis : S(122,76). Rail à x=108, constant.
+   Échelle 1,607 cm/unité (silhouette de 112 unités pour 180 cm).
+   Bas = barre au menton (108 ; 66,5), haut = même extension du
+   coude qu'au schéma 13, d=41,95. Six intervalles, IK à chacun :
+     barre  (108;66,50) -> (108;36,46), course 30,04 = 48,3 cm
+     coude  47,2 -> 57,1 -> 69,6 -> 84,3 -> 102,1 -> 125,0 -> 174,3°
+     bras   +0 -> 18,04 -> 33,66 -> 47,89 -> 61,91 -> 77,46 -> 105,96°
+     av-bras +0 -> −9,92 -> −22,35 -> −37,13 -> −54,85 -> −77,78 -> −127,06°
+   Écart max entre les poses résolues et ce que produisent les
+   rotations enchaînées du CSS : 0,0000 unité.
+   >>> CE QUE ÇA COÛTE, ET CE QUE ÇA RAPPORTE <<<
+     • bras de levier de la barre sur l'épaule au verrouillage :
+       22,5 cm, contre 3,2 cm pour une barre libre. Sept fois
+       plus. Bras tendus n'est donc JAMAIS un repos ici — le
+       deltoïde tient la barre en l'air d'un bout à l'autre de
+       la série. C'est le reproche qu'on fait à cette machine et
+       c'est aussi, selon ce qu'on cherche, son intérêt ;
+     • l'axe épaule-barre finit à 19,5° DEVANT la verticale, au
+       lieu de 2,7° derrière : ce n'est pas un verrouillage
+       au-dessus de la tête, c'est un développé incliné très
+       redressé, et autant le dire.
+   >>> LE REMÈDE, MESURÉ LUI AUSSI <<< Incliner le dossier fait
+       reculer la tête plus vite que l'épaule, donc rapproche la
+       barre de l'aplomb. La saillie du nez devant l'épaule vaut
+       −16 sin θ + 2 cos θ + 6,5 : elle tombe de 8,5 à 2,9 unités
+       pour θ=20°, et le bras de levier de 22,5 à 13,5 cm, 40 %
+       de moins. Le prix est connu : à 20° de recul, le haut des
+       pectoraux prend sa part. C'est dans la fiche.
+   >>> CE QUI EST PUBLIABLE <<< Les 22,5 cm viennent de
+       l'anatomie (nez 13,7 cm devant l'épaule, plus 6,6 cm de
+       garde), pas du dessin : ils tiennent. Les 3,2 cm de la
+       barre libre, eux, sont LUS sur le schéma 13 — c'est sa
+       position de verrouillage, à l'aplomb du milieu du pied.
+       L'ordre de grandeur est le bon, la décimale n'est pas à
+       défendre, et la conclusion ne tient pas à elle.
+   Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
+   Distinction : ≠ schéma 13, militaire DEBOUT barre libre (la
+               barre recule, le gainage tient tout) ; ≠ schéma
+               72, machine à poignées (deux rails, pas de barre
+               devant le visage) ; ≠ schéma 165, machine
+               convergente (les poignées se rapprochent).
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-militaire-guide"] = {
+  vb: "82 18 54 134",
+  dur: 3.8,
+  phases: { con: [0, 36], ecc: [44, 90] },
+  alt: "Vu de profil, assis dossier vertical dans une machine guidée : la barre, sur son rail vertical, descend devant le visage jusqu'au menton puis remonte jusqu'aux bras tendus, sans jamais reculer au-dessus de la tête.",
+  fixe: `
+    <!-- Le RAIL d'abord, le banc et le corps par-dessus : les deux
+         montants sont de part et d'autre du banc, donc DERRIÈRE lui dans
+         ce plan de coupe. Ils se superposent en un seul trait. -->
+    <line class="mo-gear" x1="108" y1="22" x2="108" y2="148"/>
+    <line class="mo-gear" x1="100" y1="22" x2="116" y2="22"/>
+    <line class="mo-ground" x1="84" y1="148" x2="134" y2="148"/>
+    <!-- banc : assise et dossier quasi vertical -->
+    <line class="mo-pad" x1="104" y1="122" x2="128" y2="122"/>
+    <line class="mo-pad" x1="127" y1="74" x2="127" y2="118"/>
+    <line class="mo-gear" x1="120" y1="124" x2="120" y2="148"/>
+    <!-- corps assis, dos plaqué, immobile. Tête à sa profondeur réelle :
+         c'est elle qui décide où passe la barre. -->
+    <circle class="mo-head" cx="120" cy="60" r="6.5"/>
+    <line class="mo-body" x1="121" y1="66" x2="122" y2="76"/>
+    <line class="mo-body" x1="122" y1="76" x2="122" y2="120"/>
+    <line class="mo-body" x1="122" y1="120" x2="94" y2="120"/>
+    <line class="mo-body" x1="94" y1="120" x2="94" y2="148"/>
+    <line class="mo-body" x1="88" y1="148" x2="100" y2="148"/>
+    <!-- APLOMB DE L'ÉPAULE : là où une barre LIBRE finirait sa course.
+         L'écart avec le rail, c'est tout le sujet. -->
+    <line class="mo-rom" x1="122" y1="30" x2="122" y2="74"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="122" cy="76" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (122,76), +105,96°. */
+      o: "122px 76px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(18.04deg)"], [12, "rotate(33.66deg)"],
+          [18, "rotate(47.89deg)"], [24, "rotate(61.91deg)"], [30, "rotate(77.46deg)"],
+          [36, "rotate(105.96deg)"], [44, "rotate(105.96deg)"], [52, "rotate(77.46deg)"],
+          [60, "rotate(61.91deg)"], [68, "rotate(47.89deg)"], [76, "rotate(33.66deg)"],
+          [84, "rotate(18.04deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      /* Triceps posé aux 70 % du bras vers le coude : au milieu, il
+         touchait le rond du deltoïde et les deux ne faisaient qu'une
+         seule tache. */
+      muscle: `<ellipse cx="111" cy="85" rx="6.5" ry="3.2" transform="rotate(-38.5 111 85)"/>`,
+      svg: `
+        <line class="mo-limb" x1="122" y1="76" x2="106.34" y2="88.44"/>
+        <circle class="mo-joint" cx="106.34" cy="88.44" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : −127,06° relatif. La barre reste sur son
+             rail : x=108 à chaque pose, par construction. */
+          o: "106.34px 88.44px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-9.92deg)"], [12, "rotate(-22.35deg)"],
+              [18, "rotate(-37.13deg)"], [24, "rotate(-54.85deg)"], [30, "rotate(-77.78deg)"],
+              [36, "rotate(-127.06deg)"], [44, "rotate(-127.06deg)"], [52, "rotate(-77.78deg)"],
+              [60, "rotate(-54.85deg)"], [68, "rotate(-37.13deg)"], [76, "rotate(-22.35deg)"],
+              [84, "rotate(-9.92deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="106.34" y1="88.44" x2="108" y2="66.5"/>
+            <circle class="mo-hub" cx="108" cy="66.5" r="3.2"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de profil, verrouillage",
+    alt: "Vue de profil, bras tendus : la barre guidée est restée sur son rail devant le visage, tandis qu'un cercle en pointillé marque, sur l'aplomb de l'épaule, l'endroit où une barre libre aurait fini sa course. Vingt-six centimètres séparent les deux.",
+    legende: "Bras tendus, les deux barres ne sont pas au même endroit : 26 cm séparent celle du rail du cercle pointillé, où une barre libre aurait fini, sur l'aplomb de l'épaule. Son bras de levier sur l'épaule vaut alors 22 cm contre 3 : bras tendus n'est pas un repos ici, le deltoïde tient la barre en l'air jusqu'à la dernière répétition.",
+    /* UN SEUL BRAS DESSINÉ, ET C'EST UNE CORRECTION. Le premier jet
+       superposait les DEUX bras, guidé et libre, comme le fait la
+       seconde vue du schéma 165. Au rendu c'était illisible : bras
+       tendus, le bras de la barre libre est quasiment vertical, donc
+       confondu avec le tronc — la silhouette semblait porter un piquet.
+       Il ne reste que son point d'arrivée, sur l'aplomb de l'épaule.
+       C'est tout ce que la cote a besoin de montrer. */
+    vb: "88 -4 72 114",
+    svg: `
+      <line class="mo-pad" x1="104" y1="104" x2="130" y2="104"/>
+      <line class="mo-pad" x1="127" y1="74" x2="127" y2="102"/>
+      <circle class="mo-head" cx="120" cy="60" r="6.5"/>
+      <line class="mo-body" x1="121" y1="66" x2="122" y2="76"/>
+      <line class="mo-body" x1="122" y1="76" x2="122" y2="102"/>
+      <line class="mo-body" x1="122" y1="102" x2="96" y2="102"/>
+      <line class="mo-gear" x1="108" y1="31" x2="108" y2="92"/>
+      <!-- APLOMB DE L'ÉPAULE : une barre libre finit dessus. Coupé autour
+           du crâne, sinon il le barre de part en part. -->
+      <line class="mo-rom" x1="122" y1="30" x2="122" y2="52"/>
+      <line class="mo-rom" x1="122" y1="67" x2="122" y2="74"/>
+      <circle class="mo-depart-pt" cx="124" cy="34.1" r="3.4"/>
+      <!-- BARRE GUIDÉE, restée devant. Le bras passe devant la tête :
+           de profil c'est exact, il est du côté de l'observateur. -->
+      <line class="mo-limb" x1="122" y1="76" x2="114.35" y2="57.52"/>
+      <circle class="mo-joint" cx="114.35" cy="57.52" r="2.6"/>
+      <line class="mo-limb" x1="114.35" y1="57.52" x2="108" y2="36.46"/>
+      <circle class="mo-hub" cx="108" cy="36.46" r="3.2"/>
+      <!-- cote entre les deux barres, dans la bande libre du haut -->
+      <line class="mo-rom" x1="108" y1="28" x2="124" y2="28"/>
+      <line class="mo-rom" x1="108" y1="25" x2="108" y2="31"/>
+      <line class="mo-rom" x1="124" y1="25" x2="124" y2="31"/>
+      <text class="mo-cote mo-cote-ok" font-size="9.4" text-anchor="start" x="131" y="31">26 cm</text>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M92 86 L92 50 M87 58 L92 50 L97 58"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M92 50 L92 86 M87 78 L92 86 L97 78"/>` }
+  ]
+};
