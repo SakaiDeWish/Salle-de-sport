@@ -20498,3 +20498,98 @@ EXERCISE_MOTIONS["developpe-militaire-guide"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M92 50 L92 86 M87 78 L92 86 L97 78"/>` }
   ]
 };
+
+/* =========================================================
+   167. BARRE AU FRONT, BANC INCLINÉ  (barre-au-front-incline)
+   -----------------------------------------------------------
+   Même rig que le schéma 23 (banc plat) : bras L1=22, avant-bras
+   L2=22, disque r=6, tête r=8 reposant sur le dossier. Banc à 30°.
+   Vue de PROFIL, +x vers les pieds.
+   >>> CE QU'ON NE PEUT PAS FAIRE : TOURNER LE SCHÉMA 23 <<< Le
+       premier réflexe est de pivoter tout le rig de 30° — la tête
+       est posée sur le dossier, donc elle suit. C'est un piège :
+       calculé ainsi, le bras pointe 19° vers les pieds et la
+       flexion d'épaule par rapport au tronc reste à 101°, comme à
+       plat. On obtient le même exercice, simplement penché, ce
+       qui n'est pas ce que fait quelqu'un sur un banc incliné. Sa
+       consigne est « bras VERTICAUX » : c'est le bras qui reste
+       fixe dans l'espace, pas le tronc.
+   MODÈLE RETENU : humérus vertical (épaule S(87,36 ; 86), coude
+   E(87,36 ; 64)), tête posée sur le dossier. Avant-bras de départ
+   à 6° vers la tête (coude à 174°, comme au schéma 23).
+   CE QUE ÇA CHANGE, MESURÉ (banc à 30°, comparé au plat) :
+     • flexion d'épaule par rapport au tronc : 120,0° contre 102,8°,
+       soit 17° de plus. C'est le gain annoncé de la variante ;
+     • MAIS la barre touche le front avant d'arriver derrière la
+       tête : coude de 174° à 114,1° seulement, contre 95,6° à
+       plat. 59,9° d'amplitude de coude au lieu de 78,4° : 24 % de
+       moins ;
+     • bras de levier gravitaire de la barre au contact : 91 % du
+       maximum, contre 100 % à plat. L'avant-bras n'atteint jamais
+       l'horizontale ; la résistance culmine en bas dans les deux cas.
+   LE DOSSIER NE SE RÈGLE PAS AU HASARD : la même mesure à 20° donne
+   103,5° de coude en bas (flexion d'épaule 110°) et à 45° donne
+   127,6° (flexion 135°) avec un levier tombé à 79 %. Plus on
+   incline, plus l'étirement d'épaule monte et plus l'amplitude de
+   coude fond. 30° est le compromis courant, pas un optimum.
+   >>> CE QUE CE SCHÉMA NE TRANCHE PAS <<< Épaule plus fléchie et coude
+       moins fléchi n'ont pas le même effet sur la LONGUE portion, qui
+       croise les deux articulations ; dire laquelle l'emporte demande
+       ses bras de levier, et je ne les ai pas modélisés. Aucun
+       « étire X % de plus » n'est donc affiché. La fiche dit le
+       gain mesuré (+17° d'épaule) ET le coût mesuré (−24 % de coude),
+       pas leur somme.
+   >>> LIMITE DU MODÈLE <<< Tête rigide, épaule fixe. Descendre la barre
+       DERRIÈRE la tête est possible, mais l'épaule se met alors à
+       bouger : c'est précisément l'erreur n°1 de la fiche, et ce n'est
+       plus le même exercice. Elle n'est pas dessinée.
+   GÉOMÉTRIE — hanche (122,106), dossier à 30° : tête C(67,14 ; 69,03).
+   Haut : main (85,06 ; 42,12). Bas : contact du front, main (67,27 ;
+   55,03), avant-bras −59,95°. Un seul pivot, le coude : la rotation
+   rigide est exacte, pas besoin de poses intermédiaires.
+   ========================================================= */
+EXERCISE_MOTIONS["barre-au-front-incline"] = {
+  vb: "44 30 112 126",
+  dur: 3.8,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur un banc incliné à 30°, bras verticaux : la barre descend vers le front par flexion des coudes, qu'elle touche avant d'arriver derrière la tête, puis remonte par extension des triceps.",
+  fixe: `
+    <line class="mo-ground" x1="52" y1="152" x2="150" y2="152"/>
+    <!-- banc : assise horizontale et dossier à 30° -->
+    <line class="mo-pad" x1="110" y1="108" x2="144" y2="108"/>
+    <line class="mo-pad" x1="122" y1="106" x2="64.85" y2="73"/>
+    <line class="mo-gear" x1="142" y1="110" x2="142" y2="152"/>
+    <line class="mo-gear" x1="102.95" y1="95" x2="102.95" y2="152"/>
+    <!-- corps : tête posée sur le dossier, jambes pliées sur l'assise -->
+    <circle class="mo-head" cx="67.14" cy="69.03" r="8"/>
+    <line class="mo-body" x1="87.36" y1="86" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="138" y2="130"/>
+    <line class="mo-body" x1="138" y1="130" x2="136" y2="152"/>
+    <!-- BRAS : fixe, VERTICAL — c'est la consigne de l'exercice -->
+    <line class="mo-limb" x1="87.36" y1="86" x2="87.36" y2="64"/>
+    <circle class="mo-joint" cx="87.36" cy="64" r="2.8"/>
+    <!-- repère : l'arc réellement parcouru par la barre, qui s'arrête
+         au front -->
+    <path class="mo-rom" fill="none" d="M85.06 42.12 A22 22 0 0 0 67.27 55.03"/>`,
+  muscles: [
+    { nom: "Triceps (longue portion)",
+      svg: `<ellipse cx="87.4" cy="75" rx="3.2" ry="8"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (87.36, 64).
+         −59,95° amène la barre du plafond au contact du front. */
+      o: "87.36px 64px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-59.95deg)"], [52, "rotate(-59.95deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="87.36" y1="64" x2="85.06" y2="42.12"/>
+        <circle class="mo-plate-o" cx="85.06" cy="42.12" r="6"/>
+        <circle class="mo-hub" cx="85.06" cy="42.12" r="2.4"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M118 82 L118 48 M113 56 L118 48 L123 56"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L118 82 M113 74 L118 82 L123 74"/>` }
+  ]
+};
