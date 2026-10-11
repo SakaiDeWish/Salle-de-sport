@@ -20718,3 +20718,167 @@ EXERCISE_MOTIONS["curl-poulie-incline"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M58 78 L58 116 M53 108 L58 116 L63 108"/>` }
   ]
 };
+
+/* =========================================================
+   169. CURL INCLINÉ MARTEAU  (curl-incline-marteau)
+   -----------------------------------------------------------
+   Rig du schéma 19 (curl incliné aux haltères) À L'IDENTIQUE :
+   banc à 56°, épaule (92 ; 62), coude (86 ; 88), main basse
+   (84 ; 114), flexion de +128° autour du coude. Vue de PROFIL.
+   Seule la PRISE change : neutre, pouces vers le haut. L'haltère
+   est donc dessiné DANS L'AXE de l'avant-bras (inclinaison de
+   4,4° sur la verticale, celle de l'avant-bras), comme au schéma 20
+   — à l'opposé du schéma 19, où il est en travers.
+   >>> CE QUE LA PRISE NE CHANGE PAS, ET C'EST MESURÉ <<< La courbe
+       de charge. La gravité est verticale, la masse est à la main,
+       le bras de levier autour du coude ne dépend donc que de la
+       position de la main : strictement le même rig, strictement les
+       mêmes valeurs qu'aux haltères en supination —
+         2,0  9,1  15,5  20,7  24,2  26,0  25,6  23,4  19,3
+       sur neuf points de la course. Le marteau ne déplace pas la
+       charge d'une unité dans l'amplitude ; il change QUI la porte.
+   Agonistes : BRACHIAL ANTÉRIEUR et BRACHIO-RADIAL en premier. La
+       prise neutre met le biceps en position moins favorable (il
+       supine l'avant-bras autant qu'il le fléchit) et reporte le
+       travail sur eux. L'épaule restant en extension, la longue
+       portion est tout de même étirée au départ, comme au curl
+       incliné classique.
+   Distinction : ≠ schéma 19 (supination, haltère en travers) ;
+       ≠ schéma 20, curl marteau DEBOUT (épaule neutre, pas
+       d'étirement de la longue portion).
+   ========================================================= */
+EXERCISE_MOTIONS["curl-incline-marteau"] = {
+  vb: "48 26 152 130",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis sur un banc incliné, bras pendant derrière le corps, haltères tenus pouces vers le haut : flexion du coude en gardant la prise neutre, l'haltère restant dans l'axe de l'avant-bras, puis retour en étirement complet.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="152" x2="192" y2="152"/>
+    <!-- banc incliné ~56° : dossier + assise + pieds -->
+    <line class="mo-pad" x1="86" y1="52" x2="126" y2="112"/>
+    <line class="mo-pad" x1="126" y1="112" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="66" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- corps plaqué au dossier -->
+    <circle class="mo-head" cx="80" cy="46" r="9"/>
+    <line class="mo-body" x1="86" y1="53" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, en extension d'épaule, il pend derrière le buste -->
+    <line class="mo-limb" x1="92" y1="62" x2="86" y2="88"/>
+    <circle class="mo-joint" cx="86" cy="88" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M84 114 A26.1 26.1 0 0 1 66.7 70.4"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="91" cy="75" rx="3.6" ry="9" transform="rotate(13 91 75)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE EN PRISE NEUTRE : rotation autour du COUDE
+         (86, 88), +128° comme au schéma 19. */
+      o: "86px 88px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(128deg)"], [40, "rotate(128deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Brachio-radial",
+      muscle: `<ellipse cx="85" cy="101" rx="3.4" ry="9" transform="rotate(4.4 85 101)"/>`,
+      svg: `
+        <line class="mo-limb" x1="86" y1="88" x2="84" y2="114"/>
+        <line class="mo-bar2" x1="84.61" y1="106.02" x2="82.93" y2="127.96"/>
+        <rect class="mo-mass" x="77.6" y="102.5" width="14" height="7" rx="2" transform="rotate(4.4 84.61 106.02)"/>
+        <rect class="mo-mass" x="75.9" y="124.5" width="14" height="7" rx="2" transform="rotate(4.4 82.93 127.96)"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 116 L58 78 M53 86 L58 78 L63 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 78 L58 116 M53 108 L58 116 L63 108"/>` }
+  ]
+};
+
+/* =========================================================
+   170. CURL INCLINÉ, BANC BAS À 30°  (curl-incline-bas)
+   -----------------------------------------------------------
+   Même construction que le schéma 19, banc ramené à 30°. Vue de
+   PROFIL. Hanche (122 ; 106), épaule (75,84 ; 79,35), bras
+   VERTICAL de 26,68 -> coude (75,84 ; 106,03), avant-bras 26,08.
+   >>> POURQUOI LE BRAS EST VERTICAL ICI, ALORS QU'IL EST INCLINÉ DE
+       13° VERS L'ARRIÈRE AU SCHÉMA 19 <<< On compare une variable à la
+       fois. Le schéma 19 a un bras incliné de 13° ; si on le gardait,
+       passer le banc de 56° à 30° ajouterait ces 13° à ce que
+       l'inclinaison change vraiment, et le chiffre annoncé mêlerait
+       deux effets. Les haltères tirent le bras à la verticale ; c'est
+       la position que la fiche donne.
+   >>> LA LOI QU'ON VEUT, ET ELLE EST SIMPLE <<< Bras vertical : le
+       tronc est incliné de α sur l'horizontale, donc l'EXTENSION
+       d'épaule par rapport au tronc vaut 90° − α.
+         banc à 60°   30°
+         banc à 56°   34°   (≈ le schéma 19)
+         banc à 45°   45°
+         banc à 30°   60°   <- ce schéma
+       Vérifié sur le rig : 60,00°. Chaque degré de dossier en moins
+       est un degré d'extension en plus.
+   >>> ET C'EST LÀ QUE L'AVERTISSEMENT N'EST PAS COSMÉTIQUE <<<
+       L'amplitude active d'extension d'épaule se situe autour de 45
+       à 60° selon les références. À 30° de banc, on est donc à la
+       LIMITE, pas dans la zone confortable : c'est la raison du niveau
+       « avancé » et de la consigne de remonter le dossier si l'avant
+       de l'épaule tire. Je cite un ordre de grandeur de la littérature,
+       pas une mesure faite ici.
+   CE QUI CHANGE SUR LA COURBE DE CHARGE : peu. Avec l'avant-bras
+   vertical au départ le bras de levier vaut L2·sin(r) :
+         0   6,8  13,0  18,4  22,6  25,2  26,1  25,2  22,6
+       contre 2,0 … 19,3 au schéma 19. En haut 22,6 au lieu de 19,3 :
+       l'avant-bras de départ est vertical plutôt qu'incliné de 4,4°,
+       et la course s'arrête à 120° au lieu de 128° ; ce n'est pas un
+       effet du banc. Le gain de ce banc est l'étirement, pas la
+       charge.
+   ROM : coude de 180° (avant-bras vertical) à 60° ; rotation +120°.
+       Main haute (53,25 ; 92,99), à 23,1 de la tête (r=9) : elle ne
+       la rencontre pas.
+   Ce que ce schéma ne tranche pas : étirer davantage la longue
+   portion ne dit pas qu'on en tire plus de croissance ; rien ici ne
+   le mesure.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-incline-bas"] = {
+  vb: "28 50 146 110",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé presque à plat sur un banc incliné à 30°, bras pendant à la verticale à côté du banc : l'haltère monte par flexion du coude, puis redescend jusqu'au bras presque tendu.",
+  fixe: `
+    <line class="mo-ground" x1="30" y1="152" x2="172" y2="152"/>
+    <!-- banc à 30° : dossier long et bas, assise, pieds -->
+    <line class="mo-pad" x1="125.46" y1="108" x2="57.05" y2="68.5"/>
+    <line class="mo-pad" x1="125.46" y1="108" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="94" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- corps plaqué au dossier, tête posée -->
+    <circle class="mo-head" cx="58.11" cy="70.39" r="9"/>
+    <line class="mo-body" x1="66.57" y1="74" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, VERTICAL — l'épaule est en extension de 60° -->
+    <line class="mo-limb" x1="75.84" y1="79.35" x2="75.84" y2="106.03"/>
+    <circle class="mo-joint" cx="75.84" cy="106.03" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M75.84 132.11 A26.08 26.08 0 0 1 53.25 92.99"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="78" cy="93" rx="3.6" ry="9"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (75.84, 106.03),
+         +120° — le coude passe de 180° à 60°. */
+      o: "75.84px 106.03px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(120deg)"], [40, "rotate(120deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="75.84" y1="106.03" x2="75.84" y2="132.11"/>
+        <line class="mo-bar2" x1="65.84" y1="132.11" x2="85.84" y2="132.11"/>
+        <rect class="mo-mass" x="62" y="124.6" width="7" height="15" rx="2"/>
+        <rect class="mo-mass" x="82.7" y="124.6" width="7" height="15" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M38 132 L38 96 M33 104 L38 96 L43 104"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M38 96 L38 132 M33 124 L38 132 L43 124"/>` }
+  ]
+};

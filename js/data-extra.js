@@ -448,6 +448,44 @@ const EXERCISES_EXTRA = [
     videoQuery: "curl poulie basse banc incliné biceps technique incline cable curl"
   },
   {
+    id: "curl-incline-marteau",
+    nom: "Curl incliné marteau",
+    groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
+    muscles: "Brachial, brachio-radial, biceps (longue portion)",
+    description: "Le curl incliné en prise neutre, pouces vers le haut. Le bras part derrière le corps comme au curl incliné classique, donc la longue portion du biceps est étirée au départ, mais la prise neutre déplace une partie du travail vers le brachial et le brachio-radial, les muscles qui épaississent le bras et l'avant-bras.",
+    execution: [
+      "Banc incliné à 45-60°, dos plaqué, bras pendants derrière la ligne du corps, haltères en prise neutre (paumes face à face).",
+      "Monte les haltères vers les épaules sans tourner les poignets : les pouces restent vers le haut du début à la fin.",
+      "Garde les coudes fixes et les épaules plaquées au dossier.",
+      "Redescends lentement jusqu'au bras presque tendu."
+    ],
+    erreurs: [
+      "Tourner les poignets en supination en montant : ce n'est plus un marteau.",
+      "Avancer les épaules pour aider la montée.",
+      "Descente relâchée : c'est en bas que l'étirement est utile."
+    ],
+    videoQuery: "curl incliné marteau haltères technique incline hammer curl"
+  },
+  {
+    id: "curl-incline-bas",
+    nom: "Curl incliné, banc bas (30°)",
+    groupe: "biceps", materiel: "halteres", niveau: "avance", type: "iso",
+    muscles: "Biceps (longue portion)",
+    description: "Le curl incliné sur un banc presque couché, à environ 30°. Les bras pendent à la verticale, donc l'épaule est en extension de 60° par rapport au tronc, contre environ 34° sur un banc à 56° : la longue portion du biceps est étirée au maximum. C'est aussi une position proche de la limite de l'épaule : on la réserve aux pratiquants à l'aise.",
+    execution: [
+      "Banc incliné à 30°, dos et tête plaqués, bras pendant VERTICALEMENT à côté du banc, haltères en supination.",
+      "Monte les haltères vers les épaules sans avancer les coudes ni décoller les épaules du dossier.",
+      "Redescends lentement jusqu'au bras presque tendu, sans te laisser tirer vers l'avant par les haltères.",
+      "Si l'avant de l'épaule tire ou pince, remonte le dossier d'un cran : ne force pas cette position."
+    ],
+    erreurs: [
+      "Décoller les épaules du banc pour gagner de l'amplitude : l'étirement vient du bras en arrière, pas d'un buste qui avance.",
+      "Charge trop lourde : le bras tendu derrière le corps est une position fragile pour l'épaule.",
+      "Coudes qui avancent en montant."
+    ],
+    videoQuery: "curl incliné 30 degrés haltères banc bas étirement biceps technique"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2109,6 +2147,9 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "curl-incline-marteau": ["incline hammer curl", "hammer curl incliné", "curl marteau incliné"],
+  "curl-incline-bas": ["low incline curl", "30 degree incline curl", "curl incliné banc bas",
+                       "curl incliné 30 degrés", "curl incliné allongé"],
   "curl-poulie-incline": ["incline cable curl", "cable incline curl", "curl incliné à la poulie",
                           "curl poulie banc incliné", "curl poulie basse incliné"],
   "barre-au-front-incline": ["incline skull crusher", "incline skullcrusher", "incline lying triceps extension",
