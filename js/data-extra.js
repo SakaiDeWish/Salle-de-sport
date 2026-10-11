@@ -1886,6 +1886,25 @@ const EXERCISES_COMBLE = [
     videoQuery: "extension triceps allongée haltères skull crusher dumbbell technique"
   },
   {
+    id: "barre-au-front-incline",
+    nom: "Barre au front, banc incliné",
+    groupe: "triceps", materiel: "barre", niveau: "intermediaire", type: "iso",
+    muscles: "Triceps (longue portion surtout)",
+    description: "Le barre au front sur un banc incliné à environ 30° : le bras vertical se retrouve plus fléchi par rapport au tronc (120° au lieu de 103° à plat), ce qui étire davantage la longue portion du triceps avant même de commencer. En échange, la barre touche le front plus tôt : l'amplitude du coude est plus courte.",
+    execution: [
+      "Dossier à 30°, tête et dos plaqués, barre EZ en pronation, bras VERTICAUX au-dessus des épaules.",
+      "Fléchis les coudes pour amener la barre vers le front : elle touche avant d'arriver derrière la tête, c'est normal.",
+      "Seuls les avant-bras bougent, les coudes restent fixes et pointés vers le plafond.",
+      "Tends les bras en contractant les triceps."
+    ],
+    erreurs: [
+      "Laisser les coudes partir vers l'arrière pour descendre derrière la tête : l'épaule se met à bouger, ça devient un pull-over.",
+      "Dossier trop incliné : à 45° la barre arrive au front quasi bras tendus, il ne reste presque rien à fléchir.",
+      "Écarter les coudes vers l'extérieur."
+    ],
+    videoQuery: "barre au front banc incliné triceps technique skull crusher incline"
+  },
+  {
     id: "farmer-walk",
     nom: "Farmer walk (port de charge)",
     groupe: "dos", materiel: "halteres", niveau: "debutant", type: "poly",
@@ -2071,6 +2090,8 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "barre-au-front-incline": ["incline skull crusher", "incline skullcrusher", "incline lying triceps extension",
+                             "barre au front inclinée", "extension triceps banc incliné"],
   "developpe-couche-prise-serree": ["close grip bench press", "CGBP"],
   "squat-barre": ["back squat", "squat arrière"],
   "front-squat": ["squat avant", "squat clavicule"],
