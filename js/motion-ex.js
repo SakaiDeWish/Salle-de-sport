@@ -20593,3 +20593,128 @@ EXERCISE_MOTIONS["barre-au-front-incline"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L118 82 M113 74 L118 82 L123 74"/>` }
   ]
 };
+
+/* =========================================================
+   168. CURL À LA POULIE BASSE, BANC INCLINÉ  (curl-poulie-incline)
+   -----------------------------------------------------------
+   Rig du schéma 19 (curl incliné aux haltères) À L'IDENTIQUE :
+   banc à 56°, épaule (92 ; 62), coude (86 ; 88), main basse
+   (84 ; 114), flexion de +128° autour du coude (171,4° -> 60,6°).
+   Seul change l'instrument : un câble, poulie au sol en (110 ; 147).
+   Vue de PROFIL.
+   >>> OÙ POSER LA POULIE N'EST PAS UN DÉTAIL : AU MAUVAIS ENDROIT, LE
+       CÂBLE AIDE LA FLEXION <<< Mon premier jet la plaçait DERRIÈRE le
+       banc, côté tête, comme on le ferait d'instinct pour « tirer
+       vers l'arrière ». Le calcul du bras de levier SIGNÉ autour du
+       coude (négatif = résiste, positif = aide) a montré que c'était
+       faux : à (56 ; 147), le câble tire la main vers l'arrière, dans
+       le sens de la flexion, et AIDE de +15,3 en bas. Ce n'est pas un
+       exercice un peu moins bon, c'est l'inverse de ce qu'on veut.
+       Balayage de la position, poulie au sol (levier en début, 25 %,
+       50 %, 75 %, fin de course) :
+         x = 56   +15,3  −7,0  −23,0  −25,9  −21,5   aide en bas
+         x = 80    +1,1 −20,1  −26,1  −23,1  −16,0   aide en bas
+         x = 90    −6,6 −23,3  −25,8  −21,3  −13,3   résiste partout
+         x = 110  −17,7 −25,9  −24,1  −17,3   −8,1   résiste partout
+         x = 150  −24,1 −25,6  −20,2  −11,0   −0,1   résiste partout
+         x = 200  −25,6 −24,5  −17,2   −6,4   +5,6   aide en haut
+       La fenêtre où le câble résiste de bout en bout va d'environ
+       x=85 à x=152, c'est-à-dire sous le banc et un peu devant :
+       derrière, il aide en bas ; trop loin devant, il aide en haut.
+       On dessine x=110, au milieu de la fenêtre. La fiche le dit,
+       en deux erreurs distinctes.
+   >>> CE QUE LE CÂBLE CHANGE, À POSITION VALIDE <<< Bras de levier
+       autour du coude, neuf points de la course, même rig :
+         câble   17,7  23,5  25,9  25,8  24,1  21,1  17,3  12,9   8,1
+         haltère  2,0   9,1  15,5  20,7  24,2  26,0  25,6  23,4  19,3
+       • EN BAS, 17,7 contre 2,0 : près de neuf fois plus. Aux
+         haltères le bras pend presque à la verticale, la gravité
+         n'a donc aucun bras de levier — c'est le trou du curl
+         incliné, précisément dans la position où la longue
+         portion du biceps est le plus étirée. Le câble le comble ;
+       • EN HAUT, 8,1 contre 19,3 : moins de la moitié. Le câble
+         tire vers le bas et en avant, l'avant-bras finit incliné
+         vers la tête, et la composante utile s'effondre ;
+       • le point FAIBLE n'a pas disparu, il a changé de côté, et
+         à 8,1 il reste quatre fois au-dessus des 2,0 de l'haltère.
+       C'est donc la courbe inverse du curl incliné aux haltères,
+       pas une courbe « plus constante ».
+   CE QUI N'EST PAS TRANCHÉ : déplacer la charge vers la position
+       étirée est un fait mesuré ; que cela donne plus de croissance
+       n'en est pas un, et rien ici ne le mesure.
+   GÉOMÉTRIE — Le câble est échantillonné en 8 intervalles : rotation
+   et longueur autour de la poulie, jusqu'à ×2,0936 en haut. Même
+   grille de keyframes que l'avant-bras, ce qui garde les deux pièces
+   synchrones. Écart maximal entre l'extrémité du câble et la vraie
+   main : 0,40 unité. Le câble reste à 8,8 du bras fixe et à 27,8 de la
+   tête sur toute la course ; il croise le montant du banc, mais le
+   montant est dans le plan des côtés et le câble dans celui du bras :
+   ce n'est qu'une superposition de profil.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-poulie-incline"] = {
+  vb: "48 26 152 130",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis-allongé sur un banc incliné, bras pendant derrière le corps : la poignée, reliée à une poulie au sol sous le banc, monte vers les épaules par flexion du coude, puis redescend jusqu'au bras presque tendu.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="152" x2="192" y2="152"/>
+    <!-- banc incliné ~56° : dossier + assise + pieds, comme au schéma 19 -->
+    <line class="mo-pad" x1="86" y1="52" x2="126" y2="112"/>
+    <line class="mo-pad" x1="126" y1="112" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="66" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- POULIE au sol, SOUS le banc : au milieu de la fenêtre où le câble
+         résiste de bout en bout (x=85 à 152) -->
+    <circle class="mo-pulley" cx="110" cy="147" r="5"/>
+    <!-- corps plaqué au dossier -->
+    <circle class="mo-head" cx="80" cy="46" r="9"/>
+    <line class="mo-body" x1="86" y1="53" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, en extension d'épaule, il pend derrière le buste -->
+    <line class="mo-limb" x1="92" y1="62" x2="86" y2="88"/>
+    <circle class="mo-joint" cx="86" cy="88" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par la main -->
+    <path class="mo-rom" fill="none" d="M84 114 A26.1 26.1 0 0 1 66.74 70.42"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="91" cy="75" rx="3.6" ry="9" transform="rotate(13 91 75)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation et longueur autour de la poulie (110,147),
+         échantillonnées sur l'arc réel de la main. */
+      o: "110px 147px",
+      k: [[0, "rotate(0deg) scale(1)"], [4, "rotate(-5.52deg) scale(1.1389)"],
+          [8, "rotate(-7.85deg) scale(1.3044)"], [12, "rotate(-7.79deg) scale(1.4771)"],
+          [16, "rotate(-6.09deg) scale(1.6436)"], [20, "rotate(-3.27deg) scale(1.7943)"],
+          [24, "rotate(0.3deg) scale(1.9225)"], [28, "rotate(4.38deg) scale(2.0234)"],
+          [32, "rotate(8.77deg) scale(2.0936)"], [40, "rotate(8.77deg) scale(2.0936)"],
+          [46, "rotate(4.38deg) scale(2.0234)"], [52, "rotate(0.3deg) scale(1.9225)"],
+          [58, "rotate(-3.27deg) scale(1.7943)"], [64, "rotate(-6.09deg) scale(1.6436)"],
+          [70, "rotate(-7.79deg) scale(1.4771)"], [76, "rotate(-7.85deg) scale(1.3044)"],
+          [82, "rotate(-5.52deg) scale(1.1389)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="110" y1="147" x2="84" y2="114"/>`
+    },
+    {
+      /* AVANT-BRAS + POIGNÉE : rotation autour du COUDE (86,88), +128°. */
+      o: "86px 88px",
+      k: [[0, "rotate(0deg)"], [4, "rotate(16deg)"], [8, "rotate(32deg)"],
+          [12, "rotate(48deg)"], [16, "rotate(64deg)"], [20, "rotate(80deg)"],
+          [24, "rotate(96deg)"], [28, "rotate(112deg)"], [32, "rotate(128deg)"],
+          [40, "rotate(128deg)"], [46, "rotate(112deg)"], [52, "rotate(96deg)"],
+          [58, "rotate(80deg)"], [64, "rotate(64deg)"], [70, "rotate(48deg)"],
+          [76, "rotate(32deg)"], [82, "rotate(16deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="86" y1="88" x2="84" y2="114"/>
+        <line class="mo-bar2" x1="78" y1="113.5" x2="90" y2="114.5"/>
+        <circle class="mo-hand" cx="84" cy="114" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 116 L58 78 M53 86 L58 78 L63 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 78 L58 116 M53 108 L58 116 L63 108"/>` }
+  ]
+};
