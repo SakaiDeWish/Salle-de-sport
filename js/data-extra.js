@@ -429,6 +429,25 @@ const EXERCISES_EXTRA = [
     videoQuery: "curl poulie basse biceps technique"
   },
   {
+    id: "curl-poulie-incline",
+    nom: "Curl à la poulie basse, banc incliné",
+    groupe: "biceps", materiel: "poulie", niveau: "intermediaire", type: "iso",
+    muscles: "Biceps (longue portion)",
+    description: "Le curl incliné, mais avec un câble au lieu d'haltères. Aux haltères, le bras qui pend n'est presque pas chargé en bas, là où le biceps est le plus étiré ; le câble, lui, charge justement cette position. En échange, il charge nettement moins le haut du mouvement.",
+    execution: [
+      "Banc incliné à 45-60°, dos plaqué, bras pendants derrière la ligne du corps. Poulie au sol, SOUS le banc ou juste devant lui.",
+      "Poignée en supination, épaules basses et plaquées au dossier.",
+      "Monte la poignée vers les épaules sans avancer les coudes.",
+      "Redescends lentement jusqu'au bras presque tendu : c'est la position où le câble travaille le mieux."
+    ],
+    erreurs: [
+      "Poulie derrière le banc : le câble tire la main vers l'arrière et AIDE la flexion en bas au lieu de lui résister.",
+      "Poulie trop loin devant : en haut, le câble finit par aider la montée.",
+      "Avancer les épaules ou les coudes pour monter la charge."
+    ],
+    videoQuery: "curl poulie basse banc incliné biceps technique incline cable curl"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2090,6 +2109,8 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "curl-poulie-incline": ["incline cable curl", "cable incline curl", "curl incliné à la poulie",
+                          "curl poulie banc incliné", "curl poulie basse incliné"],
   "barre-au-front-incline": ["incline skull crusher", "incline skullcrusher", "incline lying triceps extension",
                              "barre au front inclinée", "extension triceps banc incliné"],
   "developpe-couche-prise-serree": ["close grip bench press", "CGBP"],
