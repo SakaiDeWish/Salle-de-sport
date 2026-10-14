@@ -20986,3 +20986,102 @@ EXERCISE_MOTIONS["developpe-semi-incline-halteres"] = {
     { phase: "con", svg: `<path class="mo-arr" d="M130 92 L130 58 M125 66 L130 58 L135 66"/>` }
   ]
 };
+
+/* =========================================================
+   172. ÉLÉVATION EN Y SUR BANC INCLINÉ AUX HALTÈRES
+        (elevation-y-incline-halteres)    — VU DE TROIS QUARTS ARRIÈRE
+   -----------------------------------------------------------
+   Position : à plat ventre, poitrine contre un dossier à 45°, pieds
+   au sol, bras pendants verticalement. Montée des bras tendus en Y.
+   Muscles : trapèzes inférieur et moyen, deltoïdes postérieurs.
+   >>> POURQUOI NI LE PROFIL NI LA FACE <<< Le bras ne monte pas
+       dans le plan sagittal ni dans le plan frontal : il monte dans
+       un plan OBLIQUE, celui qui contient la verticale (bras pendant)
+       et la branche du Y (30-35° de part et d'autre du prolongement du
+       tronc). Calculé avec un banc à 45° et une branche à 35° :
+       • rotation du bras, pendant -> Y : 125,4° ;
+       • de PROFIL, le bras mesurerait 1,00 pendu, 0,71 à mi-course,
+         0,82 en haut : un raccourcissement de 29 % qui VARIE. La
+         règle de la bibliothèque est qu'un raccourcissement constant
+         se déclare et qu'un raccourcissement variable ment ; ce
+         profil est donc exclu. De FACE, mêmes valeurs (la composante
+         perdue est la latérale, qui vaut 0,71 à mi-course aussi).
+   >>> LA VUE RETENUE EST CELLE QUI REND LA ROTATION VRAIE <<< On
+       regarde LE LONG DE LA NORMALE du plan du bras : l'axe de la
+       caméra est horizontal, à 45° derrière le côté du bras. Le
+       bras tourne alors dans le plan de l'image, de 125,4° exactement
+       et à longueur constante (44, vérifié : 44,0 pendu, 44,0 en Y).
+       Le prix est un raccourcissement CONSTANT du reste du corps,
+       déclaré : largeur d'épaules 19,7 sur 28, tronc 55,5 sur 56.
+   LE BRAS OPPOSÉ N'EST PAS DESSINÉ, ET C'EST UNE DÉCISION : son plan
+   a pour normale l'autre diagonale, perpendiculaire à l'axe de la
+   caméra, donc vu PAR LA TRANCHE. Dessiné, il passerait par une
+   longueur apparente nulle : de 44 pendu à 25,5 en Y en traversant
+   zéro, comme un bras qui se replie. Il fait le même mouvement en
+   miroir ; la fiche le dit, le schéma ne le simule pas.
+   >>> LA DÉPENDANCE AU BANC, CALCULÉE <<< cos(rotation) = -cos φ ×
+       sin α (φ = écart du Y au prolongement du tronc, α = inclinaison) :
+         banc à 30°   114,2°
+         banc à 45°   125,4°   <- ce schéma
+         banc à 60°   135,2°
+       Plus le dossier est relevé, plus le bras doit tourner pour
+       rejoindre le prolongement du tronc.
+   VALEURS NON MESURÉES, DÉCLARÉES : φ = 35° et α = 45° sont des
+   valeurs représentatives choisies, pas des mesures ; le bras est
+   dessiné rigide et tendu (en pratique le coude garde une légère
+   flexion). L'haltère est dessiné par son AXE (un disque), orientation
+   de poignée admise perpendiculaire au plan du mouvement ; la fiche
+   ne tranche pas pouces-vers-le-haut contre prise neutre, et le
+   dessin n'en dépend pas.
+   Distance minimale de la main à la tête sur toute la course : 34,1
+   (rayon de tête 9) : aucun recouvrement.
+   CE QUE LE SCHÉMA NE TRANCHE PAS : que cet exercice fasse davantage
+   travailler le trapèze inférieur que le haut des trapèzes dépend de
+   la charge et de la technique (c'est l'erreur n°1 de la fiche), pas
+   de la géométrie ; rien ici ne le mesure.
+   ========================================================= */
+EXERCISE_MOTIONS["elevation-y-incline-halteres"] = {
+  vb: "32 36 140 122",
+  dur: 3.6,
+  vue: "Vu de trois quarts arrière",
+  phases: { con: [0, 36], ecc: [48, 88] },
+  alt: "Vu de trois quarts arrière, à plat ventre sur un banc incliné à 45° : le bras, tendu, tourne de 125° depuis la verticale jusqu'au Y, dans le prolongement du tronc, puis redescend lentement. Le bras opposé fait le même mouvement en miroir et n'est pas dessiné.",
+  fixe: `
+    <line class="mo-ground" x1="34" y1="152" x2="170" y2="152"/>
+    <!-- banc à 45° : dossier long, pied -->
+    <line class="mo-pad" x1="126.13" y1="125.13" x2="79.9" y2="60.08"/>
+    <line class="mo-gear" x1="102.01" y1="95" x2="102.01" y2="152"/>
+    <line class="mo-gear" x1="90" y1="152" x2="124" y2="152"/>
+    <!-- corps à plat ventre sur le dossier : jambes, tronc, épaules, tête.
+         Raccourcissements CONSTANTS : épaules 19,7 sur 28, tronc 55,5/56. -->
+    <line class="mo-body" x1="128.14" y1="113.82" x2="141.7" y2="132.91"/>
+    <line class="mo-body" x1="141.7" y1="132.91" x2="155.27" y2="152"/>
+    <line class="mo-body" x1="95.98" y1="68.56" x2="128.14" y2="113.82"/>
+    <line class="mo-body" x1="90.15" y1="74.22" x2="109.85" y2="74.22"/>
+    <circle class="mo-head" cx="86.94" cy="58.66" r="9"/>`,
+  muscles: [
+    { nom: "Trapèzes inférieur et moyen",
+      svg: `<ellipse cx="105" cy="81.3" rx="9" ry="4.2" transform="rotate(54 105 81.3)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS PROCHE : rotation de 125,4° autour de l'ÉPAULE (90.15, 74.22).
+         Le plan du mouvement est perpendiculaire à l'axe de la caméra :
+         c'est une rotation VRAIE, à longueur constante (44). */
+      o: "90.15px 74.22px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(125.4deg)"], [48, "rotate(125.4deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Deltoïde postérieur",
+      muscle: `<circle cx="90.15" cy="74.22" r="4.8"/>`,
+      svg: `
+        <circle class="mo-joint" cx="90.15" cy="74.22" r="2.8"/>
+        <line class="mo-limb" x1="90.15" y1="74.22" x2="90.15" y2="118.22"/>
+        <circle class="mo-plate-o" cx="90.15" cy="121" r="5.2"/>
+        <circle class="mo-hub" cx="90.15" cy="121" r="1.8"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M44 112 L44 84 M39 92 L44 84 L49 92"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M44 84 L44 112 M39 104 L44 112 L49 104"/>` }
+  ]
+};
