@@ -506,6 +506,26 @@ const EXERCISES_EXTRA = [
     videoQuery: "développé semi incliné haltères technique pectoraux banc 15 degrés"
   },
   {
+    id: "elevation-y-incline-halteres",
+    nom: "Élévation en Y sur banc incliné aux haltères",
+    groupe: "epaules", materiel: "halteres", niveau: "intermediaire", type: "iso",
+    muscles: "Trapèzes inférieur et moyen, deltoïdes postérieurs",
+    description: "À plat ventre sur un banc incliné à 30-45°, la poitrine appuyée, tu montes les bras tendus en forme de Y, au-dessus de la tête. Le banc supprime tout élan du buste, et la charge, très légère, travaille le bas et le milieu du dos plutôt que le haut des trapèzes.",
+    execution: [
+      "Banc incliné à 30-45°, poitrine et ventre contre le dossier, pieds au sol, bras pendants verticalement de part et d'autre du banc, haltères légers, pouces vers le haut.",
+      "Monte les deux bras en même temps, tendus, en les écartant en Y : environ 30 à 35° de part et d'autre du prolongement de ton tronc, comme si tu voulais t'allonger dans le prolongement de ton corps.",
+      "Arrête quand les bras prolongent le tronc, omoplates descendues et serrées, sans hausser les épaules vers les oreilles.",
+      "Redescends lentement jusqu'aux bras pendants."
+    ],
+    erreurs: [
+      "Charge trop lourde : les épaules montent vers les oreilles et le haut des trapèzes prend le relais.",
+      "Décoller la poitrine du banc ou se cambrer pour aller chercher de la hauteur.",
+      "Plier les coudes : l'exercice se joue bras tendus.",
+      "Balancer les bras en bas pour prendre de l'élan."
+    ],
+    videoQuery: "élévation en Y banc incliné haltères trapèzes inférieurs technique incline y raise"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2167,6 +2187,8 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "elevation-y-incline-halteres": ["incline y raise", "prone y raise", "y raise", "chest supported y raise",
+                                    "élévation en y", "élévations en y banc incliné", "y raise banc incliné"],
   "developpe-semi-incline-halteres": ["low incline dumbbell press", "low incline press", "15 degree incline press",
                                       "développé incliné léger haltères", "développé banc peu incliné"],
   "curl-incline-marteau": ["incline hammer curl", "hammer curl incliné", "curl marteau incliné"],
