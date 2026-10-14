@@ -486,6 +486,26 @@ const EXERCISES_EXTRA = [
     videoQuery: "curl incliné 30 degrés haltères banc bas étirement biceps technique"
   },
   {
+    id: "developpe-semi-incline-halteres",
+    nom: "Développé semi-incliné aux haltères",
+    groupe: "pectoraux", materiel: "halteres", niveau: "intermediaire", type: "poly",
+    muscles: "Pectoraux (haut et milieu), deltoïdes antérieurs, triceps",
+    description: "Le développé aux haltères sur un banc réglé à environ 15°, entre le plat et l'incliné classique. Les haltères montent à la verticale, au-dessus des épaules : plus le dossier est relevé, plus le bras se retrouve fléchi par rapport au tronc (105° à 15°, contre 90° à plat et 120° à 30°). C'est un réglage de compromis qui décale légèrement la charge vers le haut des pectoraux sans trop faire intervenir les épaules.",
+    execution: [
+      "Règle le banc à environ 15° : un cran au-dessus du plat, bien en dessous de l'incliné classique. Dos, tête et fessiers plaqués.",
+      "Haltères au-dessus des épaules, bras presque tendus, coudes sans verrouillage brutal.",
+      "Descends en contrôlant jusqu'à ce que les haltères arrivent au niveau de la poitrine, coudes à environ 45-70° du buste.",
+      "Repousse à la verticale, au-dessus des épaules, en expirant."
+    ],
+    erreurs: [
+      "Incliner le banc de plus en plus au fil des séries : au-delà de 30-45°, les épaules prennent le relais.",
+      "Pousser les haltères vers l'avant, vers les pieds, au lieu de monter à la verticale au-dessus des épaules.",
+      "Descendre trop bas et sur-étirer l'épaule.",
+      "Cambrer le dos pour compenser la charge."
+    ],
+    videoQuery: "développé semi incliné haltères technique pectoraux banc 15 degrés"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2147,6 +2167,8 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "developpe-semi-incline-halteres": ["low incline dumbbell press", "low incline press", "15 degree incline press",
+                                      "développé incliné léger haltères", "développé banc peu incliné"],
   "curl-incline-marteau": ["incline hammer curl", "hammer curl incliné", "curl marteau incliné"],
   "curl-incline-bas": ["low incline curl", "30 degree incline curl", "curl incliné banc bas",
                        "curl incliné 30 degrés", "curl incliné allongé"],
