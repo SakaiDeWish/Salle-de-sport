@@ -20882,3 +20882,107 @@ EXERCISE_MOTIONS["curl-incline-bas"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M38 96 L38 132 M33 124 L38 132 L43 124"/>` }
   ]
 };
+
+/* =========================================================
+   171. DÉVELOPPÉ SEMI-INCLINÉ AUX HALTÈRES
+        (developpe-semi-incline-halteres)
+   -----------------------------------------------------------
+   Banc à 15°, tête et dos plaqués. Vue de PROFIL, un seul haltère
+   visible (poignée perpendiculaire à l'avant-bras, deux masses).
+   Segments L1 = L2 = 22. Hanche (134 ; 106), épaule (79,81 ; 91,48).
+   >>> LE PIÈGE : PIVOTER LE SCHÉMA 6 DE 15° <<< On obtient une
+       silhouette inclinée dont le bras, perpendiculaire au tronc,
+       penche de 15° vers les pieds au verrouillage. Par rapport au
+       corps, c'est ALORS EXACTEMENT LE DÉVELOPPÉ À PLAT, juste
+       penché : même angle bras-tronc (90°), même exercice. Ce n'est
+       pas ce que fait quelqu'un sur un banc incliné. Les haltères
+       montent contre la GRAVITÉ, donc à la verticale, au-dessus de
+       l'articulation de l'épaule ; c'est le tronc qui s'est relevé.
+       L'angle bras-tronc au verrouillage vaut alors 90° + α :
+         plat 90°  |  15° -> 105°  |  30° -> 120°  |  45° -> 135°
+       Vérifié sur le rig : 105,0°. C'est ça, et seulement ça, que le
+       banc change dans l'axe du bras. Le schéma dessine donc le
+       verrouillage VERTICAL.
+   >>> UN DÉFAUT TROUVÉ AU PASSAGE, NON CORRIGÉ ICI <<< Le schéma 2
+       (développé incliné aux haltères, banc à ~32°) est construit
+       selon le piège ci-dessus : son bras, au verrouillage, est
+       perpendiculaire au tronc, soit incliné de 32° vers les pieds,
+       et son commentaire présente ce choix comme ce qui « distingue
+       l'incliné du couché ». Selon le calcul ci-dessus, c'est
+       l'inverse : relatif au corps, il redonne le développé à plat.
+       Je le signale ; je ne l'ai pas modifié, ce n'était pas la
+       demande.
+   MODÈLE DE LA COURSE : bas = haltère au niveau de la poitrine,
+   c'est-à-dire à 26 unités de l'épaule le long du tronc, convention
+   du schéma 6 (haltère dans le plan de la poitrine). Coude à 169,1°
+   en haut, à 72,4° en bas ; bras +153,31°, avant-bras −96,63°.
+   Deux poses seulement : le coude se ferme de façon monotone
+   (169,1 -> 72,4°) et la main descend de façon monotone. Elle décrit
+   un arc qui dépasse de 7,5 unités vers les pieds la position
+   finale, comme le fait le schéma 6 : c'est la projection d'un
+   haltère qui se déplace aussi latéralement, pas une erreur.
+   Écart entre les poses résolues par IK et les rotations du CSS :
+   0,0000. Main à 33,8 de la tête au plus près.
+   CE QUE LE SCHÉMA NE TRANCHE PAS : décaler la charge vers le haut
+   du pectoral est le propos de la variante ; combien, et si cela
+   change la croissance, dépend de l'EMG et de l'individu, et rien
+   ici ne le mesure. Seule la géométrie de l'angle est affirmée.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-semi-incline-halteres"] = {
+  vb: "40 30 150 128",
+  dur: 3.8,
+  phases: { ecc: [0, 46], con: [54, 82] },
+  alt: "Sur un banc incliné à 15°, deux haltères sont poussés à la verticale au-dessus des épaules ; ils descendent au niveau de la poitrine puis remontent, seuls les bras bougent.",
+  fixe: `
+    <line class="mo-ground" x1="44" y1="152" x2="188" y2="152"/>
+    <!-- banc à 15° : dossier long et bas, assise, deux pieds -->
+    <line class="mo-pad" x1="138" y1="107" x2="60" y2="86"/>
+    <line class="mo-pad" x1="138" y1="107" x2="170" y2="110"/>
+    <line class="mo-gear" x1="96" y1="99" x2="96" y2="152"/>
+    <line class="mo-gear" x1="166" y1="112" x2="166" y2="152"/>
+    <!-- corps plaqué au dossier : tête, dos, cuisse, tibia -->
+    <circle class="mo-head" cx="59.37" cy="82.18" r="9"/>
+    <line class="mo-body" x1="68.22" y1="88.37" x2="134" y2="106"/>
+    <line class="mo-body" x1="134" y1="106" x2="156" y2="130"/>
+    <line class="mo-body" x1="156" y1="130" x2="152" y2="152"/>
+    <!-- repère : la VERTICALE au-dessus de l'épaule, où les haltères
+         finissent. L'écart avec la perpendiculaire au tronc (15°) est ce
+         que le banc change. -->
+    <line class="mo-rom" x1="79.81" y1="40" x2="79.81" y2="88"/>`,
+  muscles: [
+    { nom: "Pectoraux",
+      svg: `<ellipse cx="94.3" cy="95.4" rx="12" ry="4.4" transform="rotate(15 94.3 95.4)"/>` },
+    { nom: "Deltoïde antérieur",
+      svg: `<circle cx="79.81" cy="91.48" r="4.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (79.81, 91.48), +153,31°. */
+      o: "79.81px 91.48px",
+      k: [[0, "rotate(0deg)"], [46, "rotate(153.31deg)"], [54, "rotate(153.31deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="80.9" cy="80.5" rx="3.2" ry="7.5" transform="rotate(5 80.9 80.5)"/>`,
+      svg: `
+        <line class="mo-limb" x1="79.81" y1="91.48" x2="81.91" y2="69.58"/>
+        <circle class="mo-joint" cx="81.91" cy="69.58" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + HALTÈRE : −96,63° relatif autour du COUDE. */
+          o: "81.91px 69.58px",
+          k: [[0, "rotate(0deg)"], [46, "rotate(-96.63deg)"], [54, "rotate(-96.63deg)"],
+              [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="81.91" y1="69.58" x2="79.81" y2="47.68"/>
+            <line class="mo-bar2" x1="69.86" y1="48.63" x2="89.76" y2="46.73"/>
+            <rect class="mo-mass" x="66.4" y="40.9" width="7" height="16" rx="2" transform="rotate(-5.4 69.86 48.63)"/>
+            <rect class="mo-mass" x="86.3" y="39" width="7" height="16" rx="2" transform="rotate(-5.4 89.76 46.73)"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M130 58 L130 92 M125 84 L130 92 L135 84"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M130 92 L130 58 M125 66 L130 58 L135 66"/>` }
+  ]
+};
