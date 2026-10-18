@@ -526,6 +526,26 @@ const EXERCISES_EXTRA = [
     videoQuery: "élévation en Y banc incliné haltères trapèzes inférieurs technique incline y raise"
   },
   {
+    id: "souleve-de-terre-barre-hexagonale",
+    nom: "Soulevé de terre à la barre hexagonale",
+    groupe: "dos", materiel: "barre", niveau: "intermediaire", type: "poly",
+    muscles: "Quadriceps, fessiers, ischio-jambiers, érecteurs du rachis, trapèzes",
+    description: "Le soulevé de terre dans une barre en losange (trap bar) : tu te places à l'intérieur, les mains de chaque côté du corps. La barre n'a plus à contourner les tibias, donc les tibias restent verticaux, le buste se redresse et les hanches partent plus bas qu'au soulevé classique. C'est un soulevé plus accessible, qui sollicite davantage les quadriceps.",
+    execution: [
+      "Place-toi au centre de la barre, pieds largeur de hanches, les poignées à hauteur de tes mains quand tu te penches. Les poignées hautes raccourcissent la course.",
+      "Saisis les poignées, bras tendus, dos plat, poitrine haute. Les tibias sont verticaux et la charge est à l'aplomb du milieu du pied.",
+      "Pousse le sol : genoux et hanches s'étendent ensemble, les épaules montent au moins aussi vite que les hanches.",
+      "Verrouille les hanches en haut sans te pencher en arrière, puis redescends en contrôlant."
+    ],
+    erreurs: [
+      "Laisser les hanches monter avant les épaules : le dos prend la charge et ce n'est plus qu'un soulevé jambes tendues.",
+      "Arrondir le bas du dos au décollage.",
+      "Plier les bras pour tirer la barre.",
+      "Se cambrer en haut au lieu de verrouiller les hanches."
+    ],
+    videoQuery: "soulevé de terre barre hexagonale trap bar deadlift technique"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2187,6 +2207,9 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "souleve-de-terre-barre-hexagonale": ["trap bar deadlift", "hex bar deadlift", "hexagonal bar deadlift",
+                                         "soulevé de terre trap bar", "soulevé de terre barre hex",
+                                         "soulevé de terre hexbar", "deadlift trap bar"],
   "elevation-y-incline-halteres": ["incline y raise", "prone y raise", "y raise", "chest supported y raise",
                                     "élévation en y", "élévations en y banc incliné", "y raise banc incliné"],
   "developpe-semi-incline-halteres": ["low incline dumbbell press", "low incline press", "15 degree incline press",
