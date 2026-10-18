@@ -21225,3 +21225,263 @@ EXERCISE_MOTIONS["souleve-de-terre-barre-hexagonale"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M146 94 L146 130 M141 122 L146 130 L151 122"/>` }
   ]
 };
+
+/* =========================================================
+   174. ÉPAULÉ-DÉVELOPPÉ À LA BARRE  (clean-and-press)
+   -----------------------------------------------------------
+   Cycle : barre au sol -> tirage -> réception sur les clavicules ->
+   développé au-dessus de la tête -> retour par le même chemin. Vue de
+   PROFIL, chaîne enracinée à la cheville (le pied ne décolle pas).
+   Segments : tibia 26, cuisse 26, tronc 29, bras 19, avant-bras 17
+   (bras tendu 36, comme au schéma 173), disque r=12.
+   >>> CE SCHÉMA A 33 POSES ET PAS SEPT, ET C'EST LE FOND DE
+       L'AFFAIRE <<< Un soulevé n'a qu'une trajectoire. Ici la barre
+       change de contrainte quatre fois : elle longe les tibias, passe le
+       genou, glisse sur les cuisses, puis monte devant le thorax et le
+       visage. Interpoler deux poses fait traverser le genou à la barre.
+       Les 21 premières poses sont RÉSOLUES pour que la barre reste en
+       avant du tibia (genou − 5,2) puis au contact de la cuisse quand
+       elle passe au-dessus du genou ; la montée est ensuite décrite par
+       les poses suivantes. Pour que 33 poses ne fassent pas saccader le
+       geste, ce schéma est le premier à demander l'interpolation LINÉAIRE
+       (`continu`), que le moteur applique désormais à la demande.
+   POSES CLÉS (bras plié) — CHOISIES, pas résolues, et déclarées :
+       extension  genou 178°, tronc −3°, barre à 62 % du tronc, 7 devant
+       réception  genou 165° (15° de flexion pour amortir), tronc 2°,
+                  barre à (−8 ; −3) de l'épaule
+       mi-presse  genou 178°, tronc −6°, barre 5 devant le front
+       verrouill. genou 178°, tronc −2°, barre à l'aplomb du milieu du
+                  pied (x = 102), bras tendus
+   Le DÉPART est résolu : tibia à 10,7° et tronc à 75,8° du vertical,
+   hanche à 41,8 du sol, barre devant le genou. Ce sont les valeurs de
+   la barre droite du schéma 173 (mêmes règles, mêmes segments).
+   >>> LE COUDE : UNE CONTRAINTE QUI A INVALIDÉ MON PREMIER JET <<<
+       Dans le plan sagittal, le coude ne plie que dans UN sens
+       (cross(épaule→coude, coude→main) > 0). Mon premier jet plaçait,
+       pour la réception, le coude « en avant et haut » — du mauvais côté
+       de la ligne épaule-main : l'avant-bras pendait depuis un coude plus
+       haut que la barre, ce qui est une hyperextension. Une réception
+       réelle a le coude EN AVANT et en dessous de la barre, l'avant-bras
+       montant vers elle. La contrainte est maintenant imposée à chaque
+       pose : le signe du produit vectoriel est positif sur les 33.
+   >>> CE QUE LE PROFIL NE PEUT PAS MONTRER : LA SECONDE TRACTION <<<
+       Quand la barre passe devant les hanches et monte contre le torse,
+       les coudes montent en haut et en dehors : l'humérus est en
+       abduction et en rotation interne, hors du plan sagittal. Dessiné
+       dans ce plan avec le sens de flexion imposé, le coude se retrouve
+       derrière et sous la barre. C'est faux, ça se dit, et le
+       schéma garde le bon sens de flexion plutôt que la bonne
+       position de coude. Un schéma de face le dirait ; celui-ci non.
+   MESURES : course de barre 107,6 (de 137,1 à 29,4). Coude : 180° bras
+   tendu, 42,1° en fin de tirage, 26,7° à la réception, 60,8° au milieu du
+   développé, 168,4° au verrouillage. Écart entre poses résolues et
+   rotations CSS : 0,0000. Dégagements sur toute la course interpolée :
+   barre-tête 11,3 (contact : tête 9 + barre 1,4 = 10,4), barre-tronc
+   12,9, barre-genou 4,2 (le genou fait environ 4 de rayon : la barre le
+   frôle, comme dans la réalité).
+   LIMITES DÉCLARÉES : les pieds sont supposés immobiles, alors qu'un
+   épaulé réel les décale de quelques centimètres ; la réception se fait
+   debout avec 15° de flexion de genou (power clean), pas en squat ; le
+   disque est dessiné au centre de la barre alors qu'il est sur le côté,
+   plus près de l'observateur, et il passe donc devant la tête ; la
+   descente est dessinée comme la montée à l'envers, ce que fait une
+   barre contrôlée, pas une barre lâchée.
+   Agonistes : quadriceps, grand fessier, ischio-jambiers, érecteurs,
+   trapèzes à la traction ; deltoïde antérieur et triceps au développé.
+   Distinction : ≠ développé militaire (barre déjà aux clavicules,
+   schéma 13), ≠ soulevé de terre (la barre ne dépasse pas les hanches),
+   ≠ kettlebell swing (charge lancée, bras sans effort).
+   ========================================================= */
+EXERCISE_MOTIONS["clean-and-press"] = {
+  vb: "72 12 96 144",
+  /* Schéma haut (la barre part du sol et finit au-dessus de la tête) : comme
+     les burpees, il lui faut plus que le plafond commun pour rester lisible. */
+  hauteur: 240,
+  dur: 8,
+  continu: true,
+  phases: { con: [0, 50], ecc: [58, 95] },
+  alt: "De profil, une barre posée au sol : la barre est tirée le long des tibias puis des cuisses, les hanches et les genoux s'étendent, la barre est reçue sur les clavicules coudes en avant, puis poussée au-dessus de la tête jusqu'aux bras tendus, et la descente se fait par le même chemin.",
+  fixe: `
+    <line class="mo-ground" x1="72" y1="150" x2="172" y2="150"/>
+    <line class="mo-body" x1="92" y1="150" x2="112" y2="150"/>
+    <circle class="mo-joint" cx="104" cy="146" r="2.6"/>`,
+  parts: [
+    {
+      /* TIBIA : enraciné à la CHEVILLE (104, 146). Il ne se redresse que de
+         10,7°, de la position « barre devant les tibias » à la verticale. */
+      o: "104px 146px",
+      k: [[0, "rotate(0deg)"], [1.25, "rotate(0.53deg)"], [2.5, "rotate(1.07deg)"],
+          [3.75, "rotate(1.6deg)"], [5, "rotate(2.14deg)"], [6.25, "rotate(2.67deg)"],
+          [7.5, "rotate(3.2deg)"], [8.75, "rotate(3.74deg)"], [10, "rotate(4.27deg)"],
+          [11.25, "rotate(4.81deg)"], [12.5, "rotate(5.34deg)"], [13.75, "rotate(5.87deg)"],
+          [15, "rotate(6.41deg)"], [16.25, "rotate(6.94deg)"], [17.5, "rotate(7.48deg)"],
+          [18.75, "rotate(8.01deg)"], [20, "rotate(8.54deg)"], [21.25, "rotate(9.08deg)"],
+          [22.5, "rotate(9.61deg)"], [23.75, "rotate(10.15deg)"], [25, "rotate(10.68deg)"],
+          [27.08, "rotate(10.68deg)"], [29.17, "rotate(10.68deg)"], [31.25, "rotate(10.68deg)"],
+          [33.33, "rotate(9.68deg)"], [35.42, "rotate(8.68deg)"], [37.5, "rotate(7.68deg)"],
+          [39.58, "rotate(8.68deg)"], [41.67, "rotate(9.68deg)"], [43.75, "rotate(10.68deg)"],
+          [45.83, "rotate(10.68deg)"], [47.92, "rotate(10.68deg)"], [50, "rotate(10.68deg)"],
+          [58, "rotate(10.68deg)"], [59.16, "rotate(10.68deg)"], [60.31, "rotate(10.68deg)"],
+          [61.47, "rotate(10.68deg)"], [62.62, "rotate(9.68deg)"], [63.78, "rotate(8.68deg)"],
+          [64.94, "rotate(7.68deg)"], [66.09, "rotate(8.68deg)"], [67.25, "rotate(9.68deg)"],
+          [68.41, "rotate(10.68deg)"], [69.56, "rotate(10.68deg)"], [70.72, "rotate(10.68deg)"],
+          [71.88, "rotate(10.68deg)"], [73.03, "rotate(10.15deg)"], [74.19, "rotate(9.61deg)"],
+          [75.34, "rotate(9.08deg)"], [76.5, "rotate(8.54deg)"], [77.66, "rotate(8.01deg)"],
+          [78.81, "rotate(7.48deg)"], [79.97, "rotate(6.94deg)"], [81.12, "rotate(6.41deg)"],
+          [82.28, "rotate(5.87deg)"], [83.44, "rotate(5.34deg)"], [84.59, "rotate(4.81deg)"],
+          [85.75, "rotate(4.27deg)"], [86.91, "rotate(3.74deg)"], [88.06, "rotate(3.2deg)"],
+          [89.22, "rotate(2.67deg)"], [90.38, "rotate(2.14deg)"], [91.53, "rotate(1.6deg)"],
+          [92.69, "rotate(1.07deg)"], [93.84, "rotate(0.53deg)"], [95, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="104" y1="146" x2="99.18" y2="120.45"/>
+        <circle class="mo-joint" cx="99.18" cy="120.45" r="2.6"/>`,
+      children: [
+        {
+          /* CUISSE : extension du GENOU autour de (99.18, 120.45). */
+          o: "99.18px 120.45px",
+          k: [[0, "rotate(0deg)"], [1.25, "rotate(-3.43deg)"], [2.5, "rotate(-6.85deg)"],
+            [3.75, "rotate(-10.28deg)"], [5, "rotate(-13.7deg)"], [6.25, "rotate(-17.13deg)"],
+            [7.5, "rotate(-20.55deg)"], [8.75, "rotate(-23.98deg)"], [10, "rotate(-27.4deg)"],
+            [11.25, "rotate(-30.82deg)"], [12.5, "rotate(-34.25deg)"], [13.75, "rotate(-37.68deg)"],
+            [15, "rotate(-41.1deg)"], [16.25, "rotate(-44.53deg)"], [17.5, "rotate(-47.95deg)"],
+            [18.75, "rotate(-51.38deg)"], [20, "rotate(-54.8deg)"], [21.25, "rotate(-58.23deg)"],
+            [22.5, "rotate(-61.65deg)"], [23.75, "rotate(-65.08deg)"], [25, "rotate(-68.5deg)"],
+            [27.08, "rotate(-69.17deg)"], [29.17, "rotate(-69.83deg)"], [31.25, "rotate(-70.5deg)"],
+            [33.33, "rotate(-66.17deg)"], [35.42, "rotate(-61.83deg)"], [37.5, "rotate(-57.5deg)"],
+            [39.58, "rotate(-61.83deg)"], [41.67, "rotate(-66.17deg)"], [43.75, "rotate(-70.5deg)"],
+            [45.83, "rotate(-70.5deg)"], [47.92, "rotate(-70.5deg)"], [50, "rotate(-70.5deg)"],
+            [58, "rotate(-70.5deg)"], [59.16, "rotate(-70.5deg)"], [60.31, "rotate(-70.5deg)"],
+            [61.47, "rotate(-70.5deg)"], [62.62, "rotate(-66.17deg)"], [63.78, "rotate(-61.83deg)"],
+            [64.94, "rotate(-57.5deg)"], [66.09, "rotate(-61.83deg)"], [67.25, "rotate(-66.17deg)"],
+            [68.41, "rotate(-70.5deg)"], [69.56, "rotate(-69.83deg)"], [70.72, "rotate(-69.17deg)"],
+            [71.88, "rotate(-68.5deg)"], [73.03, "rotate(-65.08deg)"], [74.19, "rotate(-61.65deg)"],
+            [75.34, "rotate(-58.23deg)"], [76.5, "rotate(-54.8deg)"], [77.66, "rotate(-51.38deg)"],
+            [78.81, "rotate(-47.95deg)"], [79.97, "rotate(-44.53deg)"], [81.12, "rotate(-41.1deg)"],
+            [82.28, "rotate(-37.68deg)"], [83.44, "rotate(-34.25deg)"], [84.59, "rotate(-30.82deg)"],
+            [85.75, "rotate(-27.4deg)"], [86.91, "rotate(-23.98deg)"], [88.06, "rotate(-20.55deg)"],
+            [89.22, "rotate(-17.13deg)"], [90.38, "rotate(-13.7deg)"], [91.53, "rotate(-10.28deg)"],
+            [92.69, "rotate(-6.85deg)"], [93.84, "rotate(-3.43deg)"], [95, "rotate(0deg)"],
+            [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="108.99" cy="111.23" rx="10" ry="3" transform="rotate(-28.18 108.99 111.23)"/>
+            <circle cx="124.1" cy="108.17" r="4.4"/>`,
+          svg: `
+            <line class="mo-body" x1="99.18" y1="120.45" x2="122.1" y2="108.17"/>
+            <circle class="mo-joint" cx="122.1" cy="108.17" r="2.6"/>`,
+          children: [
+            {
+              /* TRONC : extension de la HANCHE autour de (122.1, 108.17). */
+              o: "122.1px 108.17px",
+              k: [[0, "rotate(0deg)"], [1.25, "rotate(7.42deg)"], [2.5, "rotate(14.26deg)"],
+              [3.75, "rotate(20.78deg)"], [5, "rotate(27.09deg)"], [6.25, "rotate(33.27deg)"],
+              [7.5, "rotate(39.34deg)"], [8.75, "rotate(64.31deg)"], [10, "rotate(71.31deg)"],
+              [11.25, "rotate(77.01deg)"], [12.5, "rotate(82.07deg)"], [13.75, "rotate(86.73deg)"],
+              [15, "rotate(91.13deg)"], [16.25, "rotate(95.35deg)"], [17.5, "rotate(99.42deg)"],
+              [18.75, "rotate(103.39deg)"], [20, "rotate(107.27deg)"], [21.25, "rotate(111.08deg)"],
+              [22.5, "rotate(114.85deg)"], [23.75, "rotate(118.57deg)"], [25, "rotate(122.26deg)"],
+              [27.08, "rotate(127.72deg)"], [29.17, "rotate(133.19deg)"], [31.25, "rotate(138.65deg)"],
+              [33.33, "rotate(133.65deg)"], [35.42, "rotate(128.65deg)"], [37.5, "rotate(123.65deg)"],
+              [39.58, "rotate(129.65deg)"], [41.67, "rotate(135.65deg)"], [43.75, "rotate(141.65deg)"],
+              [45.83, "rotate(140.32deg)"], [47.92, "rotate(138.99deg)"], [50, "rotate(137.65deg)"],
+              [58, "rotate(137.65deg)"], [59.16, "rotate(138.99deg)"], [60.31, "rotate(140.32deg)"],
+              [61.47, "rotate(141.65deg)"], [62.62, "rotate(135.65deg)"], [63.78, "rotate(129.65deg)"],
+              [64.94, "rotate(123.65deg)"], [66.09, "rotate(128.65deg)"], [67.25, "rotate(133.65deg)"],
+              [68.41, "rotate(138.65deg)"], [69.56, "rotate(133.19deg)"], [70.72, "rotate(127.72deg)"],
+              [71.88, "rotate(122.26deg)"], [73.03, "rotate(118.57deg)"], [74.19, "rotate(114.85deg)"],
+              [75.34, "rotate(111.08deg)"], [76.5, "rotate(107.27deg)"], [77.66, "rotate(103.39deg)"],
+              [78.81, "rotate(99.42deg)"], [79.97, "rotate(95.35deg)"], [81.12, "rotate(91.13deg)"],
+              [82.28, "rotate(86.73deg)"], [83.44, "rotate(82.07deg)"], [84.59, "rotate(77.01deg)"],
+              [85.75, "rotate(71.31deg)"], [86.91, "rotate(64.31deg)"], [88.06, "rotate(39.34deg)"],
+              [89.22, "rotate(33.27deg)"], [90.38, "rotate(27.09deg)"], [91.53, "rotate(20.78deg)"],
+              [92.69, "rotate(14.26deg)"], [93.84, "rotate(7.42deg)"], [95, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+              muscleNom: ["Érecteurs du rachis", "Trapèzes"],
+              muscle: `
+                <ellipse cx="109.02" cy="100.75" rx="10" ry="2.8" transform="rotate(-165.83 109.02 100.75)"/>
+                <ellipse cx="88.03" cy="100.57" rx="5" ry="2.6" transform="rotate(-165.83 88.03 100.57)"/>`,
+              childrenFirst: true,
+              svg: `
+                <line class="mo-body" x1="122.1" y1="108.17" x2="93.98" y2="101.08"/>
+                <line class="mo-body" x1="93.98" y1="101.08" x2="86.03" y2="99.07"/>
+                <circle class="mo-head" cx="82.15" cy="98.09" r="9"/>`,
+              children: [
+                {
+                  /* BRAS : rotation autour de l'ÉPAULE (93.98, 101.08). Tendu et
+                     vertical pendant tout le tirage, puis il plie. */
+                  o: "93.98px 101.08px",
+                  k: [[0, "rotate(0deg)"], [1.25, "rotate(-4.53deg)"], [2.5, "rotate(-8.48deg)"],
+                  [3.75, "rotate(-12.11deg)"], [5, "rotate(-15.53deg)"], [6.25, "rotate(-18.81deg)"],
+                  [7.5, "rotate(-21.99deg)"], [8.75, "rotate(-44.08deg)"], [10, "rotate(-48.18deg)"],
+                  [11.25, "rotate(-50.99deg)"], [12.5, "rotate(-53.16deg)"], [13.75, "rotate(-54.93deg)"],
+                  [15, "rotate(-56.44deg)"], [16.25, "rotate(-57.76deg)"], [17.5, "rotate(-58.95deg)"],
+                  [18.75, "rotate(-60.02deg)"], [20, "rotate(-61.01deg)"], [21.25, "rotate(-61.94deg)"],
+                  [22.5, "rotate(-62.81deg)"], [23.75, "rotate(-63.64deg)"], [25, "rotate(-64.44deg)"],
+                  [27.08, "rotate(-101.22deg)"], [29.17, "rotate(-111.24deg)"], [31.25, "rotate(-104.16deg)"],
+                  [33.33, "rotate(-88.64deg)"], [35.42, "rotate(-60.06deg)"], [37.5, "rotate(-26.75deg)"],
+                  [39.58, "rotate(-14.97deg)"], [41.67, "rotate(-6.8deg)"], [43.75, "rotate(-0.14deg)"],
+                  [45.83, "rotate(27.24deg)"], [47.92, "rotate(52.91deg)"], [50, "rotate(90.39deg)"],
+                  [58, "rotate(90.39deg)"], [59.16, "rotate(52.91deg)"], [60.31, "rotate(27.24deg)"],
+                  [61.47, "rotate(-0.14deg)"], [62.62, "rotate(-6.8deg)"], [63.78, "rotate(-14.97deg)"],
+                  [64.94, "rotate(-26.75deg)"], [66.09, "rotate(-60.06deg)"], [67.25, "rotate(-88.64deg)"],
+                  [68.41, "rotate(-104.16deg)"], [69.56, "rotate(-111.24deg)"], [70.72, "rotate(-101.22deg)"],
+                  [71.88, "rotate(-64.44deg)"], [73.03, "rotate(-63.64deg)"], [74.19, "rotate(-62.81deg)"],
+                  [75.34, "rotate(-61.94deg)"], [76.5, "rotate(-61.01deg)"], [77.66, "rotate(-60.02deg)"],
+                  [78.81, "rotate(-58.95deg)"], [79.97, "rotate(-57.76deg)"], [81.12, "rotate(-56.44deg)"],
+                  [82.28, "rotate(-54.93deg)"], [83.44, "rotate(-53.16deg)"], [84.59, "rotate(-50.99deg)"],
+                  [85.75, "rotate(-48.18deg)"], [86.91, "rotate(-44.08deg)"], [88.06, "rotate(-21.99deg)"],
+                  [89.22, "rotate(-18.81deg)"], [90.38, "rotate(-15.53deg)"], [91.53, "rotate(-12.11deg)"],
+                  [92.69, "rotate(-8.48deg)"], [93.84, "rotate(-4.53deg)"], [95, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+                  muscleNom: ["Deltoïde antérieur", "Triceps brachial"],
+                  muscle: `
+                    <circle cx="93.98" cy="101.08" r="5"/>
+                    <ellipse cx="96.48" cy="110.58" rx="3" ry="7.5"/>`,
+                  svg: `
+                    <line class="mo-limb" x1="93.98" y1="101.08" x2="93.98" y2="120.08"/>
+                    <circle class="mo-joint" cx="93.98" cy="120.08" r="2.6"/>`,
+                  children: [
+                    {
+                      /* AVANT-BRAS + BARRE : rotation autour du COUDE. */
+                      o: "93.98px 120.08px",
+                      k: [[0, "rotate(0deg)"], [1.25, "rotate(0deg)"], [2.5, "rotate(0deg)"], [3.75, "rotate(0deg)"],
+                      [5, "rotate(0deg)"], [6.25, "rotate(0deg)"], [7.5, "rotate(0deg)"], [8.75, "rotate(0deg)"],
+                      [10, "rotate(0deg)"], [11.25, "rotate(0deg)"], [12.5, "rotate(0deg)"], [13.75, "rotate(0deg)"],
+                      [15, "rotate(0deg)"], [16.25, "rotate(0deg)"], [17.5, "rotate(0deg)"], [18.75, "rotate(0deg)"],
+                      [20, "rotate(0deg)"], [21.25, "rotate(0deg)"], [22.5, "rotate(0deg)"], [23.75, "rotate(0deg)"],
+                      [25, "rotate(0deg)"], [27.08, "rotate(79.73deg)"], [29.17, "rotate(113.74deg)"],
+                      [31.25, "rotate(137.93deg)"], [33.33, "rotate(148.95deg)"], [35.42, "rotate(155.09deg)"],
+                      [37.5, "rotate(153.28deg)"], [39.58, "rotate(143.26deg)"], [41.67, "rotate(131.79deg)"],
+                      [43.75, "rotate(119.25deg)"], [45.83, "rotate(101.51deg)"], [47.92, "rotate(73.15deg)"],
+                      [50, "rotate(11.64deg)"], [58, "rotate(11.64deg)"], [59.16, "rotate(73.15deg)"],
+                      [60.31, "rotate(101.51deg)"], [61.47, "rotate(119.25deg)"], [62.62, "rotate(131.79deg)"],
+                      [63.78, "rotate(143.26deg)"], [64.94, "rotate(153.28deg)"], [66.09, "rotate(155.09deg)"],
+                      [67.25, "rotate(148.95deg)"], [68.41, "rotate(137.93deg)"], [69.56, "rotate(113.74deg)"],
+                      [70.72, "rotate(79.73deg)"], [71.88, "rotate(0deg)"], [73.03, "rotate(0deg)"],
+                      [74.19, "rotate(0deg)"], [75.34, "rotate(0deg)"], [76.5, "rotate(0deg)"],
+                      [77.66, "rotate(0deg)"], [78.81, "rotate(0deg)"], [79.97, "rotate(0deg)"],
+                      [81.12, "rotate(0deg)"], [82.28, "rotate(0deg)"], [83.44, "rotate(0deg)"],
+                      [84.59, "rotate(0deg)"], [85.75, "rotate(0deg)"], [86.91, "rotate(0deg)"],
+                      [88.06, "rotate(0deg)"], [89.22, "rotate(0deg)"], [90.38, "rotate(0deg)"],
+                      [91.53, "rotate(0deg)"], [92.69, "rotate(0deg)"], [93.84, "rotate(0deg)"], [95, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                      svg: `
+                        <line class="mo-limb" x1="93.98" y1="120.08" x2="93.98" y2="137.08"/>
+                        <circle class="mo-plate-o" cx="93.98" cy="137.08" r="12"/>
+                        <circle class="mo-hub" cx="93.98" cy="137.08" r="2.8"/>`
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M150 130 L150 40 M145 48 L150 40 L155 48"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 40 L150 130 M145 122 L150 130 L155 122"/>` }
+  ]
+};
