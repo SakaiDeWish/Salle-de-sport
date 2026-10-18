@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0a0a0b"/>
+  <!-- haltère stylisé -->
+  <g fill="#ceff00">
+    <rect x="96" y="176" width="56" height="160" rx="16"/>
+    <rect x="168" y="208" width="40" height="96" rx="12"/>
+    <rect x="360" y="176" width="56" height="160" rx="16"/>
+    <rect x="304" y="208" width="40" height="96" rx="12"/>
+    <rect x="208" y="240" width="96" height="32" rx="10"/>
+  </g>
+</svg>
