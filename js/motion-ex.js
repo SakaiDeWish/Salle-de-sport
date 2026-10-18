@@ -21085,3 +21085,143 @@ EXERCISE_MOTIONS["elevation-y-incline-halteres"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M44 84 L44 112 M39 104 L44 112 L49 104"/>` }
   ]
 };
+
+/* =========================================================
+   173. SOULEVÉ DE TERRE À LA BARRE HEXAGONALE
+        (souleve-de-terre-barre-hexagonale)
+   -----------------------------------------------------------
+   Position : debout à l'INTÉRIEUR de la barre, pieds largeur de
+   hanches, mains aux poignées de chaque côté du corps, dos plat.
+   Vue de PROFIL. Chaîne enracinée à la cheville, qui ne décolle pas.
+   Segments : tibia 26, cuisse 26, tronc 29, bras 36 jusqu'au centre du
+   disque (r=12) — le rig du schéma 99, à l'échelle de la plaque.
+   >>> LA DIFFÉRENCE EST UNE CONTRAINTE QUI DISPARAÎT <<< À la barre
+       droite, la barre passe DEVANT les tibias : son aplomb doit être
+       plus en avant que le genou, ce qui projette l'épaule vers
+       l'avant. À la barre hexagonale, les mains sont sur les côtés :
+       rien ne passe devant le tibia, la charge peut se placer à
+       l'aplomb du milieu du pied. Le schéma pose exactement ces deux
+       conditions, et rien d'autre :
+         1. tibia VERTICAL au départ (limite : un genou derrière la
+            cheville n'a pas de sens) ;
+         2. charge à l'aplomb du MILIEU DU PIED (x = 102,0).
+       Elles déterminent l'angle de genou au départ : 107,5°. Il n'est
+       pas choisi, il est résolu.
+   >>> CE QUE ÇA CHANGE, MESURÉ <<< Même rig, même hauteur de poignée
+       (la barre à 12,9 du sol), MÊME ANGLE DE GENOU de départ
+       (107,5°) ; seul change l'aplomb. Pour la barre droite il vaut
+       « genou − 5,2 » (demi-épaisseur du tibia plus rayon de barre,
+       valeur déclarée) :
+                              hexagonale     barre droite
+         tibia au départ         0,0°           10,7° vers l'avant
+         tronc / verticale      67,5°           75,8°
+         hauteur de hanche      37,8            41,8
+       Soit 8,4° de tronc plus vertical et une hanche 4,0 plus basse.
+       Les valeurs « barre droite » sont recalculées ICI ; elles ne
+       reprennent pas celles de l'en-tête du schéma 99, dont les
+       paramètres n'ont pas été consignés.
+   >>> CE QUI NE CHANGE PAS, ET QUI SE DEVINE MAL <<< La course de
+       barre : 35,9 contre 35,4, soit 1,4 % d'écart. Le raccourcissement
+       d'amplitude qu'on attribue à la barre hexagonale vient de ses
+       POIGNÉES HAUTES, une option, et non de la barre elle-même : ici
+       les poignées sont à la hauteur de la barre droite, cette option
+       n'est pas modélisée.
+   >>> « HANCHES QUI MONTENT AVANT LES ÉPAULES » (erreur n°1) <<< Sur
+       la montée, la hanche monte de 18,17 et l'épaule de 35,91 :
+       l'épaule monte 1,98 fois plus. Si le rapport tombait sous 1, ce
+       serait un soulevé jambes tendues avec la barre encore au sol.
+   LE BRAS EST L'APLOMB : segment à deux forces, il est vertical à
+   chaque échantillon. Imposé aux sept poses : l'épaule reste sur
+   x=102,0 du début à la fin, et c'est ce qui détermine le tronc.
+   ROM : genou de 107,5° à 178° (genou linéaire, tibia vertical),
+   tronc de 67,5° à 5,7°. Écart entre poses résolues et rotations CSS :
+   0,0000.
+   LIMITES DÉCLARÉES : à 5,7° le tronc finit légèrement penché vers
+   l'avant, alors qu'un verrouillage réel se tient vertical : c'est le
+   prix d'une charge tenue à l'aplomb du milieu du pied, 3 en avant de
+   la hanche tendue. Le tibia est supposé vertical sur toute la course,
+   hypothèse de la condition 1. Le disque est dessiné au centre, alors
+   qu'il est de l'autre côté du corps : il passe devant la jambe parce
+   qu'il est plus proche de l'observateur.
+   Agonistes : quadriceps, grand fessier, ischio-jambiers, érecteurs ;
+   trapèzes (non marqués : ils travaillent en isométrie).
+   Distinction : ≠ schéma 11, soulevé classique (barre devant les
+   tibias) ; ≠ sumo, schéma 99 (stance large) ; ≠ roumain (départ
+   debout, genoux quasi tendus).
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-de-terre-barre-hexagonale"] = {
+  vb: "70 38 90 116",
+  dur: 4.2,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil, debout à l'intérieur d'une barre hexagonale, mains sur les côtés : les genoux et les hanches s'étendent ensemble, les tibias restant verticaux et la charge à l'aplomb du milieu du pied, l'épaule montant presque deux fois plus vite que la hanche, puis retour au sol.",
+  fixe: `
+    <line class="mo-ground" x1="72" y1="150" x2="170" y2="150"/>
+    <line class="mo-body" x1="92" y1="150" x2="112" y2="150"/>
+    <line class="mo-body" x1="104" y1="146" x2="104" y2="120"/>
+    <circle class="mo-joint" cx="104" cy="146" r="2.6"/>
+    <!-- APLOMB DU MILIEU DU PIED : la charge y reste du début à la fin ;
+         c'est ce que la barre droite ne permet pas, les tibias étant
+         devant. -->
+    <line class="mo-rom" x1="102.01" y1="46" x2="102.01" y2="86"/>`,
+  parts: [
+    {
+      /* CUISSE : extension du GENOU autour de (104, 120). Le tibia est
+         fixe (vertical), donc la rotation absolue est la relative. */
+      o: "104px 120px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(-11.75deg)"], [12, "rotate(-23.5deg)"],
+          [18, "rotate(-35.25deg)"], [24, "rotate(-47deg)"], [30, "rotate(-58.75deg)"],
+          [36, "rotate(-70.5deg)"], [46, "rotate(-70.5deg)"], [53.33, "rotate(-58.75deg)"],
+          [60.67, "rotate(-47deg)"], [68, "rotate(-35.25deg)"], [75.33, "rotate(-23.5deg)"],
+          [82.67, "rotate(-11.75deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="115.35" cy="112.8" rx="10" ry="3" transform="rotate(-17.5 115.35 112.8)"/>
+        <circle cx="130.5" cy="112.5" r="4.4"/>`,
+      svg: `
+        <circle class="mo-joint" cx="104" cy="120" r="2.6"/>
+        <line class="mo-body" x1="104" y1="120" x2="128.8" y2="112.18"/>
+        <circle class="mo-joint" cx="128.8" cy="112.18" r="2.6"/>`,
+      children: [
+        {
+          /* TRONC : extension de la HANCHE autour de (128.8, 112.18),
+             +132,24° relatif. RÉSOLU à chaque échantillon pour que
+             l'épaule reste sur l'aplomb, pas interpolé. */
+          o: "128.8px 112.18px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(20.91deg)"], [12, "rotate(42.79deg)"],
+              [18, "rotate(65.04deg)"], [24, "rotate(87.43deg)"], [30, "rotate(109.86deg)"],
+              [36, "rotate(132.24deg)"], [46, "rotate(132.24deg)"], [53.33, "rotate(109.86deg)"],
+              [60.67, "rotate(87.43deg)"], [68, "rotate(65.04deg)"], [75.33, "rotate(42.79deg)"],
+              [82.67, "rotate(20.91deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Érecteurs du rachis",
+          muscle: `<ellipse cx="116.9" cy="102.9" rx="10" ry="2.8" transform="rotate(22.5 116.9 102.9)"/>`,
+          childrenFirst: true,
+          svg: `
+            <line class="mo-body" x1="128.8" y1="112.18" x2="102.01" y2="101.07"/>
+            <line class="mo-body" x1="102.01" y1="101.07" x2="94.44" y2="97.93"/>
+            <circle class="mo-head" cx="90.74" cy="96.39" r="9"/>`,
+          children: [
+            {
+              /* BRAS : suspendu à l'ÉPAULE (102.01, 101.07), coude
+                 VERROUILLÉ. Contre-rotation exacte du tronc : vertical
+                 dans le monde à chaque instant. */
+              o: "102.01px 101.07px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(-9.16deg)"], [12, "rotate(-19.29deg)"],
+                  [18, "rotate(-29.79deg)"], [24, "rotate(-40.43deg)"], [30, "rotate(-51.11deg)"],
+                  [36, "rotate(-61.74deg)"], [46, "rotate(-61.74deg)"], [53.33, "rotate(-51.11deg)"],
+                  [60.67, "rotate(-40.43deg)"], [68, "rotate(-29.79deg)"], [75.33, "rotate(-19.29deg)"],
+                  [82.67, "rotate(-9.16deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="102.01" y1="101.07" x2="102.01" y2="137.07"/>
+                <circle class="mo-plate-o" cx="102.01" cy="137.07" r="12"/>
+                <circle class="mo-hub" cx="102.01" cy="137.07" r="2.8"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M146 130 L146 94 M141 102 L146 94 L151 102"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M146 94 L146 130 M141 122 L146 130 L151 122"/>` }
+  ]
+};
