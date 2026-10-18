@@ -546,6 +546,27 @@ const EXERCISES_EXTRA = [
     videoQuery: "soulevé de terre barre hexagonale trap bar deadlift technique"
   },
   {
+    id: "clean-and-press",
+    nom: "Épaulé-développé à la barre (clean and press)",
+    groupe: "epaules", materiel: "barre", niveau: "avance", type: "poly",
+    muscles: "Corps entier : quadriceps, fessiers, ischio-jambiers, érecteurs, trapèzes, deltoïdes, triceps",
+    description: "La barre part du sol, monte aux clavicules en un seul geste explosif (l'épaulé), puis est poussée au-dessus de la tête (le développé). C'est un exercice complet et technique : la jambe et le dos font monter la barre, l'épaule la termine. À apprendre léger, de préférence avec un coach.",
+    execution: [
+      "Barre au sol contre les tibias, pieds largeur de hanches, dos plat, bras tendus, épaules au-dessus de la barre.",
+      "Pousse le sol : genoux et hanches s'étendent, la barre glisse le long des tibias puis des cuisses, bras tendus, sans tirer avec les bras.",
+      "Quand la barre atteint les hanches, étends-toi complètement, hausse les épaules, puis plie les bras en amenant la barre contre le corps et reçois-la sur les clavicules, coudes en avant, genoux légèrement fléchis pour amortir.",
+      "Redresse-toi, puis pousse la barre au-dessus de la tête en passant le visage, jusqu'aux bras tendus, la barre à l'aplomb du milieu du pied.",
+      "Redescends la barre aux clavicules, puis au sol en la gardant contre les cuisses et les tibias."
+    ],
+    erreurs: [
+      "Tirer avec les bras avant que les hanches soient étendues : la barre s'écarte du corps et le geste perd sa puissance.",
+      "Laisser la barre s'éloigner des tibias et des cuisses : le dos prend la charge.",
+      "Recevoir la barre avec les coudes bas : elle roule vers l'avant et le développé devient un effort de dos.",
+      "Cambrer ou pousser avec les jambes pendant le développé : c'est alors un push press, pas un développé strict."
+    ],
+    videoQuery: "clean and press barre épaulé développé technique"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2207,6 +2228,8 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "clean-and-press": ["clean and press", "clean & press", "épaulé développé", "épaulé-développé", "power clean and press",
+                      "épaulé jeté développé", "clean press", "barre épaulé développé"],
   "souleve-de-terre-barre-hexagonale": ["trap bar deadlift", "hex bar deadlift", "hexagonal bar deadlift",
                                          "soulevé de terre trap bar", "soulevé de terre barre hex",
                                          "soulevé de terre hexbar", "deadlift trap bar"],

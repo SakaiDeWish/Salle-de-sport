@@ -21,9 +21,16 @@
    --------------------------------------------------------- */
 
 /* Construit un bloc @keyframes à partir de [[pourcent, transform], …] */
-function moKeyframes(name, frames) {
+function moKeyframes(name, frames, continu) {
+  /* `continu` : le schéma fournit assez de poses (plusieurs dizaines) pour
+     que l'accélération se lise déjà dans leur espacement. L'interpolation
+     par défaut, ease-in-out entre CHAQUE paire de poses, ralentirait à
+     zéro à chacune et ferait saccader le geste : on la remplace par une
+     interpolation linéaire. Les schémas à sept échantillons gardent
+     l'ancienne. */
+  const lin = continu ? ";animation-timing-function:linear" : "";
   return `@keyframes ${name}{` +
-    frames.map(([p, t]) => `${p}%{transform:${t}}`).join("") + "}";
+    frames.map(([p, t]) => `${p}%{transform:${t}${lin}}`).join("") + "}";
 }
 
 /* Surlignage musculaire : discret pendant l'excentrique,
@@ -100,7 +107,7 @@ function renderDedicatedMotion(ex, spec) {
   let pi = 0;
   const renderPart = p => {
     const name = `${uid}p${pi++}`;
-    css.push(moKeyframes(name, p.k));
+    css.push(moKeyframes(name, p.k, spec.continu));
     const kids = (p.children || []).map(renderPart).join("");
     // childrenFirst : le segment porteur se dessine PAR-DESSUS ses enfants
     // (membre proche devant le corps, sinon le coude disparaît derrière)
