@@ -567,6 +567,114 @@ const EXERCISES_EXTRA = [
     videoQuery: "clean and press barre épaulé développé technique"
   },
   {
+    id: "presse-cuisses-pieds-hauts",
+    nom: "Presse à cuisses, pieds hauts",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "intermediaire", type: "poly",
+    muscles: "Fessiers, ischio-jambiers, quadriceps",
+    description: "La presse inclinée avec les pieds posés dans le haut du plateau. À 90° de genou, la hanche est beaucoup plus fléchie (44° d'angle intérieur contre 60° pieds au milieu et 76° pieds bas), et le genou finit plus près du buste : c'est le réglage associé aux fessiers et aux ischio-jambiers.",
+    execution: [
+      "Dos et bassin plaqués, pieds largeur d'épaules dans le haut du plateau, talons bien appuyés.",
+      "Descends en contrôlant jusqu'à ce que le genou arrive vers 90°, sans que le bassin décolle du dossier.",
+      "Pousse dans les talons, sans verrouiller les genoux en haut."
+    ],
+    erreurs: [
+      "Laisser le bassin décoller en bas : plus les pieds sont hauts, plus la hanche se ferme et plus c'est facile.",
+      "Descendre trop bas pour compenser.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses pieds hauts fessiers ischios technique"
+  },
+  {
+    id: "presse-cuisses-pieds-bas",
+    nom: "Presse à cuisses, pieds bas",
+    groupe: "quadriceps", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse inclinée avec les pieds posés dans le bas du plateau. À 90° de genou, la hanche reste ouverte (76° d'angle intérieur contre 60° pieds au milieu) et le genou voyage davantage : c'est le réglage associé aux quadriceps.",
+    execution: [
+      "Dos et bassin plaqués, pieds largeur d'épaules dans le bas du plateau, talons bien appuyés.",
+      "Descends en contrôlant jusqu'à environ 90° de flexion de genou.",
+      "Pousse dans l'ensemble du pied, talon compris, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Soulever les talons : plus le pied est bas, moins il y a de place pour le talon.",
+      "Verrouiller les genoux sous charge lourde.",
+      "Genoux qui rentrent."
+    ],
+    videoQuery: "presse à cuisses pieds bas quadriceps technique"
+  },
+  {
+    id: "presse-cuisses-pieds-ecartes",
+    nom: "Presse à cuisses, pieds écartés",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "intermediaire", type: "poly",
+    muscles: "Fessiers, adducteurs, quadriceps",
+    description: "La presse inclinée avec les pieds beaucoup plus larges que les hanches, pointes légèrement ouvertes et genoux dans l'axe des pieds. Ici l'écartement se lit de face, pas de profil : de profil le chariot ne parcourt que 7,5 % de plus.",
+    execution: [
+      "Dos et bassin plaqués, pieds nettement plus larges que les épaules, pointes légèrement ouvertes.",
+      "Descends en contrôlant en gardant les genoux dans l'axe de tes pieds.",
+      "Pousse dans les talons, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Genoux qui rentrent vers l'intérieur : à cet écartement c'est la faute la plus fréquente.",
+      "Pieds trop larges pour ta mobilité de hanche : le bassin décolle plus tôt.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses pieds écartés adducteurs fessiers technique"
+  },
+  {
+    id: "presse-cuisses-pieds-serres",
+    nom: "Presse à cuisses, pieds serrés",
+    groupe: "quadriceps", materiel: "machine", niveau: "intermediaire", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse inclinée avec les pieds plus proches l'un de l'autre que les hanches. De profil, le mouvement est quasi identique à celui des pieds au milieu ; la différence se lit de face, sur la seconde vue.",
+    execution: [
+      "Dos et bassin plaqués, pieds serrés au milieu du plateau, talons bien appuyés.",
+      "Descends en contrôlant jusqu'à environ 90° de flexion de genou, genoux dans l'axe des pieds.",
+      "Pousse dans les talons, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Genoux qui se rapprochent l'un de l'autre au fil de la descente.",
+      "Bassin qui décolle en bas.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses pieds serrés quadriceps technique"
+  },
+  {
+    id: "presse-cuisses-horizontale",
+    nom: "Presse à cuisses horizontale (assise)",
+    groupe: "quadriceps", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse assise, dossier presque vertical et plateau vertical : on pousse à l'horizontale. Dans nos réglages, à 90° de genou l'angle de hanche est de 47° contre 60° sur la presse à 45° : la hanche est plus fermée.",
+    execution: [
+      "Assis, dos contre le dossier, pieds largeur d'épaules au milieu du plateau, à peu près à hauteur des hanches.",
+      "Descends en contrôlant jusqu'à environ 90° de flexion de genou.",
+      "Pousse dans les talons, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Décoller le bas du dos du dossier en descendant trop bas.",
+      "Pousser sur la pointe des pieds.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses horizontale assise technique"
+  },
+  {
+    id: "presse-cuisses-verticale",
+    nom: "Presse à cuisses verticale (allongée)",
+    groupe: "quadriceps", materiel: "machine", niveau: "avance", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse verticale : tu es allongé sur le dos et tu pousses le plateau vers le plafond. C'est la presse qui ferme le plus la hanche : dans nos réglages, à 90° de genou l'angle de hanche est de 37°, contre 47° sur la presse horizontale et 60° à 45°.",
+    execution: [
+      "Allongé sur le dos, pieds largeur d'épaules à l'aplomb des hanches, plateau au-dessus du bassin.",
+      "Descends en contrôlant : le genou vient près du buste, arrête-toi vers 90° de flexion de genou.",
+      "Pousse vers le plafond sans verrouiller les genoux et sans décoller le bassin."
+    ],
+    erreurs: [
+      "Laisser le bassin décoller en bas : sur cette presse la hanche se ferme tôt.",
+      "Descendre trop bas, genoux contre la poitrine.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses verticale allongée technique"
+  },
+  {
     id: "curl-spider",
     nom: "Curl spider (banc incliné à plat ventre)",
     groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
@@ -2228,6 +2336,12 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "presse-cuisses-pieds-hauts": ["leg press high feet", "leg press feet high", "presse pieds hauts", "presse à cuisses pieds hauts fessiers"],
+  "presse-cuisses-pieds-bas": ["leg press low feet", "leg press feet low", "presse pieds bas", "presse à cuisses pieds bas quadriceps"],
+  "presse-cuisses-pieds-ecartes": ["wide stance leg press", "leg press wide", "presse pieds écartés", "presse à cuisses pieds larges"],
+  "presse-cuisses-pieds-serres": ["narrow stance leg press", "close stance leg press", "presse pieds serrés", "presse à cuisses pieds rapprochés"],
+  "presse-cuisses-horizontale": ["horizontal leg press", "seated leg press", "presse assise", "presse à cuisses assise", "presse horizontale"],
+  "presse-cuisses-verticale": ["vertical leg press", "presse verticale", "presse à cuisses allongée", "presse à cuisses couchée"],
   "clean-and-press": ["clean and press", "clean & press", "épaulé développé", "épaulé-développé", "power clean and press",
                       "épaulé jeté développé", "clean press", "barre épaulé développé"],
   "souleve-de-terre-barre-hexagonale": ["trap bar deadlift", "hex bar deadlift", "hexagonal bar deadlift",

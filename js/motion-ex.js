@@ -21485,3 +21485,641 @@ EXERCISE_MOTIONS["clean-and-press"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M150 40 L150 130 M145 122 L150 130 L155 122"/>` }
   ]
 };
+
+/* =========================================================
+   175. PRESSE À CUISSES, PIEDS HAUTS  (presse-cuisses-pieds-hauts)
+   -----------------------------------------------------------
+   Rig du schéma 27 À L'IDENTIQUE : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> CE QUE LE PLACEMENT DU PIED CHANGE, MESURÉ <<< Le pied est posé à
+       10 du milieu du plateau, vers le HAUT. À 90° de genou, dans le
+       même rig :
+                         hanche (angle intérieur)   genou, position
+         pieds hauts            44,4°                (76,9 ; 91,6)
+         milieu                 60,4°                (84,0 ; 90,1)
+         pieds bas              76,0°                (91,1 ; 90,5)
+       Soit 16° d'angle de hanche par 10 de décalage de pied. Pieds
+       hauts, le genou finit 7,1 plus près du buste et la hanche est
+       beaucoup plus fléchie : c'est la raison pour laquelle cette
+       variante est associée aux fessiers et aux ischio-jambiers, et
+       pour laquelle le BASSIN, qui décolle quand l'angle se ferme,
+       est à surveiller de plus près.
+   Course du chariot 15,80 (15,14 au milieu). Cuisse −47,10°.
+   NON TRANCHÉ : que le travail se déplace vers les fessiers et les
+   ischios est la lecture usuelle de cet angle ; ce schéma mesure
+   l'angle, pas l'activation musculaire.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-hauts"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis dos plaqué dans la presse inclinée, pieds posés dans le haut du plateau : le chariot revient jusqu'à 90° de flexion des genoux, le genou finissant très près du buste et la hanche fortement fléchie, puis est repoussé le long du rail.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.86px,1.86px)"],
+          [15, "translate(-3.72px,3.72px)"], [22.5, "translate(-5.59px,5.59px)"],
+          [30, "translate(-7.45px,7.45px)"], [37.5, "translate(-9.31px,9.31px)"],
+          [45, "translate(-11.17px,11.17px)"], [52, "translate(-11.17px,11.17px)"],
+          [56.67, "translate(-9.31px,9.31px)"], [61.33, "translate(-7.45px,7.45px)"],
+          [66, "translate(-5.59px,5.59px)"], [70.67, "translate(-3.72px,3.72px)"],
+          [75.33, "translate(-1.86px,1.86px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="108.93" y1="67.85" x2="130.15" y2="89.07"/>
+        <circle class="mo-plate-o" cx="129.44" cy="68.56" r="9"/>
+        <circle class="mo-hub" cx="129.44" cy="68.56" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-15.21deg)"], [15, "rotate(-23.47deg)"],
+          [22.5, "rotate(-30.19deg)"], [30, "rotate(-36.18deg)"], [37.5, "rotate(-41.75deg)"],
+          [45, "rotate(-47.1deg)"], [52, "rotate(-47.1deg)"], [56.67, "rotate(-41.75deg)"],
+          [61.33, "rotate(-36.18deg)"], [66, "rotate(-30.19deg)"], [70.67, "rotate(-23.47deg)"],
+          [75.33, "rotate(-15.21deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="89.16" cy="103.04" rx="3.4" ry="9" transform="rotate(26.68 89.16 103.04)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="97.68" y2="92.77"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "97.68px 92.77px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.91deg)"], [15, "rotate(43.75deg)"],
+              [22.5, "rotate(55.32deg)"], [30, "rotate(65.2deg)"], [37.5, "rotate(73.99deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.99deg)"],
+              [61.33, "rotate(65.2deg)"], [66, "rotate(55.32deg)"], [70.67, "rotate(43.75deg)"],
+              [75.33, "rotate(28.91deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="97.68" cy="92.77" r="2.8"/>
+            <line class="mo-limb" x1="97.68" y1="92.77" x2="112.47" y2="71.39"/>
+            <circle class="mo-hand" cx="112.47" cy="71.39" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   176. PRESSE À CUISSES, PIEDS BAS  (presse-cuisses-pieds-bas)
+   -----------------------------------------------------------
+   Rig du schéma 27 À L'IDENTIQUE : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> LE SYMÉTRIQUE DE « PIEDS HAUTS » <<< Pied à 10 du milieu vers
+       le BAS du plateau : à 90° de genou, angle de hanche 76,0°
+       (60,4° au milieu, 44,4° pieds hauts) et genou à (91,1 ; 90,5),
+       7,1 plus loin du buste que pieds hauts. La hanche reste
+       ouverte, le genou voyage davantage : c'est le réglage associé
+       aux quadriceps. Course du chariot 15,31, cuisse −37,70°.
+   LIMITE : plus le pied est bas, moins il y a de talon sur le
+   plateau ; l'erreur n°3 de la presse (pousser sur la pointe) y est
+   plus facile. Le schéma ne dessine pas le talon.
+   NON TRANCHÉ : l'activation musculaire, qui n'est pas mesurée ici.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-bas"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis dos plaqué dans la presse inclinée, pieds posés dans le bas du plateau : le chariot revient jusqu'à 90° de flexion des genoux, la hanche restant ouverte et le genou voyageant davantage, puis est repoussé le long du rail.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.8px,1.8px)"],
+          [15, "translate(-3.61px,3.61px)"], [22.5, "translate(-5.41px,5.41px)"],
+          [30, "translate(-7.22px,7.22px)"], [37.5, "translate(-9.02px,9.02px)"],
+          [45, "translate(-10.83px,10.83px)"], [52, "translate(-10.83px,10.83px)"],
+          [56.67, "translate(-9.02px,9.02px)"], [61.33, "translate(-7.22px,7.22px)"],
+          [66, "translate(-5.41px,5.41px)"], [70.67, "translate(-3.61px,3.61px)"],
+          [75.33, "translate(-1.8px,1.8px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="109.72" y1="67.07" x2="130.93" y2="88.28"/>
+        <circle class="mo-plate-o" cx="130.23" cy="67.77" r="9"/>
+        <circle class="mo-hub" cx="130.23" cy="67.77" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-13.97deg)"], [15, "rotate(-20.92deg)"],
+          [22.5, "rotate(-26.2deg)"], [30, "rotate(-30.59deg)"], [37.5, "rotate(-34.37deg)"],
+          [45, "rotate(-37.7deg)"], [52, "rotate(-37.7deg)"], [56.67, "rotate(-34.37deg)"],
+          [61.33, "rotate(-30.59deg)"], [66, "rotate(-26.2deg)"], [70.67, "rotate(-20.92deg)"],
+          [75.33, "rotate(-13.97deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="93.83" cy="105.2" rx="3.4" ry="9" transform="rotate(48.95 93.83 105.2)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="105.61" y2="98.92"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "105.61px 98.92px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.76deg)"], [15, "rotate(43.56deg)"],
+              [22.5, "rotate(55.14deg)"], [30, "rotate(65.05deg)"], [37.5, "rotate(73.9deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.9deg)"],
+              [61.33, "rotate(65.05deg)"], [66, "rotate(55.14deg)"], [70.67, "rotate(43.56deg)"],
+              [75.33, "rotate(28.76deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="105.61" cy="98.92" r="2.8"/>
+            <line class="mo-limb" x1="105.61" y1="98.92" x2="127.4" y2="84.74"/>
+            <circle class="mo-hand" cx="127.4" cy="84.74" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   177. PRESSE À CUISSES, PIEDS ÉCARTÉS  (presse-cuisses-pieds-ecartes)
+   -----------------------------------------------------------
+   Rig du schéma 27 : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> LE PROFIL NE VOIT QU'UNE PARTIE DE L'ÉCARTEMENT <<< Genoux dans
+       l'axe des pieds, à mi-chemin latéral entre hanche et pied, les
+       deux segments ont chacun un décalage latéral de Δ/2 constant ;
+       leur longueur PROJETÉE vaut √(26² − (Δ/2)²), constante elle
+       aussi. Un raccourcissement constant se déclare, il ne ment pas.
+       Les angles de genou de 172° et 90° sont les angles VRAIS : la
+       distance hanche-pied de profil est donc √(d² − Δ²).
+   >>> PIEDS ÉCARTÉS : Δ = 16 <<< Hanches à ±8, pieds à ±24 (soit 26 cm
+       de largeur de hanches et 77 cm entre les pieds, à 1,6 cm par
+       unité : valeurs REPRÉSENTATIVES, non mesurées). Segments projetés
+       24,74. De profil :
+         course du chariot   16,28 contre 15,14 (+7,5 %)
+         genou projeté       171,6° -> 84,0° (90° vrais)
+         cuisse −45,41°, tibia +87,59°
+         angle de hanche     56,9° contre 60,4°
+       L'écartement CHANGE donc peu de chose de profil ; sa vraie
+       signature est frontale, d'où la seconde vue.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-ecartes"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Vue de profil de la presse inclinée, pieds très écartés et genoux dans l'axe des pieds : les segments de jambe sont raccourcis par la projection et le chariot parcourt 7,5 % de plus ; la seconde vue, de face, montre l'écartement.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.92px,1.92px)"],
+          [15, "translate(-3.84px,3.84px)"], [22.5, "translate(-5.76px,5.76px)"],
+          [30, "translate(-7.67px,7.67px)"], [37.5, "translate(-9.59px,9.59px)"],
+          [45, "translate(-11.51px,11.51px)"], [52, "translate(-11.51px,11.51px)"],
+          [56.67, "translate(-9.59px,9.59px)"], [61.33, "translate(-7.67px,7.67px)"],
+          [66, "translate(-5.76px,5.76px)"], [70.67, "translate(-3.84px,3.84px)"],
+          [75.33, "translate(-1.92px,1.92px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="108.23" y1="68.56" x2="129.44" y2="89.77"/>
+        <circle class="mo-plate-o" cx="128.73" cy="69.27" r="9"/>
+        <circle class="mo-hub" cx="128.73" cy="69.27" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-15.5deg)"], [15, "rotate(-23.6deg)"],
+          [22.5, "rotate(-30.02deg)"], [30, "rotate(-35.6deg)"], [37.5, "rotate(-40.67deg)"],
+          [45, "rotate(-45.41deg)"], [52, "rotate(-45.41deg)"], [56.67, "rotate(-40.67deg)"],
+          [61.33, "rotate(-35.6deg)"], [66, "rotate(-30.02deg)"], [70.67, "rotate(-23.6deg)"],
+          [75.33, "rotate(-15.5deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="91.15" cy="104.36" rx="3.4" ry="9" transform="rotate(37.51 91.15 104.36)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="101.06" y2="96.38"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "101.06px 96.38px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(30.62deg)"], [15, "rotate(46.38deg)"],
+              [22.5, "rotate(58.75deg)"], [30, "rotate(69.36deg)"], [37.5, "rotate(78.86deg)"],
+              [45, "rotate(87.59deg)"], [52, "rotate(87.59deg)"], [56.67, "rotate(78.86deg)"],
+              [61.33, "rotate(69.36deg)"], [66, "rotate(58.75deg)"], [70.67, "rotate(46.38deg)"],
+              [75.33, "rotate(30.62deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="101.06" cy="96.38" r="2.8"/>
+            <line class="mo-limb" x1="101.06" y1="96.38" x2="118.83" y2="79.17"/>
+            <circle class="mo-hand" cx="118.83" cy="79.17" r="3"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de face, genoux dans l'axe",
+    alt: "Vue de face, depuis le plateau, au bas du mouvement : hanches à 26 cm, genoux au milieu, pieds à 77 cm l'un de l'autre.",
+    legende: "Au bas du mouvement, de face : hanches à 26 cm, genoux à mi-chemin, pieds à 77 cm. Genoux dans l'axe des pieds, la jambe reste alignée de face. De profil cet écartement se voit à peine (course du chariot +7,5 %) : c'est ici qu'il se lit. Largeurs représentatives, non mesurées.",
+    vb: "20 10 80 62",
+    svg: `
+      
+      <!-- repère : largeur de hanches, pour lire l'écart des genoux et des pieds -->
+      <line class="mo-rom" x1="52" y1="24.3" x2="52" y2="54"/>
+      <line class="mo-rom" x1="68" y1="24.3" x2="68" y2="54"/>
+      <!-- plateau, vu de face : la ligne des pieds -->
+      <line class="mo-gear" x1="26" y1="47.2" x2="94" y2="47.2"/>
+      <line class="mo-body" x1="52" y1="50" x2="68" y2="50"/>
+      <line class="mo-limb" x1="52" y1="50" x2="44" y2="30.30"/>
+      <line class="mo-limb" x1="44" y1="30.30" x2="36" y2="47.20"/>
+      <circle class="mo-joint" cx="52" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="44" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="36" cy="47.20" r="3"/>
+      <line class="mo-limb" x1="68" y1="50" x2="76" y2="30.30"/>
+      <line class="mo-limb" x1="76" y1="30.30" x2="84" y2="47.20"/>
+      <circle class="mo-joint" cx="68" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="76" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="84" cy="47.20" r="3"/>
+      <line class="mo-rom" x1="36" y1="66" x2="84" y2="66"/>
+      <text class="mo-cote mo-cote-ok" font-size="5.1" text-anchor="middle" x="60" y="64">pieds : 77 cm</text>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   178. PRESSE À CUISSES, PIEDS SERRÉS  (presse-cuisses-pieds-serres)
+   -----------------------------------------------------------
+   Rig du schéma 27 : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> LE PROFIL NE VOIT QU'UNE PARTIE DE L'ÉCARTEMENT <<< Genoux dans
+       l'axe des pieds, à mi-chemin latéral entre hanche et pied, les
+       deux segments ont chacun un décalage latéral de Δ/2 constant ;
+       leur longueur PROJETÉE vaut √(26² − (Δ/2)²), constante elle
+       aussi. Un raccourcissement constant se déclare, il ne ment pas.
+       Les angles de genou de 172° et 90° sont les angles VRAIS : la
+       distance hanche-pied de profil est donc √(d² − Δ²).
+   >>> PIEDS SERRÉS : Δ = −4 <<< Hanches à ±8, pieds à ±4 : les pieds sont
+       plus proches l'un de l'autre que les hanches (13 cm entre les
+       pieds contre 26 cm de largeur de hanches, valeurs
+       représentatives). Segments projetés 25,92. De profil :
+         course du chariot   15,20 contre 15,14
+         genou projeté       172,0° -> 89,7°
+         angle de hanche     60,2° contre 60,4°
+       Autrement dit, DE PROFIL, PIEDS SERRÉS = PIEDS AU MILIEU. Tout
+       l'intérêt de la variante est frontal et se lit sur la seconde
+       vue, pas sur l'animation. Je préfère l'écrire que laisser croire
+       que l'animation montre quelque chose de propre à cette variante.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-serres"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Vue de profil de la presse inclinée, pieds serrés : de profil le mouvement est quasi identique à celui des pieds au milieu ; la seconde vue, de face, montre les pieds plus proches que les hanches.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.79px,1.79px)"],
+          [15, "translate(-3.58px,3.58px)"], [22.5, "translate(-5.37px,5.37px)"],
+          [30, "translate(-7.17px,7.17px)"], [37.5, "translate(-8.96px,8.96px)"],
+          [45, "translate(-10.75px,10.75px)"], [52, "translate(-10.75px,10.75px)"],
+          [56.67, "translate(-8.96px,8.96px)"], [61.33, "translate(-7.17px,7.17px)"],
+          [66, "translate(-5.37px,5.37px)"], [70.67, "translate(-3.58px,3.58px)"],
+          [75.33, "translate(-1.79px,1.79px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="109.91" y1="66.88" x2="131.12" y2="88.09"/>
+        <circle class="mo-plate-o" cx="130.42" cy="67.58" r="9"/>
+        <circle class="mo-hub" cx="130.42" cy="67.58" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-14.57deg)"], [15, "rotate(-22.17deg)"],
+          [22.5, "rotate(-28.18deg)"], [30, "rotate(-33.39deg)"], [37.5, "rotate(-38.09deg)"],
+          [45, "rotate(-42.46deg)"], [52, "rotate(-42.46deg)"], [56.67, "rotate(-38.09deg)"],
+          [61.33, "rotate(-33.39deg)"], [66, "rotate(-28.18deg)"], [70.67, "rotate(-22.17deg)"],
+          [75.33, "rotate(-14.57deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="91.58" cy="103.92" rx="3.4" ry="9" transform="rotate(37.85 91.58 103.92)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="101.91" y2="95.53"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "101.91px 95.53px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.82deg)"], [15, "rotate(43.66deg)"],
+              [22.5, "rotate(55.29deg)"], [30, "rotate(65.24deg)"], [37.5, "rotate(74.15deg)"],
+              [45, "rotate(82.32deg)"], [52, "rotate(82.32deg)"], [56.67, "rotate(74.15deg)"],
+              [61.33, "rotate(65.24deg)"], [66, "rotate(55.29deg)"], [70.67, "rotate(43.66deg)"],
+              [75.33, "rotate(28.82deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="101.91" cy="95.53" r="2.8"/>
+            <line class="mo-limb" x1="101.91" y1="95.53" x2="120.52" y2="77.48"/>
+            <circle class="mo-hand" cx="120.52" cy="77.48" r="3"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de face, pieds serrés",
+    alt: "Vue de face, depuis le plateau, au bas du mouvement : hanches à 26 cm, genoux à 19 cm, pieds à 13 cm l'un de l'autre, plus proches que les hanches.",
+    legende: "Au bas du mouvement, de face : hanches à 26 cm, genoux à 19 cm, pieds à 13 cm, plus proches que les hanches. De profil, rien ne distingue cette variante de la presse pieds au milieu ; c'est ici qu'elle se lit. Largeurs représentatives, non mesurées.",
+    vb: "20 10 80 62",
+    svg: `
+      
+      <!-- repère : largeur de hanches, pour lire l'écart des genoux et des pieds -->
+      <line class="mo-rom" x1="52" y1="24.3" x2="52" y2="54"/>
+      <line class="mo-rom" x1="68" y1="24.3" x2="68" y2="54"/>
+      <!-- plateau, vu de face : la ligne des pieds -->
+      <line class="mo-gear" x1="26" y1="47.2" x2="94" y2="47.2"/>
+      <line class="mo-body" x1="52" y1="50" x2="68" y2="50"/>
+      <line class="mo-limb" x1="52" y1="50" x2="54" y2="30.30"/>
+      <line class="mo-limb" x1="54" y1="30.30" x2="56" y2="47.20"/>
+      <circle class="mo-joint" cx="52" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="54" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="56" cy="47.20" r="3"/>
+      <line class="mo-limb" x1="68" y1="50" x2="66" y2="30.30"/>
+      <line class="mo-limb" x1="66" y1="30.30" x2="64" y2="47.20"/>
+      <circle class="mo-joint" cx="68" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="66" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="64" cy="47.20" r="3"/>
+      <line class="mo-rom" x1="56" y1="66" x2="64" y2="66"/>
+      <text class="mo-cote mo-cote-ok" font-size="5.1" text-anchor="middle" x="60" y="64">pieds : 13 cm</text>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   179. PRESSE À CUISSES HORIZONTALE (ASSISE)  (presse-cuisses-horizontale)
+   -----------------------------------------------------------
+   Position : ASSIS, dossier à 15° de la verticale, plateau VERTICAL,
+   chariot sur un rail HORIZONTAL. Même hanche (86 ; 116), mêmes
+   segments (26) que le schéma 27. Vue de PROFIL.
+   Pieds à y = 108 sur le plateau, soit 8 au-dessus de la hanche. Sept
+   poses résolues, genou de 172° à 90° vrais : le plateau recule de
+   137,25 à 121,89 (course 15,36), horizontalement.
+   >>> CE QUE LA MACHINE CHANGE : LA DIRECTION DE POUSSÉE PAR RAPPORT AU
+       TRONC <<< Sur la presse à 45° le tronc est presque couché et on
+       pousse en diagonale ; ici le tronc est presque debout et on
+       pousse à l'horizontale. À 90° de genou : angle intérieur de hanche
+       47,4° (92,1° jambes tendues), contre 60,4° sur la presse à 45°.
+       Cette valeur dépend du réglage ; mesurée ici sur la même hauteur de
+       pied pour trois positions : pied à y=96, 27,0° ; y=108, 47,4° ;
+       y=120, 66,2°.
+   NON TRANCHÉ : dossier à 15° et pieds à y=108 sont des réglages
+   représentatifs, pas des mesures de machines. Le sens de la
+   comparaison tient à la géométrie ; la valeur exacte, aux réglages.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-horizontale"] = {
+  vb: "36 54 136 92",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis presque debout dans la presse horizontale, plateau vertical : le chariot revient horizontalement jusqu'à 90° de flexion des genoux, puis est repoussé.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="170" y2="142"/>
+    <!-- rail HORIZONTAL du chariot -->
+    <line class="mo-gear" x1="112" y1="134" x2="168" y2="134"/>
+    <!-- siège, dossier à 15° de la verticale, bâti -->
+    <line class="mo-pad" x1="70.5" y1="58" x2="86.5" y2="117"/>
+    <line class="mo-pad" x1="76" y1="122" x2="104" y2="122"/>
+    <line class="mo-gear" x1="92" y1="126" x2="92" y2="142"/>
+    <line class="mo-gear" x1="76" y1="126" x2="76" y2="142"/>
+    <!-- TRONC ENTIER fixe : dos et bassin plaqués, presque debout -->
+    <circle class="mo-head" cx="74.2" cy="72.1" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="77.2" y2="83.2"/>
+    <line class="mo-body" x1="77.2" y1="83.2" x2="75.2" y2="76"/>
+    <line class="mo-limb" x1="77.2" y1="83.2" x2="84" y2="100"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long de son rail. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-2.56px,0px)"],
+          [15, "translate(-5.12px,0px)"], [22.5, "translate(-7.68px,0px)"],
+          [30, "translate(-10.24px,0px)"], [37.5, "translate(-12.8px,0px)"],
+          [45, "translate(-15.36px,0px)"], [52, "translate(-15.36px,0px)"],
+          [56.67, "translate(-12.8px,0px)"], [61.33, "translate(-10.24px,0px)"],
+          [66, "translate(-7.68px,0px)"], [70.67, "translate(-5.12px,0px)"],
+          [75.33, "translate(-2.56px,0px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="137.25" y1="88" x2="137.25" y2="128"/>
+        <line class="mo-gear" x1="137.25" y1="128" x2="151.25" y2="134"/>
+        <circle class="mo-plate-o" cx="151.25" cy="108" r="9"/>
+        <circle class="mo-hub" cx="151.25" cy="108" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-14.85deg)"], [15, "rotate(-22.76deg)"],
+          [22.5, "rotate(-29.11deg)"], [30, "rotate(-34.7deg)"], [37.5, "rotate(-39.83deg)"],
+          [45, "rotate(-44.69deg)"], [52, "rotate(-44.69deg)"], [56.67, "rotate(-39.83deg)"],
+          [61.33, "rotate(-34.7deg)"], [66, "rotate(-29.11deg)"], [70.67, "rotate(-22.76deg)"],
+          [75.33, "rotate(-14.85deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="98.67" cy="109.6" rx="3.4" ry="9" transform="rotate(77.13 98.67 109.6)"/>
+        <circle cx="86" cy="116" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="111.35" y2="110.21"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau (sept poses RÉSOLUES). */
+          o: "111.35px 110.21px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.78deg)"], [15, "rotate(43.58deg)"],
+              [22.5, "rotate(55.16deg)"], [30, "rotate(65.06deg)"], [37.5, "rotate(73.91deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.91deg)"],
+              [61.33, "rotate(65.06deg)"], [66, "rotate(55.16deg)"], [70.67, "rotate(43.58deg)"],
+              [75.33, "rotate(28.78deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="111.35" cy="110.21" r="2.8"/>
+            <line class="mo-limb" x1="111.35" y1="110.21" x2="137.25" y2="108"/>
+            <circle class="mo-hand" cx="137.25" cy="108" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M112 80 L146 80 M139 75 L146 80 L139 85"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M146 80 L112 80 M119 75 L112 80 L119 85"/>` }
+  ]
+};
+
+/* =========================================================
+   180. PRESSE À CUISSES VERTICALE (ALLONGÉE)  (presse-cuisses-verticale)
+   -----------------------------------------------------------
+   Position : ALLONGÉ sur le dos, dossier à 8° au-dessus de l'horizontale,
+   plateau HORIZONTAL au-dessus du bassin, chariot sur un rail
+   VERTICAL. Même hanche (86 ; 116), mêmes segments (26) que le schéma 27.
+   Pieds à l'aplomb des hanches. Vue de PROFIL.
+   Sept poses résolues, genou de 172° à 90° vrais : le plateau descend de
+   y = 64,13 à y = 79,23 (course 15,10), verticalement.
+   >>> LA POUSSÉE EST PERPENDICULAIRE AU TRONC, ET C'EST LA PRESSE QUI
+       FERME LE PLUS LA HANCHE <<< À 90° de genou, angle intérieur de
+       hanche 37,0° (78,0° jambes tendues), contre 47,4° sur la presse
+       horizontale et 60,4° à 45°. Le genou finit en (67,6 ; 97,6), à 15,8
+       du tronc : près du buste, sans le toucher.
+       Variation du pied à l'avant ou à l'arrière : 21,2° à 10 en arrière,
+       37,0° à l'aplomb, 52,8° à 10 en avant.
+   LIMITE : plus la hanche est fermée, plus le bassin décolle tôt, ce
+   qui fait de cette machine la moins indulgente ; d'où le niveau
+   « avancé » dans la fiche.
+   NON TRANCHÉ : dossier à 8° et pieds à l'aplomb sont des réglages
+   représentatifs. La comparaison entre machines tient à la géométrie ;
+   la valeur exacte, aux réglages.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-verticale"] = {
+  vb: "34 40 112 106",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur le dos sous la presse verticale, plateau horizontal au-dessus du bassin : le chariot descend verticalement jusqu'à 90° de flexion des genoux, le genou venant près du buste, puis est repoussé vers le haut.",
+  fixe: `
+    <line class="mo-ground" x1="34" y1="142" x2="140" y2="142"/>
+    <!-- rail VERTICAL du chariot -->
+    <line class="mo-gear" x1="120" y1="40" x2="120" y2="138"/>
+    <!-- banc : dos presque à plat, bâti -->
+    <line class="mo-pad" x1="88" y1="120" x2="36" y2="112"/>
+    <line class="mo-gear" x1="60" y1="116" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="122" x2="88" y2="142"/>
+    <!-- TRONC ENTIER fixe : allongé sur le dos -->
+    <circle class="mo-head" cx="40.4" cy="109.6" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52.3" y2="111.3"/>
+    <line class="mo-body" x1="52.3" y1="111.3" x2="48" y2="110.7"/>
+    <line class="mo-limb" x1="52.3" y1="111.3" x2="66" y2="115"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long de son rail. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(0px,2.52px)"], [15, "translate(0px,5.03px)"],
+          [22.5, "translate(0px,7.55px)"], [30, "translate(0px,10.07px)"],
+          [37.5, "translate(0px,12.59px)"], [45, "translate(0px,15.1px)"],
+          [52, "translate(0px,15.1px)"], [56.67, "translate(0px,12.59px)"],
+          [61.33, "translate(0px,10.07px)"], [66, "translate(0px,7.55px)"],
+          [70.67, "translate(0px,5.03px)"], [75.33, "translate(0px,2.52px)"],
+          [80, "translate(0px,0px)"], [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="70" y1="64.13" x2="102" y2="64.13"/>
+        <line class="mo-gear" x1="102" y1="64.13" x2="120" y2="64.13"/>
+        <circle class="mo-plate-o" cx="126" cy="64.13" r="9"/>
+        <circle class="mo-hub" cx="126" cy="64.13" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-14.35deg)"], [15, "rotate(-21.74deg)"],
+          [22.5, "rotate(-27.53deg)"], [30, "rotate(-32.49deg)"], [37.5, "rotate(-36.93deg)"],
+          [45, "rotate(-41deg)"], [52, "rotate(-41deg)"], [56.67, "rotate(-36.93deg)"],
+          [61.33, "rotate(-32.49deg)"], [66, "rotate(-27.53deg)"], [70.67, "rotate(-21.74deg)"],
+          [75.33, "rotate(-14.35deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="88.59" cy="103.03" rx="3.4" ry="9" transform="rotate(-4 88.59 103.03)"/>
+        <circle cx="86" cy="116" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="84.19" y2="90.06"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau (sept poses RÉSOLUES). */
+          o: "84.19px 90.06px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.7deg)"], [15, "rotate(43.49deg)"],
+              [22.5, "rotate(55.07deg)"], [30, "rotate(64.99deg)"], [37.5, "rotate(73.86deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.86deg)"],
+              [61.33, "rotate(64.99deg)"], [66, "rotate(55.07deg)"], [70.67, "rotate(43.49deg)"],
+              [75.33, "rotate(28.7deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="84.19" cy="90.06" r="2.8"/>
+            <line class="mo-limb" x1="84.19" y1="90.06" x2="86" y2="64.13"/>
+            <circle class="mo-hand" cx="86" cy="64.13" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M146 100 L146 62 M141 70 L146 62 L151 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M146 62 L146 100 M141 92 L146 100 L151 92"/>` }
+  ]
+};
