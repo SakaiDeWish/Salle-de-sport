@@ -144,6 +144,87 @@ function progressionHint(ex) {
   return `Garde ta charge, vise ${cible} reps sur chaque série${suffixe}.`;
 }
 
+/* ==================== TENDANCE PAR SÉRIE ====================
+
+   Le conseil de progression répond une fois par exercice : « monte »
+   ou « garde ». Mais une séance se perd rarement d'un bloc : les deux
+   premières séries passent, la troisième lâche. Une petite flèche à
+   côté de chaque série validée le montre au moment où ça arrive.
+
+   CONTRE QUOI. La série de même numéro dans memoDepart, la mémoire
+   figée au démarrage : la série 3 d'aujourd'hui face à la série 3 de
+   la dernière fois. Une série sans équivalent n'a rien à dire.
+
+   MIEUX, C'EST QUOI. Le poids d'abord, puis les reps : plus de l'un et
+   pas moins de l'autre, c'est mieux. Quand ils se contredisent (plus
+   lourd mais moins de reps), le 1RM estimé d'Epley tranche, la formule
+   déjà utilisée par l'estimateur : 70 × 6 bat 60 × 8. Sans charge, ce
+   sont les reps. Pour un maintien, le lest puis les secondes, et rien
+   quand ils se contredisent : il n'y a pas d'Epley du gainage.
+
+   Renvoie 1, 0, -1, ou null quand il n'y a rien à comparer. */
+function tendanceSerie(s, avant, statique) {
+  if (!s || !avant) return null;
+  const cmp = (a, b) => (a > b) - (a < b);
+  const pA = s.poids ?? null, pB = avant.poids ?? null;
+  if ((pA == null) !== (pB == null)) return null;   // lesté d'un côté seulement
+  const dP = pA == null ? 0 : cmp(pA, pB);
+  if (statique) {
+    if (s.secondes == null || avant.secondes == null) return null;
+    const dT = cmp(s.secondes, avant.secondes);
+    if (dP === 0) return dT;
+    if (dT === 0 || dT === dP) return dP;
+    return null;
+  }
+  if (s.reps == null || avant.reps == null) return null;
+  const dR = cmp(s.reps, avant.reps);
+  if (dP === 0) return dR;
+  if (dR === 0 || dR === dP) return dP;
+  return cmp(pA * (1 + s.reps / 30), pB * (1 + avant.reps / 30));
+}
+
+function badgeTendance(ex, j, statique) {
+  const avant = (ex.memoDepart || [])[j];
+  const t = tendanceSerie(ex.sets[j], avant, statique);
+  if (t == null) return "";
+  const ref = statique
+    ? `${avant.poids != null ? avant.poids + " kg, " : ""}${fmtSec(avant.secondes)}`
+    : `${avant.poids != null ? avant.poids + " kg × " : ""}${avant.reps} reps`;
+  const [cls, glyphe, mot] = t > 0 ? ["up", "↑", "Mieux"] : t < 0 ? ["down", "↓", "Moins bien"] : ["eq", "=", "Pareil"];
+  const texte = `${mot} que la dernière fois (${ref})`;
+  return ` <span class="set-trend set-trend-${cls}" title="${esc(texte)}" aria-label="${esc(texte)}">${glyphe}</span>`;
+}
+
+/* ==================== ÉCRAN ALLUMÉ ====================
+
+   Entre deux séries, le téléphone posé sur le banc se met en veille, et
+   il faut le déverrouiller pour voir le repos ou valider la série. On
+   demande donc au navigateur de garder l'écran allumé tant qu'une
+   séance est ouverte (API Screen Wake Lock).
+
+   Le système relâche ce verrou dès que l'app passe en arrière-plan :
+   on le redemande au retour (visibilitychange). Navigateur sans l'API,
+   batterie faible ou refus : l'écran se met en veille comme avant, ce
+   n'est qu'un confort, pas une fonction dont la séance dépend. */
+let verrouEcran = null;
+async function garderEcranAllume() {
+  if (!live || verrouEcran || document.hidden || !("wakeLock" in navigator)) return;
+  try {
+    verrouEcran = await navigator.wakeLock.request("screen");
+    verrouEcran.addEventListener("release", () => { verrouEcran = null; });
+  } catch (e) {
+    verrouEcran = null;
+    console.info("GymCoach : écran allumé refusé par le navigateur", e && e.name);
+  }
+}
+function libererEcran() {
+  if (verrouEcran) verrouEcran.release().catch(() => {});
+  verrouEcran = null;
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) garderEcranAllume();
+});
+
 /* Référence temporelle : figée pendant une pause */
 function nowRef() { return (live && live.pausedAt) ? live.pausedAt : Date.now(); }
 
@@ -380,6 +461,7 @@ function clearLive() {
   rest = null;
   restMinimized = false;
   if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+  libererEcran();           // plus de séance, plus de raison de garder l'écran
   if (elRestOverlay) elRestOverlay.classList.add("hidden");
   /* Même raison que ci-dessus, pour les deux modes d'édition de liste :
      sans séance, ni l'appairage ni la réorganisation n'ont de carte à
@@ -401,7 +483,7 @@ function newLiveExercise(ex, target, restSec, rir, tempo) {
     tempo: tempo || null,          // ex : "2-3 s en descente, explosif en montée"
     // charges/reps/rir de la dernière séance de cet exercice, figés ici pour
     // que la suggestion de progression ne bouge pas en cours de séance
-    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir }),
+    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir, secondes: s.secondes ?? null }),
     restSec: restSec || (ex.type ? smartRest(ex) : getDefaultRest()),
     restAuto: !restSec,
     sets: [],                      // { poids, reps, doneAt, restAfter }
@@ -663,6 +745,7 @@ function showLive() {
   if (liveTimer) clearInterval(liveTimer);
   liveTimer = setInterval(tick, 250);
   tick();
+  garderEcranAllume();
 }
 
 function totalRestMs() {
@@ -1170,7 +1253,7 @@ function renderLiveExercises() {
             return `
             <tr class="set-row${s.note ? " set-noted" : ""}${der}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
                 title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
-              <td>✔ ${j + 1}</td>
+              <td>✔ ${j + 1}${badgeTendance(ex, j, statique)}</td>
               ${statique
                 ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td>
                    <td>${s.poids != null ? s.poids : "—"}</td>`
