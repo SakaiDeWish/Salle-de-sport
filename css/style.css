@@ -1882,6 +1882,13 @@ body { max-width: 100%; }
 .set-edit-hint { color: var(--text-soft); margin-left: 8px; opacity: 0; transition: opacity 0.15s ease; }
 .set-row:hover .set-edit-hint, .set-row:focus-visible .set-edit-hint { opacity: 1; }
 .set-editing td { background: var(--accent-soft); }
+/* Tendance contre la même série la dernière fois : discrète, un glyphe
+   et une couleur, le détail dans l'infobulle. Baisse en jaune et non en
+   rouge : une série moins bonne n'est pas une erreur. */
+.set-trend { display: inline-block; margin-left: 6px; font-weight: 800; }
+.set-trend-up { color: var(--green); }
+.set-trend-eq { color: var(--text-soft); }
+.set-trend-down { color: var(--yellow); }
 .set-edit-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; padding: 4px 0; }
 .set-edit-row input { max-width: 92px; }
 .set-edit-n { font-size: 0.78rem; font-weight: 800; color: var(--text-soft); }
