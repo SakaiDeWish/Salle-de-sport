@@ -3508,3 +3508,31 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 /* La barre « Terminé » restait en haut de page : à mi-liste elle n'était
    plus à l'écran, et on ne savait plus comment quitter le mode. Elle suit. */
 #reorder-bar { position: sticky; top: 8px; z-index: 40; background: var(--bg); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+
+
+/* ---------- Séries à cocher (séance épurée) ---------- */
+.cb-list { list-style: none; margin: 10px 0 6px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.cb-row {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 52px; padding: 4px 10px 4px 4px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+}
+.cb-row.next { border-color: var(--accent); background: var(--accent-soft); }
+.cb-row.todo { opacity: 0.45; }
+.cb {
+  flex: 0 0 auto; width: 44px; height: 44px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 12px; border: 2px solid var(--text-soft);
+  background: transparent; color: var(--bg);
+  font-size: 1.25rem; font-weight: 900; line-height: 1; cursor: pointer;
+}
+.cb.on { background: var(--accent); border-color: var(--accent); }
+.cb.off { border-style: dashed; border-color: var(--border); cursor: default; }
+.cb-row.next .cb { border-color: var(--accent); }
+.cb:active:not(.off) { transform: scale(0.94); }
+.cb-lab { font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
+.cb-sum { flex: 1; text-align: right; font-size: 0.86rem; color: var(--text-soft); }
+.cb-row.done .cb-sum { color: var(--text); }
+.cb-more { display: flex; justify-content: center; }
+.live-detail-off { display: none; }
+.live-detail { margin-top: 6px; }
