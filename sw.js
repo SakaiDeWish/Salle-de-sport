@@ -7,7 +7,7 @@
    ensemble n'est pas qu'une discipline d'écriture : leur ÉCART est ce
    qui permet à l'app de détecter qu'une page tourne encore sur l'ancien
    code pendant qu'un service worker plus récent a déjà pris la main. */
-const CACHE = "gymcoach-v64";
+const CACHE = "gymcoach-v66";
 const ASSETS = [
   "./",
   "index.html",
@@ -21,9 +21,11 @@ const ASSETS = [
   "js/app.js",
   "js/ui.js",
   "js/stats-info.js",
+  "js/pave.js",
   "js/workout.js",
   "js/tracking.js",
   "js/home.js",
+  "js/push.js",
   "js/shell.js",
   "js/exercice-nouveau.js",
   "js/import-programme.js",
@@ -69,4 +71,18 @@ self.addEventListener("fetch", e => {
         caches.match(e.request).then(hit => hit || caches.match("index.html"))
       )
   );
+});
+
+/* Web Push : le serveur réveille ce service worker, même app fermée. */
+self.addEventListener("push", e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch { /* charge illisible : message par défaut */ }
+  e.waitUntil(self.registration.showNotification(d.titre || "Repos terminé — on reprend", {
+    body: d.texte || "", tag: "gymcoach-reprise", renotify: true,
+    icon: "icon.svg", vibrate: [200, 100, 200] }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(l =>
+    l.length ? l[0].focus() : self.clients.openWindow("./")));
 });

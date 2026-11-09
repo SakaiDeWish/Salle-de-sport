@@ -3602,3 +3602,50 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
 .cb-edit .set-form { margin-top: 6px; }
 .cb-edit .last-hint { margin: 0 0 6px; }
 .set-sub-line { margin: 6px 0 0; font-size: 0.78rem; color: var(--text-soft); }
+
+
+/* ---------- Pas réglable + pavé numérique + disques ---------- */
+.step-pas {
+  flex: 0 0 auto; min-width: 48px; min-height: 48px; padding: 0 8px;
+  border-radius: var(--radius-sm); border: 1px dashed var(--border);
+  background: transparent; color: var(--text-dim, var(--text));
+  font: 600 .8rem var(--font-body); cursor: pointer;
+}
+.step-pas:hover { border-color: var(--accent-2); color: var(--accent-2); }
+
+.pave { position: fixed; inset: 0; z-index: 400; display: flex; align-items: flex-end; justify-content: center; }
+.pave.hidden { display: none; }
+.pave-fond { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.pave-feuille {
+  position: relative; width: 100%; max-width: 440px; max-height: 94vh; overflow-y: auto;
+  background: var(--card, var(--bg)); border: 1px solid var(--border);
+  border-radius: 18px 18px 0 0; padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pave-tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.pave-lab { font-size: .8rem; color: var(--text-dim, var(--text)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pave-lien { background: none; border: 0; color: var(--accent-2); font: 600 .8rem var(--font-body); cursor: pointer; padding: 6px 0 6px 10px; }
+.pave-aff { display: flex; align-items: baseline; justify-content: center; gap: 8px; padding: 4px 0 2px; }
+#pave-val { font-size: 3rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
+.pave-unite { font-size: 1rem; color: var(--text-dim, var(--text)); }
+.pave-touches, .pave-pas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pave-pas { grid-template-columns: repeat(2, 1fr); }
+.pave-k {
+  min-height: 52px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--bg-soft); color: var(--text); font: 700 1.3rem var(--font-body); cursor: pointer;
+}
+.pave-k:active { background: var(--card-hover); }
+.pave-k:disabled { opacity: .3; }
+.pave-k-pm { min-height: 44px; font-size: 1rem; color: var(--accent-2); }
+.pave-k svg { width: 22px; height: 22px; }
+.pave-ok { min-height: 50px; font-size: 1rem; }
+.pave-disques { display: flex; flex-direction: column; gap: 8px; }
+.pave-disques.hidden { display: none; }
+.pave-ligne { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .85rem; }
+.pave-chip { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 99px; padding: 6px 12px; color: var(--text); font: 600 .75rem var(--font-body); cursor: pointer; }
+.pave-rang { display: flex; gap: 6px; flex-wrap: wrap; }
+.pave-disque {
+  flex: 1 0 auto; min-width: 44px; min-height: 40px; border-radius: 99px; border: 1px solid var(--accent-2);
+  background: transparent; color: var(--accent-2); font: 700 .85rem var(--font-body); cursor: pointer;
+}
+.pave-disque:active { background: var(--accent-2); color: var(--bg); }
