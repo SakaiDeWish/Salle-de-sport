@@ -2336,7 +2336,10 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
    « lisible ». Il reste calé à droite, au-dessus de la barre d'onglets. */
 .sf-lab { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em; }
 .settings-fab:hover { color: var(--text); transform: translateY(-1px); }
-body.live-on .settings-fab { opacity: 0; pointer-events: none; }
+/* Pendant une séance, la pastille occupe le bas de l'écran : le bouton
+   Réglages ne disparaît plus, il se pose AU-DESSUS d'elle. */
+body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); }
+@media (min-width: 761px) { body.live-on .settings-fab { bottom: 96px; } }
 @media (min-width: 761px) { .settings-fab { bottom: 20px; } }
 
 /* ---------- 2 · Panneau de vue (Nutrition / Bibliothèque / Réglages) ----
@@ -3567,3 +3570,12 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .live-ex-tools { gap: 6px; margin: 8px 0 2px; }
 .live-ex-tools .btn { min-height: 34px; padding: 4px 10px; font-size: 0.74rem; }
 .live-ex-tools .btn .icon { width: 1.05em; height: 1.05em; }
+
+
+/* ---------- Ligne de mise à jour, à l'accueil ---------- */
+.home-maj {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin: 18px 0 6px; padding: 8px 4px;
+  font-size: 0.8rem; color: var(--text-soft);
+}
+.home-maj strong { color: var(--text); }
