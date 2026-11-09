@@ -297,7 +297,7 @@ function renderDashboard() {
       ${disclosure("dash.goal", {
         summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
           <span class="disc-meta">cette semaine · streak ${gs.streak} sem.${statInfo("streak")}
-          ${gs.achievedThisWeek ? '<span class="goal-ok">✓ atteint</span>' : ""}</span>`,
+          ${gs.achievedThisWeek ? `<span class="goal-ok">${icon("tick")} atteint</span>` : ""}</span>`,
         label: "Régler",
         detail: `<label class="goal-adjust">Séances / semaine
             <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
@@ -330,7 +330,7 @@ function renderDashboard() {
               <span class="badge-ico">${icon(b.ico)}</span>
               <span class="badge-nom">${esc(b.nom)}</span>
               <span class="badge-desc">${esc(b.desc)}</span>
-              ${b.ok ? '<span class="badge-check">✓</span>'
+              ${b.ok ? `<span class="badge-check">${icon("tick")}</span>`
                      : (b.binaire ? "" : `<span class="badge-prog" role="img"
                           aria-label="Avancement : ${esc(badgeAvance(b))}">${badgeRing(b)}</span>`)}
               ${b.ok || b.binaire ? "" : `<span class="badge-compte">${esc(badgeAvance(b))}</span>`}
@@ -509,7 +509,7 @@ function renderSessionsPanel() {
     return (va - vb) * sessionsState.sortDir;
   });
 
-  const arrow = k => sessionsState.sortBy === k ? (sessionsState.sortDir === 1 ? " ↑" : " ↓") : "";
+  const arrow = k => sessionsState.sortBy === k ? (" " + icon(sessionsState.sortDir === 1 ? "arrow-up" : "arrow-down")) : "";
 
   panel.innerHTML = `
     <div class="sessions-controls">
@@ -775,9 +775,9 @@ function renderCalendar() {
   panel.innerHTML = `
     <div class="card cal-card">
       <div class="cal-nav">
-        <button class="btn btn-ghost btn-sm" id="cal-prev" aria-label="Mois précédent">←</button>
+        <button class="btn btn-ghost btn-sm" id="cal-prev" aria-label="Mois précédent">${icon("chevron-left")}</button>
         <h3 class="panel-title cal-title">${monthName.charAt(0).toUpperCase() + monthName.slice(1)}</h3>
-        <button class="btn btn-ghost btn-sm" id="cal-next" aria-label="Mois suivant">→</button>
+        <button class="btn btn-ghost btn-sm" id="cal-next" aria-label="Mois suivant">${icon("chevron-right")}</button>
       </div>
       <div class="cal-grid cal-head">
         ${["L", "M", "M", "J", "V", "S", "D"].map(d => `<span class="cal-dow">${d}</span>`).join("")}
@@ -801,7 +801,7 @@ function renderCalendar() {
             </button>`;
           }).join("")}
           <span class="cal-week-status ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "goal-ok" : ""}">
-            ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "✓" : `${gs.perWeek.get(w.key) || 0}/${gs.goal}`}
+            ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? icon("tick") : `${gs.perWeek.get(w.key) || 0}/${gs.goal}`}
           </span>
         </div>`).join("")}
 

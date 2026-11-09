@@ -9,7 +9,7 @@
 const GOAL_SCHEMES = {
   masse: {
     label: "Prise de masse musculaire",
-    icone: "💪",
+    icone: "dumbbell",
     // Repos long : un repos court réduit le volume-charge réalisable, et
     // c'est lui qui porte l'hypertrophie (Schoenfeld 2016, Longo 2020).
     // RIR = répétitions en réserve à la fin de chaque série. Proche de
@@ -31,7 +31,7 @@ const GOAL_SCHEMES = {
   },
   force: {
     label: "Force maximale",
-    icone: "🏋️",
+    icone: "trophy",
     poly:  { series: 5, reps: "3-6",   repos: "3-5 min", rir: "2-4" },
     iso:   { series: 3, reps: "6-10",  repos: "2-3 min", rir: "1-3" },
     tempo: "descente contrôlée, montée explosive",
@@ -45,7 +45,7 @@ const GOAL_SCHEMES = {
   },
   seche: {
     label: "Sèche / Perte de gras",
-    icone: "🔥",
+    icone: "flame",
     // Même entraînement qu'en prise de masse : en déficit, l'objectif est
     // de CONSERVER le muscle, donc le stimulus doit être identique. À
     // effort égal l'hypertrophie ne dépend pas de la plage de répétitions
@@ -63,7 +63,7 @@ const GOAL_SCHEMES = {
   },
   forme: {
     label: "Remise en forme / Tonification",
-    icone: "⚡",
+    icone: "bolt",
     poly:  { series: 3, reps: "8-12",  repos: "90 s", rir: "2-4" },
     iso:   { series: 2, reps: "12-15", repos: "75 s", rir: "2-4" },
     tempo: "descente contrôlée sur 2 s",

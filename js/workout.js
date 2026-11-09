@@ -190,7 +190,7 @@ function badgeTendance(ex, j, statique) {
   const ref = statique
     ? `${avant.poids != null ? avant.poids + " kg, " : ""}${fmtSec(avant.secondes)}`
     : `${avant.poids != null ? avant.poids + " kg × " : ""}${avant.reps} reps`;
-  const [cls, glyphe, mot] = t > 0 ? ["up", "↑", "Mieux"] : t < 0 ? ["down", "↓", "Moins bien"] : ["eq", "=", "Pareil"];
+  const [cls, glyphe, mot] = t > 0 ? ["up", icon("arrow-up"), "Mieux"] : t < 0 ? ["down", icon("arrow-down"), "Moins bien"] : ["eq", "=", "Pareil"];
   const texte = `${mot} que la dernière fois (${ref})`;
   return ` <span class="set-trend set-trend-${cls}" title="${esc(texte)}" aria-label="${esc(texte)}">${glyphe}</span>`;
 }
@@ -702,7 +702,7 @@ function renderProgramDayButtons() {
   const container = document.getElementById("program-day-buttons");
   const program = loadJSON(STORAGE_KEYS.program, null);
   if (!program) {
-    container.innerHTML = `<p class="video-hint">💡 Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
+    container.innerHTML = `<p class="video-hint">${icon("bulb")} Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
     return;
   }
   /* Bouton « départ » (.btn-go) : la pastille d'accent s'étend et prend
@@ -919,7 +919,7 @@ function applyHeaderMin(on) {
   elLive.classList.toggle("hdr-min", on);
   const btn = document.getElementById("live-hdr-toggle");
   if (btn) {
-    btn.textContent = on ? "⌄" : "⌃";
+    btn.innerHTML = icon(on ? "chevron-down" : "chevron-up");
     btn.title = on ? "Agrandir le chrono" : "Réduire le chrono";
   }
   tick();
@@ -1109,7 +1109,7 @@ function ssAssemble(cartes) {
     const memo = ssIsRemembered(gid);
     out.push(`<div class="ss-group" data-ss="${gid}">
       <div class="ss-head">
-        <span class="ss-badge">⚡ Super set</span>
+        <span class="ss-badge">${icon("zap")} Super set</span>
         <span class="ss-flow">${noms.map((n, k) => n + " (" + series[k] + ")").join(" → ")}
           · repos ${ssRest(gid)} s après la paire</span>
         <span class="ss-actions">
@@ -1119,12 +1119,12 @@ function ssAssemble(cartes) {
                 blocIndex(membres[0]) < reorderBlocks().length - 1,
                 "le super set", "Le groupe entier")
             : `<button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
-                 memo ? "★ Mémorisé" : "☆ Mémoriser"}</button>
+                 memo ? icon("star", "on") + " Mémorisé" : icon("star") + " Mémoriser"}</button>
                <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>`}
         </span>
       </div>
       ${membres.map((k, r) => cartes[k] + (r < membres.length - 1
-        ? '<div class="ss-link">↓ enchaîne sans repos</div>' : "")).join("")}
+        ? '<div class="ss-link">'+ icon("arrow-down") + ' enchaîne sans repos</div>' : "")).join("")}
     </div>`);
   }
   return out.join("");
@@ -1194,7 +1194,7 @@ function casesHtml(ex, i, statique, p, pre) {
   for (let j = 0; j < nb; j++) {
     const s = ex.sets[j];
     lignes.push(`<li class="cb-row done">
-      <button type="button" class="cb on" data-undo-i="${i}" data-undo-j="${j}" aria-label="Série ${j + 1} validée — toucher pour dé-valider">✔</button>
+      <button type="button" class="cb on" data-undo-i="${i}" data-undo-j="${j}" aria-label="Série ${j + 1} validée — toucher pour dé-valider">${icon("tick")}</button>
       <span class="cb-lab">Série ${j + 1}</span>
       <span class="cb-sum">${esc(resumeSerie(statique, s.poids, s.reps, s.secondes, s.rir))}${badgeTendance(ex, j, statique)}</span>
     </li>`);
@@ -1212,7 +1212,7 @@ function casesHtml(ex, i, statique, p, pre) {
       <span class="cb-lab">Série ${j + 1}</span><span class="cb-sum">à venir</span></li>`);
   }
   const plus = !prochaine
-    ? `<li class="cb-more"><button type="button" class="btn btn-ghost btn-sm cb-bonus" data-bonus="${i}">＋ Série en plus</button></li>` : "";
+    ? `<li class="cb-more"><button type="button" class="btn btn-ghost btn-sm cb-bonus" data-bonus="${i}">${icon("plus")} Série en plus</button></li>` : "";
   return `<ul class="cb-list">${lignes.join("")}${plus}</ul>`;
 }
 /* Cocher : on valide avec ce que la case annonce. Si un champ obligatoire
@@ -1260,7 +1260,7 @@ function apercuHtml(ex) {
   }
   return `<div class="live-apercu${on ? "" : " live-apercu-off"}">
     <button type="button" class="live-apercu-toggle" aria-expanded="${on}">
-      <span>Aperçu du mouvement</span><span aria-hidden="true">${on ? "Masquer ⌃" : "Afficher ⌄"}</span>
+      <span>Aperçu du mouvement</span><span aria-hidden="true">${on ? "Masquer " + icon("chevron-up") : "Afficher " + icon("chevron-down")}</span>
     </button>
     ${on ? `<div class="live-apercu-fig">${fig}</div>` : ""}
   </div>`;
@@ -1269,7 +1269,7 @@ function apercuHtml(ex) {
 function renderLiveExercises() {
   if (live.exercises.length === 0) {
     elLiveExercises.innerHTML = `<div class="card empty-live">
-      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer. 💪</p>
+      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer.</p>
     </div>`;
     updateProgress();
     return;
@@ -1314,10 +1314,10 @@ function renderLiveExercises() {
           <p class="day-focus live-ex-recap">${esc(recap)}</p>
         </div>
         <div class="live-ex-right">
-          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? "✓ Terminé" : esc(p.texte)}</span>
+          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? icon("tick") + " Terminé" : esc(p.texte)}</span>
           <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
           ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
-          <span class="live-ex-chev" aria-hidden="true">⌄</span>
+          <span class="live-ex-chev" aria-hidden="true">${icon("chevron-down")}</span>
         </div>
       </button>
       ${reordering ? moveStrip(i) : ""}
@@ -1326,13 +1326,13 @@ function renderLiveExercises() {
       ${open ? apercuHtml(ex) : ""}
       <div class="live-ex-tools">
         <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
-        ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">↕ Ordre</button>` : ""}
+        ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">${icon("arrows-v")} Ordre</button>` : ""}
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative" aria-label="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost btn-sm remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
-        <button class="btn btn-ghost btn-sm ex-detail" type="button" aria-expanded="${detail}">Détail ${detail ? "⌃" : "⌄"}</button>
-        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
+        <button class="btn btn-ghost btn-sm ex-detail" type="button" aria-expanded="${detail}">Détail ${icon(detail ? "chevron-up" : "chevron-down")}</button>
+        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
-          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
+          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
       </div>
 
       ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
@@ -1347,7 +1347,7 @@ function renderLiveExercises() {
       <div class="hold-bloc${holdEnCours(i) ? " on" : ""}">
         <span class="hold-val" id="hold-val-${i}">${fmtSec(holdEnCours(i) ? holdSecondes() : 0)}</span>
         <button type="button" class="btn ${holdEnCours(i) ? "btn-danger-ghost" : "btn-primary"} hold-go" data-i="${i}">
-          ${holdEnCours(i) ? "■ Arrêter" : "▶ Démarrer le maintien"}
+          ${holdEnCours(i) ? icon("stop") + " Arrêter" : icon("play") + " Démarrer le maintien"}
         </button>
       </div>` : ""}
 
@@ -1413,19 +1413,19 @@ function renderLiveExercises() {
             return `
             <tr class="set-row${s.note ? " set-noted" : ""}${der}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
                 title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
-              <td>✔ ${j + 1}${badgeTendance(ex, j, statique)}</td>
+              <td>${icon("tick")} ${j + 1}${badgeTendance(ex, j, statique)}</td>
               ${statique
                 ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td>
                    <td>${s.poids != null ? s.poids : "—"}</td>`
                 : `<td>${s.poids != null ? s.poids : "—"}</td><td>${s.reps}</td>
                    <td>${s.rir != null ? s.rir : "—"}</td>`}
-              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
+              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">${icon("pencil")}</span></td>
             </tr>
             <tr class="set-note-line${der}">
               <td colspan="${statique ? 4 : 5}">
                 <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
                   aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
-                  s.note ? `💬 ${esc(s.note)}` : "＋ note"}</button>
+                  s.note ? `${icon("message")} ${esc(s.note)}` : `${icon("plus")} note`}</button>
               </td>
             </tr>`;
           }).join("")}
@@ -1494,7 +1494,7 @@ function renderLiveExercises() {
   const bandeau = live.exercises.length > 1 && !reordering
     ? `<div class="live-list-head">
          <span>Exercices · ${live.exercises.length}</span>
-         <button type="button" class="btn btn-ghost btn-sm ex-move">↕ Ordre</button>
+         <button type="button" class="btn btn-ghost btn-sm ex-move">${icon("arrows-v")} Ordre</button>
        </div>` : "";
   elLiveExercises.innerHTML = bandeau + ssAssemble(cartes);
 
@@ -2128,7 +2128,7 @@ function renderPickerList(query) {
   list = list.slice(0, 40);
   document.getElementById("picker-list").innerHTML = list.map(ex => `
     <button class="picker-item" data-exid="${esc(ex.id)}">
-      <span>${typeof isFavorite === "function" && isFavorite(ex.id) ? '<span class="pick-fav">★</span> ' : ""}${esc(ex.nom)}</span>
+      <span>${typeof isFavorite === "function" && isFavorite(ex.id) ? '<span class="pick-fav">' + icon("star", "on") + '</span> ' : ""}${esc(ex.nom)}</span>
       <span class="tag">${LABELS.groupes[ex.groupe]}</span>
     </button>`).join("") || `<p class="video-hint">Aucun exercice trouvé.</p>`;
   document.querySelectorAll(".picker-item").forEach(btn =>
@@ -2193,7 +2193,7 @@ function renderSuggestions() {
     ${sugg.map((e, i) => `
       <button class="picker-item suggest-item ${inSession.has(e.id) ? "suggest-added" : ""}" data-exid="${esc(e.id)}">
         <span>${i + 1}. ${esc(e.nom)}</span>
-        <span class="tag">${inSession.has(e.id) ? "✓ Ajouté" : e.type === "poly" ? "Polyarticulaire" : "Isolation"}</span>
+        <span class="tag">${inSession.has(e.id) ? icon("tick") + " Ajouté" : e.type === "poly" ? "Polyarticulaire" : "Isolation"}</span>
       </button>`).join("")}`;
   zone.querySelectorAll(".suggest-item").forEach(b =>
     b.addEventListener("click", () => {
@@ -2401,9 +2401,9 @@ function moveButtons(i, quoi, haut, bas, nom, lbl) {
   return `<div class="live-ex-move">
     ${lbl ? `<span class="live-ex-move-lbl">${esc(lbl)}</span>` : ""}
     <button type="button" class="btn btn-ghost btn-sm mv" data-i="${i}" data-mv="${quoi}"
-      data-dir="-1" ${haut ? "" : "disabled"} aria-label="Monter ${esc(nom)}">▲</button>
+      data-dir="-1" ${haut ? "" : "disabled"} aria-label="Monter ${esc(nom)}">${icon("arrow-up")}</button>
     <button type="button" class="btn btn-ghost btn-sm mv" data-i="${i}" data-mv="${quoi}"
-      data-dir="1" ${bas ? "" : "disabled"} aria-label="Descendre ${esc(nom)}">▼</button>
+      data-dir="1" ${bas ? "" : "disabled"} aria-label="Descendre ${esc(nom)}">${icon("arrow-down")}</button>
   </div>`;
 }
 
@@ -2554,7 +2554,7 @@ function recapHtml(r, editable) {
   if (!a) return "";                    // séance d'avant cette version
   const puces = (a.points || []).map(p => `
     <li class="recap-pt recap-${p.sig === "+" ? "ok" : p.sig === "!" ? "warn" : "mid"}">
-      <span class="recap-sig" aria-hidden="true">${p.sig === "+" ? "✓" : p.sig === "!" ? "⚠" : "~"}</span>
+      <span class="recap-sig" aria-hidden="true">${p.sig === "+" ? icon("tick") : p.sig === "!" ? icon("alert") : "~"}</span>
       <span>${esc(p.txt)}${p.ex ? ` <span class="recap-ex">· ${esc(p.ex)}</span>` : ""}</span>
     </li>`).join("");
   return `
@@ -2664,7 +2664,7 @@ function showSummary(r) {
         <p class="feedback" id="summary-feel-feedback"></p>
       </div>
       ${renderSessionDetail(r)}
-      <button class="btn btn-primary btn-lg" id="summary-back">↩ Retour aux séances</button>
+      <button class="btn btn-primary btn-lg" id="summary-back">${icon("undo")} Retour aux séances</button>
     </div>`;
 
   renderWarmupFix(r);
@@ -2701,7 +2701,7 @@ function showSummary(r) {
     if (typeof renderProgramsPanel === "function") renderProgramsPanel();
     addBtn.disabled = true;
     document.getElementById("add-to-program-feedback").textContent =
-      `✓ Ajoutée à « ${pr.nom || "ton programme"} » comme séance ${day.numero}.`;
+      `Ajoutée à « ${pr.nom || "ton programme"} » comme séance ${day.numero}.`;
   });
 
   let summaryRpe = null;
@@ -2727,7 +2727,7 @@ function showSummary(r) {
       const program = loadJSON(STORAGE_KEYS.program, null);
       if (!program || summaryDiff === "correcte") {
         zone.innerHTML = summaryDiff === "correcte"
-          ? '<p class="video-hint">Parfait, on ne change rien : la difficulté est bien calibrée. 👌</p>' : "";
+          ? '<p class="video-hint">Parfait, on ne change rien : la difficulté est bien calibrée.</p>' : "";
         return;
       }
       const dure = summaryDiff === "dure";
@@ -2750,7 +2750,7 @@ function showSummary(r) {
       elSummary.querySelectorAll(".rpe-chip").forEach(x =>
         x.classList.toggle("active", parseInt(x.dataset.rpe, 10) === summaryRpe));
       saveFeel();
-      document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré ✓" : "";
+      document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré" : "";
     }));
   const recapEdit = document.getElementById("recap-edit");
   if (recapEdit) recapEdit.addEventListener("change", () => {
@@ -2761,7 +2761,7 @@ function showSummary(r) {
 
   document.getElementById("summary-notes").addEventListener("change", () => {
     saveFeel();
-    document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées ✓";
+    document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées";
   });
   document.getElementById("summary-back").addEventListener("click", showSetup);
 }
@@ -2771,7 +2771,7 @@ function renderSessionDetail(r) {
     const stat = estStatique(ex);
     return `
     <div class="session-ex">
-      <h4><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
+      <h4><span class="ico">${GROUP_ICONS[ex.groupe] || icon("dumbbell")} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
       <table class="sets-table">
         <thead><tr><th>Série</th>${stat
           ? `<th>Temps</th><th>Lest</th>`
@@ -2781,7 +2781,7 @@ function renderSessionDetail(r) {
             ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td>`
             : `<td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td><td>${s.rir != null ? s.rir : "—"}</td>`}
           <td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
-          ${s.note ? `<tr class="set-note-line"><td colspan="${stat ? 4 : 5}">💬 ${esc(s.note)}</td></tr>` : ""}`).join("")}
+          ${s.note ? `<tr class="set-note-line"><td colspan="${stat ? 4 : 5}">${icon("message")} ${esc(s.note)}</td></tr>` : ""}`).join("")}
         </tbody>
       </table>
     </div>`; }).join("")}</div>`;
