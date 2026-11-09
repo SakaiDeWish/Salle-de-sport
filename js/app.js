@@ -77,6 +77,9 @@ function activateView(view) {
     t.classList.toggle("active", t.dataset.view === view));
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.getElementById("view-" + view).classList.add("active");
+  /* Le bouton Réglages n'existe qu'à l'accueil : ailleurs (séance, suivi…)
+     il masquait du contenu et doublait la pastille de séance. */
+  document.body.classList.toggle("hors-accueil", view !== "accueil");
   window.scrollTo({ top: 0 });
 }
 
