@@ -403,6 +403,27 @@ function annonce(n) {
   } catch { /* voix indisponible : silencieux, jamais bloquant */ }
 }
 
+/* Notification de reprise, posée par le service worker pour apparaître
+   aussi quand l'app est en arrière-plan. Limite assumée : une page ne peut
+   pas programmer une notification à l'avance. Elle part d'un minuteur de la
+   page, que le système peut geler écran verrouillé. Seul un serveur
+   d'envoi (Web Push) le garantirait. */
+STORAGE_KEYS.restNotif = "gymcoach.restNotif";
+function notifOn() {
+  return localStorage.getItem(STORAGE_KEYS.restNotif) === "1" &&
+    "Notification" in window && Notification.permission === "granted";
+}
+async function notifierReprise(exName) {
+  if (!notifOn() || !document.hidden) return;
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const opts = { body: exName || "", tag: "gymcoach-reprise", renotify: true,
+      icon: "icon.svg", vibrate: [200, 100, 200] };
+    if (reg) reg.showNotification("Repos terminé — on reprend", opts);
+    else new Notification("Repos terminé — on reprend", opts);
+  } catch { /* notification indisponible : jamais bloquant */ }
+}
+
 /* Vibration SEULE, sans le bip. Même interrupteur que le signal de fin
    de repos : qui a coupé la vibration ne veut pas la retrouver
    ailleurs sous un autre nom. */
@@ -1067,7 +1088,7 @@ function tick() {
         ring.style.strokeDashoffset = RING_CIRC * (1 - remaining / rest.targetSec);
       }
     } else {
-      if (!rest.beeped) { beep(); rest.beeped = true; }
+      if (!rest.beeped) { beep(); rest.beeped = true; notifierReprise(rest.exName); }
       cd.textContent = "+" + fmtSec(Math.floor(-remaining));
       cd.classList.remove("preavis");
       cd.classList.add("overtime");
@@ -2049,6 +2070,10 @@ function validateSet(i) {
   const cible = ex.ss ? ssRest(ex.ss) : ex.restSec;
   rest = { setRef: { exIndex: i, setIndex: ex.sets.length - 1 }, exName: ex.nom, startAt: now, targetSec: cible, beeped: false };
   restMinimized = false;
+  /* Minuteur d'arrière-plan : tick() dort quand la page est masquée. */
+  const ref = rest;
+  setTimeout(() => { if (rest === ref && !ref.beeped) { ref.beeped = true; beep(); notifierReprise(ref.exName); } },
+    cible * 1000 + 100);
   document.getElementById("rest-exercise-name").textContent = ex.ss
     ? "Super set bouclé — repos " + cible + " s"
     : ex.nom + " — série " + ex.sets.length + " terminée";

@@ -151,7 +151,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v63";
+const APP_VERSION = "v64";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -209,6 +209,13 @@ function settingsHtml() {
           <span class="set-sub">Dit « 3, 2, 1 » à voix haute avant la reprise. Suit le
             volume du bip et se tait si le son est coupé.</span></span>
         <input type="checkbox" id="set-voice" ${localStorage.getItem("gymcoach.restVoice") !== "0" ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Notification de reprise
+          <span class="set-sub" id="set-notif-sub">Une notification à la fin du repos quand l'app est
+            en arrière-plan. Sans serveur, le système peut la retarder ou la perdre écran
+            verrouillé.</span></span>
+        <input type="checkbox" id="set-notif" ${typeof notifOn === "function" && notifOn() ? "checked" : ""}>
       </label>
       <label class="set-row set-check">
         <span class="set-lab">Rappel si un exercice traîne
@@ -283,6 +290,17 @@ function openSettings() {
   vol.addEventListener("change", () => {
     localStorage.setItem(STORAGE_KEYS.restVolume, vol.value);
     if (typeof beep === "function") beep(true, +vol.value);
+  });
+  const nt = document.getElementById("set-notif");
+  nt.addEventListener("change", async () => {
+    if (!nt.checked) { localStorage.setItem(STORAGE_KEYS.restNotif, "0"); return; }
+    let ok = "Notification" in window;
+    if (ok && Notification.permission === "default") ok = (await Notification.requestPermission()) === "granted";
+    else if (ok) ok = Notification.permission === "granted";
+    nt.checked = ok;
+    localStorage.setItem(STORAGE_KEYS.restNotif, ok ? "1" : "0");
+    if (!ok) document.getElementById("set-notif-sub").textContent =
+      "Notifications refusées ou indisponibles : autorise-les dans les réglages du navigateur.";
   });
   document.getElementById("set-voice").addEventListener("change", e =>
     localStorage.setItem("gymcoach.restVoice", e.target.checked ? "1" : "0"));
