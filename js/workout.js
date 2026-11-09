@@ -1128,6 +1128,40 @@ function ssAssemble(cartes) {
   return out.join("");
 }
 
+/* ---------- Aperçu du mouvement, dans la carte de l'exercice ----------
+   Pendant une série on regarde l'écran entre deux efforts : le schéma
+   animé de l'exercice y est donc rendu DANS la carte ouverte, au-dessus
+   du formulaire, sans passer par la fiche. Seule la carte dépliée en
+   porte un : un schéma animé par exercice de la liste, c'est autant
+   d'animations qui tournent pour rien. Le choix « afficher / masquer »
+   est mémorisé, parce qu'un écran de téléphone est petit et que
+   certains préfèrent récupérer la place. */
+const APERCU_KEY = "gymcoach.apercu";
+function apercuOn() {
+  try { return localStorage.getItem(APERCU_KEY) !== "0"; } catch { return true; }
+}
+function apercuHtml(ex) {
+  if (typeof motionSVG !== "function") return "";
+  const def = allExercisesForUI().find(e => e.id === ex.exId);
+  if (!def) return "";
+  const on = apercuOn();
+  let fig = "";
+  if (on) {
+    /* Le schéma animé seulement : la seconde vue statique, quand elle
+       existe, reste dans la fiche — ici elle doublerait la hauteur. */
+    const tmp = document.createElement("div");
+    tmp.innerHTML = motionSVG(def);
+    tmp.querySelectorAll(".motion-statique").forEach(n => n.remove());
+    fig = tmp.innerHTML;
+  }
+  return `<div class="live-apercu${on ? "" : " live-apercu-off"}">
+    <button type="button" class="live-apercu-toggle" aria-expanded="${on}">
+      <span>Aperçu du mouvement</span><span aria-hidden="true">${on ? "Masquer ⌃" : "Afficher ⌄"}</span>
+    </button>
+    ${on ? `<div class="live-apercu-fig">${fig}</div>` : ""}
+  </div>`;
+}
+
 function renderLiveExercises() {
   if (live.exercises.length === 0) {
     elLiveExercises.innerHTML = `<div class="card empty-live">
@@ -1183,8 +1217,10 @@ function renderLiveExercises() {
       ${reordering ? moveStrip(i) : ""}
 
       <div class="live-ex-body"><div class="live-ex-body-inner">
+      ${open ? apercuHtml(ex) : ""}
       <div class="live-ex-tools">
         <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
+        ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">↕ Ordre</button>` : ""}
         ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
           ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
@@ -1339,7 +1375,16 @@ function renderLiveExercises() {
       </div></div><!-- /live-ex-body -->
     </div>`;
   });
-  elLiveExercises.innerHTML = ssAssemble(cartes);
+  /* Bandeau de liste. Le bouton « ↕ Ordre » de l'en-tête de séance est
+     au-dessus de tout : une fois la page défilée jusqu'à l'exercice en
+     cours, il n'est plus à l'écran, et on pouvait croire la fonction
+     disparue. Ce bandeau, lui, est collé à la liste. */
+  const bandeau = live.exercises.length > 1 && !reordering
+    ? `<div class="live-list-head">
+         <span>Exercices · ${live.exercises.length}</span>
+         <button type="button" class="btn btn-ghost btn-sm ex-move">↕ Ordre</button>
+       </div>` : "";
+  elLiveExercises.innerHTML = bandeau + ssAssemble(cartes);
 
   /* Accordéon : ouvrir un exercice replie les autres (point 3) */
   elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
@@ -1364,6 +1409,18 @@ function renderLiveExercises() {
     btn.addEventListener("click", e => {
       e.stopPropagation();                       // ne pas replier via l'en-tête
       setCurrentExercise(parseInt(btn.dataset.i, 10));
+    }));
+  elLiveExercises.querySelectorAll(".ex-move").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      reorderStart();
+      const bar = document.getElementById("reorder-bar");
+      if (bar) bar.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }));
+  elLiveExercises.querySelectorAll(".live-apercu-toggle").forEach(btn =>
+    btn.addEventListener("click", () => {
+      try { localStorage.setItem(APERCU_KEY, apercuOn() ? "0" : "1"); } catch {}
+      renderLiveExercises();
     }));
   elLiveExercises.querySelectorAll(".remove-ex").forEach(btn =>
     btn.addEventListener("click", () => removeExercise(parseInt(btn.dataset.i, 10))));
