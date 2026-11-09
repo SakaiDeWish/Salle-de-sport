@@ -3579,3 +3579,24 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
   font-size: 0.8rem; color: var(--text-soft);
 }
 .home-maj strong { color: var(--text); }
+
+/* ---------- Réglage sous chaque série ---------- */
+.cb-main {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
+  min-height: 34px; padding: 0; border: 0; background: transparent;
+  color: inherit; font: inherit; text-align: left; cursor: pointer;
+}
+.cb-main .cb-sum { flex: 1; }
+.cb-chev { color: var(--text-soft); display: inline-flex; transition: transform 0.2s ease; }
+.cb-chev .icon { width: 1rem; height: 1rem; }
+.cb-chev.open { transform: rotate(180deg); }
+.cb-row.open { border-color: var(--accent); }
+.cb-edit {
+  margin: -2px 0 2px; padding: 10px 10px 12px;
+  border: 1px solid var(--accent); border-top: 0;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: var(--accent-soft);
+}
+.cb-edit .set-form { margin-top: 6px; }
+.cb-edit .last-hint { margin: 0 0 6px; }
+.set-sub-line { margin: 6px 0 0; font-size: 0.78rem; color: var(--text-soft); }
