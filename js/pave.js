@@ -8,7 +8,7 @@
       disques de chaque côté, la barre à vide étant réglable. */
 const PAS_CLE = "gymcoach.pas";            // { exId: pas du poids en kg }
 const BARRE_CLE = "gymcoach.barre";        // { exId: poids de la barre à vide }
-const PAS_POIDS = [1, 2.5, 5, 10];
+const PAS_POIDS = [1, 2, 2.5, 5, 10];
 const BARRES = [20, 15, 10];
 const DISQUES = [25, 20, 15, 10, 5, 2.5, 1.25];
 
@@ -16,7 +16,14 @@ function lireMap(cle) { try { return JSON.parse(localStorage.getItem(cle)) || {}
 function ecrireMap(cle, exId, v) {
   try { const m = lireMap(cle); m[exId] = v; localStorage.setItem(cle, JSON.stringify(m)); } catch { /* stockage indisponible */ }
 }
-function pasPoids(exId) { const v = lireMap(PAS_CLE)[exId]; return PAS_POIDS.includes(v) ? v : 2.5; }
+/* Pas par défaut : les haltères montent de 2 kg en 2 kg (la paire grimpe
+   donc de 2 en 2 sur chaque main), le reste par 2,5 kg. Le choix fait sur
+   la puce, lui, prime toujours. */
+function pasParDefaut(exId) {
+  const def = typeof allExercisesForUI === "function" ? allExercisesForUI().find(e => e.id === exId) : null;
+  return def && def.materiel === "halteres" ? 2 : 2.5;
+}
+function pasPoids(exId) { const v = lireMap(PAS_CLE)[exId]; return PAS_POIDS.includes(v) ? v : pasParDefaut(exId); }
 function poidsBarre(exId) { const v = lireMap(BARRE_CLE)[exId]; return BARRES.includes(v) ? v : 20; }
 const fmtNb = n => String(Math.round(n * 100) / 100).replace(".", ",");
 
