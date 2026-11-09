@@ -1325,7 +1325,7 @@ function renderLiveExercises() {
       <div class="live-ex-body"><div class="live-ex-body-inner">
       ${open ? apercuHtml(ex) : ""}
       <div class="live-ex-tools">
-        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
+        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Fiche</button>
         ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">${icon("arrows-v")} Ordre</button>` : ""}
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative" aria-label="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost btn-sm remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>

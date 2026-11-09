@@ -3486,10 +3486,10 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .live-apercu { margin: 10px 0 4px; }
 .live-apercu-toggle {
   width: 100%; display: flex; align-items: center; justify-content: space-between;
-  min-height: 40px; padding: 8px 12px;
+  min-height: 32px; padding: 4px 10px;
   border-radius: var(--radius-sm); border: 1px solid var(--border);
   background: transparent; color: var(--text-soft);
-  font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+  font: inherit; font-size: 0.76rem; font-weight: 700; cursor: pointer;
 }
 .live-apercu-toggle:hover { color: var(--accent-2); border-color: var(--accent); }
 .live-apercu-fig { margin-top: 8px; }
@@ -3497,7 +3497,13 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
    série vient juste dessous. Plafond plus bas que celui de la fiche, y
    compris pour les schémas hauts qui fixent leur propre hauteur. */
 .live-apercu-fig .motion-wrap { margin: 0; }
-.live-apercu-fig .motion-dedie svg { max-height: min(var(--mo-h, 190px), 170px); }
+.live-apercu-fig .motion-dedie svg { max-height: min(var(--mo-h, 190px), 96px); }
+/* Aperçu minimal : le schéma et ses trois boutons, sans la légende des
+   muscles ni le cadre — la fiche, un tap plus loin, les garde. */
+.live-apercu-fig .motion-wrap { padding: 4px 8px; background: transparent; border: 0; box-shadow: none; }
+.live-apercu-fig .mo-legend, .live-apercu-fig .motion-tag, .live-apercu-fig .motion-vue { display: none; }
+.live-apercu-fig .motion-cap { padding-top: 0; margin-top: 0; justify-content: flex-end; }
+.live-apercu-fig .mo-btn { transform: scale(0.85); transform-origin: right center; }
 
 /* ---------- Bandeau de liste et barre d'ordre ---------- */
 .live-list-head {
@@ -3511,27 +3517,31 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 
 
 /* ---------- Séries à cocher (séance épurée) ---------- */
-.cb-list { list-style: none; margin: 10px 0 6px; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.cb-list { list-style: none; margin: 8px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .cb-row {
-  display: flex; align-items: center; gap: 12px;
-  min-height: 52px; padding: 4px 10px 4px 4px;
+  display: flex; align-items: center; gap: 10px;
+  min-height: 40px; padding: 3px 10px 3px 8px;
   border-radius: var(--radius-sm); border: 1px solid var(--border);
 }
 .cb-row.next { border-color: var(--accent); background: var(--accent-soft); }
 .cb-row.todo { opacity: 0.45; }
 .cb {
-  flex: 0 0 auto; width: 44px; height: 44px; padding: 0;
+  position: relative;
+  flex: 0 0 auto; width: 26px; height: 26px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 12px; border: 2px solid var(--text-soft);
+  border-radius: 8px; border: 1.5px solid var(--text-soft);
   background: transparent; color: var(--bg);
-  font-size: 1.25rem; font-weight: 900; line-height: 1; cursor: pointer;
+  line-height: 1; cursor: pointer;
 }
+/* Case visuellement petite, zone de tap inchangée (44 px) : la case ne
+   grossit pas, c'est le contour invisible qui porte le pouce. */
+.cb::after { content: ""; position: absolute; inset: -9px; }
 .cb.on { background: var(--accent); border-color: var(--accent); }
 .cb.off { border-style: dashed; border-color: var(--border); cursor: default; }
 .cb-row.next .cb { border-color: var(--accent); }
 .cb:active:not(.off) { transform: scale(0.94); }
-.cb-lab { font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
-.cb-sum { flex: 1; text-align: right; font-size: 0.86rem; color: var(--text-soft); }
+.cb-lab { font-weight: 700; font-size: 0.86rem; white-space: nowrap; }
+.cb-sum { flex: 1; text-align: right; font-size: 0.82rem; color: var(--text-soft); }
 .cb-row.done .cb-sum { color: var(--text); }
 .cb-more { display: flex; justify-content: center; }
 .live-detail-off { display: none; }
@@ -3544,7 +3554,7 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .btn-ic .icon, .modal-close .icon, .mo-btn .icon, .sf-ico .icon { width: 1.15em; height: 1.15em; vertical-align: middle; }
 .sf-ico .icon { width: 1.2rem; height: 1.2rem; }
 .i-star.on { fill: currentColor; }
-.cb .icon { width: 1.5rem; height: 1.5rem; stroke-width: 3.2; }
+.cb .icon { width: 1rem; height: 1rem; stroke-width: 3.2; }
 .theme-epure .cb .icon { stroke-width: 2.4; stroke-linecap: round; }
 .disc-chev .icon, .live-ex-chev .icon, .hdr-pill-chev .icon { vertical-align: middle; }
 .set-trend .icon { width: 0.95em; height: 0.95em; vertical-align: -0.12em; stroke-width: 3; }
@@ -3552,3 +3562,8 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 /* Les boutons sont en flex : l'espace typographique après une icône est
    avalé, d'où un gap explicite. */
 .btn, .segm, .chip, .live-apercu-toggle, .tag { gap: 0.4em; }
+
+/* Rangée d'outils de la carte : plus fine, pour tenir sur une seule ligne */
+.live-ex-tools { gap: 6px; margin: 8px 0 2px; }
+.live-ex-tools .btn { min-height: 34px; padding: 4px 10px; font-size: 0.74rem; }
+.live-ex-tools .btn .icon { width: 1.05em; height: 1.05em; }
