@@ -151,7 +151,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v57";
+const APP_VERSION = "v58";
 
 function settingsHtml() {
   const t = currentTheme();
@@ -161,8 +161,8 @@ function settingsHtml() {
       <div class="set-row">
         <span class="set-lab">Thème</span>
         <div class="seg-mini" role="group" aria-label="Choix du thème">
-          <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">☾ Sombre</button>
-          <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">☀ Clair</button>
+          <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">${icon("moon")} Sombre</button>
+          <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">${icon("sun")} Clair</button>
         </div>
       </div>
     </div>
@@ -367,7 +367,7 @@ applyTheme(currentTheme());
   btn.className = "to-chrono";
   btn.type = "button";
   btn.setAttribute("aria-label", "Revenir au chronomètre");
-  btn.innerHTML = '<span aria-hidden="true">⌃</span>';
+  btn.innerHTML = icon("chevron-up");
   btn.addEventListener("click", () => {
     if (typeof toggleHeaderManual === "function") toggleHeaderManual(false);
     window.scrollTo({ top: 0, behavior: "smooth" });

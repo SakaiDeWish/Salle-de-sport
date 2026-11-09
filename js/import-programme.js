@@ -550,7 +550,7 @@ function renderImportApercu(res) {
                     (!l.ex || l.ambigu) ? `<button type="button" class="btn btn-ghost btn-sm imp-chercher"
                         data-j="${ji}" data-l="${li}">Choisir dans la bibliothèque</button>` : ""}
                   <button type="button" class="btn btn-ghost btn-sm imp-creer-ex"
-                    data-j="${ji}" data-l="${li}">＋ Créer « ${esc(l.nom)} »</button>
+                    data-j="${ji}" data-l="${li}">${icon("plus")} Créer « ${esc(l.nom)} »</button>
                 </div>` : ""}
             </div>`).join("")}
         </div>`).join("")}

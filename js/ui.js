@@ -108,7 +108,7 @@ function disclosure(key, { summary, detail, what = "", label = "Détails", dflt 
   return `<div class="disc${open ? " disc-open" : ""}" data-disc="${esc(key)}">
     <button type="button" class="disc-toggle" aria-expanded="${open}">
       <span class="disc-sum">${summary}</span>
-      <span class="disc-more">${esc(label)}<span class="disc-chev" aria-hidden="true">⌄</span></span>
+      <span class="disc-more">${esc(label)}<span class="disc-chev" aria-hidden="true">${icon("chevron-down")}</span></span>
     </button>
     <div class="disc-body">
       ${what ? `<p class="disc-what">${what}</p>` : ""}
@@ -248,7 +248,7 @@ function favButton(exId, cls = "") {
   const on = isFavorite(exId);
   return `<button type="button" class="fav-btn ${cls} ${on ? "fav-on" : ""}" data-fav="${esc(exId)}"
     aria-pressed="${on}" title="${on ? "Retirer des favoris" : "Ajouter aux favoris"}"
-    aria-label="${on ? "Retirer des favoris" : "Ajouter aux favoris"}">${on ? "★" : "☆"}</button>`;
+    aria-label="${on ? "Retirer des favoris" : "Ajouter aux favoris"}">${icon("star", on ? "on" : "")}</button>`;
 }
 
 /* Écouteur délégué : marche partout (bibliothèque, fiche, sélecteur) */
@@ -258,7 +258,7 @@ document.addEventListener("click", e => {
   e.stopPropagation();          // ne pas ouvrir la fiche en cliquant l'étoile
   const on = toggleFavorite(btn.dataset.fav);
   btn.classList.toggle("fav-on", on);
-  btn.textContent = on ? "★" : "☆";
+  btn.innerHTML = icon("star", on ? "on" : "");
   btn.setAttribute("aria-pressed", String(on));
   btn.title = on ? "Retirer des favoris" : "Ajouter aux favoris";
   if (typeof renderLibrary === "function" && libState.favOnly) renderLibrary();

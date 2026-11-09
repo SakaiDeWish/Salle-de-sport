@@ -3536,3 +3536,19 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .cb-more { display: flex; justify-content: center; }
 .live-detail-off { display: none; }
 .live-detail { margin-top: 6px; }
+
+
+/* ---------- Icônes d'interface (Lucide) à la place des emojis ----------
+   Un bouton qui ne porte qu'une icône n'a pas de texte à côté : on lui
+   donne une taille nette ; dans une phrase l'icône suit la taille du texte. */
+.btn-ic .icon, .modal-close .icon, .mo-btn .icon, .sf-ico .icon { width: 1.15em; height: 1.15em; vertical-align: middle; }
+.sf-ico .icon { width: 1.2rem; height: 1.2rem; }
+.i-star.on { fill: currentColor; }
+.cb .icon { width: 1.5rem; height: 1.5rem; stroke-width: 3.2; }
+.theme-epure .cb .icon { stroke-width: 2.4; stroke-linecap: round; }
+.disc-chev .icon, .live-ex-chev .icon, .hdr-pill-chev .icon { vertical-align: middle; }
+.set-trend .icon { width: 0.95em; height: 0.95em; vertical-align: -0.12em; stroke-width: 3; }
+.btn .icon { vertical-align: -0.22em; }
+/* Les boutons sont en flex : l'espace typographique après une icône est
+   avalé, d'où un gap explicite. */
+.btn, .segm, .chip, .live-apercu-toggle, .tag { gap: 0.4em; }
