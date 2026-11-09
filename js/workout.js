@@ -456,7 +456,7 @@ function saveLive() { saveJSON(STORAGE_KEYS.live, live); }
    (terminer et abandonner) passent par là, ce qui les empêche de
    diverger comme elles avaient commencé à le faire. */
 function clearLive() {
-  bonusRows.clear(); forceDetail = -1;
+  bonusRows.clear(); openNext = -1;
   for (const k in saisie) delete saisie[k];
   localStorage.removeItem(STORAGE_KEYS.live);
   live = null;
@@ -1136,11 +1136,7 @@ function ssAssemble(cartes) {
    replié par défaut : à la salle on veut cocher, pas remplir un
    formulaire. Les champs existent toujours dans la page, seulement cachés :
    validateSet les lit par leur id comme avant, rien n'a changé dessous. */
-const DETAIL_KEY = "gymcoach.detail";
-function detailOn() {
-  try { return localStorage.getItem(DETAIL_KEY) === "1"; } catch { return false; }
-}
-let forceDetail = -1;            // carte où il faut montrer le détail : un champ manque
+let openNext = -1;               // carte dont le réglage de la prochaine série est ouvert
 const bonusRows = new Set();     // exercices où l'on a demandé une série en plus
 
 /* Répétitions / secondes prescrites : « 3 × 10 » -> 10, « 3 × 45 s » -> 45 s */
@@ -1191,21 +1187,32 @@ function casesHtml(ex, i, statique, p, pre) {
   const nb = ex.sets.length;
   const slots = p.target != null ? Math.max(p.target, nb) : nb;
   const lignes = [];
+  const chev = ouvert => `<span class="cb-chev${ouvert ? " open" : ""}" aria-hidden="true">${icon("chevron-down")}</span>`;
   for (let j = 0; j < nb; j++) {
     const s = ex.sets[j];
-    lignes.push(`<li class="cb-row done">
+    const ed = editingSet && editingSet.i === i && editingSet.j === j;
+    lignes.push(`<li class="cb-row done${ed ? " open" : ""}">
       <button type="button" class="cb on" data-undo-i="${i}" data-undo-j="${j}" aria-label="Série ${j + 1} validée — toucher pour dé-valider">${icon("tick")}</button>
-      <span class="cb-lab">Série ${j + 1}</span>
-      <span class="cb-sum">${esc(resumeSerie(statique, s.poids, s.reps, s.secondes, s.rir))}${badgeTendance(ex, j, statique)}</span>
+      <button type="button" class="cb-main" data-open-i="${i}" data-open-j="${j}" aria-expanded="${ed}" aria-label="Modifier la série ${j + 1}">
+        <span class="cb-lab">Série ${j + 1}</span>
+        <span class="cb-sum">${s.note ? icon("message") + " " : ""}${esc(resumeSerie(statique, s.poids, s.reps, s.secondes, s.rir))}${badgeTendance(ex, j, statique)}</span>
+        ${chev(ed)}
+      </button>
     </li>`);
+    if (ed) lignes.push(`<li class="cb-edit">${editionSerie(ex, i, j, statique)}</li>`);
   }
   const prochaine = nb < slots || p.target == null || bonusRows.has(ex);
   if (prochaine) {
-    lignes.push(`<li class="cb-row next">
+    const ouv = openNext === i;
+    lignes.push(`<li class="cb-row next${ouv ? " open" : ""}">
       <button type="button" class="cb" data-check="${i}" aria-label="Valider la série ${nb + 1}"></button>
-      <span class="cb-lab">Série ${nb + 1}${nb >= slots && p.target != null ? " (en plus)" : ""}</span>
-      <span class="cb-sum" id="cb-sum-${i}">${esc(resumeSerie(statique, pre.poids, pre.reps, pre.secondes, pre.rir))}</span>
+      <button type="button" class="cb-main" data-open-i="${i}" data-open-j="${nb}" aria-expanded="${ouv}" aria-label="Régler la série ${nb + 1}">
+        <span class="cb-lab">Série ${nb + 1}${nb >= slots && p.target != null ? " (en plus)" : ""}</span>
+        <span class="cb-sum" id="cb-sum-${i}">${esc(resumeSerie(statique, pre.poids, pre.reps, pre.secondes, pre.rir))}</span>
+        ${chev(ouv)}
+      </button>
     </li>`);
+    lignes.push(`<li class="cb-edit next-edit${ouv ? "" : " live-detail-off"}">${formulaireProchaine(ex, i, statique, pre)}</li>`);
   }
   for (let j = nb + 1; j < slots; j++) {
     lignes.push(`<li class="cb-row todo"><span class="cb off" aria-hidden="true"></span>
@@ -1223,13 +1230,104 @@ function cocherSerie(i) {
   const champ = document.getElementById((statique ? "temps-" : "reps-") + i);
   const chronoEnCours = statique && holdEnCours(i);
   if (!chronoEnCours && !(champ && parseInt(champ.value, 10) > 0)) {
-    forceDetail = i;
+    openNext = i; editingSet = null;
     renderLiveExercises();
     const c = document.getElementById((statique ? "temps-" : "reps-") + i);
     if (c) c.focus();
     return;
   }
   validateSet(i);
+}
+
+/* Formulaire de la PROCHAINE série (pas-à-pas) et rappel de la dernière
+   fois. Il vit sous la ligne de la série, replié tant qu'on ne l'ouvre pas ;
+   les champs restent dans la page, seulement cachés : validateSet les lit
+   par leur id comme avant. */
+function formulaireProchaine(ex, i, statique, pre) {
+  return `
+      ${(() => {
+        const mem = recallSet(ex.exId, ex.sets.length);
+        if (!mem) return "";
+        if (statique) {
+          return mem.secondes != null
+            ? `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${fmtSec(mem.secondes)}</strong>${
+                mem.poids != null ? ` · ${mem.poids} kg` : ""}</p>`
+            : "";
+        }
+        const rir = mem.rir != null ? ` · ${mem.rir} en réserve` : "";
+        return `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong>${rir}</p>`;
+      })()}
+      <!-- PAS-À-PAS. Les <input> restent la source de vérité : validateSet
+           les lit toujours par leur id, et recallSet les pré-remplit comme
+           avant. Les boutons ± ne font qu'écrire dedans. En salle, la
+           charge bouge par paliers de 2,5 kg — deux taps valent mieux que
+           le clavier numérique avec les mains moites. Le champ reste
+           tapable pour une valeur inhabituelle. -->
+      <div class="set-form">
+        ${statique ? `
+        <div class="stepper" data-step="5" data-min="1">
+          <button type="button" class="step-btn" data-target="temps-${i}" data-delta="-1" aria-label="Cinq secondes de moins">−</button>
+          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
+            value="${pre.secondes ?? ""}">
+          <button type="button" class="step-btn" data-target="temps-${i}" data-delta="1" aria-label="Cinq secondes de plus">+</button>
+        </div>
+        <div class="stepper" data-step="2.5" data-min="0">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg de lest">−</button>
+          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
+            value="${pre.poids ?? ""}">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg de lest">+</button>
+        </div>` : `
+        <div class="stepper" data-step="2.5" data-min="0">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg">−</button>
+          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
+            value="${pre.poids ?? ""}">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg">+</button>
+        </div>
+        <div class="stepper" data-step="1" data-min="1">
+          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
+          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
+            value="${pre.reps ?? ""}">
+          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
+        </div>
+        <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
+          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
+          <input type="number" inputmode="numeric" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
+            value="${pre.rir ?? ""}">
+          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
+        </div>`}
+      </div>
+  `;
+}
+/* Édition d'une série DÉJÀ validée, sous sa propre ligne : poids, reps,
+   RIR, note, et dé-validation. */
+function editionSerie(ex, i, j, statique) {
+  const s = ex.sets[j];
+  return `
+                  <div class="set-edit-row">
+                    <span class="set-edit-n">Série ${j + 1}</span>
+                    <input type="number" inputmode="decimal" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
+                    ${statique
+                      ? `<input type="number" inputmode="numeric" min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
+                      : `<input type="number" inputmode="numeric" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                         <input type="number" inputmode="numeric" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
+                    <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
+                    <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
+                    <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
+                  </div>
+                  <!-- La note vit ici aussi : on revient sur une série pour
+                       la corriger OU pour dire comment elle s'est passée,
+                       et rien n'oblige à deviner laquelle des deux avant
+                       d'ouvrir. -->
+                  <div class="set-edit-note">
+                    <input type="text" id="ed-note" maxlength="${NOTE_MAX}" class="set-note-input"
+                      placeholder="Note (facultatif) — ex : aidé sur les 2 dernières"
+                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
+                  </div>
+                  <div class="note-suggests">
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="ed-note">${esc(t)}</button>`).join("")}
+                  </div>
+    ${s.restAfter != null ? `<p class="set-sub-line">Repos pris : ${fmtSec(s.restAfter)}</p>` : ""}
+  `;
 }
 
 /* ---------- Aperçu du mouvement, dans la carte de l'exercice ----------
@@ -1290,7 +1388,6 @@ function renderLiveExercises() {
        par carte, et décide du tableau, du formulaire et de l'édition. */
     const statique = estStatique(ex);
     const pre = prefillSet(ex, i);
-    const detail = detailOn() || forceDetail === i;
     const poidsUtilises = [...new Set(ex.sets.map(s => s.poids).filter(v => v != null))];
     /* Un maintien s'y résume par le temps TOTAL tenu : « 3 séries ·
        02:15 tenu » dit quelque chose, « 3 séries » seul ne dit rien. */
@@ -1329,7 +1426,6 @@ function renderLiveExercises() {
         ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">${icon("arrows-v")} Ordre</button>` : ""}
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative" aria-label="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost btn-sm remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
-        <button class="btn btn-ghost btn-sm ex-detail" type="button" aria-expanded="${detail}">Détail ${icon(detail ? "chevron-up" : "chevron-down")}</button>
         ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
           ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
@@ -1351,139 +1447,6 @@ function renderLiveExercises() {
         </button>
       </div>` : ""}
 
-      <div class="live-detail${detail ? "" : " live-detail-off"}">
-      ${ex.sets.length ? `
-      <table class="sets-table">
-        <thead><tr><th>Série</th>${statique
-          ? `<th>Temps</th><th>Lest (kg)</th>`
-          : `<th>Poids (kg)</th><th>Reps</th><th>RIR</th>`}<th>Repos</th></tr></thead>
-        <tbody>
-          ${ex.sets.map((s, j) => {
-            /* En affichage réduit, seule la DERNIÈRE série reste visible.
-               Ce marquage est explicite : la règle CSS s'appuyait avant
-               sur :last-child, ce qui a cessé d'être vrai le jour où
-               chaque série a gagné une ligne de note en dessous. */
-            const der = j === ex.sets.length - 1 ? " set-last" : "";
-            const editing = editingSet && editingSet.i === i && editingSet.j === j;
-            if (editing) return `
-              <tr class="set-editing">
-                <td colspan="${statique ? 4 : 5}">
-                  <div class="set-edit-row">
-                    <span class="set-edit-n">Série ${j + 1}</span>
-                    <input type="number" inputmode="decimal" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
-                    ${statique
-                      ? `<input type="number" inputmode="numeric" min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
-                      : `<input type="number" inputmode="numeric" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
-                         <input type="number" inputmode="numeric" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
-                    <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
-                    <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
-                    <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
-                  </div>
-                  <!-- La note vit ici aussi : on revient sur une série pour
-                       la corriger OU pour dire comment elle s'est passée,
-                       et rien n'oblige à deviner laquelle des deux avant
-                       d'ouvrir. -->
-                  <div class="set-edit-note">
-                    <input type="text" id="ed-note" maxlength="${NOTE_MAX}" class="set-note-input"
-                      placeholder="Note (facultatif) — ex : aidé sur les 2 dernières"
-                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
-                  </div>
-                  <div class="note-suggests">
-                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="ed-note">${esc(t)}</button>`).join("")}
-                  </div>
-                </td>
-              </tr>`;
-            const noting = notingSet && notingSet.i === i && notingSet.j === j;
-            if (noting) return `
-              <tr class="set-editing">
-                <td colspan="${statique ? 4 : 5}">
-                  <div class="set-note-row">
-                    <span class="set-edit-n">Série ${j + 1}</span>
-                    <input type="text" id="note-input" maxlength="100" class="set-note-input"
-                      placeholder="Ex : aidé sur les 2 dernières, bien contrôlé…"
-                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
-                    <button class="btn btn-primary btn-sm note-save" data-i="${i}" data-j="${j}">OK</button>
-                    <button class="btn btn-ghost btn-sm note-cancel">Annuler</button>
-                  </div>
-                  <div class="note-suggests">
-                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="note-input">${esc(t)}</button>`).join("")}
-                  </div>
-                </td>
-              </tr>`;
-            return `
-            <tr class="set-row${s.note ? " set-noted" : ""}${der}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
-                title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
-              <td>${icon("tick")} ${j + 1}${badgeTendance(ex, j, statique)}</td>
-              ${statique
-                ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td>
-                   <td>${s.poids != null ? s.poids : "—"}</td>`
-                : `<td>${s.poids != null ? s.poids : "—"}</td><td>${s.reps}</td>
-                   <td>${s.rir != null ? s.rir : "—"}</td>`}
-              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">${icon("pencil")}</span></td>
-            </tr>
-            <tr class="set-note-line${der}">
-              <td colspan="${statique ? 4 : 5}">
-                <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
-                  aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
-                  s.note ? `${icon("message")} ${esc(s.note)}` : `${icon("plus")} note`}</button>
-              </td>
-            </tr>`;
-          }).join("")}
-        </tbody>
-      </table>` : ""}
-
-      ${(() => {
-        const mem = recallSet(ex.exId, ex.sets.length);
-        if (!mem) return "";
-        if (statique) {
-          return mem.secondes != null
-            ? `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${fmtSec(mem.secondes)}</strong>${
-                mem.poids != null ? ` · ${mem.poids} kg` : ""}</p>`
-            : "";
-        }
-        const rir = mem.rir != null ? ` · ${mem.rir} en réserve` : "";
-        return `<p class="last-hint">Dernière fois (série ${ex.sets.length + 1}) : <strong>${mem.poids != null ? mem.poids + " kg" : "—"} × ${mem.reps}</strong>${rir}</p>`;
-      })()}
-      <!-- PAS-À-PAS. Les <input> restent la source de vérité : validateSet
-           les lit toujours par leur id, et recallSet les pré-remplit comme
-           avant. Les boutons ± ne font qu'écrire dedans. En salle, la
-           charge bouge par paliers de 2,5 kg — deux taps valent mieux que
-           le clavier numérique avec les mains moites. Le champ reste
-           tapable pour une valeur inhabituelle. -->
-      <div class="set-form">
-        ${statique ? `
-        <div class="stepper" data-step="5" data-min="1">
-          <button type="button" class="step-btn" data-target="temps-${i}" data-delta="-1" aria-label="Cinq secondes de moins">−</button>
-          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
-            value="${pre.secondes ?? ""}">
-          <button type="button" class="step-btn" data-target="temps-${i}" data-delta="1" aria-label="Cinq secondes de plus">+</button>
-        </div>
-        <div class="stepper" data-step="2.5" data-min="0">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg de lest">−</button>
-          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
-            value="${pre.poids ?? ""}">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg de lest">+</button>
-        </div>` : `
-        <div class="stepper" data-step="2.5" data-min="0">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg">−</button>
-          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
-            value="${pre.poids ?? ""}">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg">+</button>
-        </div>
-        <div class="stepper" data-step="1" data-min="1">
-          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
-          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
-            value="${pre.reps ?? ""}">
-          <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
-        </div>
-        <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
-          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
-          <input type="number" inputmode="numeric" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
-            value="${pre.rir ?? ""}">
-          <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
-        </div>`}
-      </div>
-      </div><!-- /live-detail -->
       </div></div><!-- /live-ex-body -->
     </div>`;
   });
@@ -1521,12 +1484,20 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => unvalidateSet(+btn.dataset.undoI, +btn.dataset.undoJ)));
   elLiveExercises.querySelectorAll(".cb-bonus").forEach(btn =>
     btn.addEventListener("click", () => { bonusRows.add(live.exercises[+btn.dataset.bonus]); renderLiveExercises(); }));
-  elLiveExercises.querySelectorAll(".ex-detail").forEach(btn =>
-    btn.addEventListener("click", e => {
-      e.stopPropagation();
-      try { localStorage.setItem(DETAIL_KEY, detailOn() ? "0" : "1"); } catch {}
-      forceDetail = -1;
+  elLiveExercises.querySelectorAll(".cb-main").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const i = +btn.dataset.openI, j = +btn.dataset.openJ;
+      const ex = live.exercises[i];
+      if (j < ex.sets.length) {                    // série validée : on la modifie
+        const deja = editingSet && editingSet.i === i && editingSet.j === j;
+        editingSet = deja ? null : { i, j }; openNext = -1;
+      } else {                                      // prochaine série : on la règle
+        openNext = openNext === i ? -1 : i; editingSet = null;
+      }
+      notingSet = null;
       renderLiveExercises();
+      const f = document.getElementById(editingSet ? "ed-poids" : "");
+      if (f) f.focus();
     }));
   /* La ligne de la prochaine série annonce ce qu'un tap va enregistrer :
      elle suit donc les champs quand on les modifie dans le détail. */
@@ -1631,17 +1602,6 @@ function renderLiveExercises() {
     elLiveExercises.classList.remove("ss-picking");
   }
 
-  /* Série validée : un tap l'ouvre en édition (B2) */
-  elLiveExercises.querySelectorAll(".set-row").forEach(tr => {
-    const open = () => {
-      editingSet = { i: +tr.dataset.i, j: +tr.dataset.j };
-      renderLiveExercises();
-      const f = document.getElementById("ed-poids");
-      if (f) f.focus();
-    };
-    tr.addEventListener("click", open);
-    tr.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); open(); } });
-  });
   elLiveExercises.querySelectorAll(".set-edit-cancel").forEach(b =>
     b.addEventListener("click", () => { editingSet = null; renderLiveExercises(); }));
   elLiveExercises.querySelectorAll(".set-edit-save").forEach(b =>
@@ -2044,7 +2004,7 @@ function validateSet(i) {
 
   const set = { poids: isNaN(poids) ? null : poids, reps, rir, secondes, doneAt: now, restAfter: null, note: "" };
   ex.sets.push(set);
-  forceDetail = -1;
+  openNext = -1;
   rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps, set.rir, set.secondes);
   saveLive();
   renderLiveExercises();

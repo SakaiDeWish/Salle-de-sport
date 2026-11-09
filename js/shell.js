@@ -151,7 +151,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v60";
+const APP_VERSION = "v61";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
