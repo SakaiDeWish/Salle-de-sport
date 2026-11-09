@@ -386,6 +386,23 @@ function beep(force, volume) {
   }
 }
 
+/* Voix du décompte « 3, 2, 1 » avant la reprise. Synthèse vocale du
+   navigateur (aucun fichier audio) : suit le volume du bip, se tait si le
+   son est coupé ou si l'appareil n'a pas de voix. */
+STORAGE_KEYS.restVoice = "gymcoach.restVoice";
+function annonce(n) {
+  if (localStorage.getItem(STORAGE_KEYS.restVoice) === "0") return;
+  if (localStorage.getItem(STORAGE_KEYS.restSound) === "0") return;
+  const vol = restVolume() / 100;
+  if (vol <= 0 || !("speechSynthesis" in window)) return;
+  try {
+    const u = new SpeechSynthesisUtterance(String(n));
+    u.lang = "fr-FR"; u.volume = vol; u.rate = 1.1;
+    window.speechSynthesis.cancel();   // jamais de file qui prend du retard
+    window.speechSynthesis.speak(u);
+  } catch { /* voix indisponible : silencieux, jamais bloquant */ }
+}
+
 /* Vibration SEULE, sans le bip. Même interrupteur que le signal de fin
    de repos : qui a coupé la vibration ne veut pas la retrouver
    ailleurs sous un autre nom. */
@@ -1043,7 +1060,7 @@ function tick() {
          seconde : tick() bat quatre fois plus vite qu'elles. */
       const preavis = s <= REST_PREAVIS_S;
       cd.classList.toggle("preavis", preavis);
-      if (preavis && rest.preavis !== s) { rest.preavis = s; vibre(REST_PREAVIS_MS); }
+      if (preavis && rest.preavis !== s) { rest.preavis = s; vibre(REST_PREAVIS_MS); annonce(s); }
       if (ring) {
         ring.classList.remove("ring-over");
         // l'anneau se vide à mesure que le repos s'écoule
