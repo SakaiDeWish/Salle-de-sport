@@ -151,7 +151,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v62";
+const APP_VERSION = "v63";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -203,6 +203,12 @@ function settingsHtml() {
           <span class="set-sub">Trois tapes brèves sur les 3 dernières secondes du repos,
             puis une impulsion pleine à la reprise. Si l'appareil le permet.</span></span>
         <input type="checkbox" id="set-vibrate" ${restVibrateOn() ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Voix du décompte
+          <span class="set-sub">Dit « 3, 2, 1 » à voix haute avant la reprise. Suit le
+            volume du bip et se tait si le son est coupé.</span></span>
+        <input type="checkbox" id="set-voice" ${localStorage.getItem("gymcoach.restVoice") !== "0" ? "checked" : ""}>
       </label>
       <label class="set-row set-check">
         <span class="set-lab">Rappel si un exercice traîne
@@ -278,6 +284,8 @@ function openSettings() {
     localStorage.setItem(STORAGE_KEYS.restVolume, vol.value);
     if (typeof beep === "function") beep(true, +vol.value);
   });
+  document.getElementById("set-voice").addEventListener("change", e =>
+    localStorage.setItem("gymcoach.restVoice", e.target.checked ? "1" : "0"));
   v.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restVibrate, v.checked ? "1" : "0"));
   const dbd = document.getElementById("set-debord");
   if (dbd) dbd.addEventListener("change", () =>
