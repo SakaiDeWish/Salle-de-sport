@@ -415,6 +415,7 @@ function notifOn() {
 }
 async function notifierReprise(exName) {
   if (!notifOn() || !document.hidden) return;
+  if (typeof pushConfigure === "function" && pushConfigure()) return;   // le serveur s'en charge
   try {
     const reg = await navigator.serviceWorker.getRegistration();
     const opts = { body: exName || "", tag: "gymcoach-reprise", renotify: true,
@@ -2072,7 +2073,8 @@ function validateSet(i) {
   restMinimized = false;
   /* Minuteur d'arrière-plan : tick() dort quand la page est masquée. */
   const ref = rest;
-  setTimeout(() => { if (rest === ref && !ref.beeped) { ref.beeped = true; beep(); notifierReprise(ref.exName); } },
+  if (typeof pushProgrammer === "function") pushProgrammer(cible, ex.nom);
+  setTimeout(() => { if (rest === ref && !ref.beeped && nowRef() - ref.startAt >= ref.targetSec * 1000 - 200) { ref.beeped = true; beep(); notifierReprise(ref.exName); } },
     cible * 1000 + 100);
   document.getElementById("rest-exercise-name").textContent = ex.ss
     ? "Super set bouclé — repos " + cible + " s"
@@ -2090,6 +2092,7 @@ function endRest() {
   const ex = live.exercises[rest.setRef.exIndex];
   if (ex && ex.sets[rest.setRef.setIndex]) ex.sets[rest.setRef.setIndex].restAfter = actual;
   rest = null;
+  if (typeof pushAnnuler === "function") pushAnnuler();
   elRestOverlay.classList.add("hidden");
   saveLive();
   renderLiveExercises();
@@ -2103,7 +2106,7 @@ document.getElementById("rest-minimize").addEventListener("click", () => {
   elRestOverlay.classList.add("hidden");
   tick();
 });
-document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; tick(); } });
+document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; if (typeof pushProgrammer === "function") pushProgrammer(Math.max(1, Math.ceil(rest.targetSec - (nowRef() - rest.startAt) / 1000)), rest.exName); tick(); } });
 document.getElementById("rest-minus").addEventListener("click", () => { if (rest) { rest.targetSec = Math.max(5, rest.targetSec - 15); tick(); } });
 
 /* ---------- Sélecteur d'exercice ---------- */

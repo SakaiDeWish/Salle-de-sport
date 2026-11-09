@@ -151,7 +151,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v64";
+const APP_VERSION = "v65";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -297,6 +297,7 @@ function openSettings() {
     let ok = "Notification" in window;
     if (ok && Notification.permission === "default") ok = (await Notification.requestPermission()) === "granted";
     else if (ok) ok = Notification.permission === "granted";
+    if (ok && typeof pushAbonnement === "function") { try { await pushAbonnement(true); } catch { /* repli : notification locale */ } }
     nt.checked = ok;
     localStorage.setItem(STORAGE_KEYS.restNotif, ok ? "1" : "0");
     if (!ok) document.getElementById("set-notif-sub").textContent =

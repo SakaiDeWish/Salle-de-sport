@@ -1,0 +1,14 @@
+name = "gymcoach-push"
+main = "src.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+VAPID_SUBJECT = "mailto:ungethan@gmail.com"
+
+[[durable_objects.bindings]]
+name = "REPOS"
+class_name = "Repos"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Repos"]
