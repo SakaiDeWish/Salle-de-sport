@@ -456,6 +456,8 @@ function saveLive() { saveJSON(STORAGE_KEYS.live, live); }
    (terminer et abandonner) passent par là, ce qui les empêche de
    diverger comme elles avaient commencé à le faire. */
 function clearLive() {
+  bonusRows.clear(); forceDetail = -1;
+  for (const k in saisie) delete saisie[k];
   localStorage.removeItem(STORAGE_KEYS.live);
   live = null;
   rest = null;
@@ -1128,6 +1130,108 @@ function ssAssemble(cartes) {
   return out.join("");
 }
 
+/* ---------- Séries à cocher ----------
+   Une série se VALIDE d'un tap sur sa case. Le formulaire complet (poids,
+   reps, RIR, notes, tableau modifiable) reste disponible dans « Détail »,
+   replié par défaut : à la salle on veut cocher, pas remplir un
+   formulaire. Les champs existent toujours dans la page, seulement cachés :
+   validateSet les lit par leur id comme avant, rien n'a changé dessous. */
+const DETAIL_KEY = "gymcoach.detail";
+function detailOn() {
+  try { return localStorage.getItem(DETAIL_KEY) === "1"; } catch { return false; }
+}
+let forceDetail = -1;            // carte où il faut montrer le détail : un champ manque
+const bonusRows = new Set();     // exercices où l'on a demandé une série en plus
+
+/* Répétitions / secondes prescrites : « 3 × 10 » -> 10, « 3 × 45 s » -> 45 s */
+function targetRepsOf(ex) {
+  const m = String(ex.target || "").match(/[x×]\s*(\d+)/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+function targetSecondsOf(ex) {
+  const m = String(ex.target || "").match(/(\d+)\s*s\b/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+/* Valeurs proposées pour la PROCHAINE série : celles de la dernière fois,
+   à défaut celles de la série qui vient d'être faite, à défaut la
+   prescription. Cocher revient donc à dire « pareil ». */
+const saisie = {};      // ce qu'on a TAPÉ pour la prochaine série, qui survit aux rendus
+function prefillSet(ex, i) {
+  const n = ex.sets.length;
+  const tape = champ => {
+    const v = saisie[i + ":" + n + ":" + champ];
+    return v === undefined ? undefined : (v === "" ? null : parseFloat(v));
+  };
+  const base = prefillBase(ex);
+  const out = {};
+  for (const [k, champ] of [["poids", "poids"], ["reps", "reps"], ["rir", "rir"], ["secondes", "temps"]]) {
+    const t = tape(champ);
+    out[k] = t === undefined ? base[k] : t;
+  }
+  return out;
+}
+function prefillBase(ex) {
+  const n = ex.sets.length;
+  const mem = recallSet(ex.exId, n) || null;
+  const prev = n ? ex.sets[n - 1] : null;
+  return {
+    poids: mem ? mem.poids : (prev ? prev.poids : null),
+    reps: mem && mem.reps != null ? mem.reps : (prev && prev.reps != null ? prev.reps : targetRepsOf(ex)),
+    rir: mem ? mem.rir : null,
+    secondes: mem && mem.secondes != null ? mem.secondes : (prev && prev.secondes != null ? prev.secondes : targetSecondsOf(ex))
+  };
+}
+function resumeSerie(statique, poids, reps, secondes, rir) {
+  const kg = poids != null ? poids + " kg" : (statique ? "" : "au poids du corps");
+  if (statique) return [kg, secondes != null ? fmtSec(secondes) : "—"].filter(Boolean).join(" · ");
+  return [poids != null ? `${poids} kg × ${reps ?? "—"}` : `${reps ?? "—"} reps`, rir != null ? `${rir} en réserve` : ""]
+    .filter(Boolean).join(" · ");
+}
+function casesHtml(ex, i, statique, p, pre) {
+  const nb = ex.sets.length;
+  const slots = p.target != null ? Math.max(p.target, nb) : nb;
+  const lignes = [];
+  for (let j = 0; j < nb; j++) {
+    const s = ex.sets[j];
+    lignes.push(`<li class="cb-row done">
+      <button type="button" class="cb on" data-undo-i="${i}" data-undo-j="${j}" aria-label="Série ${j + 1} validée — toucher pour dé-valider">✔</button>
+      <span class="cb-lab">Série ${j + 1}</span>
+      <span class="cb-sum">${esc(resumeSerie(statique, s.poids, s.reps, s.secondes, s.rir))}${badgeTendance(ex, j, statique)}</span>
+    </li>`);
+  }
+  const prochaine = nb < slots || p.target == null || bonusRows.has(ex);
+  if (prochaine) {
+    lignes.push(`<li class="cb-row next">
+      <button type="button" class="cb" data-check="${i}" aria-label="Valider la série ${nb + 1}"></button>
+      <span class="cb-lab">Série ${nb + 1}${nb >= slots && p.target != null ? " (en plus)" : ""}</span>
+      <span class="cb-sum" id="cb-sum-${i}">${esc(resumeSerie(statique, pre.poids, pre.reps, pre.secondes, pre.rir))}</span>
+    </li>`);
+  }
+  for (let j = nb + 1; j < slots; j++) {
+    lignes.push(`<li class="cb-row todo"><span class="cb off" aria-hidden="true"></span>
+      <span class="cb-lab">Série ${j + 1}</span><span class="cb-sum">à venir</span></li>`);
+  }
+  const plus = !prochaine
+    ? `<li class="cb-more"><button type="button" class="btn btn-ghost btn-sm cb-bonus" data-bonus="${i}">＋ Série en plus</button></li>` : "";
+  return `<ul class="cb-list">${lignes.join("")}${plus}</ul>`;
+}
+/* Cocher : on valide avec ce que la case annonce. Si un champ obligatoire
+   est vide (rien à proposer), on montre le détail et on y met le curseur. */
+function cocherSerie(i) {
+  const ex = live.exercises[i];
+  const statique = estStatique(ex);
+  const champ = document.getElementById((statique ? "temps-" : "reps-") + i);
+  const chronoEnCours = statique && holdEnCours(i);
+  if (!chronoEnCours && !(champ && parseInt(champ.value, 10) > 0)) {
+    forceDetail = i;
+    renderLiveExercises();
+    const c = document.getElementById((statique ? "temps-" : "reps-") + i);
+    if (c) c.focus();
+    return;
+  }
+  validateSet(i);
+}
+
 /* ---------- Aperçu du mouvement, dans la carte de l'exercice ----------
    Pendant une série on regarde l'écran entre deux efforts : le schéma
    animé de l'exercice y est donc rendu DANS la carte ouverte, au-dessus
@@ -1185,6 +1289,8 @@ function renderLiveExercises() {
     /* Mesuré en temps ou en répétitions : la question se pose une fois
        par carte, et décide du tableau, du formulaire et de l'édition. */
     const statique = estStatique(ex);
+    const pre = prefillSet(ex, i);
+    const detail = detailOn() || forceDetail === i;
     const poidsUtilises = [...new Set(ex.sets.map(s => s.poids).filter(v => v != null))];
     /* Un maintien s'y résume par le temps TOTAL tenu : « 3 séries ·
        02:15 tenu » dit quelque chose, « 3 séries » seul ne dit rien. */
@@ -1221,6 +1327,9 @@ function renderLiveExercises() {
       <div class="live-ex-tools">
         <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
         ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">↕ Ordre</button>` : ""}
+        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative" aria-label="Remplacer par une alternative">${icon("swap")}</button>
+        <button class="btn btn-danger-ghost btn-sm remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
+        <button class="btn btn-ghost btn-sm ex-detail" type="button" aria-expanded="${detail}">Détail ${detail ? "⌃" : "⌄"}</button>
         ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
           ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
@@ -1228,6 +1337,21 @@ function renderLiveExercises() {
 
       ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
 
+      ${casesHtml(ex, i, statique, p, pre)}
+
+      ${statique ? `
+      <!-- CHRONO DE MAINTIEN. On ne demande pas à quelqu'un en gainage
+           de compter dans sa tête : le bouton tient le compte, et se
+           contente de remplir le champ en s'arrêtant. Il reste visible
+           hors du détail : c'est lui, pas un formulaire, qui sert ici. -->
+      <div class="hold-bloc${holdEnCours(i) ? " on" : ""}">
+        <span class="hold-val" id="hold-val-${i}">${fmtSec(holdEnCours(i) ? holdSecondes() : 0)}</span>
+        <button type="button" class="btn ${holdEnCours(i) ? "btn-danger-ghost" : "btn-primary"} hold-go" data-i="${i}">
+          ${holdEnCours(i) ? "■ Arrêter" : "▶ Démarrer le maintien"}
+        </button>
+      </div>` : ""}
+
+      <div class="live-detail${detail ? "" : " live-detail-off"}">
       ${ex.sets.length ? `
       <table class="sets-table">
         <thead><tr><th>Série</th>${statique
@@ -1326,52 +1450,40 @@ function renderLiveExercises() {
            charge bouge par paliers de 2,5 kg — deux taps valent mieux que
            le clavier numérique avec les mains moites. Le champ reste
            tapable pour une valeur inhabituelle. -->
-      ${statique ? `
-      <!-- CHRONO DE MAINTIEN. On ne demande pas à quelqu'un en gainage
-           de compter dans sa tête : le bouton tient le compte, et se
-           contente de remplir le champ en s'arrêtant. -->
-      <div class="hold-bloc${holdEnCours(i) ? " on" : ""}">
-        <span class="hold-val" id="hold-val-${i}">${fmtSec(holdEnCours(i) ? holdSecondes() : 0)}</span>
-        <button type="button" class="btn ${holdEnCours(i) ? "btn-danger-ghost" : "btn-primary"} hold-go" data-i="${i}">
-          ${holdEnCours(i) ? "■ Arrêter" : "▶ Démarrer le maintien"}
-        </button>
-      </div>` : ""}
       <div class="set-form">
         ${statique ? `
         <div class="stepper" data-step="5" data-min="1">
           <button type="button" class="step-btn" data-target="temps-${i}" data-delta="-1" aria-label="Cinq secondes de moins">−</button>
           <input type="number" inputmode="numeric" min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).secondes ?? ""}">
+            value="${pre.secondes ?? ""}">
           <button type="button" class="step-btn" data-target="temps-${i}" data-delta="1" aria-label="Cinq secondes de plus">+</button>
         </div>
         <div class="stepper" data-step="2.5" data-min="0">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg de lest">−</button>
           <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
+            value="${pre.poids ?? ""}">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg de lest">+</button>
         </div>` : `
         <div class="stepper" data-step="2.5" data-min="0">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg">−</button>
           <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
+            value="${pre.poids ?? ""}">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg">+</button>
         </div>
         <div class="stepper" data-step="1" data-min="1">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
           <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
+            value="${pre.reps ?? ""}">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
         </div>
         <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
           <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
           <input type="number" inputmode="numeric" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).rir ?? ""}">
+            value="${pre.rir ?? ""}">
           <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
         </div>`}
-        <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
-        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
-        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
       </div>
+      </div><!-- /live-detail -->
       </div></div><!-- /live-ex-body -->
     </div>`;
   });
@@ -1403,8 +1515,33 @@ function renderLiveExercises() {
       holdEnCours(i) ? arreterHold() : demarrerHold(i);
     }));
 
-  elLiveExercises.querySelectorAll(".validate-set").forEach(btn =>
-    btn.addEventListener("click", () => validateSet(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".cb[data-check]").forEach(btn =>
+    btn.addEventListener("click", () => cocherSerie(+btn.dataset.check)));
+  elLiveExercises.querySelectorAll(".cb[data-undo-i]").forEach(btn =>
+    btn.addEventListener("click", () => unvalidateSet(+btn.dataset.undoI, +btn.dataset.undoJ)));
+  elLiveExercises.querySelectorAll(".cb-bonus").forEach(btn =>
+    btn.addEventListener("click", () => { bonusRows.add(live.exercises[+btn.dataset.bonus]); renderLiveExercises(); }));
+  elLiveExercises.querySelectorAll(".ex-detail").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      try { localStorage.setItem(DETAIL_KEY, detailOn() ? "0" : "1"); } catch {}
+      forceDetail = -1;
+      renderLiveExercises();
+    }));
+  /* La ligne de la prochaine série annonce ce qu'un tap va enregistrer :
+     elle suit donc les champs quand on les modifie dans le détail. */
+  live.exercises.forEach((ex, i) => {
+    const out = document.getElementById("cb-sum-" + i);
+    if (!out) return;
+    const st = estStatique(ex);
+    const maj = () => {
+      const g = id => { const el = document.getElementById(id + i); return el && el.value !== "" ? parseFloat(el.value) : null; };
+      out.textContent = resumeSerie(st, g("poids-"), g("reps-"), g("temps-"), g("rir-"));
+    };
+    ["poids-", "reps-", "temps-", "rir-"].forEach(id => {
+      const el = document.getElementById(id + i); if (el) el.addEventListener("input", maj);
+    });
+  });
   elLiveExercises.querySelectorAll(".set-current, .go-next").forEach(btn =>
     btn.addEventListener("click", e => {
       e.stopPropagation();                       // ne pas replier via l'en-tête
@@ -1907,6 +2044,7 @@ function validateSet(i) {
 
   const set = { poids: isNaN(poids) ? null : poids, reps, rir, secondes, doneAt: now, restAfter: null, note: "" };
   ex.sets.push(set);
+  forceDetail = -1;
   rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps, set.rir, set.secondes);
   saveLive();
   renderLiveExercises();
@@ -2296,6 +2434,14 @@ function reorderStop() {
 document.getElementById("live-reorder").addEventListener("click", () =>
   reordering ? reorderStop() : reorderStart());
 document.getElementById("reorder-done").addEventListener("click", reorderStop);
+
+/* Ce qu'on tape dans le détail ne doit pas s'effacer quand la carte est
+   redessinée (ouvrir/fermer le détail, minuteur, etc.). */
+elLiveExercises.addEventListener("input", e => {
+  const m = /^(poids|reps|rir|temps)-(\d+)$/.exec(e.target.id || "");
+  if (!m || !live || !live.exercises[+m[2]]) return;
+  saisie[m[2] + ":" + live.exercises[+m[2]].sets.length + ":" + m[1]] = e.target.value;
+});
 
 /* ---------- Fin de séance ---------- */
 document.getElementById("live-pause").addEventListener("click", pauseSession);
