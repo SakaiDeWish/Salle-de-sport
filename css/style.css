@@ -3480,3 +3480,31 @@ body.live-on .settings-fab { opacity: 0; pointer-events: none; }
 .hold-bloc.on { border-color: var(--accent); background: var(--card-hover); }
 .hold-bloc.on .hold-val { color: var(--accent-2); }
 .theme-epure .hold-bloc.on .hold-val { color: var(--accent); }
+
+
+/* ---------- Aperçu du mouvement dans la séance ---------- */
+.live-apercu { margin: 10px 0 4px; }
+.live-apercu-toggle {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  min-height: 40px; padding: 8px 12px;
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: transparent; color: var(--text-soft);
+  font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+}
+.live-apercu-toggle:hover { color: var(--accent-2); border-color: var(--accent); }
+.live-apercu-fig { margin-top: 8px; }
+/* Dans la séance le schéma ne doit pas manger l'écran : le formulaire de
+   série vient juste dessous. Plafond plus bas que celui de la fiche, y
+   compris pour les schémas hauts qui fixent leur propre hauteur. */
+.live-apercu-fig .motion-wrap { margin: 0; }
+.live-apercu-fig .motion-dedie svg { max-height: min(var(--mo-h, 190px), 170px); }
+
+/* ---------- Bandeau de liste et barre d'ordre ---------- */
+.live-list-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 4px 0 8px; font-size: 0.8rem; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft);
+}
+/* La barre « Terminé » restait en haut de page : à mi-liste elle n'était
+   plus à l'écran, et on ne savait plus comment quitter le mode. Elle suit. */
+#reorder-bar { position: sticky; top: 8px; z-index: 40; background: var(--bg); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
