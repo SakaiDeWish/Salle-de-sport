@@ -363,6 +363,7 @@ function beep(force, volume) {
   /* À 0 %, on ne fabrique aucun oscillateur : une rampe exponentielle
      vers zéro n'existe pas, et un bip inaudible reste un bip payé. */
   if (sonOn && pic > 0.0002) {
+    if (typeof baisseLesAutres === "function") baisseLesAutres();
     try {
       const ctx = audioContext();
       if (ctx) {
@@ -390,6 +391,23 @@ function beep(force, volume) {
    navigateur (aucun fichier audio) : suit le volume du bip, se tait si le
    son est coupé ou si l'appareil n'a pas de voix. */
 STORAGE_KEYS.restVoice = "gymcoach.restVoice";
+/* Baisse la musique/podcast d'une autre app pendant le décompte.
+   `navigator.audioSession` (Safari iOS 16.4+, Chrome récent) : le type
+   « transient » déclare un son bref qui doit passer AU-DESSUS des autres
+   (ils baissent, puis remontent d'eux-mêmes). Ni la page ni l'app ne
+   peut régler le volume d'une autre app : c'est au système de le faire.
+   Détecté, jamais exigé : sans l'API, la voix est dite normalement. */
+let finDuck = null;
+function baisseLesAutres() {
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = "transient";
+  } catch { /* API absente ou refusée */ }
+  clearTimeout(finDuck);
+  finDuck = setTimeout(() => {
+    try { if (navigator.audioSession) navigator.audioSession.type = "auto"; } catch { /* idem */ }
+  }, 1800);
+}
+
 function annonce(n) {
   if (localStorage.getItem(STORAGE_KEYS.restVoice) === "0") return;
   if (localStorage.getItem(STORAGE_KEYS.restSound) === "0") return;
@@ -398,6 +416,7 @@ function annonce(n) {
   try {
     const u = new SpeechSynthesisUtterance(String(n));
     u.lang = "fr-FR"; u.volume = vol; u.rate = 1.1;
+    baisseLesAutres();
     window.speechSynthesis.cancel();   // jamais de file qui prend du retard
     window.speechSynthesis.speak(u);
   } catch { /* voix indisponible : silencieux, jamais bloquant */ }
