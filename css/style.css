@@ -2336,8 +2336,10 @@ rect.mo-gear { fill: var(--bg-soft); stroke-width: 1.5; }
    « lisible ». Il reste calé à droite, au-dessus de la barre d'onglets. */
 .sf-lab { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em; }
 .settings-fab:hover { color: var(--text); transform: translateY(-1px); }
-/* Pendant une séance, la pastille occupe le bas de l'écran : le bouton
-   Réglages ne disparaît plus, il se pose AU-DESSUS d'elle. */
+/* Le bouton Réglages ne s'affiche qu'à l'ACCUEIL. Ailleurs, séance comprise,
+   il recouvrait le contenu et se superposait à la pastille de séance.
+   À l'accueil, pendant une séance, il se pose au-dessus de cette pastille. */
+body.hors-accueil .settings-fab { display: none; }
 body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); }
 @media (min-width: 761px) { body.live-on .settings-fab { bottom: 96px; } }
 @media (min-width: 761px) { .settings-fab { bottom: 20px; } }
