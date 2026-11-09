@@ -343,8 +343,23 @@ function renderHome() {
       </div>` : ""}
     </section>
     ${rendered.join("")}
+    <div class="home-maj">
+      <span class="home-maj-ver">${icon("refresh")} Version <strong>${esc(typeof APP_VERSION !== "undefined" ? APP_VERSION : "")}</strong>
+        <span id="home-maj-etat"></span></span>
+      <button class="btn btn-ghost btn-sm" id="home-maj" type="button">Mettre à jour</button>
+    </div>
     ${homeCustomizePanel()}
   `;
+  const majBtn = document.getElementById("home-maj");
+  if (majBtn) majBtn.addEventListener("click", () => rechargerApp(majBtn));
+  /* Dit si la page tourne sur l'ancien code : le service worker actif
+     annonce sa version, la page annonce la sienne. */
+  if (typeof versionDuServiceWorker === "function") versionDuServiceWorker().then(v => {
+    const etat = document.getElementById("home-maj-etat");
+    if (!etat || !v) return;
+    if (v === APP_VERSION) etat.textContent = "· à jour";
+    else { etat.textContent = "· " + v + " disponible"; majBtn && majBtn.classList.replace("btn-ghost", "btn-primary"); }
+  });
 
   const start = document.getElementById("home-start");
   if (start) start.addEventListener("click", () => {

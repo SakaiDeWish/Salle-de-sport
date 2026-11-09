@@ -151,7 +151,20 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v59";
+const APP_VERSION = "v60";
+
+/* Recharger l'app pour prendre la dernière version : demande au service
+   worker de chercher, lui dit de s'installer s'il attend, puis recharge la
+   page. Le bouton vit à l'ACCUEIL ; il vivait dans Réglages, que la
+   pastille de séance masquait justement quand on en avait besoin. */
+async function rechargerApp(btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Recherche…"; }
+  try {
+    const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+    if (reg) { await reg.update(); if (reg.waiting) reg.waiting.postMessage({ type: "skip" }); }
+  } catch { /* hors ligne : le rechargement reste utile */ }
+  location.reload();
+}
 
 function settingsHtml() {
   const t = currentTheme();
@@ -222,12 +235,6 @@ function settingsHtml() {
           <span class="set-sub" id="set-version-sub">Celle qui tourne en ce moment sur cet appareil.</span></span>
         <span class="set-version" id="set-version">${esc(APP_VERSION)}</span>
       </div>
-      <div class="set-row set-row-bouton">
-        <span class="set-lab">Mise à jour
-          <span class="set-sub">Une app ajoutée à l'écran d'accueil peut garder son ancien
-            code tant qu'elle n'a pas rechargé sa page.</span></span>
-        <button class="btn btn-ghost btn-sm" id="set-maj">Recharger la dernière version</button>
-      </div>
       <p class="set-sub">GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute,
         consulte un professionnel de santé.</p>
     </div>`;
@@ -286,17 +293,6 @@ function openSettings() {
      si un service worker plus récent attend son tour, il faut d'abord le
      laisser prendre la main. On lui demande donc de s'installer, puis on
      recharge — et au pire, on recharge quand même. */
-  const maj = document.getElementById("set-maj");
-  if (maj) maj.addEventListener("click", async () => {
-    maj.disabled = true;
-    maj.textContent = "Recherche…";
-    try {
-      const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
-      if (reg) { await reg.update(); if (reg.waiting) reg.waiting.postMessage({ type: "skip" }); }
-    } catch { /* hors ligne : le rechargement reste utile */ }
-    location.reload();
-  });
-
   /* Compare ce que la PAGE exécute avec ce que le service worker ACTIF
      a mis en cache. Un écart signifie que la page est restée sur
      l'ancien code — c'est le cas « je ne vois pas le changement ». */
