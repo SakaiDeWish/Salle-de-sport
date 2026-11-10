@@ -3747,3 +3747,19 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
 @media (prefers-reduced-motion: reduce) {
   .reordering > .live-ex, .reordering > .ss-group { animation: none; }
 }
+
+
+/* Pied de liste de séries : nombre prévu + clôture de l'exercice */
+.cb-pied { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 4px 2px 0; }
+.cb-nb { display: inline-flex; align-items: center; gap: 4px; font-size: .78rem; color: var(--text-soft); }
+.cb-nb-val strong { color: var(--text); font-weight: 800; }
+.cb-nb-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); background: transparent;
+  color: var(--text-soft); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
+  transition: transform .38s var(--ressort, ease), border-color .16s ease, color .16s ease;
+}
+.cb-nb-btn:hover:not(:disabled) { border-color: var(--accent-2); color: var(--accent-2); }
+.cb-nb-btn:active:not(:disabled) { transform: scale(.85); transition-duration: .08s; }
+.cb-nb-btn:disabled { opacity: .3; cursor: not-allowed; }
+.cb-nb-btn .icon { width: .9rem; height: .9rem; stroke-width: 2.6; }
+.cb-fin { color: var(--accent-2); }
