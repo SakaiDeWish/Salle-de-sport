@@ -3649,3 +3649,39 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
   background: transparent; color: var(--accent-2); font: 700 .85rem var(--font-body); cursor: pointer;
 }
 .pave-disque:active { background: var(--accent-2); color: var(--bg); }
+
+
+/* =========================================================
+   TRANSITIONS — aucune apparition ni disparition sèche
+   `translate` et `opacity` seulement : elles ne se battent pas avec un
+   `transform` déjà posé sur l'élément.
+   ========================================================= */
+.view.active { animation: vue-entre 0.38s cubic-bezier(0.16, 1, 0.3, 1); }
+.view.partant { display: block; animation: vue-part 0.2s ease forwards; z-index: 0; }
+@keyframes vue-entre { from { opacity: 0; translate: var(--vx, 0px) 10px; } to { opacity: 1; translate: 0 0; } }
+@keyframes vue-part { from { opacity: 1; translate: 0 0; } to { opacity: 0; translate: var(--vx, 0px) 0; } }
+
+@keyframes fond-entre { from { opacity: 0; } to { opacity: 1; } }
+@keyframes monte-entre { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+@keyframes sortie-fond { to { opacity: 0; } }
+
+.modal:not(.hidden) .modal-backdrop,
+.pave:not(.hidden) .pave-fond { animation: fond-entre 0.24s ease both; }
+.pave:not(.hidden) .pave-feuille { animation: monte-entre 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.rest-overlay:not(.hidden) { animation: fond-entre 0.25s ease both; }
+.rest-overlay:not(.hidden) > * { animation: monte-entre 0.34s cubic-bezier(0.16, 1, 0.3, 1) both; }
+#reorder-bar:not(.hidden), #live-minibar:not(.hidden) { animation: monte-entre 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+#seance-setup:not(.hidden), #seance-live:not(.hidden), #seance-summary:not(.hidden) {
+  animation: vue-entre 0.36s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.settings-fab { animation: fond-entre 0.3s ease both; }
+
+/* Le fantôme d'une sortie : il rejoue la disparition, sans rien capter. */
+.sortie { pointer-events: none !important; animation: sortie-fond 0.22s ease forwards !important; }
+.sortie * { animation: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .view.active, .view.partant, .modal .modal-backdrop, .pave .pave-fond, .pave .pave-feuille,
+  .rest-overlay, .rest-overlay > *, #reorder-bar, #live-minibar,
+  #seance-setup, #seance-live, #seance-summary, .settings-fab, .sortie { animation: none !important; }
+}
