@@ -1442,6 +1442,7 @@ function renderLiveExercises() {
     /* En réorganisation, TOUT est replié : on déplace en voyant la liste,
        pas en voyant un formulaire de série. */
     const open = !reordering && i === expandedIndex;
+    const choisi = reordering && swapSel === ex;
     const p = exerciseProgress(ex);
     // ligne récapitulative de l'exercice replié : séries faites + charges
     /* Mesuré en temps ou en répétitions : la question se pose une fois
@@ -1457,7 +1458,7 @@ function renderLiveExercises() {
           ? (tempsTotal ? ` · ${fmtSec(tempsTotal)} tenu` : "")
           : (poidsUtilises.length ? " · " + poidsUtilises.slice(0, 4).join(" / ") + " kg" : ""));
     return `
-    <div class="card live-ex ${isCurrent ? "live-ex-current" : ""} ${open ? "live-ex-open" : "live-ex-collapsed"} ${p.fini ? "live-ex-done" : ""}" data-i="${i}">
+    <div class="card live-ex ${choisi ? "reorder-sel" : ""} ${isCurrent ? "live-ex-current" : ""} ${open ? "live-ex-open" : "live-ex-collapsed"} ${p.fini ? "live-ex-done" : ""}" data-i="${i}">
       <button type="button" class="live-ex-head" data-toggle="${i}" aria-expanded="${open}">
         <div class="live-ex-id">
           <h3>${esc(ex.nom)}</h3>
@@ -1525,6 +1526,8 @@ function renderLiveExercises() {
   elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
     head.addEventListener("click", () => {
       const i = parseInt(head.dataset.toggle, 10);
+      if (Date.now() - dernierGeste < 450) return;      // fin d'un glisser ou d'un appui long
+      if (reordering) { toucheEchange(i); return; }
       expandedIndex = (expandedIndex === i) ? -1 : i;   // re-tap = tout replier
       renderLiveExercises();
     }));
@@ -2437,6 +2440,186 @@ function reorderBar(on) {
   if (bar) bar.classList.toggle("hidden", !on);
 }
 
+/* ---------- Échange en touchant deux exercices ----------
+   Premier toucher : l'exercice est choisi. Second toucher : ils
+   échangent leurs places. Deux membres d'un même super set s'échangent
+   entre eux ; sinon ce sont les BLOCS (exercice seul ou super set entier)
+   qui s'échangent, pour ne jamais casser un groupe. */
+let swapSel = null;
+let dernierGeste = 0;                 // horodatage d'un glisser / appui long, pour étouffer le clic qui suit
+
+function majMessageOrdre() {
+  const m = document.getElementById("reorder-msg");
+  if (!m) return;
+  m.innerHTML = swapSel
+    ? `Touche l'exercice à échanger avec <strong>${esc(swapSel.nom)}</strong>.`
+    : `Touche <strong>deux</strong> exercices pour les échanger, ou <strong>fais-les glisser</strong>. Les flèches déplacent d'un cran.`;
+}
+
+function toucheEchange(i) {
+  const ex = live.exercises[i];
+  if (!ex) return;
+  if (!swapSel || swapSel === ex) {
+    swapSel = swapSel === ex ? null : ex;
+    vibre(10); majMessageOrdre(); renderLiveExercises();
+    return;
+  }
+  const a = live.exercises.indexOf(swapSel), b = i;
+  swapSel = null;
+  if (a < 0) { majMessageOrdre(); renderLiveExercises(); return; }
+  const nouvel = live.exercises.slice();
+  if (ex.ss && live.exercises[a].ss === ex.ss) {
+    nouvel[a] = live.exercises[b]; nouvel[b] = live.exercises[a];        // dans le même groupe
+  } else {
+    const blocs = reorderBlocks();
+    const ba = blocIndex(a), bb = blocIndex(b);
+    const seg = ([x, z]) => live.exercises.slice(x, z + 1);
+    const ordre = blocs.map((_, k) => k === ba ? bb : k === bb ? ba : k);
+    nouvel.length = 0;
+    ordre.forEach(k => nouvel.push(...seg(blocs[k])));
+  }
+  vibre([12, 40, 12]);
+  majMessageOrdre();
+  appliqueOrdre(nouvel);
+}
+
+/* ---------- Glisser-déposer ----------
+   Les cartes gigotent (mode réorganisation) ; on attrape l'en-tête d'un
+   exercice et on le fait glisser : les autres s'écartent en direct, et au
+   lâcher la carte se pose dans son créneau. Un bloc (super set) glisse
+   d'un seul tenant. `translate` / `rotate` sont des propriétés
+   individuelles : elles se cumulent avec le transform des animations. */
+let drag = null;
+const SEUIL_DRAG = 7;
+
+function blocsDom() {
+  return [...elLiveExercises.children].filter(n => n.matches(".live-ex, .ss-group"));
+}
+
+function dragDebut(e) {
+  if (!reordering || e.button > 0) return;
+  /* Toute la carte (repliée) est une prise, pas seulement son titre. */
+  const carte = e.target.closest(".live-ex");
+  if (!carte || e.target.closest(".mv, .ss-actions .btn")) return;
+  const bloc = carte.closest(".ss-group") || carte;
+  drag = { id: e.pointerId, bloc, x0: e.clientX, y0: e.clientY, actif: false };
+}
+
+function dragActive() {
+  const blocs = blocsDom();
+  const d = blocs.indexOf(drag.bloc);
+  if (d < 0 || blocs.length !== reorderBlocks().length) { drag = null; return; }
+  const rects = blocs.map(b => b.getBoundingClientRect());
+  const y = window.scrollY;
+  drag.blocs = blocs; drag.d = d; drag.t = d;
+  drag.mid = rects.map(r => r.top + y + r.height / 2);
+  drag.h = rects.map(r => r.height);
+  drag.espace = blocs.length > 1 ? Math.max(0, (d < blocs.length - 1 ? rects[d + 1].top - rects[d].bottom : rects[d].top - rects[d - 1].bottom)) : 8;
+  drag.py0 = drag.y0 + y;
+  drag.actif = true;
+  drag.bloc.classList.add("glisse");
+  elLiveExercises.classList.add("en-glisse");
+  vibre(15);
+  document.body.style.userSelect = "none";
+  const defile = () => {
+    if (!drag || !drag.actif) return;
+    const h = window.innerHeight, c = drag.cy;
+    if (c < 90) window.scrollBy(0, -Math.ceil((90 - c) / 6));
+    else if (c > h - 90) window.scrollBy(0, Math.ceil((c - (h - 90)) / 6));
+    dragPlace();
+    drag.raf = requestAnimationFrame(defile);
+  };
+  drag.raf = requestAnimationFrame(defile);
+}
+
+function dragPlace() {
+  const dy = drag.cy + window.scrollY - drag.py0;
+  drag.bloc.style.translate = `0 ${dy}px`;
+  const centre = drag.mid[drag.d] + dy;
+  let t = 0;
+  drag.mid.forEach((m, k) => { if (k !== drag.d && m < centre) t++; });
+  drag.t = t;
+  const decal = drag.h[drag.d] + drag.espace;
+  drag.blocs.forEach((b, k) => {
+    if (k === drag.d) return;
+    const m = k < drag.d ? k : k - 1;
+    b.style.translate = k < drag.d && m >= t ? `0 ${decal}px` : k > drag.d && m < t ? `0 ${-decal}px` : "";
+  });
+}
+
+function dragBouge(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  drag.cy = e.clientY;
+  if (!drag.actif) {
+    if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < SEUIL_DRAG) return;
+    dragActive();
+    if (!drag) return;
+  }
+  e.preventDefault();
+  dragPlace();
+}
+
+function dragFin(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const g = drag; drag = null;
+  if (!g.actif) return;
+  cancelAnimationFrame(g.raf);
+  document.body.style.userSelect = "";
+  dernierGeste = Date.now();
+  elLiveExercises.classList.remove("en-glisse");
+  g.bloc.classList.remove("glisse");
+  if (e.type === "pointercancel" || g.t === g.d) {            // rien ne change : tout revient en place
+    g.blocs.forEach(b => { b.style.translate = ""; });
+    return;
+  }
+  const blocs = reorderBlocks();
+  const seg = ([a, z]) => live.exercises.slice(a, z + 1);
+  const autres = blocs.filter((_, k) => k !== g.d);
+  autres.splice(g.t, 0, blocs[g.d]);
+  vibre([12, 40, 12]);
+  appliqueOrdre(autres.flatMap(seg));    // le FLIP fait glisser chaque carte de où elle est à où elle va
+}
+
+elLiveExercises.addEventListener("pointerdown", dragDebut);
+/* Un toucher ailleurs que sur le titre (marge, flèches exclues) compte aussi. */
+elLiveExercises.addEventListener("click", e => {
+  if (!reordering || e.target.closest(".live-ex-head, .mv, .ss-actions")) return;
+  if (Date.now() - dernierGeste < 450) return;
+  const carte = e.target.closest(".live-ex");
+  if (carte) toucheEchange(+carte.dataset.i);
+});
+window.addEventListener("pointermove", dragBouge, { passive: false });
+window.addEventListener("pointerup", dragFin);
+window.addEventListener("pointercancel", dragFin);
+
+/* Appui long sur un exercice : entre en mode réorganisation, comme sur
+   l'écran d'accueil d'un iPhone. On lève ensuite le doigt, puis on glisse. */
+(function () {
+  let minuteur = null, x0 = 0, y0 = 0;
+  const annule = () => { clearTimeout(minuteur); minuteur = null; };
+  elLiveExercises.addEventListener("pointerdown", e => {
+    if (reordering || !live || live.exercises.length < 2) return;
+    const tete = e.target.closest(".live-ex-head");
+    if (!tete || e.button > 0) return;
+    x0 = e.clientX; y0 = e.clientY;
+    const i = +tete.dataset.toggle;
+    minuteur = setTimeout(() => {
+      minuteur = null;
+      dernierGeste = Date.now();
+      vibre(25);
+      reorderStart();
+      swapSel = live.exercises[i] || null;       // l'exercice pressé est déjà choisi pour un échange
+      majMessageOrdre(); renderLiveExercises();
+    }, 520);
+  });
+  window.addEventListener("pointermove", e => {
+    if (minuteur && Math.hypot(e.clientX - x0, e.clientY - y0) > 9) annule();
+  });
+  window.addEventListener("pointerup", annule);
+  window.addEventListener("pointercancel", annule);
+  elLiveExercises.addEventListener("contextmenu", e => { if (e.target.closest(".live-ex-head")) e.preventDefault(); });
+})();
+
 function reorderStart() {
   if (!live || live.exercises.length < 2) {
     alert("Il faut au moins deux exercices pour changer l'ordre.");
@@ -2444,13 +2627,15 @@ function reorderStart() {
   }
   if (ssPicking) ssPickCancel();
   reordering = true;
+  swapSel = null; majMessageOrdre();
   editingSet = null; notingSet = null;
   reorderBar(true);
   renderLiveExercises();
 }
 
 function reorderStop() {
-  reordering = false;
+  reordering = false; swapSel = null;
+  if (drag) { cancelAnimationFrame(drag.raf); drag = null; }
   reorderBar(false);
   expandedIndex = live ? live.currentIndex : -1;
   renderLiveExercises();

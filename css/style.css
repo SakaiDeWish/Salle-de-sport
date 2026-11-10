@@ -3723,3 +3723,27 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
   .pave-chip:active, .chip:active, .cb:active, .settings-fab:active { transform: none; }
   .tab.active .icon, .tab.active svg { animation: none; }
 }
+
+
+/* =========================================================
+   RÉORGANISER — les cartes gigotent, on les échange ou on les glisse
+   ========================================================= */
+.live-ex-head { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.reordering .live-ex, .reordering .ss-head { touch-action: none; cursor: grab; }
+.reordering > .live-ex, .reordering > .ss-group {
+  animation: gigote 0.26s ease-in-out infinite alternate;
+  transition: translate 0.3s var(--ressort, ease), scale 0.2s ease, box-shadow 0.2s ease, outline-color 0.2s ease;
+}
+.reordering > :nth-child(2n) { animation-delay: -0.09s; animation-direction: alternate-reverse; }
+.reordering > :nth-child(3n) { animation-delay: -0.17s; }
+@keyframes gigote { from { rotate: -0.55deg; } to { rotate: 0.55deg; } }
+/* Une carte choisie pour l'échange se tient droite et ressort. */
+.reordering .reorder-sel { animation: none; rotate: 0deg; scale: 1.02; outline: 2px solid var(--accent) !important; box-shadow: 0 10px 26px rgba(0,0,0,.35); }
+/* La carte saisie : soulevée, droite, sans transition qui la retarde. */
+.reordering .glisse { animation: none !important; transition: none !important; rotate: 0deg; scale: 1.03; z-index: 60; position: relative;
+  box-shadow: 0 18px 40px rgba(0,0,0,.45); opacity: 0.97; }
+.en-glisse { cursor: grabbing; }
+.en-glisse .live-ex-head, .en-glisse .ss-head { cursor: grabbing; }
+@media (prefers-reduced-motion: reduce) {
+  .reordering > .live-ex, .reordering > .ss-group { animation: none; }
+}
