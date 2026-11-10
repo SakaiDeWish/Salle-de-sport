@@ -2022,6 +2022,7 @@ function stepValue(btn) {
   if (Number.isFinite(min)) v = Math.max(min, v);
   champ.value = String(Math.round(v * 100) / 100);
   champ.dispatchEvent(new Event("input", { bubbles: true }));
+  if (typeof rebond === "function") rebond(champ, 0.94, 1.08, 260);
 }
 
 function validateSet(i) {

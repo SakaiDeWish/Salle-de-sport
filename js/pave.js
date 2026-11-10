@@ -161,6 +161,8 @@ function majPave() {
     document.getElementById("pave-rang").innerHTML =
       DISQUES.map(d => `<button type="button" class="pave-disque" data-disque="${d}">${fmtNb(d)}</button>`).join("");
   }
+  const val = document.getElementById("pave-val");
+  if (val && typeof rebond === "function") rebond(val, 0.9, 1.07, 220);
   if (champ) {            // écriture immédiate : fermer le pavé n'est jamais une perte
     champ.value = pave.texte === "" ? "" : pave.texte.replace(",", ".");
     champ.dispatchEvent(new Event("input", { bubbles: true }));

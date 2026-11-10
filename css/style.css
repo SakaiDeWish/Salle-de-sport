@@ -3685,3 +3685,41 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
   .rest-overlay, .rest-overlay > *, #reorder-bar, #live-minibar,
   #seance-setup, #seance-live, #seance-summary, .settings-fab, .sortie { animation: none !important; }
 }
+
+
+/* =========================================================
+   REBONDS — là où un geste doit « répondre » sous le doigt
+   Courbe à dépassement : l'élément va un peu trop loin, puis se pose.
+   ========================================================= */
+:root { --ressort: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+/* Appuis : on s'enfonce vite, on revient avec du jeu. */
+.btn, .step-btn, .step-pas, .pave-k, .pave-disque, .pave-chip, .chip, .tab, .cb, .settings-fab {
+  transition: transform 0.38s var(--ressort), border-color 0.16s ease, color 0.16s ease, background 0.16s ease, opacity 0.16s ease;
+}
+.btn:active, .step-btn:active, .step-pas:active, .pave-k:active, .pave-disque:active,
+.pave-chip:active, .chip:active, .settings-fab:active { transform: scale(0.93); transition-duration: 0.08s; }
+.cb:active:not(.off) { transform: scale(0.85); transition-duration: 0.08s; }
+
+/* Les panneaux arrivent avec un léger dépassement. */
+.pave:not(.hidden) .pave-feuille { animation: ressort-monte 0.46s var(--ressort) both; }
+.modal:not(.hidden) .modal-box { animation: ressort-monte 0.46s var(--ressort) both; }
+.rest-overlay:not(.hidden) > * { animation: ressort-monte 0.5s var(--ressort) both; }
+#reorder-bar:not(.hidden), #live-minibar:not(.hidden) { animation: ressort-monte 0.46s var(--ressort) both; }
+.settings-fab { animation: ressort-pop 0.5s var(--ressort) both; }
+@keyframes ressort-monte { from { opacity: 0; translate: 0 34px; } 60% { opacity: 1; } to { opacity: 1; translate: 0 0; } }
+@keyframes ressort-pop { from { opacity: 0; scale: 0.5; } to { opacity: 1; scale: 1; } }
+
+/* L'onglet qui devient actif fait un petit saut. */
+.tab.active .icon, .tab.active svg { animation: onglet-saut 0.5s var(--ressort); }
+@keyframes onglet-saut { 0% { transform: translateY(0) scale(1); } 35% { transform: translateY(-5px) scale(1.18); } 100% { transform: translateY(0) scale(1); } }
+
+/* Ligne dont la case vient d'être cochée : un éclair d'accent qui s'éteint. */
+.cb-row.done { transition: background 0.6s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .step-btn, .step-pas, .pave-k, .pave-disque, .pave-chip, .chip, .tab, .cb, .settings-fab { transition: none; }
+  .btn:active, .step-btn:active, .step-pas:active, .pave-k:active, .pave-disque:active,
+  .pave-chip:active, .chip:active, .cb:active, .settings-fab:active { transform: none; }
+  .tab.active .icon, .tab.active svg { animation: none; }
+}
