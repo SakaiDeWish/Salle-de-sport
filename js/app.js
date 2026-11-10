@@ -73,10 +73,26 @@ function estimateDayMinutes(day) {
 
 /* ---------- Navigation (nav desktop + barre mobile synchronisées) ---------- */
 function activateView(view) {
+  const ordre = [...document.querySelectorAll(".tab")].map(t => t.dataset.view);
+  const ancienne = document.querySelector("main .view.active:not(.as-panel), .view.active:not(.as-panel)");
+  const nouvelle = document.getElementById("view-" + view);
   document.querySelectorAll(".tab").forEach(t =>
     t.classList.toggle("active", t.dataset.view === view));
+  /* Pas de téléportation : la vue qui part ne disparaît pas d'un coup. Elle
+     reste là, figée à sa position, le temps de s'effacer pendant que la
+     nouvelle arrive du côté de son onglet. */
+  const sens = ordre.indexOf(view) >= ordre.indexOf(ancienne ? ancienne.id.replace("view-", "") : view) ? 1 : -1;
+  const anime = ancienne && ancienne !== nouvelle &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (anime) {
+    ancienne.style.cssText = `position:fixed;top:${-window.scrollY}px;left:0;right:0;margin:0 auto;pointer-events:none;`;
+    ancienne.classList.add("partant");
+    ancienne.style.setProperty("--vx", (-sens * 28) + "px");
+    setTimeout(() => { ancienne.classList.remove("partant"); ancienne.style.cssText = ""; }, 200);
+  }
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  document.getElementById("view-" + view).classList.add("active");
+  nouvelle.style.setProperty("--vx", (sens * 28) + "px");
+  nouvelle.classList.add("active");
   /* Le bouton Réglages n'existe qu'à l'accueil : ailleurs (séance, suivi…)
      il masquait du contenu et doublait la pastille de séance. */
   document.body.classList.toggle("hors-accueil", view !== "accueil");
