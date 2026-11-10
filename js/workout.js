@@ -1276,10 +1276,65 @@ function casesHtml(ex, i, statique, p, pre) {
     lignes.push(`<li class="cb-row todo"><span class="cb off" aria-hidden="true"></span>
       <span class="cb-lab">Série ${j + 1}</span><span class="cb-sum">à venir</span></li>`);
   }
-  const plus = !prochaine
-    ? `<li class="cb-more"><button type="button" class="btn btn-ghost btn-sm cb-bonus" data-bonus="${i}">${icon("plus")} Série en plus</button></li>` : "";
-  return `<ul class="cb-list">${lignes.join("")}${plus}</ul>`;
+  /* Pied de liste : combien de séries on veut faire, et « j'ai fini ».
+     − retire une série à venir, + en ajoute une ; « Valider l'exercice »
+     clôt l'exercice avec les séries déjà faites (4 prévues, 3 faites,
+     on s'arrête : l'exercice est terminé, ni plus ni moins). */
+  const prevu = Math.max(slots, 1);
+  const peutRetirer = prevu > Math.max(nb, 1);
+  const pied = `<li class="cb-pied">
+      <div class="cb-nb" role="group" aria-label="Nombre de séries prévues">
+        <button type="button" class="cb-nb-btn" data-nb="-1" data-i="${i}" ${peutRetirer ? "" : "disabled"} aria-label="Retirer une série">${icon("minus")}</button>
+        <span class="cb-nb-val"><strong>${prevu}</strong> série${prevu > 1 ? "s" : ""} prévue${prevu > 1 ? "s" : ""}</span>
+        <button type="button" class="cb-nb-btn" data-nb="1" data-i="${i}" ${prevu < 20 ? "" : "disabled"} aria-label="Ajouter une série">${icon("plus")}</button>
+      </div>
+      ${nb > 0 && !p.fini ? `<button type="button" class="btn btn-ghost btn-sm cb-fin" data-fin="${i}">${icon("tick")} Valider l'exercice</button>` : ""}
+    </li>`;
+  return `<ul class="cb-list">${lignes.join("")}${pied}</ul>`;
 }
+/* Fixe le nombre de séries prévues dans la prescription (« 3 × 10 » ->
+   « 4 × 10 »). Sans prescription (séance libre), on en crée une. */
+function fixeNbSeries(ex, n) {
+  n = Math.max(1, Math.min(20, n));
+  if (ex.target && /^\s*\d+/.test(String(ex.target))) {
+    ex.target = String(ex.target).replace(/^(\s*)\d+/, "$1" + n);
+  } else {
+    const derniere = ex.sets[ex.sets.length - 1];
+    const stat = estStatique(ex);
+    const val = stat ? (derniere && derniere.secondes ? derniere.secondes + " s" : "30 s")
+                     : (derniere && derniere.reps ? derniere.reps : 10);
+    ex.target = `${n} × ${val}`;
+  }
+}
+
+function changerNbSeries(i, delta) {
+  const ex = live.exercises[i];
+  const p = exerciseProgress(ex);
+  const actuel = Math.max(p.target != null ? p.target : ex.sets.length, 1);
+  const n = Math.max(ex.sets.length, 1, Math.min(20, actuel + delta));
+  if (n === actuel) return;
+  bonusRows.delete(ex);
+  fixeNbSeries(ex, n);
+  vibre(10);
+  saveLive();
+  renderLiveExercises();
+}
+
+/* « J'ai fini » : l'exercice est clos avec les séries déjà faites, puis on
+   passe au suivant s'il en reste un à faire. */
+function validerExercice(i) {
+  const ex = live.exercises[i];
+  if (!ex.sets.length) return;
+  bonusRows.delete(ex);
+  fixeNbSeries(ex, ex.sets.length);
+  openNext = -1; editingSet = null;
+  vibre([12, 40, 12]);
+  saveLive();
+  const suivant = i === live.currentIndex ? nextUnfinished(i) : null;
+  if (suivant != null) setCurrentExercise(suivant);
+  else renderLiveExercises();
+}
+
 /* Cocher : on valide avec ce que la case annonce. Si un champ obligatoire
    est vide (rien à proposer), on montre le détail et on y met le curseur. */
 function cocherSerie(i) {
@@ -1545,6 +1600,10 @@ function renderLiveExercises() {
     btn.addEventListener("click", () => cocherSerie(+btn.dataset.check)));
   elLiveExercises.querySelectorAll(".cb[data-undo-i]").forEach(btn =>
     btn.addEventListener("click", () => unvalidateSet(+btn.dataset.undoI, +btn.dataset.undoJ)));
+  elLiveExercises.querySelectorAll(".cb-nb-btn").forEach(btn =>
+    btn.addEventListener("click", () => changerNbSeries(+btn.dataset.i, +btn.dataset.nb)));
+  elLiveExercises.querySelectorAll(".cb-fin").forEach(btn =>
+    btn.addEventListener("click", () => validerExercice(+btn.dataset.fin)));
   elLiveExercises.querySelectorAll(".cb-bonus").forEach(btn =>
     btn.addEventListener("click", () => { bonusRows.add(live.exercises[+btn.dataset.bonus]); renderLiveExercises(); }));
   elLiveExercises.querySelectorAll(".cb-main").forEach(btn =>

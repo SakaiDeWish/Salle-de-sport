@@ -18,6 +18,7 @@ const ICON_SPRITE = `
   <symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-8"/><path d="M22 20H2"/></symbol>
   <symbol id="ic-apple" viewBox="0 0 24 24"><path d="M12 7c-4-2-8 .5-8 5.5S7.5 21 12 21s8-3.5 8-8.5S16 5 12 7Z"/><path d="M12 7c0-2 1-4 3-5"/></symbol>
   <symbol id="ic-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="ic-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
   <!-- Entraînement -->
   <symbol id="ic-dumbbell" viewBox="0 0 24 24"><rect x="2" y="9" width="3" height="6" rx="1"/><rect x="6" y="7" width="3" height="10" rx="1"/><rect x="15" y="7" width="3" height="10" rx="1"/><rect x="19" y="9" width="3" height="6" rx="1"/><path d="M9 12h6"/></symbol>
   <symbol id="ic-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5Z" class="ic-fill"/></symbol>
