@@ -73,10 +73,29 @@ function estimateDayMinutes(day) {
 
 /* ---------- Navigation (nav desktop + barre mobile synchronisées) ---------- */
 function activateView(view) {
+  const ordre = [...document.querySelectorAll(".tab")].map(t => t.dataset.view);
+  const ancienne = document.querySelector("main .view.active:not(.as-panel), .view.active:not(.as-panel)");
+  const nouvelle = document.getElementById("view-" + view);
   document.querySelectorAll(".tab").forEach(t =>
     t.classList.toggle("active", t.dataset.view === view));
+  /* Pas de téléportation : la vue qui part ne disparaît pas d'un coup. Elle
+     reste là, figée à sa position, le temps de s'effacer pendant que la
+     nouvelle arrive du côté de son onglet. */
+  const sens = ordre.indexOf(view) >= ordre.indexOf(ancienne ? ancienne.id.replace("view-", "") : view) ? 1 : -1;
+  const anime = ancienne && ancienne !== nouvelle &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (anime) {
+    ancienne.style.cssText = `position:fixed;top:${-window.scrollY}px;left:0;right:0;margin:0 auto;pointer-events:none;`;
+    ancienne.classList.add("partant");
+    ancienne.style.setProperty("--vx", (-sens * 28) + "px");
+    setTimeout(() => { ancienne.classList.remove("partant"); ancienne.style.cssText = ""; }, 200);
+  }
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  document.getElementById("view-" + view).classList.add("active");
+  nouvelle.style.setProperty("--vx", (sens * 28) + "px");
+  nouvelle.classList.add("active");
+  /* Le bouton Réglages n'existe qu'à l'accueil : ailleurs (séance, suivi…)
+     il masquait du contenu et doublait la pastille de séance. */
+  document.body.classList.toggle("hors-accueil", view !== "accueil");
   window.scrollTo({ top: 0 });
 }
 
@@ -110,7 +129,7 @@ function exerciseCardHTML(ex) {
   return `
     <article class="ex-card grad-${esc(ex.groupe)}" data-id="${esc(ex.id)}" tabindex="0"
              role="button" aria-label="${esc(ex.nom)}">
-      <span class="ex-card-bg" aria-hidden="true">${GROUP_ICONS[ex.groupe] || "🏋️"}</span>
+      <span class="ex-card-bg" aria-hidden="true">${GROUP_ICONS[ex.groupe] || icon("dumbbell")}</span>
       <div class="ex-card-top">
         <span class="badge badge-${esc(ex.niveau)}">${LABELS.niveaux[ex.niveau]}</span>
         ${ex.custom ? '<span class="tag tag-custom">Perso</span>' : ""}
@@ -178,7 +197,7 @@ document.getElementById("fav-filter").addEventListener("click", e => {
   libState.favOnly = !libState.favOnly;
   e.currentTarget.classList.toggle("btn-primary", libState.favOnly);
   e.currentTarget.setAttribute("aria-pressed", String(libState.favOnly));
-  e.currentTarget.textContent = (libState.favOnly ? "★" : "☆") + " Favoris";
+  e.currentTarget.innerHTML = icon("star", libState.favOnly ? "on" : "") + " Favoris";
   renderLibrary();
 });
 
@@ -231,9 +250,9 @@ function openExercise(id) {
          <button class="linklike" id="video-change">Changer la vidéo</button> ·
          <a class="linklike" href="${youtubeSearchUrl(ex)}" target="_blank" rel="noopener">Voir d'autres vidéos</a></p>`
     : `<div class="video-placeholder">
-         <p><span class="ico">🎬 </span><strong>Vidéo de démonstration</strong></p>
+         <p><span class="ico">${icon("clapper")} </span><strong>Vidéo de démonstration</strong></p>
          <a class="btn btn-primary" href="${youtubeSearchUrl(ex)}" target="_blank" rel="noopener">
-           ▶ Voir la démonstration sur YouTube
+           ${icon("play")} Voir la démonstration sur YouTube
          </a>
          <p class="video-hint">Tu as trouvé la vidéo parfaite ? Colle son lien ci-dessous pour l'intégrer directement dans cette fiche :</p>
          <div class="video-form">
@@ -252,7 +271,7 @@ function openExercise(id) {
 
   modalContent.innerHTML = `
     <div class="modal-header">
-      <span class="ex-icon big">${GROUP_ICONS[ex.groupe] || "🏋️"}</span>
+      <span class="ex-icon big">${GROUP_ICONS[ex.groupe] || icon("dumbbell")}</span>
       <div>
         <h2>${esc(ex.nom)}</h2>
         <div class="ex-tags">
@@ -298,15 +317,15 @@ function openExercise(id) {
     ${alts.length ? block("alt", {
       summary: `<span class="disc-title">Alternatives</span><span class="disc-meta">${alts.length} au même muscle</span>`,
       what: `Machine occupée, douleur, ou simple envie de varier : ces mouvements travaillent le
-        même muscle par un autre chemin. Tes favoris ★ apparaissent en premier.`,
+        même muscle par un autre chemin. Tes favoris ${icon("star", "on")} apparaissent en premier.`,
       detail: `<div class="alt-list">${alts.map(a2 => `
         <button class="picker-item alt-open" data-exid="${esc(a2.id)}">
-          <span>${typeof isFavorite === "function" && isFavorite(a2.id) ? "★ " : ""}${esc(a2.nom)}</span>
+          <span>${typeof isFavorite === "function" && isFavorite(a2.id) ? icon("star", "on") + " " : ""}${esc(a2.nom)}</span>
           <span class="tag">${LABELS.materiel[a2.materiel]} · ${a2.type === "poly" ? "Poly" : "Iso"}</span>
         </button>`).join("")}</div>`
     }) : ""}
 
-    ${ex.custom ? `<button class="btn btn-danger" id="delete-custom">🗑 Supprimer cet exercice personnalisé</button>` : ""}
+    ${ex.custom ? `<button class="btn btn-danger" id="delete-custom">${icon("trash")} Supprimer cet exercice personnalisé</button>` : ""}
   `;
 
   modalContent.querySelectorAll(".alt-open").forEach(b =>
@@ -429,7 +448,7 @@ addForm.addEventListener("submit", e => {
   saveJSON(STORAGE_KEYS.custom, list);
 
   addForm.reset();
-  addFeedback.textContent = "✅ « " + nom + " » ajouté à ta bibliothèque !";
+  addFeedback.textContent = "« " + nom + " » ajouté à ta bibliothèque !";
   setTimeout(() => (addFeedback.textContent = ""), 4000);
   renderLibrary();
   renderCustomList();
@@ -509,7 +528,7 @@ function updateRepartUI() {
     ${total !== jours ? `<br><span class="repart-hint">${total < jours
       ? "Il reste " + (jours - total) + " séance(s) à placer (sinon je complèterai en full body)."
       : "Tu as placé plus de séances que prévu : je passerai le total à " + total + " séances/semaine."}</span>` : ""}
-    ${warns.map(t => `<span class="repart-warn">⚠ ${esc(t)}</span>`).join("")}`;
+    ${warns.map(t => `<span class="repart-warn">${icon("alert")} ${esc(t)}</span>`).join("")}`;
 }
 
 document.getElementById("p-split").addEventListener("change", updateRepartUI);
@@ -585,8 +604,8 @@ function renderProgram(pr) {
         · Généré le ${esc(pr.genereLe)}
       </p>
       <div class="program-actions">
-        <button class="btn btn-ghost" id="btn-regen">🔄 Régénérer</button>
-        <button class="btn btn-ghost" id="btn-print">🖨 Imprimer / PDF</button>
+        <button class="btn btn-ghost" id="btn-regen">${icon("refresh")} Régénérer</button>
+        <button class="btn btn-ghost" id="btn-print">${icon("printer")} Imprimer / PDF</button>
       </div>
     </div>
 
@@ -602,7 +621,7 @@ function renderProgram(pr) {
           </div>
           <div class="day-meta">
             <span>⏱ <strong>~${estimateDayMinutes(day)} min</strong></span>
-            <span>💪 <strong>${day.exercices.length}</strong> exercices</span>
+            <span>${icon("dumbbell")} <strong>${day.exercices.length}</strong> exercices</span>
           </div>
           <!-- 3 colonnes : tout tient à l'écran, aucun défilement latéral -->
           <table class="day-table">
@@ -641,7 +660,7 @@ function renderProgram(pr) {
         }) : renderVolumeTable(vol)}
         ${sous.length ? `<p class="volume-warn">Encore sous la cible : ${sous.join(", ")}. Ajoute 1 à 2 séries sur ces muscles dans l'éditeur.</p>` : ""}
         ${auto.length ? `<div class="volume-auto"><p class="volume-auto-title">D'après tes dernières séances</p><ul>${
-          auto.map(h => `<li class="auto-${h.sens}">${h.sens === "plus" ? "▲" : "▼"} <strong>${LABELS.groupes[h.groupe]}</strong> — ${esc(h.raison)}</li>`).join("")
+          auto.map(h => `<li class="auto-${h.sens}">${icon(h.sens === "plus" ? "arrow-up" : "arrow-down")} <strong>${LABELS.groupes[h.groupe]}</strong> — ${esc(h.raison)}</li>`).join("")
         }</ul></div>` : ""}
       </div>`;
     })() : ""}
@@ -652,7 +671,7 @@ function renderProgram(pr) {
         what: `Le programme dit quoi faire ; ces repères disent comment le rendre efficace —
           alimentation, récupération et surcharge progressive comptent autant que les séries.`,
         detail: `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
-          <p class="disclaimer">⚠️ Échauffe-toi 5-10 min avant chaque séance. Touche un exercice pour ouvrir sa fiche.</p>`
+          <p class="disclaimer">${icon("alert")} Échauffe-toi 5-10 min avant chaque séance. Touche un exercice pour ouvrir sa fiche.</p>`
       }) : `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>`}
     </div>
   `;

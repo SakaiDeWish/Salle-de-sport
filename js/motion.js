@@ -21,9 +21,16 @@
    --------------------------------------------------------- */
 
 /* Construit un bloc @keyframes à partir de [[pourcent, transform], …] */
-function moKeyframes(name, frames) {
+function moKeyframes(name, frames, continu) {
+  /* `continu` : le schéma fournit assez de poses (plusieurs dizaines) pour
+     que l'accélération se lise déjà dans leur espacement. L'interpolation
+     par défaut, ease-in-out entre CHAQUE paire de poses, ralentirait à
+     zéro à chacune et ferait saccader le geste : on la remplace par une
+     interpolation linéaire. Les schémas à sept échantillons gardent
+     l'ancienne. */
+  const lin = continu ? ";animation-timing-function:linear" : "";
   return `@keyframes ${name}{` +
-    frames.map(([p, t]) => `${p}%{transform:${t}}`).join("") + "}";
+    frames.map(([p, t]) => `${p}%{transform:${t}${lin}}`).join("") + "}";
 }
 
 /* Surlignage musculaire : discret pendant l'excentrique,
@@ -100,7 +107,7 @@ function renderDedicatedMotion(ex, spec) {
   let pi = 0;
   const renderPart = p => {
     const name = `${uid}p${pi++}`;
-    css.push(moKeyframes(name, p.k));
+    css.push(moKeyframes(name, p.k, spec.continu));
     const kids = (p.children || []).map(renderPart).join("");
     // childrenFirst : le segment porteur se dessine PAR-DESSUS ses enfants
     // (membre proche devant le corps, sinon le coude disparaît derrière)
@@ -195,8 +202,8 @@ function renderDedicatedMotion(ex, spec) {
     <figcaption class="motion-cap">
       <span class="mo-legend">${musclesNoms.map(n => `<span class="mo-leg-item">${esc(n)}</span>`).join("")}</span>
       <span class="mo-ctl">
-        <button type="button" class="mo-btn" data-mo="play" aria-label="Mettre en pause">⏸</button>
-        <button type="button" class="mo-btn" data-mo="replay" aria-label="Rejouer">↻</button>
+        <button type="button" class="mo-btn" data-mo="play" aria-label="Mettre en pause">${icon("pause")}</button>
+        <button type="button" class="mo-btn" data-mo="replay" aria-label="Rejouer">${icon("rotate")}</button>
         <button type="button" class="mo-btn mo-speed" data-mo="speed" aria-label="Vitesse">1×</button>
       </span>
     </figcaption>
@@ -213,12 +220,12 @@ document.addEventListener("click", e => {
 
   if (action === "play") {
     const paused = wrap.classList.toggle("mo-paused");
-    btn.textContent = paused ? "▶" : "⏸";
+    btn.innerHTML = icon(paused ? "play" : "pause");
     btn.setAttribute("aria-label", paused ? "Lancer" : "Mettre en pause");
   } else if (action === "replay") {
     wrap.classList.remove("mo-paused");
     const play = wrap.querySelector('[data-mo="play"]');
-    if (play) { play.textContent = "⏸"; play.setAttribute("aria-label", "Mettre en pause"); }
+    if (play) { play.innerHTML = icon("pause"); play.setAttribute("aria-label", "Mettre en pause"); }
     // relance depuis zéro : on coupe l'animation, on force un reflow, on la remet
     wrap.querySelectorAll(".mo-anim").forEach(g => {
       const n = g.style.animationName;

@@ -8000,6 +8000,13 @@ EXERCISE_MOTIONS["rowing-menton"] = {
        CONVERGENTS, qui reproduisent le rapprochement des
        haltères. Le schéma dessine la version à rails
        rectilignes, la plus répandue, et le dit.
+       >>> CETTE RÉSERVE A MAINTENANT SON PROPRE SCHÉMA <<<
+       La machine convergente est le schéma 165
+       (developpe-epaules-convergent), bâti sur CE cadre exact —
+       mêmes épaules, mêmes longueurs de segments, même poignée
+       de départ — pour que les deux se comparent unité par
+       unité. Toute la différence entre eux est l'inclinaison du
+       trajet : 0° ici, 15° là.
    Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
    Distinction : ≠ développé haltères assis (charge libre, mains
                convergentes, stabilisateurs sollicités) ;
@@ -20041,3 +20048,2078 @@ EXERCISE_MOTIONS["fentes-laterales"] = {
   ]
 };
 
+
+/* =========================================================
+   165. DÉVELOPPÉ ÉPAULES, MACHINE CONVERGENTE
+        (developpe-epaules-convergent)
+   -----------------------------------------------------------
+   Position  : ASSIS dos plaqué, poignées à hauteur d'OREILLES,
+               coudes bas et écartés, avant-bras verticaux.
+   Matériel  : machine à bras CONVERGENTS, dite iso-latérale :
+               deux leviers INDÉPENDANTS, chacun sa charge, dont
+               les poignées se rapprochent en montant.
+   Mobiles   : ÉPAULE et COUDE.
+   Fixes     : bassin et dos, plaqués au dossier.
+   Vue de FACE : le rapprochement vit dans le plan frontal.
+   >>> POURQUOI LE RAIL DESSINÉ EST DROIT, ET POURQUOI C'EST
+       EXACT <<< Sur la machine, le bras tourne autour d'un axe
+       de pivot. Si cet axe était purement transversal, la
+       poignée décrirait un arc dans le plan sagittal et ne se
+       rapprocherait pas d'une unité : c'est la machine à rails
+       verticaux (schéma 72). Sur une convergente, l'axe est
+       incliné de BÊTA autour de l'axe sagittal. Le plan de
+       rotation contient alors la direction (−sin BÊTA, cos
+       BÊTA, 0) et la direction avant-arrière ; sa PROJECTION
+       FRONTALE est donc une DROITE, inclinée de BÊTA sur la
+       verticale. Le rail droit et incliné du schéma n'est pas
+       une approximation de l'arc : c'est son ombre frontale
+       exacte. L'arc, lui, est tout entier dans la profondeur,
+       invisible de face — et c'est dit ici plutôt que suggéré.
+       C'est aussi pourquoi il n'y a pas de seconde vue de
+       profil : le rayon de l'arc et la place du pivot changent
+       d'une machine à l'autre, et il faudrait les inventer.
+   >>> D'OÙ VIENT BÊTA = 15° <<< Aucun fabricant ne publie
+       l'angle de convergence de ses bras. Deux repères
+       accessibles : un brevet de développé épaules convergent
+       donne un angle inclus de 150° (fourchette 135–165°), ce
+       qui fait 15° par côté si on lit ces 150° comme l'angle
+       entre les deux trajets ; et une machine du commerce
+       annonce 20° par côté. On dessine donc 15°, la borne basse
+       de 15–20°, et on l'écrit ici au lieu de le faire passer
+       pour une mesure.
+   GÉOMÉTRIE (calculée) — cadre repris À L'IDENTIQUE du schéma
+   72 pour que les deux se comparent unité par unité : épaule
+   gauche (104,70), bras 30, avant-bras 27, poignée de départ
+   (74,46 ; 48,21), coude de départ 80,0°. Rail incliné de 15° ;
+   course arrêtée quand le coude atteint 165°, soit 31,61 unités
+   de course, six intervalles, IK à chacun :
+     poignée (74.46,48.21) -> (82.64,17.68)
+     coude   80,0 -> 86,0 -> 94,0 -> 104,0 -> 116,7 -> 133,7 -> 165,0
+     bras    +0 -> 9,89 -> 19,80 -> 29,87 -> 40,45 -> 52,43 -> 70,69°
+     av-bras +0 -> −6,02 -> −13,97 -> −24,01 -> −36,69 -> −53,66 -> −85,01°
+   Écart max entre les poses IK et ce que produisent réellement
+   les rotations enchaînées du CSS : 0,0000 unité.
+   >>> CE QUE LE RAPPROCHEMENT CHANGE, MESURÉ <<<
+     • montée de la poignée 30,53 contre 26,39 au schéma 72,
+       pour le MÊME intervalle de coude (80° -> 165°) : +15,7 %.
+       Le trajet rentrant ramène la main vers l'aplomb de
+       l'épaule, il faut donc monter plus haut pour tendre
+       autant le coude ;
+     • écart entre poignées 91,08 -> 74,72, soit 18 % de
+       fermeture (zéro au schéma 72, 73 % aux haltères) ;
+     • en fin de course, l'axe épaule-main est à 22,2° de la
+       verticale contre 31,5° : 9,3° de moins, c'est-à-dire un
+       bras plus proche du vrai au-dessus de la tête.
+   >>> CE QUI EST PUBLIABLE ET CE QUI NE L'EST PAS <<<
+       Ce cadre dessine l'humérus à PLEINE longueur dans le plan
+       frontal, comme les schémas 15 et 72. C'est une
+       idéalisation : en vrai le bras pousse dans le plan de
+       l'omoplate, à ~33° en avant, donc raccourci à l'écran.
+       Conséquence, l'écartement dessiné des poignées — 91
+       unités, soit un mètre — n'est PAS une cote de machine :
+       une convergente a ses poignées vers 58 cm. Les deux
+       chiffres ci-dessus ont donc été refaits avec l'humérus
+       raccourci à 30 × cos 33° = 25,2 : la fermeture passe de
+       18,0 à 17,8 % et l'écart d'angle final de 9,3 à 8,8°.
+       Ces deux-là tiennent, ce sont des RAPPORTS ; l'écartement
+       absolu des mains, non, et il n'est donc affiché nulle
+       part en centimètres.
+   Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
+   Distinction : ≠ schéma 72, machine à rails verticaux (0° de
+               convergence, bras reliés à un même chariot) ;
+               ≠ schéma 15, haltères assis (trajet LIBRE, 40°
+               de rapprochement, stabilisateurs sollicités) ;
+               ≠ développé militaire debout (gainage).
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-epaules-convergent"] = {
+  vb: "52 8 138 158",
+  dur: 3.6,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Vu de face, assis dos au dossier dans une machine à bras convergents : les poignées montent depuis la hauteur des oreilles jusqu'aux bras presque tendus en se rapprochant l'une de l'autre, chacune sur un rail incliné de 15° vers l'axe du corps, puis redescendent.",
+  fixe: `
+    <line class="mo-ground" x1="54" y1="160" x2="188" y2="160"/>
+    <!-- DEUX bâtis séparés, chacun sa charge : sur une machine
+         iso-latérale, rien ne relie les deux bras. Pas de traverse. -->
+    <line class="mo-gear" x1="58" y1="24" x2="58" y2="160"/>
+    <line class="mo-gear" x1="182" y1="24" x2="182" y2="160"/>
+    <rect class="mo-mass" x="55" y="124" width="6" height="22" rx="2"/>
+    <rect class="mo-mass" x="179" y="124" width="6" height="22" rx="2"/>
+    <!-- RAILS INCLINÉS de 15° : la projection frontale exacte du trajet
+         imposé. C'est tout ce qui sépare cette machine du schéma 72. -->
+    <line class="mo-gear" x1="73.42" y1="52.07" x2="83.93" y2="12.85"/>
+    <line class="mo-gear" x1="166.58" y1="52.07" x2="156.07" y2="12.85"/>
+    <!-- APLOMBS, en pointillé : ce que ferait un rail VERTICAL, parti du
+         même point. L'écart entre les deux lignes EST la convergence. -->
+    <line class="mo-rom" x1="74.46" y1="48.21" x2="74.46" y2="13"/>
+    <line class="mo-rom" x1="165.54" y1="48.21" x2="165.54" y2="13"/>
+    <!-- siège et dossier -->
+    <rect class="mo-gear" x="108" y="62" width="24" height="62" rx="4"/>
+    <line class="mo-pad" x1="100" y1="124" x2="140" y2="124"/>
+    <line class="mo-gear" x1="120" y1="124" x2="120" y2="160"/>
+    <!-- corps assis de face, dos plaqué -->
+    <circle class="mo-head" cx="120" cy="50" r="10"/>
+    <line class="mo-body" x1="104" y1="70" x2="136" y2="70"/>
+    <line class="mo-body" x1="120" y1="60" x2="120" y2="116"/>
+    <line class="mo-body" x1="120" y1="116" x2="112" y2="160"/>
+    <line class="mo-body" x1="120" y1="116" x2="128" y2="160"/>
+    <!-- REPÈRE : hauteur d'oreilles, le point bas que le réglage du siège
+         respecte ou non -->
+    <line class="mo-rom" x1="88" y1="48.21" x2="100" y2="48.21"/>
+    <line class="mo-rom" x1="140" y1="48.21" x2="152" y2="48.21"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="104" cy="70" r="5.5"/><circle cx="136" cy="70" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* POIGNÉE GAUCHE : translation le long du rail incliné — elle monte
+         de 30,53 ET rentre de 8,18. Les deux poignées sont des parts
+         SÉPARÉES, puisqu'elles vont en sens contraire en x. */
+      k: [[0, "translate(0px,0px)"], [5.33, "translate(1.36px,-5.09px)"],
+          [10.67, "translate(2.73px,-10.18px)"], [16, "translate(4.09px,-15.27px)"],
+          [21.33, "translate(5.45px,-20.35px)"], [26.67, "translate(6.82px,-25.44px)"],
+          [32, "translate(8.18px,-30.53px)"], [40, "translate(8.18px,-30.53px)"],
+          [48, "translate(6.82px,-25.44px)"], [56, "translate(5.45px,-20.35px)"],
+          [64, "translate(4.09px,-15.27px)"], [72, "translate(2.73px,-10.18px)"],
+          [80, "translate(1.36px,-5.09px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `<line class="mo-bar2" x1="68" y1="48.21" x2="81" y2="48.21"/>`
+    },
+    {
+      /* POIGNÉE DROITE : même course, x opposé. */
+      k: [[0, "translate(0px,0px)"], [5.33, "translate(-1.36px,-5.09px)"],
+          [10.67, "translate(-2.73px,-10.18px)"], [16, "translate(-4.09px,-15.27px)"],
+          [21.33, "translate(-5.45px,-20.35px)"], [26.67, "translate(-6.82px,-25.44px)"],
+          [32, "translate(-8.18px,-30.53px)"], [40, "translate(-8.18px,-30.53px)"],
+          [48, "translate(-6.82px,-25.44px)"], [56, "translate(-5.45px,-20.35px)"],
+          [64, "translate(-4.09px,-15.27px)"], [72, "translate(-2.73px,-10.18px)"],
+          [80, "translate(-1.36px,-5.09px)"], [88, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `<line class="mo-bar2" x1="159" y1="48.21" x2="172" y2="48.21"/>`
+    },
+    {
+      /* BRAS GAUCHE : rotation autour de l'ÉPAULE (104,70), +70,69° —
+         contre +61,39° au schéma 72, parce que la main finit plus haut. */
+      o: "104px 70px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(9.89deg)"], [10.67, "rotate(19.8deg)"],
+          [16, "rotate(29.87deg)"], [21.33, "rotate(40.45deg)"], [26.67, "rotate(52.43deg)"],
+          [32, "rotate(70.69deg)"], [40, "rotate(70.69deg)"], [48, "rotate(52.43deg)"],
+          [56, "rotate(40.45deg)"], [64, "rotate(29.87deg)"], [72, "rotate(19.8deg)"],
+          [80, "rotate(9.89deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="90" cy="76" rx="7" ry="3.2" transform="rotate(10 90 76)"/>`,
+      svg: `
+        <line class="mo-limb" x1="104" y1="70" x2="74.46" y2="75.21"/>
+        <circle class="mo-joint" cx="74.46" cy="75.21" r="2.6"/>`,
+      children: [
+        {
+          o: "74.46px 75.21px",
+          k: [[0, "rotate(0deg)"], [5.33, "rotate(-6.02deg)"], [10.67, "rotate(-13.97deg)"],
+              [16, "rotate(-24.01deg)"], [21.33, "rotate(-36.69deg)"], [26.67, "rotate(-53.66deg)"],
+              [32, "rotate(-85.01deg)"], [40, "rotate(-85.01deg)"], [48, "rotate(-53.66deg)"],
+              [56, "rotate(-36.69deg)"], [64, "rotate(-24.01deg)"], [72, "rotate(-13.97deg)"],
+              [80, "rotate(-6.02deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="74.46" y1="75.21" x2="74.46" y2="48.21"/>
+            <circle class="mo-hand" cx="74.46" cy="48.21" r="3.2"/>`
+        }
+      ]
+    },
+    {
+      /* BRAS DROIT : miroir exact autour de x=120. */
+      o: "136px 70px",
+      k: [[0, "rotate(0deg)"], [5.33, "rotate(-9.89deg)"], [10.67, "rotate(-19.8deg)"],
+          [16, "rotate(-29.87deg)"], [21.33, "rotate(-40.45deg)"], [26.67, "rotate(-52.43deg)"],
+          [32, "rotate(-70.69deg)"], [40, "rotate(-70.69deg)"], [48, "rotate(-52.43deg)"],
+          [56, "rotate(-40.45deg)"], [64, "rotate(-29.87deg)"], [72, "rotate(-19.8deg)"],
+          [80, "rotate(-9.89deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscle: `<ellipse cx="150" cy="76" rx="7" ry="3.2" transform="rotate(-10 150 76)"/>`,
+      svg: `
+        <line class="mo-limb" x1="136" y1="70" x2="165.54" y2="75.21"/>
+        <circle class="mo-joint" cx="165.54" cy="75.21" r="2.6"/>`,
+      children: [
+        {
+          o: "165.54px 75.21px",
+          k: [[0, "rotate(0deg)"], [5.33, "rotate(6.02deg)"], [10.67, "rotate(13.97deg)"],
+              [16, "rotate(24.01deg)"], [21.33, "rotate(36.69deg)"], [26.67, "rotate(53.66deg)"],
+              [32, "rotate(85.01deg)"], [40, "rotate(85.01deg)"], [48, "rotate(53.66deg)"],
+              [56, "rotate(36.69deg)"], [64, "rotate(24.01deg)"], [72, "rotate(13.97deg)"],
+              [80, "rotate(6.02deg)"], [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="165.54" y1="75.21" x2="165.54" y2="48.21"/>
+            <circle class="mo-hand" cx="165.54" cy="48.21" r="3.2"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de face, fin de course",
+    alt: "Vue de face en fin de course, les deux machines côte à côte sur le même corps : à gauche le bras de la machine convergente, dont la poignée a suivi un rail incliné et termine à 22° de l'aplomb de l'épaule ; à droite le bras de la machine à rails verticaux, qui termine à 31°.",
+    legende: "Même corps, même coude tendu à 165°, deux machines : à GAUCHE la convergente, rail incliné, à DROITE celle à rails verticaux (schéma 72). Le trajet rentrant finit 9° plus près de l'aplomb de l'épaule — 22° contre 31° — c'est-à-dire plus près du vrai au-dessus de la tête. Un angle dans le plan frontal, lui, ne dépend pas de la longueur à laquelle on dessine les bras : c'est pour ça que ce sont des angles qui sont cotés ici, et pas des centimètres.",
+    /* Deux marges ont été ACHETÉES dans le viewBox, chacune pour une
+       raison mesurée :
+       • en haut, 23 unités de vide (le dessin commence à y=12,85 pour un
+         viewBox qui démarre à −10). Le badge de vue est posé en haut à
+         gauche, en pixels, par-dessus le SVG : sans cette marge il
+         recouvre la main gauche et la cote 22°, ce qu'un premier rendu a
+         montré ;
+       • à gauche et à droite, deux bandes libres pour les cotes. Un
+         premier essai les plaçait DANS l'angle : 22° d'ouverture ne
+         laissent pas la place d'écrire « 22° » — il aurait fallu un
+         rayon de 44 unités pour que le texte y tienne.
+       La hauteur est ce qui limite le SVG à l'écran (170 px), donc la
+       largeur en trop ne coûte rien ; la hauteur en trop, si. */
+    vb: "45 -10 150 130",
+    svg: `
+      <line class="mo-pad" x1="104" y1="108" x2="136" y2="108"/>
+      <line class="mo-gear" x1="120" y1="108" x2="120" y2="116"/>
+      <!-- corps de face, immobile et commun aux deux moitiés -->
+      <circle class="mo-head" cx="120" cy="50" r="10"/>
+      <line class="mo-body" x1="104" y1="70" x2="136" y2="70"/>
+      <line class="mo-body" x1="120" y1="60" x2="120" y2="104"/>
+      <!-- aplombs d'épaule : le premier côté de chaque angle. Le second
+           côté, c'est le bras lui-même : le coude s'écarte si peu de la
+           corde épaule-main qu'une ligne d'axe en plus ne ferait que
+           doubler le membre. -->
+      <line class="mo-rom" x1="104" y1="26" x2="104" y2="70"/>
+      <line class="mo-rom" x1="136" y1="26" x2="136" y2="70"/>
+      <path class="mo-rom" fill="none" d="M104 30 A40 40 0 0 0 88.88 32.96"/>
+      <path class="mo-rom" fill="none" d="M136 30 A40 40 0 0 1 156.89 35.89"/>
+      <text class="mo-cote mo-cote-ok" font-size="10.7" text-anchor="end" x="72" y="37">22°</text>
+      <text class="mo-cote" font-size="10.7" text-anchor="start" x="168" y="37">31°</text>
+      <!-- GAUCHE : machine CONVERGENTE, rail incliné de 15° -->
+      <line class="mo-gear" x1="78" y1="34.69" x2="83.93" y2="12.85"/>
+      <line class="mo-limb" x1="104" y1="70" x2="89.31" y2="43.84"/>
+      <circle class="mo-joint" cx="89.31" cy="43.84" r="2.6"/>
+      <line class="mo-limb" x1="89.31" y1="43.84" x2="82.64" y2="17.68"/>
+      <circle class="mo-hand" cx="82.64" cy="17.68" r="3.2"/>
+      <!-- DROITE : machine à RAILS VERTICAUX, même corps, même coude -->
+      <line class="mo-gear" x1="165.54" y1="36" x2="165.54" y2="13"/>
+      <line class="mo-limb" x1="136" y1="70" x2="154.72" y2="46.56"/>
+      <circle class="mo-joint" cx="154.72" cy="46.56" r="2.6"/>
+      <line class="mo-limb" x1="154.72" y1="46.56" x2="165.54" y2="21.82"/>
+      <circle class="mo-hand" cx="165.54" cy="21.82" r="3.2"/>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M66 124 L75.3 89.2 M77.8 99.18 L75.3 89.2 L68.14 96.6"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M75.3 89.2 L66 124 M73.16 116.6 L66 124 L63.5 114.02"/>` }
+  ]
+};
+
+/* =========================================================
+   166. DÉVELOPPÉ MILITAIRE ASSIS À LA MACHINE GUIDÉE
+        (developpe-militaire-guide)
+   -----------------------------------------------------------
+   Position  : ASSIS, dossier quasi vertical, dos plaqué, pieds
+               au sol. Barre montée sur RAILS VERTICAUX, prise
+               pronation un peu plus large que les épaules.
+   Mobiles   : ÉPAULE et COUDE.
+   Fixes     : tronc et bassin, tenus par le dossier ; jambes.
+               Pas de gainage debout, pas d'impulsion : c'est
+               exactement ce que le banc retire au mouvement.
+   Vue de PROFIL : le trajet de la barre vit dans le plan
+   sagittal. De face, on ne verrait rien de ce qui suit.
+   >>> CE QUE LE RAIL INTERDIT, CHIFFRÉ <<< Une barre LIBRE ne
+       monte pas droit : elle part devant les clavicules, passe
+       devant le visage, puis RECULE pour finir à l'aplomb de
+       l'épaule. Dans le cadre du schéma 13, elle va de 16 unités
+       devant l'épaule à 2 unités derrière — 18 unités de recul,
+       soit 29 cm. Un rail vertical en autorise ZÉRO. La barre
+       choisit donc une seule position d'avant en arrière, et la
+       garde du début à la fin.
+   >>> CE QUI FIXE CETTE POSITION : LE NEZ <<< et pas autre
+       chose. La barre doit descendre devant le visage sans le
+       toucher. C'est pour cela que CE schéma ne dessine pas la
+       tête comme les autres : le schéma 13 lui donne un rond de
+       r=9, soit 29 cm de profondeur de crâne — une tête de
+       silhouette. Ici la tête n'est pas un décor, c'est la butée
+       qui décide de tout ; elle est donc dessinée à sa
+       profondeur réelle, 19 cm (r=6,5), l'oreille à l'aplomb de
+       l'épaule à 2 unités près. Le nez tombe alors 8,5 unités
+       (13,7 cm) devant l'épaule, et la barre 5,5 unités plus
+       loin : 14 unités, soit 22,5 cm devant l'épaule.
+   >>> ET LA BARRE EST DESSINÉE COMME UNE BARRE <<< Le schéma 13
+       dessine un DISQUE (r=7,5) parce que, debout, rien ne se
+       joue à cet endroit. Ici si : un disque de 24 cm de rayon
+       posé à côté du visage ferait croire que la barre frôle la
+       joue, alors que les disques sont à 60 cm sur les côtés,
+       hors du plan de coupe. Ce que ce plan traverse, c'est la
+       BARRE — 2,8 cm de diamètre. Elle est donc dessinée en
+       petit. Sans cela, la garde au nez aurait été mesurée sur
+       un objet qui n'est pas là.
+   GÉOMÉTRIE (calculée) — mêmes segments que le schéma 13, bras
+   L1=20, avant-bras L2=22 ; l'épaule descend de 10 unités
+   puisqu'on est assis : S(122,76). Rail à x=108, constant.
+   Échelle 1,607 cm/unité (silhouette de 112 unités pour 180 cm).
+   Bas = barre au menton (108 ; 66,5), haut = même extension du
+   coude qu'au schéma 13, d=41,95. Six intervalles, IK à chacun :
+     barre  (108;66,50) -> (108;36,46), course 30,04 = 48,3 cm
+     coude  47,2 -> 57,1 -> 69,6 -> 84,3 -> 102,1 -> 125,0 -> 174,3°
+     bras   +0 -> 18,04 -> 33,66 -> 47,89 -> 61,91 -> 77,46 -> 105,96°
+     av-bras +0 -> −9,92 -> −22,35 -> −37,13 -> −54,85 -> −77,78 -> −127,06°
+   Écart max entre les poses résolues et ce que produisent les
+   rotations enchaînées du CSS : 0,0000 unité.
+   >>> CE QUE ÇA COÛTE, ET CE QUE ÇA RAPPORTE <<<
+     • bras de levier de la barre sur l'épaule au verrouillage :
+       22,5 cm, contre 3,2 cm pour une barre libre. Sept fois
+       plus. Bras tendus n'est donc JAMAIS un repos ici — le
+       deltoïde tient la barre en l'air d'un bout à l'autre de
+       la série. C'est le reproche qu'on fait à cette machine et
+       c'est aussi, selon ce qu'on cherche, son intérêt ;
+     • l'axe épaule-barre finit à 19,5° DEVANT la verticale, au
+       lieu de 2,7° derrière : ce n'est pas un verrouillage
+       au-dessus de la tête, c'est un développé incliné très
+       redressé, et autant le dire.
+   >>> LE REMÈDE, MESURÉ LUI AUSSI <<< Incliner le dossier fait
+       reculer la tête plus vite que l'épaule, donc rapproche la
+       barre de l'aplomb. La saillie du nez devant l'épaule vaut
+       −16 sin θ + 2 cos θ + 6,5 : elle tombe de 8,5 à 2,9 unités
+       pour θ=20°, et le bras de levier de 22,5 à 13,5 cm, 40 %
+       de moins. Le prix est connu : à 20° de recul, le haut des
+       pectoraux prend sa part. C'est dans la fiche.
+   >>> CE QUI EST PUBLIABLE <<< Les 22,5 cm viennent de
+       l'anatomie (nez 13,7 cm devant l'épaule, plus 6,6 cm de
+       garde), pas du dessin : ils tiennent. Les 3,2 cm de la
+       barre libre, eux, sont LUS sur le schéma 13 — c'est sa
+       position de verrouillage, à l'aplomb du milieu du pied.
+       L'ordre de grandeur est le bon, la décimale n'est pas à
+       défendre, et la conclusion ne tient pas à elle.
+   Agonistes : DELTOÏDE antérieur et moyen, TRICEPS.
+   Distinction : ≠ schéma 13, militaire DEBOUT barre libre (la
+               barre recule, le gainage tient tout) ; ≠ schéma
+               72, machine à poignées (deux rails, pas de barre
+               devant le visage) ; ≠ schéma 165, machine
+               convergente (les poignées se rapprochent).
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-militaire-guide"] = {
+  vb: "82 18 54 134",
+  dur: 3.8,
+  phases: { con: [0, 36], ecc: [44, 90] },
+  alt: "Vu de profil, assis dossier vertical dans une machine guidée : la barre, sur son rail vertical, descend devant le visage jusqu'au menton puis remonte jusqu'aux bras tendus, sans jamais reculer au-dessus de la tête.",
+  fixe: `
+    <!-- Le RAIL d'abord, le banc et le corps par-dessus : les deux
+         montants sont de part et d'autre du banc, donc DERRIÈRE lui dans
+         ce plan de coupe. Ils se superposent en un seul trait. -->
+    <line class="mo-gear" x1="108" y1="22" x2="108" y2="148"/>
+    <line class="mo-gear" x1="100" y1="22" x2="116" y2="22"/>
+    <line class="mo-ground" x1="84" y1="148" x2="134" y2="148"/>
+    <!-- banc : assise et dossier quasi vertical -->
+    <line class="mo-pad" x1="104" y1="122" x2="128" y2="122"/>
+    <line class="mo-pad" x1="127" y1="74" x2="127" y2="118"/>
+    <line class="mo-gear" x1="120" y1="124" x2="120" y2="148"/>
+    <!-- corps assis, dos plaqué, immobile. Tête à sa profondeur réelle :
+         c'est elle qui décide où passe la barre. -->
+    <circle class="mo-head" cx="120" cy="60" r="6.5"/>
+    <line class="mo-body" x1="121" y1="66" x2="122" y2="76"/>
+    <line class="mo-body" x1="122" y1="76" x2="122" y2="120"/>
+    <line class="mo-body" x1="122" y1="120" x2="94" y2="120"/>
+    <line class="mo-body" x1="94" y1="120" x2="94" y2="148"/>
+    <line class="mo-body" x1="88" y1="148" x2="100" y2="148"/>
+    <!-- APLOMB DE L'ÉPAULE : là où une barre LIBRE finirait sa course.
+         L'écart avec le rail, c'est tout le sujet. -->
+    <line class="mo-rom" x1="122" y1="30" x2="122" y2="74"/>`,
+  muscles: [
+    { nom: "Deltoïde antérieur et moyen",
+      svg: `<circle cx="122" cy="76" r="5.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (122,76), +105,96°. */
+      o: "122px 76px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(18.04deg)"], [12, "rotate(33.66deg)"],
+          [18, "rotate(47.89deg)"], [24, "rotate(61.91deg)"], [30, "rotate(77.46deg)"],
+          [36, "rotate(105.96deg)"], [44, "rotate(105.96deg)"], [52, "rotate(77.46deg)"],
+          [60, "rotate(61.91deg)"], [68, "rotate(47.89deg)"], [76, "rotate(33.66deg)"],
+          [84, "rotate(18.04deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      /* Triceps posé aux 70 % du bras vers le coude : au milieu, il
+         touchait le rond du deltoïde et les deux ne faisaient qu'une
+         seule tache. */
+      muscle: `<ellipse cx="111" cy="85" rx="6.5" ry="3.2" transform="rotate(-38.5 111 85)"/>`,
+      svg: `
+        <line class="mo-limb" x1="122" y1="76" x2="106.34" y2="88.44"/>
+        <circle class="mo-joint" cx="106.34" cy="88.44" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + BARRE : −127,06° relatif. La barre reste sur son
+             rail : x=108 à chaque pose, par construction. */
+          o: "106.34px 88.44px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(-9.92deg)"], [12, "rotate(-22.35deg)"],
+              [18, "rotate(-37.13deg)"], [24, "rotate(-54.85deg)"], [30, "rotate(-77.78deg)"],
+              [36, "rotate(-127.06deg)"], [44, "rotate(-127.06deg)"], [52, "rotate(-77.78deg)"],
+              [60, "rotate(-54.85deg)"], [68, "rotate(-37.13deg)"], [76, "rotate(-22.35deg)"],
+              [84, "rotate(-9.92deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="106.34" y1="88.44" x2="108" y2="66.5"/>
+            <circle class="mo-hub" cx="108" cy="66.5" r="3.2"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de profil, verrouillage",
+    alt: "Vue de profil, bras tendus : la barre guidée est restée sur son rail devant le visage, tandis qu'un cercle en pointillé marque, sur l'aplomb de l'épaule, l'endroit où une barre libre aurait fini sa course. Vingt-six centimètres séparent les deux.",
+    legende: "Bras tendus, les deux barres ne sont pas au même endroit : 26 cm séparent celle du rail du cercle pointillé, où une barre libre aurait fini, sur l'aplomb de l'épaule. Son bras de levier sur l'épaule vaut alors 22 cm contre 3 : bras tendus n'est pas un repos ici, le deltoïde tient la barre en l'air jusqu'à la dernière répétition.",
+    /* UN SEUL BRAS DESSINÉ, ET C'EST UNE CORRECTION. Le premier jet
+       superposait les DEUX bras, guidé et libre, comme le fait la
+       seconde vue du schéma 165. Au rendu c'était illisible : bras
+       tendus, le bras de la barre libre est quasiment vertical, donc
+       confondu avec le tronc — la silhouette semblait porter un piquet.
+       Il ne reste que son point d'arrivée, sur l'aplomb de l'épaule.
+       C'est tout ce que la cote a besoin de montrer. */
+    vb: "88 -4 72 114",
+    svg: `
+      <line class="mo-pad" x1="104" y1="104" x2="130" y2="104"/>
+      <line class="mo-pad" x1="127" y1="74" x2="127" y2="102"/>
+      <circle class="mo-head" cx="120" cy="60" r="6.5"/>
+      <line class="mo-body" x1="121" y1="66" x2="122" y2="76"/>
+      <line class="mo-body" x1="122" y1="76" x2="122" y2="102"/>
+      <line class="mo-body" x1="122" y1="102" x2="96" y2="102"/>
+      <line class="mo-gear" x1="108" y1="31" x2="108" y2="92"/>
+      <!-- APLOMB DE L'ÉPAULE : une barre libre finit dessus. Coupé autour
+           du crâne, sinon il le barre de part en part. -->
+      <line class="mo-rom" x1="122" y1="30" x2="122" y2="52"/>
+      <line class="mo-rom" x1="122" y1="67" x2="122" y2="74"/>
+      <circle class="mo-depart-pt" cx="124" cy="34.1" r="3.4"/>
+      <!-- BARRE GUIDÉE, restée devant. Le bras passe devant la tête :
+           de profil c'est exact, il est du côté de l'observateur. -->
+      <line class="mo-limb" x1="122" y1="76" x2="114.35" y2="57.52"/>
+      <circle class="mo-joint" cx="114.35" cy="57.52" r="2.6"/>
+      <line class="mo-limb" x1="114.35" y1="57.52" x2="108" y2="36.46"/>
+      <circle class="mo-hub" cx="108" cy="36.46" r="3.2"/>
+      <!-- cote entre les deux barres, dans la bande libre du haut -->
+      <line class="mo-rom" x1="108" y1="28" x2="124" y2="28"/>
+      <line class="mo-rom" x1="108" y1="25" x2="108" y2="31"/>
+      <line class="mo-rom" x1="124" y1="25" x2="124" y2="31"/>
+      <text class="mo-cote mo-cote-ok" font-size="9.4" text-anchor="start" x="131" y="31">26 cm</text>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M92 86 L92 50 M87 58 L92 50 L97 58"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M92 50 L92 86 M87 78 L92 86 L97 78"/>` }
+  ]
+};
+
+/* =========================================================
+   167. BARRE AU FRONT, BANC INCLINÉ  (barre-au-front-incline)
+   -----------------------------------------------------------
+   Même rig que le schéma 23 (banc plat) : bras L1=22, avant-bras
+   L2=22, disque r=6, tête r=8 reposant sur le dossier. Banc à 30°.
+   Vue de PROFIL, +x vers les pieds.
+   >>> CE QU'ON NE PEUT PAS FAIRE : TOURNER LE SCHÉMA 23 <<< Le
+       premier réflexe est de pivoter tout le rig de 30° — la tête
+       est posée sur le dossier, donc elle suit. C'est un piège :
+       calculé ainsi, le bras pointe 19° vers les pieds et la
+       flexion d'épaule par rapport au tronc reste à 101°, comme à
+       plat. On obtient le même exercice, simplement penché, ce
+       qui n'est pas ce que fait quelqu'un sur un banc incliné. Sa
+       consigne est « bras VERTICAUX » : c'est le bras qui reste
+       fixe dans l'espace, pas le tronc.
+   MODÈLE RETENU : humérus vertical (épaule S(87,36 ; 86), coude
+   E(87,36 ; 64)), tête posée sur le dossier. Avant-bras de départ
+   à 6° vers la tête (coude à 174°, comme au schéma 23).
+   CE QUE ÇA CHANGE, MESURÉ (banc à 30°, comparé au plat) :
+     • flexion d'épaule par rapport au tronc : 120,0° contre 102,8°,
+       soit 17° de plus. C'est le gain annoncé de la variante ;
+     • MAIS la barre touche le front avant d'arriver derrière la
+       tête : coude de 174° à 114,1° seulement, contre 95,6° à
+       plat. 59,9° d'amplitude de coude au lieu de 78,4° : 24 % de
+       moins ;
+     • bras de levier gravitaire de la barre au contact : 91 % du
+       maximum, contre 100 % à plat. L'avant-bras n'atteint jamais
+       l'horizontale ; la résistance culmine en bas dans les deux cas.
+   LE DOSSIER NE SE RÈGLE PAS AU HASARD : la même mesure à 20° donne
+   103,5° de coude en bas (flexion d'épaule 110°) et à 45° donne
+   127,6° (flexion 135°) avec un levier tombé à 79 %. Plus on
+   incline, plus l'étirement d'épaule monte et plus l'amplitude de
+   coude fond. 30° est le compromis courant, pas un optimum.
+   >>> CE QUE CE SCHÉMA NE TRANCHE PAS <<< Épaule plus fléchie et coude
+       moins fléchi n'ont pas le même effet sur la LONGUE portion, qui
+       croise les deux articulations ; dire laquelle l'emporte demande
+       ses bras de levier, et je ne les ai pas modélisés. Aucun
+       « étire X % de plus » n'est donc affiché. La fiche dit le
+       gain mesuré (+17° d'épaule) ET le coût mesuré (−24 % de coude),
+       pas leur somme.
+   >>> LIMITE DU MODÈLE <<< Tête rigide, épaule fixe. Descendre la barre
+       DERRIÈRE la tête est possible, mais l'épaule se met alors à
+       bouger : c'est précisément l'erreur n°1 de la fiche, et ce n'est
+       plus le même exercice. Elle n'est pas dessinée.
+   GÉOMÉTRIE — hanche (122,106), dossier à 30° : tête C(67,14 ; 69,03).
+   Haut : main (85,06 ; 42,12). Bas : contact du front, main (67,27 ;
+   55,03), avant-bras −59,95°. Un seul pivot, le coude : la rotation
+   rigide est exacte, pas besoin de poses intermédiaires.
+   ========================================================= */
+EXERCISE_MOTIONS["barre-au-front-incline"] = {
+  vb: "44 30 112 126",
+  dur: 3.8,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur un banc incliné à 30°, bras verticaux : la barre descend vers le front par flexion des coudes, qu'elle touche avant d'arriver derrière la tête, puis remonte par extension des triceps.",
+  fixe: `
+    <line class="mo-ground" x1="52" y1="152" x2="150" y2="152"/>
+    <!-- banc : assise horizontale et dossier à 30° -->
+    <line class="mo-pad" x1="110" y1="108" x2="144" y2="108"/>
+    <line class="mo-pad" x1="122" y1="106" x2="64.85" y2="73"/>
+    <line class="mo-gear" x1="142" y1="110" x2="142" y2="152"/>
+    <line class="mo-gear" x1="102.95" y1="95" x2="102.95" y2="152"/>
+    <!-- corps : tête posée sur le dossier, jambes pliées sur l'assise -->
+    <circle class="mo-head" cx="67.14" cy="69.03" r="8"/>
+    <line class="mo-body" x1="87.36" y1="86" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="138" y2="130"/>
+    <line class="mo-body" x1="138" y1="130" x2="136" y2="152"/>
+    <!-- BRAS : fixe, VERTICAL — c'est la consigne de l'exercice -->
+    <line class="mo-limb" x1="87.36" y1="86" x2="87.36" y2="64"/>
+    <circle class="mo-joint" cx="87.36" cy="64" r="2.8"/>
+    <!-- repère : l'arc réellement parcouru par la barre, qui s'arrête
+         au front -->
+    <path class="mo-rom" fill="none" d="M85.06 42.12 A22 22 0 0 0 67.27 55.03"/>`,
+  muscles: [
+    { nom: "Triceps (longue portion)",
+      svg: `<ellipse cx="87.4" cy="75" rx="3.2" ry="8"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + BARRE : rotation autour du COUDE (87.36, 64).
+         −59,95° amène la barre du plafond au contact du front. */
+      o: "87.36px 64px",
+      k: [[0, "rotate(0deg)"], [45, "rotate(-59.95deg)"], [52, "rotate(-59.95deg)"],
+          [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="87.36" y1="64" x2="85.06" y2="42.12"/>
+        <circle class="mo-plate-o" cx="85.06" cy="42.12" r="6"/>
+        <circle class="mo-hub" cx="85.06" cy="42.12" r="2.4"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M118 82 L118 48 M113 56 L118 48 L123 56"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L118 82 M113 74 L118 82 L123 74"/>` }
+  ]
+};
+
+/* =========================================================
+   168. CURL À LA POULIE BASSE, BANC INCLINÉ  (curl-poulie-incline)
+   -----------------------------------------------------------
+   Rig du schéma 19 (curl incliné aux haltères) À L'IDENTIQUE :
+   banc à 56°, épaule (92 ; 62), coude (86 ; 88), main basse
+   (84 ; 114), flexion de +128° autour du coude (171,4° -> 60,6°).
+   Seul change l'instrument : un câble, poulie au sol en (110 ; 147).
+   Vue de PROFIL.
+   >>> OÙ POSER LA POULIE N'EST PAS UN DÉTAIL : AU MAUVAIS ENDROIT, LE
+       CÂBLE AIDE LA FLEXION <<< Mon premier jet la plaçait DERRIÈRE le
+       banc, côté tête, comme on le ferait d'instinct pour « tirer
+       vers l'arrière ». Le calcul du bras de levier SIGNÉ autour du
+       coude (négatif = résiste, positif = aide) a montré que c'était
+       faux : à (56 ; 147), le câble tire la main vers l'arrière, dans
+       le sens de la flexion, et AIDE de +15,3 en bas. Ce n'est pas un
+       exercice un peu moins bon, c'est l'inverse de ce qu'on veut.
+       Balayage de la position, poulie au sol (levier en début, 25 %,
+       50 %, 75 %, fin de course) :
+         x = 56   +15,3  −7,0  −23,0  −25,9  −21,5   aide en bas
+         x = 80    +1,1 −20,1  −26,1  −23,1  −16,0   aide en bas
+         x = 90    −6,6 −23,3  −25,8  −21,3  −13,3   résiste partout
+         x = 110  −17,7 −25,9  −24,1  −17,3   −8,1   résiste partout
+         x = 150  −24,1 −25,6  −20,2  −11,0   −0,1   résiste partout
+         x = 200  −25,6 −24,5  −17,2   −6,4   +5,6   aide en haut
+       La fenêtre où le câble résiste de bout en bout va d'environ
+       x=85 à x=152, c'est-à-dire sous le banc et un peu devant :
+       derrière, il aide en bas ; trop loin devant, il aide en haut.
+       On dessine x=110, au milieu de la fenêtre. La fiche le dit,
+       en deux erreurs distinctes.
+   >>> CE QUE LE CÂBLE CHANGE, À POSITION VALIDE <<< Bras de levier
+       autour du coude, neuf points de la course, même rig :
+         câble   17,7  23,5  25,9  25,8  24,1  21,1  17,3  12,9   8,1
+         haltère  2,0   9,1  15,5  20,7  24,2  26,0  25,6  23,4  19,3
+       • EN BAS, 17,7 contre 2,0 : près de neuf fois plus. Aux
+         haltères le bras pend presque à la verticale, la gravité
+         n'a donc aucun bras de levier — c'est le trou du curl
+         incliné, précisément dans la position où la longue
+         portion du biceps est le plus étirée. Le câble le comble ;
+       • EN HAUT, 8,1 contre 19,3 : moins de la moitié. Le câble
+         tire vers le bas et en avant, l'avant-bras finit incliné
+         vers la tête, et la composante utile s'effondre ;
+       • le point FAIBLE n'a pas disparu, il a changé de côté, et
+         à 8,1 il reste quatre fois au-dessus des 2,0 de l'haltère.
+       C'est donc la courbe inverse du curl incliné aux haltères,
+       pas une courbe « plus constante ».
+   CE QUI N'EST PAS TRANCHÉ : déplacer la charge vers la position
+       étirée est un fait mesuré ; que cela donne plus de croissance
+       n'en est pas un, et rien ici ne le mesure.
+   GÉOMÉTRIE — Le câble est échantillonné en 8 intervalles : rotation
+   et longueur autour de la poulie, jusqu'à ×2,0936 en haut. Même
+   grille de keyframes que l'avant-bras, ce qui garde les deux pièces
+   synchrones. Écart maximal entre l'extrémité du câble et la vraie
+   main : 0,40 unité. Le câble reste à 8,8 du bras fixe et à 27,8 de la
+   tête sur toute la course ; il croise le montant du banc, mais le
+   montant est dans le plan des côtés et le câble dans celui du bras :
+   ce n'est qu'une superposition de profil.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-poulie-incline"] = {
+  vb: "48 26 152 130",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis-allongé sur un banc incliné, bras pendant derrière le corps : la poignée, reliée à une poulie au sol sous le banc, monte vers les épaules par flexion du coude, puis redescend jusqu'au bras presque tendu.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="152" x2="192" y2="152"/>
+    <!-- banc incliné ~56° : dossier + assise + pieds, comme au schéma 19 -->
+    <line class="mo-pad" x1="86" y1="52" x2="126" y2="112"/>
+    <line class="mo-pad" x1="126" y1="112" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="66" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- POULIE au sol, SOUS le banc : au milieu de la fenêtre où le câble
+         résiste de bout en bout (x=85 à 152) -->
+    <circle class="mo-pulley" cx="110" cy="147" r="5"/>
+    <!-- corps plaqué au dossier -->
+    <circle class="mo-head" cx="80" cy="46" r="9"/>
+    <line class="mo-body" x1="86" y1="53" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, en extension d'épaule, il pend derrière le buste -->
+    <line class="mo-limb" x1="92" y1="62" x2="86" y2="88"/>
+    <circle class="mo-joint" cx="86" cy="88" r="2.8"/>
+    <!-- repère d'amplitude : l'arc réellement parcouru par la main -->
+    <path class="mo-rom" fill="none" d="M84 114 A26.1 26.1 0 0 1 66.74 70.42"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="91" cy="75" rx="3.6" ry="9" transform="rotate(13 91 75)"/>` }
+  ],
+  parts: [
+    {
+      /* CÂBLE : rotation et longueur autour de la poulie (110,147),
+         échantillonnées sur l'arc réel de la main. */
+      o: "110px 147px",
+      k: [[0, "rotate(0deg) scale(1)"], [4, "rotate(-5.52deg) scale(1.1389)"],
+          [8, "rotate(-7.85deg) scale(1.3044)"], [12, "rotate(-7.79deg) scale(1.4771)"],
+          [16, "rotate(-6.09deg) scale(1.6436)"], [20, "rotate(-3.27deg) scale(1.7943)"],
+          [24, "rotate(0.3deg) scale(1.9225)"], [28, "rotate(4.38deg) scale(2.0234)"],
+          [32, "rotate(8.77deg) scale(2.0936)"], [40, "rotate(8.77deg) scale(2.0936)"],
+          [46, "rotate(4.38deg) scale(2.0234)"], [52, "rotate(0.3deg) scale(1.9225)"],
+          [58, "rotate(-3.27deg) scale(1.7943)"], [64, "rotate(-6.09deg) scale(1.6436)"],
+          [70, "rotate(-7.79deg) scale(1.4771)"], [76, "rotate(-7.85deg) scale(1.3044)"],
+          [82, "rotate(-5.52deg) scale(1.1389)"], [88, "rotate(0deg) scale(1)"],
+          [100, "rotate(0deg) scale(1)"]],
+      svg: `<line class="mo-cable" x1="110" y1="147" x2="84" y2="114"/>`
+    },
+    {
+      /* AVANT-BRAS + POIGNÉE : rotation autour du COUDE (86,88), +128°. */
+      o: "86px 88px",
+      k: [[0, "rotate(0deg)"], [4, "rotate(16deg)"], [8, "rotate(32deg)"],
+          [12, "rotate(48deg)"], [16, "rotate(64deg)"], [20, "rotate(80deg)"],
+          [24, "rotate(96deg)"], [28, "rotate(112deg)"], [32, "rotate(128deg)"],
+          [40, "rotate(128deg)"], [46, "rotate(112deg)"], [52, "rotate(96deg)"],
+          [58, "rotate(80deg)"], [64, "rotate(64deg)"], [70, "rotate(48deg)"],
+          [76, "rotate(32deg)"], [82, "rotate(16deg)"], [88, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="86" y1="88" x2="84" y2="114"/>
+        <line class="mo-bar2" x1="78" y1="113.5" x2="90" y2="114.5"/>
+        <circle class="mo-hand" cx="84" cy="114" r="3"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 116 L58 78 M53 86 L58 78 L63 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 78 L58 116 M53 108 L58 116 L63 108"/>` }
+  ]
+};
+
+/* =========================================================
+   169. CURL INCLINÉ MARTEAU  (curl-incline-marteau)
+   -----------------------------------------------------------
+   Rig du schéma 19 (curl incliné aux haltères) À L'IDENTIQUE :
+   banc à 56°, épaule (92 ; 62), coude (86 ; 88), main basse
+   (84 ; 114), flexion de +128° autour du coude. Vue de PROFIL.
+   Seule la PRISE change : neutre, pouces vers le haut. L'haltère
+   est donc dessiné DANS L'AXE de l'avant-bras (inclinaison de
+   4,4° sur la verticale, celle de l'avant-bras), comme au schéma 20
+   — à l'opposé du schéma 19, où il est en travers.
+   >>> CE QUE LA PRISE NE CHANGE PAS, ET C'EST MESURÉ <<< La courbe
+       de charge. La gravité est verticale, la masse est à la main,
+       le bras de levier autour du coude ne dépend donc que de la
+       position de la main : strictement le même rig, strictement les
+       mêmes valeurs qu'aux haltères en supination —
+         2,0  9,1  15,5  20,7  24,2  26,0  25,6  23,4  19,3
+       sur neuf points de la course. Le marteau ne déplace pas la
+       charge d'une unité dans l'amplitude ; il change QUI la porte.
+   Agonistes : BRACHIAL ANTÉRIEUR et BRACHIO-RADIAL en premier. La
+       prise neutre met le biceps en position moins favorable (il
+       supine l'avant-bras autant qu'il le fléchit) et reporte le
+       travail sur eux. L'épaule restant en extension, la longue
+       portion est tout de même étirée au départ, comme au curl
+       incliné classique.
+   Distinction : ≠ schéma 19 (supination, haltère en travers) ;
+       ≠ schéma 20, curl marteau DEBOUT (épaule neutre, pas
+       d'étirement de la longue portion).
+   ========================================================= */
+EXERCISE_MOTIONS["curl-incline-marteau"] = {
+  vb: "48 26 152 130",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Assis sur un banc incliné, bras pendant derrière le corps, haltères tenus pouces vers le haut : flexion du coude en gardant la prise neutre, l'haltère restant dans l'axe de l'avant-bras, puis retour en étirement complet.",
+  fixe: `
+    <line class="mo-ground" x1="60" y1="152" x2="192" y2="152"/>
+    <!-- banc incliné ~56° : dossier + assise + pieds -->
+    <line class="mo-pad" x1="86" y1="52" x2="126" y2="112"/>
+    <line class="mo-pad" x1="126" y1="112" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="66" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- corps plaqué au dossier -->
+    <circle class="mo-head" cx="80" cy="46" r="9"/>
+    <line class="mo-body" x1="86" y1="53" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, en extension d'épaule, il pend derrière le buste -->
+    <line class="mo-limb" x1="92" y1="62" x2="86" y2="88"/>
+    <circle class="mo-joint" cx="86" cy="88" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M84 114 A26.1 26.1 0 0 1 66.7 70.4"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="91" cy="75" rx="3.6" ry="9" transform="rotate(13 91 75)"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE EN PRISE NEUTRE : rotation autour du COUDE
+         (86, 88), +128° comme au schéma 19. */
+      o: "86px 88px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(128deg)"], [40, "rotate(128deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Brachio-radial",
+      muscle: `<ellipse cx="85" cy="101" rx="3.4" ry="9" transform="rotate(4.4 85 101)"/>`,
+      svg: `
+        <line class="mo-limb" x1="86" y1="88" x2="84" y2="114"/>
+        <line class="mo-bar2" x1="84.61" y1="106.02" x2="82.93" y2="127.96"/>
+        <rect class="mo-mass" x="77.6" y="102.5" width="14" height="7" rx="2" transform="rotate(4.4 84.61 106.02)"/>
+        <rect class="mo-mass" x="75.9" y="124.5" width="14" height="7" rx="2" transform="rotate(4.4 82.93 127.96)"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M58 116 L58 78 M53 86 L58 78 L63 86"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M58 78 L58 116 M53 108 L58 116 L63 108"/>` }
+  ]
+};
+
+/* =========================================================
+   170. CURL INCLINÉ, BANC BAS À 30°  (curl-incline-bas)
+   -----------------------------------------------------------
+   Même construction que le schéma 19, banc ramené à 30°. Vue de
+   PROFIL. Hanche (122 ; 106), épaule (75,84 ; 79,35), bras
+   VERTICAL de 26,68 -> coude (75,84 ; 106,03), avant-bras 26,08.
+   >>> POURQUOI LE BRAS EST VERTICAL ICI, ALORS QU'IL EST INCLINÉ DE
+       13° VERS L'ARRIÈRE AU SCHÉMA 19 <<< On compare une variable à la
+       fois. Le schéma 19 a un bras incliné de 13° ; si on le gardait,
+       passer le banc de 56° à 30° ajouterait ces 13° à ce que
+       l'inclinaison change vraiment, et le chiffre annoncé mêlerait
+       deux effets. Les haltères tirent le bras à la verticale ; c'est
+       la position que la fiche donne.
+   >>> LA LOI QU'ON VEUT, ET ELLE EST SIMPLE <<< Bras vertical : le
+       tronc est incliné de α sur l'horizontale, donc l'EXTENSION
+       d'épaule par rapport au tronc vaut 90° − α.
+         banc à 60°   30°
+         banc à 56°   34°   (≈ le schéma 19)
+         banc à 45°   45°
+         banc à 30°   60°   <- ce schéma
+       Vérifié sur le rig : 60,00°. Chaque degré de dossier en moins
+       est un degré d'extension en plus.
+   >>> ET C'EST LÀ QUE L'AVERTISSEMENT N'EST PAS COSMÉTIQUE <<<
+       L'amplitude active d'extension d'épaule se situe autour de 45
+       à 60° selon les références. À 30° de banc, on est donc à la
+       LIMITE, pas dans la zone confortable : c'est la raison du niveau
+       « avancé » et de la consigne de remonter le dossier si l'avant
+       de l'épaule tire. Je cite un ordre de grandeur de la littérature,
+       pas une mesure faite ici.
+   CE QUI CHANGE SUR LA COURBE DE CHARGE : peu. Avec l'avant-bras
+   vertical au départ le bras de levier vaut L2·sin(r) :
+         0   6,8  13,0  18,4  22,6  25,2  26,1  25,2  22,6
+       contre 2,0 … 19,3 au schéma 19. En haut 22,6 au lieu de 19,3 :
+       l'avant-bras de départ est vertical plutôt qu'incliné de 4,4°,
+       et la course s'arrête à 120° au lieu de 128° ; ce n'est pas un
+       effet du banc. Le gain de ce banc est l'étirement, pas la
+       charge.
+   ROM : coude de 180° (avant-bras vertical) à 60° ; rotation +120°.
+       Main haute (53,25 ; 92,99), à 23,1 de la tête (r=9) : elle ne
+       la rencontre pas.
+   Ce que ce schéma ne tranche pas : étirer davantage la longue
+   portion ne dit pas qu'on en tire plus de croissance ; rien ici ne
+   le mesure.
+   ========================================================= */
+EXERCISE_MOTIONS["curl-incline-bas"] = {
+  vb: "28 50 146 110",
+  dur: 3.8,
+  phases: { con: [0, 32], ecc: [40, 88] },
+  alt: "Allongé presque à plat sur un banc incliné à 30°, bras pendant à la verticale à côté du banc : l'haltère monte par flexion du coude, puis redescend jusqu'au bras presque tendu.",
+  fixe: `
+    <line class="mo-ground" x1="30" y1="152" x2="172" y2="152"/>
+    <!-- banc à 30° : dossier long et bas, assise, pieds -->
+    <line class="mo-pad" x1="125.46" y1="108" x2="57.05" y2="68.5"/>
+    <line class="mo-pad" x1="125.46" y1="108" x2="166" y2="116"/>
+    <line class="mo-gear" x1="96" y1="94" x2="96" y2="152"/>
+    <line class="mo-gear" x1="160" y1="118" x2="160" y2="152"/>
+    <!-- corps plaqué au dossier, tête posée -->
+    <circle class="mo-head" cx="58.11" cy="70.39" r="9"/>
+    <line class="mo-body" x1="66.57" y1="74" x2="122" y2="106"/>
+    <line class="mo-body" x1="122" y1="106" x2="160" y2="114"/>
+    <line class="mo-body" x1="160" y1="114" x2="166" y2="152"/>
+    <!-- BRAS : fixe, VERTICAL — l'épaule est en extension de 60° -->
+    <line class="mo-limb" x1="75.84" y1="79.35" x2="75.84" y2="106.03"/>
+    <circle class="mo-joint" cx="75.84" cy="106.03" r="2.8"/>
+    <path class="mo-rom" fill="none" d="M75.84 132.11 A26.08 26.08 0 0 1 53.25 92.99"/>`,
+  muscles: [
+    { nom: "Biceps brachial (longue portion)",
+      svg: `<ellipse cx="78" cy="93" rx="3.6" ry="9"/>` }
+  ],
+  parts: [
+    {
+      /* AVANT-BRAS + HALTÈRE : rotation autour du COUDE (75.84, 106.03),
+         +120° — le coude passe de 180° à 60°. */
+      o: "75.84px 106.03px",
+      k: [[0, "rotate(0deg)"], [32, "rotate(120deg)"], [40, "rotate(120deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-limb" x1="75.84" y1="106.03" x2="75.84" y2="132.11"/>
+        <line class="mo-bar2" x1="65.84" y1="132.11" x2="85.84" y2="132.11"/>
+        <rect class="mo-mass" x="62" y="124.6" width="7" height="15" rx="2"/>
+        <rect class="mo-mass" x="82.7" y="124.6" width="7" height="15" rx="2"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M38 132 L38 96 M33 104 L38 96 L43 104"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M38 96 L38 132 M33 124 L38 132 L43 124"/>` }
+  ]
+};
+
+/* =========================================================
+   171. DÉVELOPPÉ SEMI-INCLINÉ AUX HALTÈRES
+        (developpe-semi-incline-halteres)
+   -----------------------------------------------------------
+   Banc à 15°, tête et dos plaqués. Vue de PROFIL, un seul haltère
+   visible (poignée perpendiculaire à l'avant-bras, deux masses).
+   Segments L1 = L2 = 22. Hanche (134 ; 106), épaule (79,81 ; 91,48).
+   >>> LE PIÈGE : PIVOTER LE SCHÉMA 6 DE 15° <<< On obtient une
+       silhouette inclinée dont le bras, perpendiculaire au tronc,
+       penche de 15° vers les pieds au verrouillage. Par rapport au
+       corps, c'est ALORS EXACTEMENT LE DÉVELOPPÉ À PLAT, juste
+       penché : même angle bras-tronc (90°), même exercice. Ce n'est
+       pas ce que fait quelqu'un sur un banc incliné. Les haltères
+       montent contre la GRAVITÉ, donc à la verticale, au-dessus de
+       l'articulation de l'épaule ; c'est le tronc qui s'est relevé.
+       L'angle bras-tronc au verrouillage vaut alors 90° + α :
+         plat 90°  |  15° -> 105°  |  30° -> 120°  |  45° -> 135°
+       Vérifié sur le rig : 105,0°. C'est ça, et seulement ça, que le
+       banc change dans l'axe du bras. Le schéma dessine donc le
+       verrouillage VERTICAL.
+   >>> UN DÉFAUT TROUVÉ AU PASSAGE, NON CORRIGÉ ICI <<< Le schéma 2
+       (développé incliné aux haltères, banc à ~32°) est construit
+       selon le piège ci-dessus : son bras, au verrouillage, est
+       perpendiculaire au tronc, soit incliné de 32° vers les pieds,
+       et son commentaire présente ce choix comme ce qui « distingue
+       l'incliné du couché ». Selon le calcul ci-dessus, c'est
+       l'inverse : relatif au corps, il redonne le développé à plat.
+       Je le signale ; je ne l'ai pas modifié, ce n'était pas la
+       demande.
+   MODÈLE DE LA COURSE : bas = haltère au niveau de la poitrine,
+   c'est-à-dire à 26 unités de l'épaule le long du tronc, convention
+   du schéma 6 (haltère dans le plan de la poitrine). Coude à 169,1°
+   en haut, à 72,4° en bas ; bras +153,31°, avant-bras −96,63°.
+   Deux poses seulement : le coude se ferme de façon monotone
+   (169,1 -> 72,4°) et la main descend de façon monotone. Elle décrit
+   un arc qui dépasse de 7,5 unités vers les pieds la position
+   finale, comme le fait le schéma 6 : c'est la projection d'un
+   haltère qui se déplace aussi latéralement, pas une erreur.
+   Écart entre les poses résolues par IK et les rotations du CSS :
+   0,0000. Main à 33,8 de la tête au plus près.
+   CE QUE LE SCHÉMA NE TRANCHE PAS : décaler la charge vers le haut
+   du pectoral est le propos de la variante ; combien, et si cela
+   change la croissance, dépend de l'EMG et de l'individu, et rien
+   ici ne le mesure. Seule la géométrie de l'angle est affirmée.
+   ========================================================= */
+EXERCISE_MOTIONS["developpe-semi-incline-halteres"] = {
+  vb: "40 30 150 128",
+  dur: 3.8,
+  phases: { ecc: [0, 46], con: [54, 82] },
+  alt: "Sur un banc incliné à 15°, deux haltères sont poussés à la verticale au-dessus des épaules ; ils descendent au niveau de la poitrine puis remontent, seuls les bras bougent.",
+  fixe: `
+    <line class="mo-ground" x1="44" y1="152" x2="188" y2="152"/>
+    <!-- banc à 15° : dossier long et bas, assise, deux pieds -->
+    <line class="mo-pad" x1="138" y1="107" x2="60" y2="86"/>
+    <line class="mo-pad" x1="138" y1="107" x2="170" y2="110"/>
+    <line class="mo-gear" x1="96" y1="99" x2="96" y2="152"/>
+    <line class="mo-gear" x1="166" y1="112" x2="166" y2="152"/>
+    <!-- corps plaqué au dossier : tête, dos, cuisse, tibia -->
+    <circle class="mo-head" cx="59.37" cy="82.18" r="9"/>
+    <line class="mo-body" x1="68.22" y1="88.37" x2="134" y2="106"/>
+    <line class="mo-body" x1="134" y1="106" x2="156" y2="130"/>
+    <line class="mo-body" x1="156" y1="130" x2="152" y2="152"/>
+    <!-- repère : la VERTICALE au-dessus de l'épaule, où les haltères
+         finissent. L'écart avec la perpendiculaire au tronc (15°) est ce
+         que le banc change. -->
+    <line class="mo-rom" x1="79.81" y1="40" x2="79.81" y2="88"/>`,
+  muscles: [
+    { nom: "Pectoraux",
+      svg: `<ellipse cx="94.3" cy="95.4" rx="12" ry="4.4" transform="rotate(15 94.3 95.4)"/>` },
+    { nom: "Deltoïde antérieur",
+      svg: `<circle cx="79.81" cy="91.48" r="4.5"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS : rotation autour de l'ÉPAULE (79.81, 91.48), +153,31°. */
+      o: "79.81px 91.48px",
+      k: [[0, "rotate(0deg)"], [46, "rotate(153.31deg)"], [54, "rotate(153.31deg)"],
+          [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Triceps brachial",
+      muscle: `<ellipse cx="80.9" cy="80.5" rx="3.2" ry="7.5" transform="rotate(5 80.9 80.5)"/>`,
+      svg: `
+        <line class="mo-limb" x1="79.81" y1="91.48" x2="81.91" y2="69.58"/>
+        <circle class="mo-joint" cx="81.91" cy="69.58" r="2.6"/>`,
+      children: [
+        {
+          /* AVANT-BRAS + HALTÈRE : −96,63° relatif autour du COUDE. */
+          o: "81.91px 69.58px",
+          k: [[0, "rotate(0deg)"], [46, "rotate(-96.63deg)"], [54, "rotate(-96.63deg)"],
+              [82, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <line class="mo-limb" x1="81.91" y1="69.58" x2="79.81" y2="47.68"/>
+            <line class="mo-bar2" x1="69.86" y1="48.63" x2="89.76" y2="46.73"/>
+            <rect class="mo-mass" x="66.4" y="40.9" width="7" height="16" rx="2" transform="rotate(-5.4 69.86 48.63)"/>
+            <rect class="mo-mass" x="86.3" y="39" width="7" height="16" rx="2" transform="rotate(-5.4 89.76 46.73)"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "ecc", svg: `<path class="mo-arr" d="M130 58 L130 92 M125 84 L130 92 L135 84"/>` },
+    { phase: "con", svg: `<path class="mo-arr" d="M130 92 L130 58 M125 66 L130 58 L135 66"/>` }
+  ]
+};
+
+/* =========================================================
+   172. ÉLÉVATION EN Y SUR BANC INCLINÉ AUX HALTÈRES
+        (elevation-y-incline-halteres)    — VU DE TROIS QUARTS ARRIÈRE
+   -----------------------------------------------------------
+   Position : à plat ventre, poitrine contre un dossier à 45°, pieds
+   au sol, bras pendants verticalement. Montée des bras tendus en Y.
+   Muscles : trapèzes inférieur et moyen, deltoïdes postérieurs.
+   >>> POURQUOI NI LE PROFIL NI LA FACE <<< Le bras ne monte pas
+       dans le plan sagittal ni dans le plan frontal : il monte dans
+       un plan OBLIQUE, celui qui contient la verticale (bras pendant)
+       et la branche du Y (30-35° de part et d'autre du prolongement du
+       tronc). Calculé avec un banc à 45° et une branche à 35° :
+       • rotation du bras, pendant -> Y : 125,4° ;
+       • de PROFIL, le bras mesurerait 1,00 pendu, 0,71 à mi-course,
+         0,82 en haut : un raccourcissement de 29 % qui VARIE. La
+         règle de la bibliothèque est qu'un raccourcissement constant
+         se déclare et qu'un raccourcissement variable ment ; ce
+         profil est donc exclu. De FACE, mêmes valeurs (la composante
+         perdue est la latérale, qui vaut 0,71 à mi-course aussi).
+   >>> LA VUE RETENUE EST CELLE QUI REND LA ROTATION VRAIE <<< On
+       regarde LE LONG DE LA NORMALE du plan du bras : l'axe de la
+       caméra est horizontal, à 45° derrière le côté du bras. Le
+       bras tourne alors dans le plan de l'image, de 125,4° exactement
+       et à longueur constante (44, vérifié : 44,0 pendu, 44,0 en Y).
+       Le prix est un raccourcissement CONSTANT du reste du corps,
+       déclaré : largeur d'épaules 19,7 sur 28, tronc 55,5 sur 56.
+   LE BRAS OPPOSÉ N'EST PAS DESSINÉ, ET C'EST UNE DÉCISION : son plan
+   a pour normale l'autre diagonale, perpendiculaire à l'axe de la
+   caméra, donc vu PAR LA TRANCHE. Dessiné, il passerait par une
+   longueur apparente nulle : de 44 pendu à 25,5 en Y en traversant
+   zéro, comme un bras qui se replie. Il fait le même mouvement en
+   miroir ; la fiche le dit, le schéma ne le simule pas.
+   >>> LA DÉPENDANCE AU BANC, CALCULÉE <<< cos(rotation) = -cos φ ×
+       sin α (φ = écart du Y au prolongement du tronc, α = inclinaison) :
+         banc à 30°   114,2°
+         banc à 45°   125,4°   <- ce schéma
+         banc à 60°   135,2°
+       Plus le dossier est relevé, plus le bras doit tourner pour
+       rejoindre le prolongement du tronc.
+   VALEURS NON MESURÉES, DÉCLARÉES : φ = 35° et α = 45° sont des
+   valeurs représentatives choisies, pas des mesures ; le bras est
+   dessiné rigide et tendu (en pratique le coude garde une légère
+   flexion). L'haltère est dessiné par son AXE (un disque), orientation
+   de poignée admise perpendiculaire au plan du mouvement ; la fiche
+   ne tranche pas pouces-vers-le-haut contre prise neutre, et le
+   dessin n'en dépend pas.
+   Distance minimale de la main à la tête sur toute la course : 34,1
+   (rayon de tête 9) : aucun recouvrement.
+   CE QUE LE SCHÉMA NE TRANCHE PAS : que cet exercice fasse davantage
+   travailler le trapèze inférieur que le haut des trapèzes dépend de
+   la charge et de la technique (c'est l'erreur n°1 de la fiche), pas
+   de la géométrie ; rien ici ne le mesure.
+   ========================================================= */
+EXERCISE_MOTIONS["elevation-y-incline-halteres"] = {
+  vb: "32 36 140 122",
+  dur: 3.6,
+  vue: "Vu de trois quarts arrière",
+  phases: { con: [0, 36], ecc: [48, 88] },
+  alt: "Vu de trois quarts arrière, à plat ventre sur un banc incliné à 45° : le bras, tendu, tourne de 125° depuis la verticale jusqu'au Y, dans le prolongement du tronc, puis redescend lentement. Le bras opposé fait le même mouvement en miroir et n'est pas dessiné.",
+  fixe: `
+    <line class="mo-ground" x1="34" y1="152" x2="170" y2="152"/>
+    <!-- banc à 45° : dossier long, pied -->
+    <line class="mo-pad" x1="126.13" y1="125.13" x2="79.9" y2="60.08"/>
+    <line class="mo-gear" x1="102.01" y1="95" x2="102.01" y2="152"/>
+    <line class="mo-gear" x1="90" y1="152" x2="124" y2="152"/>
+    <!-- corps à plat ventre sur le dossier : jambes, tronc, épaules, tête.
+         Raccourcissements CONSTANTS : épaules 19,7 sur 28, tronc 55,5/56. -->
+    <line class="mo-body" x1="128.14" y1="113.82" x2="141.7" y2="132.91"/>
+    <line class="mo-body" x1="141.7" y1="132.91" x2="155.27" y2="152"/>
+    <line class="mo-body" x1="95.98" y1="68.56" x2="128.14" y2="113.82"/>
+    <line class="mo-body" x1="90.15" y1="74.22" x2="109.85" y2="74.22"/>
+    <circle class="mo-head" cx="86.94" cy="58.66" r="9"/>`,
+  muscles: [
+    { nom: "Trapèzes inférieur et moyen",
+      svg: `<ellipse cx="105" cy="81.3" rx="9" ry="4.2" transform="rotate(54 105 81.3)"/>` }
+  ],
+  parts: [
+    {
+      /* BRAS PROCHE : rotation de 125,4° autour de l'ÉPAULE (90.15, 74.22).
+         Le plan du mouvement est perpendiculaire à l'axe de la caméra :
+         c'est une rotation VRAIE, à longueur constante (44). */
+      o: "90.15px 74.22px",
+      k: [[0, "rotate(0deg)"], [36, "rotate(125.4deg)"], [48, "rotate(125.4deg)"],
+          [88, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: "Deltoïde postérieur",
+      muscle: `<circle cx="90.15" cy="74.22" r="4.8"/>`,
+      svg: `
+        <circle class="mo-joint" cx="90.15" cy="74.22" r="2.8"/>
+        <line class="mo-limb" x1="90.15" y1="74.22" x2="90.15" y2="118.22"/>
+        <circle class="mo-plate-o" cx="90.15" cy="121" r="5.2"/>
+        <circle class="mo-hub" cx="90.15" cy="121" r="1.8"/>`
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M44 112 L44 84 M39 92 L44 84 L49 92"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M44 84 L44 112 M39 104 L44 112 L49 104"/>` }
+  ]
+};
+
+/* =========================================================
+   173. SOULEVÉ DE TERRE À LA BARRE HEXAGONALE
+        (souleve-de-terre-barre-hexagonale)
+   -----------------------------------------------------------
+   Position : debout à l'INTÉRIEUR de la barre, pieds largeur de
+   hanches, mains aux poignées de chaque côté du corps, dos plat.
+   Vue de PROFIL. Chaîne enracinée à la cheville, qui ne décolle pas.
+   Segments : tibia 26, cuisse 26, tronc 29, bras 36 jusqu'au centre du
+   disque (r=12) — le rig du schéma 99, à l'échelle de la plaque.
+   >>> LA DIFFÉRENCE EST UNE CONTRAINTE QUI DISPARAÎT <<< À la barre
+       droite, la barre passe DEVANT les tibias : son aplomb doit être
+       plus en avant que le genou, ce qui projette l'épaule vers
+       l'avant. À la barre hexagonale, les mains sont sur les côtés :
+       rien ne passe devant le tibia, la charge peut se placer à
+       l'aplomb du milieu du pied. Le schéma pose exactement ces deux
+       conditions, et rien d'autre :
+         1. tibia VERTICAL au départ (limite : un genou derrière la
+            cheville n'a pas de sens) ;
+         2. charge à l'aplomb du MILIEU DU PIED (x = 102,0).
+       Elles déterminent l'angle de genou au départ : 107,5°. Il n'est
+       pas choisi, il est résolu.
+   >>> CE QUE ÇA CHANGE, MESURÉ <<< Même rig, même hauteur de poignée
+       (la barre à 12,9 du sol), MÊME ANGLE DE GENOU de départ
+       (107,5°) ; seul change l'aplomb. Pour la barre droite il vaut
+       « genou − 5,2 » (demi-épaisseur du tibia plus rayon de barre,
+       valeur déclarée) :
+                              hexagonale     barre droite
+         tibia au départ         0,0°           10,7° vers l'avant
+         tronc / verticale      67,5°           75,8°
+         hauteur de hanche      37,8            41,8
+       Soit 8,4° de tronc plus vertical et une hanche 4,0 plus basse.
+       Les valeurs « barre droite » sont recalculées ICI ; elles ne
+       reprennent pas celles de l'en-tête du schéma 99, dont les
+       paramètres n'ont pas été consignés.
+   >>> CE QUI NE CHANGE PAS, ET QUI SE DEVINE MAL <<< La course de
+       barre : 35,9 contre 35,4, soit 1,4 % d'écart. Le raccourcissement
+       d'amplitude qu'on attribue à la barre hexagonale vient de ses
+       POIGNÉES HAUTES, une option, et non de la barre elle-même : ici
+       les poignées sont à la hauteur de la barre droite, cette option
+       n'est pas modélisée.
+   >>> « HANCHES QUI MONTENT AVANT LES ÉPAULES » (erreur n°1) <<< Sur
+       la montée, la hanche monte de 18,17 et l'épaule de 35,91 :
+       l'épaule monte 1,98 fois plus. Si le rapport tombait sous 1, ce
+       serait un soulevé jambes tendues avec la barre encore au sol.
+   LE BRAS EST L'APLOMB : segment à deux forces, il est vertical à
+   chaque échantillon. Imposé aux sept poses : l'épaule reste sur
+   x=102,0 du début à la fin, et c'est ce qui détermine le tronc.
+   ROM : genou de 107,5° à 178° (genou linéaire, tibia vertical),
+   tronc de 67,5° à 5,7°. Écart entre poses résolues et rotations CSS :
+   0,0000.
+   LIMITES DÉCLARÉES : à 5,7° le tronc finit légèrement penché vers
+   l'avant, alors qu'un verrouillage réel se tient vertical : c'est le
+   prix d'une charge tenue à l'aplomb du milieu du pied, 3 en avant de
+   la hanche tendue. Le tibia est supposé vertical sur toute la course,
+   hypothèse de la condition 1. Le disque est dessiné au centre, alors
+   qu'il est de l'autre côté du corps : il passe devant la jambe parce
+   qu'il est plus proche de l'observateur.
+   Agonistes : quadriceps, grand fessier, ischio-jambiers, érecteurs ;
+   trapèzes (non marqués : ils travaillent en isométrie).
+   Distinction : ≠ schéma 11, soulevé classique (barre devant les
+   tibias) ; ≠ sumo, schéma 99 (stance large) ; ≠ roumain (départ
+   debout, genoux quasi tendus).
+   ========================================================= */
+EXERCISE_MOTIONS["souleve-de-terre-barre-hexagonale"] = {
+  vb: "70 38 90 116",
+  dur: 4.2,
+  phases: { con: [0, 36], ecc: [46, 90] },
+  alt: "De profil, debout à l'intérieur d'une barre hexagonale, mains sur les côtés : les genoux et les hanches s'étendent ensemble, les tibias restant verticaux et la charge à l'aplomb du milieu du pied, l'épaule montant presque deux fois plus vite que la hanche, puis retour au sol.",
+  fixe: `
+    <line class="mo-ground" x1="72" y1="150" x2="170" y2="150"/>
+    <line class="mo-body" x1="92" y1="150" x2="112" y2="150"/>
+    <line class="mo-body" x1="104" y1="146" x2="104" y2="120"/>
+    <circle class="mo-joint" cx="104" cy="146" r="2.6"/>
+    <!-- APLOMB DU MILIEU DU PIED : la charge y reste du début à la fin ;
+         c'est ce que la barre droite ne permet pas, les tibias étant
+         devant. -->
+    <line class="mo-rom" x1="102.01" y1="46" x2="102.01" y2="86"/>`,
+  parts: [
+    {
+      /* CUISSE : extension du GENOU autour de (104, 120). Le tibia est
+         fixe (vertical), donc la rotation absolue est la relative. */
+      o: "104px 120px",
+      k: [[0, "rotate(0deg)"], [6, "rotate(-11.75deg)"], [12, "rotate(-23.5deg)"],
+          [18, "rotate(-35.25deg)"], [24, "rotate(-47deg)"], [30, "rotate(-58.75deg)"],
+          [36, "rotate(-70.5deg)"], [46, "rotate(-70.5deg)"], [53.33, "rotate(-58.75deg)"],
+          [60.67, "rotate(-47deg)"], [68, "rotate(-35.25deg)"], [75.33, "rotate(-23.5deg)"],
+          [82.67, "rotate(-11.75deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="115.35" cy="112.8" rx="10" ry="3" transform="rotate(-17.5 115.35 112.8)"/>
+        <circle cx="130.5" cy="112.5" r="4.4"/>`,
+      svg: `
+        <circle class="mo-joint" cx="104" cy="120" r="2.6"/>
+        <line class="mo-body" x1="104" y1="120" x2="128.8" y2="112.18"/>
+        <circle class="mo-joint" cx="128.8" cy="112.18" r="2.6"/>`,
+      children: [
+        {
+          /* TRONC : extension de la HANCHE autour de (128.8, 112.18),
+             +132,24° relatif. RÉSOLU à chaque échantillon pour que
+             l'épaule reste sur l'aplomb, pas interpolé. */
+          o: "128.8px 112.18px",
+          k: [[0, "rotate(0deg)"], [6, "rotate(20.91deg)"], [12, "rotate(42.79deg)"],
+              [18, "rotate(65.04deg)"], [24, "rotate(87.43deg)"], [30, "rotate(109.86deg)"],
+              [36, "rotate(132.24deg)"], [46, "rotate(132.24deg)"], [53.33, "rotate(109.86deg)"],
+              [60.67, "rotate(87.43deg)"], [68, "rotate(65.04deg)"], [75.33, "rotate(42.79deg)"],
+              [82.67, "rotate(20.91deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          muscleNom: "Érecteurs du rachis",
+          muscle: `<ellipse cx="116.9" cy="102.9" rx="10" ry="2.8" transform="rotate(22.5 116.9 102.9)"/>`,
+          childrenFirst: true,
+          svg: `
+            <line class="mo-body" x1="128.8" y1="112.18" x2="102.01" y2="101.07"/>
+            <line class="mo-body" x1="102.01" y1="101.07" x2="94.44" y2="97.93"/>
+            <circle class="mo-head" cx="90.74" cy="96.39" r="9"/>`,
+          children: [
+            {
+              /* BRAS : suspendu à l'ÉPAULE (102.01, 101.07), coude
+                 VERROUILLÉ. Contre-rotation exacte du tronc : vertical
+                 dans le monde à chaque instant. */
+              o: "102.01px 101.07px",
+              k: [[0, "rotate(0deg)"], [6, "rotate(-9.16deg)"], [12, "rotate(-19.29deg)"],
+                  [18, "rotate(-29.79deg)"], [24, "rotate(-40.43deg)"], [30, "rotate(-51.11deg)"],
+                  [36, "rotate(-61.74deg)"], [46, "rotate(-61.74deg)"], [53.33, "rotate(-51.11deg)"],
+                  [60.67, "rotate(-40.43deg)"], [68, "rotate(-29.79deg)"], [75.33, "rotate(-19.29deg)"],
+                  [82.67, "rotate(-9.16deg)"], [90, "rotate(0deg)"], [100, "rotate(0deg)"]],
+              svg: `
+                <line class="mo-limb" x1="102.01" y1="101.07" x2="102.01" y2="137.07"/>
+                <circle class="mo-plate-o" cx="102.01" cy="137.07" r="12"/>
+                <circle class="mo-hub" cx="102.01" cy="137.07" r="2.8"/>`
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M146 130 L146 94 M141 102 L146 94 L151 102"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M146 94 L146 130 M141 122 L146 130 L151 122"/>` }
+  ]
+};
+
+/* =========================================================
+   174. ÉPAULÉ-DÉVELOPPÉ À LA BARRE  (clean-and-press)
+   -----------------------------------------------------------
+   Cycle : barre au sol -> tirage -> réception sur les clavicules ->
+   développé au-dessus de la tête -> retour par le même chemin. Vue de
+   PROFIL, chaîne enracinée à la cheville (le pied ne décolle pas).
+   Segments : tibia 26, cuisse 26, tronc 29, bras 19, avant-bras 17
+   (bras tendu 36, comme au schéma 173), disque r=12.
+   >>> CE SCHÉMA A 33 POSES ET PAS SEPT, ET C'EST LE FOND DE
+       L'AFFAIRE <<< Un soulevé n'a qu'une trajectoire. Ici la barre
+       change de contrainte quatre fois : elle longe les tibias, passe le
+       genou, glisse sur les cuisses, puis monte devant le thorax et le
+       visage. Interpoler deux poses fait traverser le genou à la barre.
+       Les 21 premières poses sont RÉSOLUES pour que la barre reste en
+       avant du tibia (genou − 5,2) puis au contact de la cuisse quand
+       elle passe au-dessus du genou ; la montée est ensuite décrite par
+       les poses suivantes. Pour que 33 poses ne fassent pas saccader le
+       geste, ce schéma est le premier à demander l'interpolation LINÉAIRE
+       (`continu`), que le moteur applique désormais à la demande.
+   POSES CLÉS (bras plié) — CHOISIES, pas résolues, et déclarées :
+       extension  genou 178°, tronc −3°, barre à 62 % du tronc, 7 devant
+       réception  genou 165° (15° de flexion pour amortir), tronc 2°,
+                  barre à (−8 ; −3) de l'épaule
+       mi-presse  genou 178°, tronc −6°, barre 5 devant le front
+       verrouill. genou 178°, tronc −2°, barre à l'aplomb du milieu du
+                  pied (x = 102), bras tendus
+   Le DÉPART est résolu : tibia à 10,7° et tronc à 75,8° du vertical,
+   hanche à 41,8 du sol, barre devant le genou. Ce sont les valeurs de
+   la barre droite du schéma 173 (mêmes règles, mêmes segments).
+   >>> LE COUDE : UNE CONTRAINTE QUI A INVALIDÉ MON PREMIER JET <<<
+       Dans le plan sagittal, le coude ne plie que dans UN sens
+       (cross(épaule→coude, coude→main) > 0). Mon premier jet plaçait,
+       pour la réception, le coude « en avant et haut » — du mauvais côté
+       de la ligne épaule-main : l'avant-bras pendait depuis un coude plus
+       haut que la barre, ce qui est une hyperextension. Une réception
+       réelle a le coude EN AVANT et en dessous de la barre, l'avant-bras
+       montant vers elle. La contrainte est maintenant imposée à chaque
+       pose : le signe du produit vectoriel est positif sur les 33.
+   >>> CE QUE LE PROFIL NE PEUT PAS MONTRER : LA SECONDE TRACTION <<<
+       Quand la barre passe devant les hanches et monte contre le torse,
+       les coudes montent en haut et en dehors : l'humérus est en
+       abduction et en rotation interne, hors du plan sagittal. Dessiné
+       dans ce plan avec le sens de flexion imposé, le coude se retrouve
+       derrière et sous la barre. C'est faux, ça se dit, et le
+       schéma garde le bon sens de flexion plutôt que la bonne
+       position de coude. Un schéma de face le dirait ; celui-ci non.
+   MESURES : course de barre 107,6 (de 137,1 à 29,4). Coude : 180° bras
+   tendu, 42,1° en fin de tirage, 26,7° à la réception, 60,8° au milieu du
+   développé, 168,4° au verrouillage. Écart entre poses résolues et
+   rotations CSS : 0,0000. Dégagements sur toute la course interpolée :
+   barre-tête 11,3 (contact : tête 9 + barre 1,4 = 10,4), barre-tronc
+   12,9, barre-genou 4,2 (le genou fait environ 4 de rayon : la barre le
+   frôle, comme dans la réalité).
+   LIMITES DÉCLARÉES : les pieds sont supposés immobiles, alors qu'un
+   épaulé réel les décale de quelques centimètres ; la réception se fait
+   debout avec 15° de flexion de genou (power clean), pas en squat ; le
+   disque est dessiné au centre de la barre alors qu'il est sur le côté,
+   plus près de l'observateur, et il passe donc devant la tête ; la
+   descente est dessinée comme la montée à l'envers, ce que fait une
+   barre contrôlée, pas une barre lâchée.
+   Agonistes : quadriceps, grand fessier, ischio-jambiers, érecteurs,
+   trapèzes à la traction ; deltoïde antérieur et triceps au développé.
+   Distinction : ≠ développé militaire (barre déjà aux clavicules,
+   schéma 13), ≠ soulevé de terre (la barre ne dépasse pas les hanches),
+   ≠ kettlebell swing (charge lancée, bras sans effort).
+   ========================================================= */
+EXERCISE_MOTIONS["clean-and-press"] = {
+  vb: "72 12 96 144",
+  /* Schéma haut (la barre part du sol et finit au-dessus de la tête) : comme
+     les burpees, il lui faut plus que le plafond commun pour rester lisible. */
+  hauteur: 240,
+  dur: 8,
+  continu: true,
+  phases: { con: [0, 50], ecc: [58, 95] },
+  alt: "De profil, une barre posée au sol : la barre est tirée le long des tibias puis des cuisses, les hanches et les genoux s'étendent, la barre est reçue sur les clavicules coudes en avant, puis poussée au-dessus de la tête jusqu'aux bras tendus, et la descente se fait par le même chemin.",
+  fixe: `
+    <line class="mo-ground" x1="72" y1="150" x2="172" y2="150"/>
+    <line class="mo-body" x1="92" y1="150" x2="112" y2="150"/>
+    <circle class="mo-joint" cx="104" cy="146" r="2.6"/>`,
+  parts: [
+    {
+      /* TIBIA : enraciné à la CHEVILLE (104, 146). Il ne se redresse que de
+         10,7°, de la position « barre devant les tibias » à la verticale. */
+      o: "104px 146px",
+      k: [[0, "rotate(0deg)"], [1.25, "rotate(0.53deg)"], [2.5, "rotate(1.07deg)"],
+          [3.75, "rotate(1.6deg)"], [5, "rotate(2.14deg)"], [6.25, "rotate(2.67deg)"],
+          [7.5, "rotate(3.2deg)"], [8.75, "rotate(3.74deg)"], [10, "rotate(4.27deg)"],
+          [11.25, "rotate(4.81deg)"], [12.5, "rotate(5.34deg)"], [13.75, "rotate(5.87deg)"],
+          [15, "rotate(6.41deg)"], [16.25, "rotate(6.94deg)"], [17.5, "rotate(7.48deg)"],
+          [18.75, "rotate(8.01deg)"], [20, "rotate(8.54deg)"], [21.25, "rotate(9.08deg)"],
+          [22.5, "rotate(9.61deg)"], [23.75, "rotate(10.15deg)"], [25, "rotate(10.68deg)"],
+          [27.08, "rotate(10.68deg)"], [29.17, "rotate(10.68deg)"], [31.25, "rotate(10.68deg)"],
+          [33.33, "rotate(9.68deg)"], [35.42, "rotate(8.68deg)"], [37.5, "rotate(7.68deg)"],
+          [39.58, "rotate(8.68deg)"], [41.67, "rotate(9.68deg)"], [43.75, "rotate(10.68deg)"],
+          [45.83, "rotate(10.68deg)"], [47.92, "rotate(10.68deg)"], [50, "rotate(10.68deg)"],
+          [58, "rotate(10.68deg)"], [59.16, "rotate(10.68deg)"], [60.31, "rotate(10.68deg)"],
+          [61.47, "rotate(10.68deg)"], [62.62, "rotate(9.68deg)"], [63.78, "rotate(8.68deg)"],
+          [64.94, "rotate(7.68deg)"], [66.09, "rotate(8.68deg)"], [67.25, "rotate(9.68deg)"],
+          [68.41, "rotate(10.68deg)"], [69.56, "rotate(10.68deg)"], [70.72, "rotate(10.68deg)"],
+          [71.88, "rotate(10.68deg)"], [73.03, "rotate(10.15deg)"], [74.19, "rotate(9.61deg)"],
+          [75.34, "rotate(9.08deg)"], [76.5, "rotate(8.54deg)"], [77.66, "rotate(8.01deg)"],
+          [78.81, "rotate(7.48deg)"], [79.97, "rotate(6.94deg)"], [81.12, "rotate(6.41deg)"],
+          [82.28, "rotate(5.87deg)"], [83.44, "rotate(5.34deg)"], [84.59, "rotate(4.81deg)"],
+          [85.75, "rotate(4.27deg)"], [86.91, "rotate(3.74deg)"], [88.06, "rotate(3.2deg)"],
+          [89.22, "rotate(2.67deg)"], [90.38, "rotate(2.14deg)"], [91.53, "rotate(1.6deg)"],
+          [92.69, "rotate(1.07deg)"], [93.84, "rotate(0.53deg)"], [95, "rotate(0deg)"],
+          [100, "rotate(0deg)"]],
+      svg: `
+        <line class="mo-body" x1="104" y1="146" x2="99.18" y2="120.45"/>
+        <circle class="mo-joint" cx="99.18" cy="120.45" r="2.6"/>`,
+      children: [
+        {
+          /* CUISSE : extension du GENOU autour de (99.18, 120.45). */
+          o: "99.18px 120.45px",
+          k: [[0, "rotate(0deg)"], [1.25, "rotate(-3.43deg)"], [2.5, "rotate(-6.85deg)"],
+            [3.75, "rotate(-10.28deg)"], [5, "rotate(-13.7deg)"], [6.25, "rotate(-17.13deg)"],
+            [7.5, "rotate(-20.55deg)"], [8.75, "rotate(-23.98deg)"], [10, "rotate(-27.4deg)"],
+            [11.25, "rotate(-30.82deg)"], [12.5, "rotate(-34.25deg)"], [13.75, "rotate(-37.68deg)"],
+            [15, "rotate(-41.1deg)"], [16.25, "rotate(-44.53deg)"], [17.5, "rotate(-47.95deg)"],
+            [18.75, "rotate(-51.38deg)"], [20, "rotate(-54.8deg)"], [21.25, "rotate(-58.23deg)"],
+            [22.5, "rotate(-61.65deg)"], [23.75, "rotate(-65.08deg)"], [25, "rotate(-68.5deg)"],
+            [27.08, "rotate(-69.17deg)"], [29.17, "rotate(-69.83deg)"], [31.25, "rotate(-70.5deg)"],
+            [33.33, "rotate(-66.17deg)"], [35.42, "rotate(-61.83deg)"], [37.5, "rotate(-57.5deg)"],
+            [39.58, "rotate(-61.83deg)"], [41.67, "rotate(-66.17deg)"], [43.75, "rotate(-70.5deg)"],
+            [45.83, "rotate(-70.5deg)"], [47.92, "rotate(-70.5deg)"], [50, "rotate(-70.5deg)"],
+            [58, "rotate(-70.5deg)"], [59.16, "rotate(-70.5deg)"], [60.31, "rotate(-70.5deg)"],
+            [61.47, "rotate(-70.5deg)"], [62.62, "rotate(-66.17deg)"], [63.78, "rotate(-61.83deg)"],
+            [64.94, "rotate(-57.5deg)"], [66.09, "rotate(-61.83deg)"], [67.25, "rotate(-66.17deg)"],
+            [68.41, "rotate(-70.5deg)"], [69.56, "rotate(-69.83deg)"], [70.72, "rotate(-69.17deg)"],
+            [71.88, "rotate(-68.5deg)"], [73.03, "rotate(-65.08deg)"], [74.19, "rotate(-61.65deg)"],
+            [75.34, "rotate(-58.23deg)"], [76.5, "rotate(-54.8deg)"], [77.66, "rotate(-51.38deg)"],
+            [78.81, "rotate(-47.95deg)"], [79.97, "rotate(-44.53deg)"], [81.12, "rotate(-41.1deg)"],
+            [82.28, "rotate(-37.68deg)"], [83.44, "rotate(-34.25deg)"], [84.59, "rotate(-30.82deg)"],
+            [85.75, "rotate(-27.4deg)"], [86.91, "rotate(-23.98deg)"], [88.06, "rotate(-20.55deg)"],
+            [89.22, "rotate(-17.13deg)"], [90.38, "rotate(-13.7deg)"], [91.53, "rotate(-10.28deg)"],
+            [92.69, "rotate(-6.85deg)"], [93.84, "rotate(-3.43deg)"], [95, "rotate(0deg)"],
+            [100, "rotate(0deg)"]],
+          muscleNom: ["Quadriceps", "Grand fessier"],
+          muscle: `
+            <ellipse cx="108.99" cy="111.23" rx="10" ry="3" transform="rotate(-28.18 108.99 111.23)"/>
+            <circle cx="124.1" cy="108.17" r="4.4"/>`,
+          svg: `
+            <line class="mo-body" x1="99.18" y1="120.45" x2="122.1" y2="108.17"/>
+            <circle class="mo-joint" cx="122.1" cy="108.17" r="2.6"/>`,
+          children: [
+            {
+              /* TRONC : extension de la HANCHE autour de (122.1, 108.17). */
+              o: "122.1px 108.17px",
+              k: [[0, "rotate(0deg)"], [1.25, "rotate(7.42deg)"], [2.5, "rotate(14.26deg)"],
+              [3.75, "rotate(20.78deg)"], [5, "rotate(27.09deg)"], [6.25, "rotate(33.27deg)"],
+              [7.5, "rotate(39.34deg)"], [8.75, "rotate(64.31deg)"], [10, "rotate(71.31deg)"],
+              [11.25, "rotate(77.01deg)"], [12.5, "rotate(82.07deg)"], [13.75, "rotate(86.73deg)"],
+              [15, "rotate(91.13deg)"], [16.25, "rotate(95.35deg)"], [17.5, "rotate(99.42deg)"],
+              [18.75, "rotate(103.39deg)"], [20, "rotate(107.27deg)"], [21.25, "rotate(111.08deg)"],
+              [22.5, "rotate(114.85deg)"], [23.75, "rotate(118.57deg)"], [25, "rotate(122.26deg)"],
+              [27.08, "rotate(127.72deg)"], [29.17, "rotate(133.19deg)"], [31.25, "rotate(138.65deg)"],
+              [33.33, "rotate(133.65deg)"], [35.42, "rotate(128.65deg)"], [37.5, "rotate(123.65deg)"],
+              [39.58, "rotate(129.65deg)"], [41.67, "rotate(135.65deg)"], [43.75, "rotate(141.65deg)"],
+              [45.83, "rotate(140.32deg)"], [47.92, "rotate(138.99deg)"], [50, "rotate(137.65deg)"],
+              [58, "rotate(137.65deg)"], [59.16, "rotate(138.99deg)"], [60.31, "rotate(140.32deg)"],
+              [61.47, "rotate(141.65deg)"], [62.62, "rotate(135.65deg)"], [63.78, "rotate(129.65deg)"],
+              [64.94, "rotate(123.65deg)"], [66.09, "rotate(128.65deg)"], [67.25, "rotate(133.65deg)"],
+              [68.41, "rotate(138.65deg)"], [69.56, "rotate(133.19deg)"], [70.72, "rotate(127.72deg)"],
+              [71.88, "rotate(122.26deg)"], [73.03, "rotate(118.57deg)"], [74.19, "rotate(114.85deg)"],
+              [75.34, "rotate(111.08deg)"], [76.5, "rotate(107.27deg)"], [77.66, "rotate(103.39deg)"],
+              [78.81, "rotate(99.42deg)"], [79.97, "rotate(95.35deg)"], [81.12, "rotate(91.13deg)"],
+              [82.28, "rotate(86.73deg)"], [83.44, "rotate(82.07deg)"], [84.59, "rotate(77.01deg)"],
+              [85.75, "rotate(71.31deg)"], [86.91, "rotate(64.31deg)"], [88.06, "rotate(39.34deg)"],
+              [89.22, "rotate(33.27deg)"], [90.38, "rotate(27.09deg)"], [91.53, "rotate(20.78deg)"],
+              [92.69, "rotate(14.26deg)"], [93.84, "rotate(7.42deg)"], [95, "rotate(0deg)"],
+              [100, "rotate(0deg)"]],
+              muscleNom: ["Érecteurs du rachis", "Trapèzes"],
+              muscle: `
+                <ellipse cx="109.02" cy="100.75" rx="10" ry="2.8" transform="rotate(-165.83 109.02 100.75)"/>
+                <ellipse cx="88.03" cy="100.57" rx="5" ry="2.6" transform="rotate(-165.83 88.03 100.57)"/>`,
+              childrenFirst: true,
+              svg: `
+                <line class="mo-body" x1="122.1" y1="108.17" x2="93.98" y2="101.08"/>
+                <line class="mo-body" x1="93.98" y1="101.08" x2="86.03" y2="99.07"/>
+                <circle class="mo-head" cx="82.15" cy="98.09" r="9"/>`,
+              children: [
+                {
+                  /* BRAS : rotation autour de l'ÉPAULE (93.98, 101.08). Tendu et
+                     vertical pendant tout le tirage, puis il plie. */
+                  o: "93.98px 101.08px",
+                  k: [[0, "rotate(0deg)"], [1.25, "rotate(-4.53deg)"], [2.5, "rotate(-8.48deg)"],
+                  [3.75, "rotate(-12.11deg)"], [5, "rotate(-15.53deg)"], [6.25, "rotate(-18.81deg)"],
+                  [7.5, "rotate(-21.99deg)"], [8.75, "rotate(-44.08deg)"], [10, "rotate(-48.18deg)"],
+                  [11.25, "rotate(-50.99deg)"], [12.5, "rotate(-53.16deg)"], [13.75, "rotate(-54.93deg)"],
+                  [15, "rotate(-56.44deg)"], [16.25, "rotate(-57.76deg)"], [17.5, "rotate(-58.95deg)"],
+                  [18.75, "rotate(-60.02deg)"], [20, "rotate(-61.01deg)"], [21.25, "rotate(-61.94deg)"],
+                  [22.5, "rotate(-62.81deg)"], [23.75, "rotate(-63.64deg)"], [25, "rotate(-64.44deg)"],
+                  [27.08, "rotate(-101.22deg)"], [29.17, "rotate(-111.24deg)"], [31.25, "rotate(-104.16deg)"],
+                  [33.33, "rotate(-88.64deg)"], [35.42, "rotate(-60.06deg)"], [37.5, "rotate(-26.75deg)"],
+                  [39.58, "rotate(-14.97deg)"], [41.67, "rotate(-6.8deg)"], [43.75, "rotate(-0.14deg)"],
+                  [45.83, "rotate(27.24deg)"], [47.92, "rotate(52.91deg)"], [50, "rotate(90.39deg)"],
+                  [58, "rotate(90.39deg)"], [59.16, "rotate(52.91deg)"], [60.31, "rotate(27.24deg)"],
+                  [61.47, "rotate(-0.14deg)"], [62.62, "rotate(-6.8deg)"], [63.78, "rotate(-14.97deg)"],
+                  [64.94, "rotate(-26.75deg)"], [66.09, "rotate(-60.06deg)"], [67.25, "rotate(-88.64deg)"],
+                  [68.41, "rotate(-104.16deg)"], [69.56, "rotate(-111.24deg)"], [70.72, "rotate(-101.22deg)"],
+                  [71.88, "rotate(-64.44deg)"], [73.03, "rotate(-63.64deg)"], [74.19, "rotate(-62.81deg)"],
+                  [75.34, "rotate(-61.94deg)"], [76.5, "rotate(-61.01deg)"], [77.66, "rotate(-60.02deg)"],
+                  [78.81, "rotate(-58.95deg)"], [79.97, "rotate(-57.76deg)"], [81.12, "rotate(-56.44deg)"],
+                  [82.28, "rotate(-54.93deg)"], [83.44, "rotate(-53.16deg)"], [84.59, "rotate(-50.99deg)"],
+                  [85.75, "rotate(-48.18deg)"], [86.91, "rotate(-44.08deg)"], [88.06, "rotate(-21.99deg)"],
+                  [89.22, "rotate(-18.81deg)"], [90.38, "rotate(-15.53deg)"], [91.53, "rotate(-12.11deg)"],
+                  [92.69, "rotate(-8.48deg)"], [93.84, "rotate(-4.53deg)"], [95, "rotate(0deg)"],
+                  [100, "rotate(0deg)"]],
+                  muscleNom: ["Deltoïde antérieur", "Triceps brachial"],
+                  muscle: `
+                    <circle cx="93.98" cy="101.08" r="5"/>
+                    <ellipse cx="96.48" cy="110.58" rx="3" ry="7.5"/>`,
+                  svg: `
+                    <line class="mo-limb" x1="93.98" y1="101.08" x2="93.98" y2="120.08"/>
+                    <circle class="mo-joint" cx="93.98" cy="120.08" r="2.6"/>`,
+                  children: [
+                    {
+                      /* AVANT-BRAS + BARRE : rotation autour du COUDE. */
+                      o: "93.98px 120.08px",
+                      k: [[0, "rotate(0deg)"], [1.25, "rotate(0deg)"], [2.5, "rotate(0deg)"], [3.75, "rotate(0deg)"],
+                      [5, "rotate(0deg)"], [6.25, "rotate(0deg)"], [7.5, "rotate(0deg)"], [8.75, "rotate(0deg)"],
+                      [10, "rotate(0deg)"], [11.25, "rotate(0deg)"], [12.5, "rotate(0deg)"], [13.75, "rotate(0deg)"],
+                      [15, "rotate(0deg)"], [16.25, "rotate(0deg)"], [17.5, "rotate(0deg)"], [18.75, "rotate(0deg)"],
+                      [20, "rotate(0deg)"], [21.25, "rotate(0deg)"], [22.5, "rotate(0deg)"], [23.75, "rotate(0deg)"],
+                      [25, "rotate(0deg)"], [27.08, "rotate(79.73deg)"], [29.17, "rotate(113.74deg)"],
+                      [31.25, "rotate(137.93deg)"], [33.33, "rotate(148.95deg)"], [35.42, "rotate(155.09deg)"],
+                      [37.5, "rotate(153.28deg)"], [39.58, "rotate(143.26deg)"], [41.67, "rotate(131.79deg)"],
+                      [43.75, "rotate(119.25deg)"], [45.83, "rotate(101.51deg)"], [47.92, "rotate(73.15deg)"],
+                      [50, "rotate(11.64deg)"], [58, "rotate(11.64deg)"], [59.16, "rotate(73.15deg)"],
+                      [60.31, "rotate(101.51deg)"], [61.47, "rotate(119.25deg)"], [62.62, "rotate(131.79deg)"],
+                      [63.78, "rotate(143.26deg)"], [64.94, "rotate(153.28deg)"], [66.09, "rotate(155.09deg)"],
+                      [67.25, "rotate(148.95deg)"], [68.41, "rotate(137.93deg)"], [69.56, "rotate(113.74deg)"],
+                      [70.72, "rotate(79.73deg)"], [71.88, "rotate(0deg)"], [73.03, "rotate(0deg)"],
+                      [74.19, "rotate(0deg)"], [75.34, "rotate(0deg)"], [76.5, "rotate(0deg)"],
+                      [77.66, "rotate(0deg)"], [78.81, "rotate(0deg)"], [79.97, "rotate(0deg)"],
+                      [81.12, "rotate(0deg)"], [82.28, "rotate(0deg)"], [83.44, "rotate(0deg)"],
+                      [84.59, "rotate(0deg)"], [85.75, "rotate(0deg)"], [86.91, "rotate(0deg)"],
+                      [88.06, "rotate(0deg)"], [89.22, "rotate(0deg)"], [90.38, "rotate(0deg)"],
+                      [91.53, "rotate(0deg)"], [92.69, "rotate(0deg)"], [93.84, "rotate(0deg)"], [95, "rotate(0deg)"],
+                      [100, "rotate(0deg)"]],
+                      svg: `
+                        <line class="mo-limb" x1="93.98" y1="120.08" x2="93.98" y2="137.08"/>
+                        <circle class="mo-plate-o" cx="93.98" cy="137.08" r="12"/>
+                        <circle class="mo-hub" cx="93.98" cy="137.08" r="2.8"/>`
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M150 130 L150 40 M145 48 L150 40 L155 48"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M150 40 L150 130 M145 122 L150 130 L155 122"/>` }
+  ]
+};
+
+/* =========================================================
+   175. PRESSE À CUISSES, PIEDS HAUTS  (presse-cuisses-pieds-hauts)
+   -----------------------------------------------------------
+   Rig du schéma 27 À L'IDENTIQUE : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> CE QUE LE PLACEMENT DU PIED CHANGE, MESURÉ <<< Le pied est posé à
+       10 du milieu du plateau, vers le HAUT. À 90° de genou, dans le
+       même rig :
+                         hanche (angle intérieur)   genou, position
+         pieds hauts            44,4°                (76,9 ; 91,6)
+         milieu                 60,4°                (84,0 ; 90,1)
+         pieds bas              76,0°                (91,1 ; 90,5)
+       Soit 16° d'angle de hanche par 10 de décalage de pied. Pieds
+       hauts, le genou finit 7,1 plus près du buste et la hanche est
+       beaucoup plus fléchie : c'est la raison pour laquelle cette
+       variante est associée aux fessiers et aux ischio-jambiers, et
+       pour laquelle le BASSIN, qui décolle quand l'angle se ferme,
+       est à surveiller de plus près.
+   Course du chariot 15,80 (15,14 au milieu). Cuisse −47,10°.
+   NON TRANCHÉ : que le travail se déplace vers les fessiers et les
+   ischios est la lecture usuelle de cet angle ; ce schéma mesure
+   l'angle, pas l'activation musculaire.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-hauts"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis dos plaqué dans la presse inclinée, pieds posés dans le haut du plateau : le chariot revient jusqu'à 90° de flexion des genoux, le genou finissant très près du buste et la hanche fortement fléchie, puis est repoussé le long du rail.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.86px,1.86px)"],
+          [15, "translate(-3.72px,3.72px)"], [22.5, "translate(-5.59px,5.59px)"],
+          [30, "translate(-7.45px,7.45px)"], [37.5, "translate(-9.31px,9.31px)"],
+          [45, "translate(-11.17px,11.17px)"], [52, "translate(-11.17px,11.17px)"],
+          [56.67, "translate(-9.31px,9.31px)"], [61.33, "translate(-7.45px,7.45px)"],
+          [66, "translate(-5.59px,5.59px)"], [70.67, "translate(-3.72px,3.72px)"],
+          [75.33, "translate(-1.86px,1.86px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="108.93" y1="67.85" x2="130.15" y2="89.07"/>
+        <circle class="mo-plate-o" cx="129.44" cy="68.56" r="9"/>
+        <circle class="mo-hub" cx="129.44" cy="68.56" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-15.21deg)"], [15, "rotate(-23.47deg)"],
+          [22.5, "rotate(-30.19deg)"], [30, "rotate(-36.18deg)"], [37.5, "rotate(-41.75deg)"],
+          [45, "rotate(-47.1deg)"], [52, "rotate(-47.1deg)"], [56.67, "rotate(-41.75deg)"],
+          [61.33, "rotate(-36.18deg)"], [66, "rotate(-30.19deg)"], [70.67, "rotate(-23.47deg)"],
+          [75.33, "rotate(-15.21deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="89.16" cy="103.04" rx="3.4" ry="9" transform="rotate(26.68 89.16 103.04)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="97.68" y2="92.77"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "97.68px 92.77px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.91deg)"], [15, "rotate(43.75deg)"],
+              [22.5, "rotate(55.32deg)"], [30, "rotate(65.2deg)"], [37.5, "rotate(73.99deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.99deg)"],
+              [61.33, "rotate(65.2deg)"], [66, "rotate(55.32deg)"], [70.67, "rotate(43.75deg)"],
+              [75.33, "rotate(28.91deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="97.68" cy="92.77" r="2.8"/>
+            <line class="mo-limb" x1="97.68" y1="92.77" x2="112.47" y2="71.39"/>
+            <circle class="mo-hand" cx="112.47" cy="71.39" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   176. PRESSE À CUISSES, PIEDS BAS  (presse-cuisses-pieds-bas)
+   -----------------------------------------------------------
+   Rig du schéma 27 À L'IDENTIQUE : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> LE SYMÉTRIQUE DE « PIEDS HAUTS » <<< Pied à 10 du milieu vers
+       le BAS du plateau : à 90° de genou, angle de hanche 76,0°
+       (60,4° au milieu, 44,4° pieds hauts) et genou à (91,1 ; 90,5),
+       7,1 plus loin du buste que pieds hauts. La hanche reste
+       ouverte, le genou voyage davantage : c'est le réglage associé
+       aux quadriceps. Course du chariot 15,31, cuisse −37,70°.
+   LIMITE : plus le pied est bas, moins il y a de talon sur le
+   plateau ; l'erreur n°3 de la presse (pousser sur la pointe) y est
+   plus facile. Le schéma ne dessine pas le talon.
+   NON TRANCHÉ : l'activation musculaire, qui n'est pas mesurée ici.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-bas"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis dos plaqué dans la presse inclinée, pieds posés dans le bas du plateau : le chariot revient jusqu'à 90° de flexion des genoux, la hanche restant ouverte et le genou voyageant davantage, puis est repoussé le long du rail.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.8px,1.8px)"],
+          [15, "translate(-3.61px,3.61px)"], [22.5, "translate(-5.41px,5.41px)"],
+          [30, "translate(-7.22px,7.22px)"], [37.5, "translate(-9.02px,9.02px)"],
+          [45, "translate(-10.83px,10.83px)"], [52, "translate(-10.83px,10.83px)"],
+          [56.67, "translate(-9.02px,9.02px)"], [61.33, "translate(-7.22px,7.22px)"],
+          [66, "translate(-5.41px,5.41px)"], [70.67, "translate(-3.61px,3.61px)"],
+          [75.33, "translate(-1.8px,1.8px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="109.72" y1="67.07" x2="130.93" y2="88.28"/>
+        <circle class="mo-plate-o" cx="130.23" cy="67.77" r="9"/>
+        <circle class="mo-hub" cx="130.23" cy="67.77" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-13.97deg)"], [15, "rotate(-20.92deg)"],
+          [22.5, "rotate(-26.2deg)"], [30, "rotate(-30.59deg)"], [37.5, "rotate(-34.37deg)"],
+          [45, "rotate(-37.7deg)"], [52, "rotate(-37.7deg)"], [56.67, "rotate(-34.37deg)"],
+          [61.33, "rotate(-30.59deg)"], [66, "rotate(-26.2deg)"], [70.67, "rotate(-20.92deg)"],
+          [75.33, "rotate(-13.97deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="93.83" cy="105.2" rx="3.4" ry="9" transform="rotate(48.95 93.83 105.2)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="105.61" y2="98.92"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "105.61px 98.92px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.76deg)"], [15, "rotate(43.56deg)"],
+              [22.5, "rotate(55.14deg)"], [30, "rotate(65.05deg)"], [37.5, "rotate(73.9deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.9deg)"],
+              [61.33, "rotate(65.05deg)"], [66, "rotate(55.14deg)"], [70.67, "rotate(43.56deg)"],
+              [75.33, "rotate(28.76deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="105.61" cy="98.92" r="2.8"/>
+            <line class="mo-limb" x1="105.61" y1="98.92" x2="127.4" y2="84.74"/>
+            <circle class="mo-hand" cx="127.4" cy="84.74" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   177. PRESSE À CUISSES, PIEDS ÉCARTÉS  (presse-cuisses-pieds-ecartes)
+   -----------------------------------------------------------
+   Rig du schéma 27 : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> LE PROFIL NE VOIT QU'UNE PARTIE DE L'ÉCARTEMENT <<< Genoux dans
+       l'axe des pieds, à mi-chemin latéral entre hanche et pied, les
+       deux segments ont chacun un décalage latéral de Δ/2 constant ;
+       leur longueur PROJETÉE vaut √(26² − (Δ/2)²), constante elle
+       aussi. Un raccourcissement constant se déclare, il ne ment pas.
+       Les angles de genou de 172° et 90° sont les angles VRAIS : la
+       distance hanche-pied de profil est donc √(d² − Δ²).
+   >>> PIEDS ÉCARTÉS : Δ = 16 <<< Hanches à ±8, pieds à ±24 (soit 26 cm
+       de largeur de hanches et 77 cm entre les pieds, à 1,6 cm par
+       unité : valeurs REPRÉSENTATIVES, non mesurées). Segments projetés
+       24,74. De profil :
+         course du chariot   16,28 contre 15,14 (+7,5 %)
+         genou projeté       171,6° -> 84,0° (90° vrais)
+         cuisse −45,41°, tibia +87,59°
+         angle de hanche     56,9° contre 60,4°
+       L'écartement CHANGE donc peu de chose de profil ; sa vraie
+       signature est frontale, d'où la seconde vue.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-ecartes"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Vue de profil de la presse inclinée, pieds très écartés et genoux dans l'axe des pieds : les segments de jambe sont raccourcis par la projection et le chariot parcourt 7,5 % de plus ; la seconde vue, de face, montre l'écartement.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.92px,1.92px)"],
+          [15, "translate(-3.84px,3.84px)"], [22.5, "translate(-5.76px,5.76px)"],
+          [30, "translate(-7.67px,7.67px)"], [37.5, "translate(-9.59px,9.59px)"],
+          [45, "translate(-11.51px,11.51px)"], [52, "translate(-11.51px,11.51px)"],
+          [56.67, "translate(-9.59px,9.59px)"], [61.33, "translate(-7.67px,7.67px)"],
+          [66, "translate(-5.76px,5.76px)"], [70.67, "translate(-3.84px,3.84px)"],
+          [75.33, "translate(-1.92px,1.92px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="108.23" y1="68.56" x2="129.44" y2="89.77"/>
+        <circle class="mo-plate-o" cx="128.73" cy="69.27" r="9"/>
+        <circle class="mo-hub" cx="128.73" cy="69.27" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-15.5deg)"], [15, "rotate(-23.6deg)"],
+          [22.5, "rotate(-30.02deg)"], [30, "rotate(-35.6deg)"], [37.5, "rotate(-40.67deg)"],
+          [45, "rotate(-45.41deg)"], [52, "rotate(-45.41deg)"], [56.67, "rotate(-40.67deg)"],
+          [61.33, "rotate(-35.6deg)"], [66, "rotate(-30.02deg)"], [70.67, "rotate(-23.6deg)"],
+          [75.33, "rotate(-15.5deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="91.15" cy="104.36" rx="3.4" ry="9" transform="rotate(37.51 91.15 104.36)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="101.06" y2="96.38"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "101.06px 96.38px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(30.62deg)"], [15, "rotate(46.38deg)"],
+              [22.5, "rotate(58.75deg)"], [30, "rotate(69.36deg)"], [37.5, "rotate(78.86deg)"],
+              [45, "rotate(87.59deg)"], [52, "rotate(87.59deg)"], [56.67, "rotate(78.86deg)"],
+              [61.33, "rotate(69.36deg)"], [66, "rotate(58.75deg)"], [70.67, "rotate(46.38deg)"],
+              [75.33, "rotate(30.62deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="101.06" cy="96.38" r="2.8"/>
+            <line class="mo-limb" x1="101.06" y1="96.38" x2="118.83" y2="79.17"/>
+            <circle class="mo-hand" cx="118.83" cy="79.17" r="3"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de face, genoux dans l'axe",
+    alt: "Vue de face, depuis le plateau, au bas du mouvement : hanches à 26 cm, genoux au milieu, pieds à 77 cm l'un de l'autre.",
+    legende: "Au bas du mouvement, de face : hanches à 26 cm, genoux à mi-chemin, pieds à 77 cm. Genoux dans l'axe des pieds, la jambe reste alignée de face. De profil cet écartement se voit à peine (course du chariot +7,5 %) : c'est ici qu'il se lit. Largeurs représentatives, non mesurées.",
+    vb: "20 10 80 62",
+    svg: `
+      
+      <!-- repère : largeur de hanches, pour lire l'écart des genoux et des pieds -->
+      <line class="mo-rom" x1="52" y1="24.3" x2="52" y2="54"/>
+      <line class="mo-rom" x1="68" y1="24.3" x2="68" y2="54"/>
+      <!-- plateau, vu de face : la ligne des pieds -->
+      <line class="mo-gear" x1="26" y1="47.2" x2="94" y2="47.2"/>
+      <line class="mo-body" x1="52" y1="50" x2="68" y2="50"/>
+      <line class="mo-limb" x1="52" y1="50" x2="44" y2="30.30"/>
+      <line class="mo-limb" x1="44" y1="30.30" x2="36" y2="47.20"/>
+      <circle class="mo-joint" cx="52" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="44" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="36" cy="47.20" r="3"/>
+      <line class="mo-limb" x1="68" y1="50" x2="76" y2="30.30"/>
+      <line class="mo-limb" x1="76" y1="30.30" x2="84" y2="47.20"/>
+      <circle class="mo-joint" cx="68" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="76" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="84" cy="47.20" r="3"/>
+      <line class="mo-rom" x1="36" y1="66" x2="84" y2="66"/>
+      <text class="mo-cote mo-cote-ok" font-size="5.1" text-anchor="middle" x="60" y="64">pieds : 77 cm</text>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   178. PRESSE À CUISSES, PIEDS SERRÉS  (presse-cuisses-pieds-serres)
+   -----------------------------------------------------------
+   Rig du schéma 27 : hanche fixe (86 ; 116), cuisse et
+   tibia de 26, rail à 45°, chariot en translation, plateau de 30
+   perpendiculaire au rail. SEPT POSES RÉSOLUES (genou de 172° à 90°
+   vrais) : le pied reste sur le plateau à chaque pose, ce que
+   l'interpolation de deux poses ne garantit pas.
+   CONTRÔLE : à décalage nul le même calcul redonne le schéma 27, cuisse
+   −42,29° contre −41,98°, tibia +82,00° contre +81,42° ; l'écart
+   vient de ce que le schéma 27 s'arrête à 171,8° et 90,3° de genou.
+   >>> LE PROFIL NE VOIT QU'UNE PARTIE DE L'ÉCARTEMENT <<< Genoux dans
+       l'axe des pieds, à mi-chemin latéral entre hanche et pied, les
+       deux segments ont chacun un décalage latéral de Δ/2 constant ;
+       leur longueur PROJETÉE vaut √(26² − (Δ/2)²), constante elle
+       aussi. Un raccourcissement constant se déclare, il ne ment pas.
+       Les angles de genou de 172° et 90° sont les angles VRAIS : la
+       distance hanche-pied de profil est donc √(d² − Δ²).
+   >>> PIEDS SERRÉS : Δ = −4 <<< Hanches à ±8, pieds à ±4 : les pieds sont
+       plus proches l'un de l'autre que les hanches (13 cm entre les
+       pieds contre 26 cm de largeur de hanches, valeurs
+       représentatives). Segments projetés 25,92. De profil :
+         course du chariot   15,20 contre 15,14
+         genou projeté       172,0° -> 89,7°
+         angle de hanche     60,2° contre 60,4°
+       Autrement dit, DE PROFIL, PIEDS SERRÉS = PIEDS AU MILIEU. Tout
+       l'intérêt de la variante est frontal et se lit sur la seconde
+       vue, pas sur l'animation. Je préfère l'écrire que laisser croire
+       que l'animation montre quelque chose de propre à cette variante.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-pieds-serres"] = {
+  vb: "30 38 132 114",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Vue de profil de la presse inclinée, pieds serrés : de profil le mouvement est quasi identique à celui des pieds au milieu ; la seconde vue, de face, montre les pieds plus proches que les hanches.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="152" y2="142"/>
+    <!-- rail incliné à 45° sur lequel coulisse le chariot -->
+    <line class="mo-gear" x1="106" y1="92" x2="150" y2="48"/>
+    <!-- dossier incliné + bâti -->
+    <line class="mo-pad" x1="89" y1="122" x2="49" y2="103"/>
+    <line class="mo-gear" x1="60" y1="106" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="118" x2="88" y2="142"/>
+    <!-- TRONC ENTIER dans les éléments fixes : dos et bassin plaqués -->
+    <circle class="mo-head" cx="42" cy="96" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52" y2="100"/>
+    <line class="mo-limb" x1="52" y1="100" x2="58" y2="114"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long du rail — il ne pivote pas.
+         Le plateau est dessiné avec le pied à SA place sur lui. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-1.79px,1.79px)"],
+          [15, "translate(-3.58px,3.58px)"], [22.5, "translate(-5.37px,5.37px)"],
+          [30, "translate(-7.17px,7.17px)"], [37.5, "translate(-8.96px,8.96px)"],
+          [45, "translate(-10.75px,10.75px)"], [52, "translate(-10.75px,10.75px)"],
+          [56.67, "translate(-8.96px,8.96px)"], [61.33, "translate(-7.17px,7.17px)"],
+          [66, "translate(-5.37px,5.37px)"], [70.67, "translate(-3.58px,3.58px)"],
+          [75.33, "translate(-1.79px,1.79px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="109.91" y1="66.88" x2="131.12" y2="88.09"/>
+        <circle class="mo-plate-o" cx="130.42" cy="67.58" r="9"/>
+        <circle class="mo-hub" cx="130.42" cy="67.58" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-14.57deg)"], [15, "rotate(-22.17deg)"],
+          [22.5, "rotate(-28.18deg)"], [30, "rotate(-33.39deg)"], [37.5, "rotate(-38.09deg)"],
+          [45, "rotate(-42.46deg)"], [52, "rotate(-42.46deg)"], [56.67, "rotate(-38.09deg)"],
+          [61.33, "rotate(-33.39deg)"], [66, "rotate(-28.18deg)"], [70.67, "rotate(-22.17deg)"],
+          [75.33, "rotate(-14.57deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="91.58" cy="103.92" rx="3.4" ry="9" transform="rotate(37.85 91.58 103.92)"/>
+        <circle cx="89.5" cy="119" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="101.91" y2="95.53"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau — chaîne
+             fermée : le pied ne le quitte jamais (sept poses RÉSOLUES). */
+          o: "101.91px 95.53px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.82deg)"], [15, "rotate(43.66deg)"],
+              [22.5, "rotate(55.29deg)"], [30, "rotate(65.24deg)"], [37.5, "rotate(74.15deg)"],
+              [45, "rotate(82.32deg)"], [52, "rotate(82.32deg)"], [56.67, "rotate(74.15deg)"],
+              [61.33, "rotate(65.24deg)"], [66, "rotate(55.29deg)"], [70.67, "rotate(43.66deg)"],
+              [75.33, "rotate(28.82deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="101.91" cy="95.53" r="2.8"/>
+            <line class="mo-limb" x1="101.91" y1="95.53" x2="120.52" y2="77.48"/>
+            <circle class="mo-hand" cx="120.52" cy="77.48" r="3"/>`
+        }
+      ]
+    }
+  ],
+  vue2: {
+    titre: "Vu de face, pieds serrés",
+    alt: "Vue de face, depuis le plateau, au bas du mouvement : hanches à 26 cm, genoux à 19 cm, pieds à 13 cm l'un de l'autre, plus proches que les hanches.",
+    legende: "Au bas du mouvement, de face : hanches à 26 cm, genoux à 19 cm, pieds à 13 cm, plus proches que les hanches. De profil, rien ne distingue cette variante de la presse pieds au milieu ; c'est ici qu'elle se lit. Largeurs représentatives, non mesurées.",
+    vb: "20 10 80 62",
+    svg: `
+      
+      <!-- repère : largeur de hanches, pour lire l'écart des genoux et des pieds -->
+      <line class="mo-rom" x1="52" y1="24.3" x2="52" y2="54"/>
+      <line class="mo-rom" x1="68" y1="24.3" x2="68" y2="54"/>
+      <!-- plateau, vu de face : la ligne des pieds -->
+      <line class="mo-gear" x1="26" y1="47.2" x2="94" y2="47.2"/>
+      <line class="mo-body" x1="52" y1="50" x2="68" y2="50"/>
+      <line class="mo-limb" x1="52" y1="50" x2="54" y2="30.30"/>
+      <line class="mo-limb" x1="54" y1="30.30" x2="56" y2="47.20"/>
+      <circle class="mo-joint" cx="52" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="54" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="56" cy="47.20" r="3"/>
+      <line class="mo-limb" x1="68" y1="50" x2="66" y2="30.30"/>
+      <line class="mo-limb" x1="66" y1="30.30" x2="64" y2="47.20"/>
+      <circle class="mo-joint" cx="68" cy="50" r="2.6"/>
+      <circle class="mo-joint" cx="66" cy="30.30" r="2.8"/>
+      <circle class="mo-hand" cx="64" cy="47.20" r="3"/>
+      <line class="mo-rom" x1="56" y1="66" x2="64" y2="66"/>
+      <text class="mo-cote mo-cote-ok" font-size="5.1" text-anchor="middle" x="60" y="64">pieds : 13 cm</text>`
+  },
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M100 66 L118 48 M115.17 56.49 L118 48 L109.51 50.83"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M118 48 L100 66 M108.49 63.17 L100 66 L102.83 57.51"/>` }
+  ]
+};
+
+/* =========================================================
+   179. PRESSE À CUISSES HORIZONTALE (ASSISE)  (presse-cuisses-horizontale)
+   -----------------------------------------------------------
+   Position : ASSIS, dossier à 15° de la verticale, plateau VERTICAL,
+   chariot sur un rail HORIZONTAL. Même hanche (86 ; 116), mêmes
+   segments (26) que le schéma 27. Vue de PROFIL.
+   Pieds à y = 108 sur le plateau, soit 8 au-dessus de la hanche. Sept
+   poses résolues, genou de 172° à 90° vrais : le plateau recule de
+   137,25 à 121,89 (course 15,36), horizontalement.
+   >>> CE QUE LA MACHINE CHANGE : LA DIRECTION DE POUSSÉE PAR RAPPORT AU
+       TRONC <<< Sur la presse à 45° le tronc est presque couché et on
+       pousse en diagonale ; ici le tronc est presque debout et on
+       pousse à l'horizontale. À 90° de genou : angle intérieur de hanche
+       47,4° (92,1° jambes tendues), contre 60,4° sur la presse à 45°.
+       Cette valeur dépend du réglage ; mesurée ici sur la même hauteur de
+       pied pour trois positions : pied à y=96, 27,0° ; y=108, 47,4° ;
+       y=120, 66,2°.
+   NON TRANCHÉ : dossier à 15° et pieds à y=108 sont des réglages
+   représentatifs, pas des mesures de machines. Le sens de la
+   comparaison tient à la géométrie ; la valeur exacte, aux réglages.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-horizontale"] = {
+  vb: "36 54 136 92",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Assis presque debout dans la presse horizontale, plateau vertical : le chariot revient horizontalement jusqu'à 90° de flexion des genoux, puis est repoussé.",
+  fixe: `
+    <line class="mo-ground" x1="40" y1="142" x2="170" y2="142"/>
+    <!-- rail HORIZONTAL du chariot -->
+    <line class="mo-gear" x1="112" y1="134" x2="168" y2="134"/>
+    <!-- siège, dossier à 15° de la verticale, bâti -->
+    <line class="mo-pad" x1="70.5" y1="58" x2="86.5" y2="117"/>
+    <line class="mo-pad" x1="76" y1="122" x2="104" y2="122"/>
+    <line class="mo-gear" x1="92" y1="126" x2="92" y2="142"/>
+    <line class="mo-gear" x1="76" y1="126" x2="76" y2="142"/>
+    <!-- TRONC ENTIER fixe : dos et bassin plaqués, presque debout -->
+    <circle class="mo-head" cx="74.2" cy="72.1" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="77.2" y2="83.2"/>
+    <line class="mo-body" x1="77.2" y1="83.2" x2="75.2" y2="76"/>
+    <line class="mo-limb" x1="77.2" y1="83.2" x2="84" y2="100"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long de son rail. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(-2.56px,0px)"],
+          [15, "translate(-5.12px,0px)"], [22.5, "translate(-7.68px,0px)"],
+          [30, "translate(-10.24px,0px)"], [37.5, "translate(-12.8px,0px)"],
+          [45, "translate(-15.36px,0px)"], [52, "translate(-15.36px,0px)"],
+          [56.67, "translate(-12.8px,0px)"], [61.33, "translate(-10.24px,0px)"],
+          [66, "translate(-7.68px,0px)"], [70.67, "translate(-5.12px,0px)"],
+          [75.33, "translate(-2.56px,0px)"], [80, "translate(0px,0px)"],
+          [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="137.25" y1="88" x2="137.25" y2="128"/>
+        <line class="mo-gear" x1="137.25" y1="128" x2="151.25" y2="134"/>
+        <circle class="mo-plate-o" cx="151.25" cy="108" r="9"/>
+        <circle class="mo-hub" cx="151.25" cy="108" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-14.85deg)"], [15, "rotate(-22.76deg)"],
+          [22.5, "rotate(-29.11deg)"], [30, "rotate(-34.7deg)"], [37.5, "rotate(-39.83deg)"],
+          [45, "rotate(-44.69deg)"], [52, "rotate(-44.69deg)"], [56.67, "rotate(-39.83deg)"],
+          [61.33, "rotate(-34.7deg)"], [66, "rotate(-29.11deg)"], [70.67, "rotate(-22.76deg)"],
+          [75.33, "rotate(-14.85deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="98.67" cy="109.6" rx="3.4" ry="9" transform="rotate(77.13 98.67 109.6)"/>
+        <circle cx="86" cy="116" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="111.35" y2="110.21"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau (sept poses RÉSOLUES). */
+          o: "111.35px 110.21px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.78deg)"], [15, "rotate(43.58deg)"],
+              [22.5, "rotate(55.16deg)"], [30, "rotate(65.06deg)"], [37.5, "rotate(73.91deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.91deg)"],
+              [61.33, "rotate(65.06deg)"], [66, "rotate(55.16deg)"], [70.67, "rotate(43.58deg)"],
+              [75.33, "rotate(28.78deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="111.35" cy="110.21" r="2.8"/>
+            <line class="mo-limb" x1="111.35" y1="110.21" x2="137.25" y2="108"/>
+            <circle class="mo-hand" cx="137.25" cy="108" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M112 80 L146 80 M139 75 L146 80 L139 85"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M146 80 L112 80 M119 75 L112 80 L119 85"/>` }
+  ]
+};
+
+/* =========================================================
+   180. PRESSE À CUISSES VERTICALE (ALLONGÉE)  (presse-cuisses-verticale)
+   -----------------------------------------------------------
+   Position : ALLONGÉ sur le dos, dossier à 8° au-dessus de l'horizontale,
+   plateau HORIZONTAL au-dessus du bassin, chariot sur un rail
+   VERTICAL. Même hanche (86 ; 116), mêmes segments (26) que le schéma 27.
+   Pieds à l'aplomb des hanches. Vue de PROFIL.
+   Sept poses résolues, genou de 172° à 90° vrais : le plateau descend de
+   y = 64,13 à y = 79,23 (course 15,10), verticalement.
+   >>> LA POUSSÉE EST PERPENDICULAIRE AU TRONC, ET C'EST LA PRESSE QUI
+       FERME LE PLUS LA HANCHE <<< À 90° de genou, angle intérieur de
+       hanche 37,0° (78,0° jambes tendues), contre 47,4° sur la presse
+       horizontale et 60,4° à 45°. Le genou finit en (67,6 ; 97,6), à 15,8
+       du tronc : près du buste, sans le toucher.
+       Variation du pied à l'avant ou à l'arrière : 21,2° à 10 en arrière,
+       37,0° à l'aplomb, 52,8° à 10 en avant.
+   LIMITE : plus la hanche est fermée, plus le bassin décolle tôt, ce
+   qui fait de cette machine la moins indulgente ; d'où le niveau
+   « avancé » dans la fiche.
+   NON TRANCHÉ : dossier à 8° et pieds à l'aplomb sont des réglages
+   représentatifs. La comparaison entre machines tient à la géométrie ;
+   la valeur exacte, aux réglages.
+   ========================================================= */
+EXERCISE_MOTIONS["presse-cuisses-verticale"] = {
+  vb: "34 40 112 106",
+  dur: 4.0,
+  phases: { ecc: [0, 45], con: [52, 80] },
+  alt: "Allongé sur le dos sous la presse verticale, plateau horizontal au-dessus du bassin : le chariot descend verticalement jusqu'à 90° de flexion des genoux, le genou venant près du buste, puis est repoussé vers le haut.",
+  fixe: `
+    <line class="mo-ground" x1="34" y1="142" x2="140" y2="142"/>
+    <!-- rail VERTICAL du chariot -->
+    <line class="mo-gear" x1="120" y1="40" x2="120" y2="138"/>
+    <!-- banc : dos presque à plat, bâti -->
+    <line class="mo-pad" x1="88" y1="120" x2="36" y2="112"/>
+    <line class="mo-gear" x1="60" y1="116" x2="60" y2="142"/>
+    <line class="mo-gear" x1="88" y1="122" x2="88" y2="142"/>
+    <!-- TRONC ENTIER fixe : allongé sur le dos -->
+    <circle class="mo-head" cx="40.4" cy="109.6" r="8"/>
+    <line class="mo-body" x1="86" y1="116" x2="52.3" y2="111.3"/>
+    <line class="mo-body" x1="52.3" y1="111.3" x2="48" y2="110.7"/>
+    <line class="mo-limb" x1="52.3" y1="111.3" x2="66" y2="115"/>
+    <circle class="mo-joint" cx="86" cy="116" r="3"/>`,
+  parts: [
+    {
+      /* CHARIOT : TRANSLATION pure le long de son rail. */
+      k: [[0, "translate(0px,0px)"], [7.5, "translate(0px,2.52px)"], [15, "translate(0px,5.03px)"],
+          [22.5, "translate(0px,7.55px)"], [30, "translate(0px,10.07px)"],
+          [37.5, "translate(0px,12.59px)"], [45, "translate(0px,15.1px)"],
+          [52, "translate(0px,15.1px)"], [56.67, "translate(0px,12.59px)"],
+          [61.33, "translate(0px,10.07px)"], [66, "translate(0px,7.55px)"],
+          [70.67, "translate(0px,5.03px)"], [75.33, "translate(0px,2.52px)"],
+          [80, "translate(0px,0px)"], [100, "translate(0px,0px)"]],
+      svg: `
+        <line class="mo-gear" x1="70" y1="64.13" x2="102" y2="64.13"/>
+        <line class="mo-gear" x1="102" y1="64.13" x2="120" y2="64.13"/>
+        <circle class="mo-plate-o" cx="126" cy="64.13" r="9"/>
+        <circle class="mo-hub" cx="126" cy="64.13" r="2.6"/>`
+    },
+    {
+      /* CUISSE : rotation autour de la HANCHE, qui ne bouge pas. */
+      o: "86px 116px",
+      k: [[0, "rotate(0deg)"], [7.5, "rotate(-14.35deg)"], [15, "rotate(-21.74deg)"],
+          [22.5, "rotate(-27.53deg)"], [30, "rotate(-32.49deg)"], [37.5, "rotate(-36.93deg)"],
+          [45, "rotate(-41deg)"], [52, "rotate(-41deg)"], [56.67, "rotate(-36.93deg)"],
+          [61.33, "rotate(-32.49deg)"], [66, "rotate(-27.53deg)"], [70.67, "rotate(-21.74deg)"],
+          [75.33, "rotate(-14.35deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+      muscleNom: ["Quadriceps", "Grand fessier"],
+      muscle: `
+        <ellipse cx="88.59" cy="103.03" rx="3.4" ry="9" transform="rotate(-4 88.59 103.03)"/>
+        <circle cx="86" cy="116" r="4.5"/>`,
+      svg: `<line class="mo-limb" x1="86" y1="116" x2="84.19" y2="90.06"/>`,
+      children: [
+        {
+          /* TIBIA : son extrémité suit exactement le plateau (sept poses RÉSOLUES). */
+          o: "84.19px 90.06px",
+          k: [[0, "rotate(0deg)"], [7.5, "rotate(28.7deg)"], [15, "rotate(43.49deg)"],
+              [22.5, "rotate(55.07deg)"], [30, "rotate(64.99deg)"], [37.5, "rotate(73.86deg)"],
+              [45, "rotate(82deg)"], [52, "rotate(82deg)"], [56.67, "rotate(73.86deg)"],
+              [61.33, "rotate(64.99deg)"], [66, "rotate(55.07deg)"], [70.67, "rotate(43.49deg)"],
+              [75.33, "rotate(28.7deg)"], [80, "rotate(0deg)"], [100, "rotate(0deg)"]],
+          svg: `
+            <circle class="mo-joint" cx="84.19" cy="90.06" r="2.8"/>
+            <line class="mo-limb" x1="84.19" y1="90.06" x2="86" y2="64.13"/>
+            <circle class="mo-hand" cx="86" cy="64.13" r="3"/>`
+        }
+      ]
+    }
+  ],
+  arrows: [
+    { phase: "con", svg: `<path class="mo-arr" d="M146 100 L146 62 M141 70 L146 62 L151 70"/>` },
+    { phase: "ecc", svg: `<path class="mo-arr" d="M146 62 L146 100 M141 92 L146 100 L151 92"/>` }
+  ]
+};

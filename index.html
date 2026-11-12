@@ -108,7 +108,7 @@
         <button type="button" class="disc-toggle" aria-expanded="false">
           <span class="disc-sum"><span class="disc-title">Matériel &amp; niveau</span>
             <span class="disc-meta" id="lib-filter-state">tout</span></span>
-          <span class="disc-more">Filtrer<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></span></span>
+          <span class="disc-more">Filtrer<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span></span>
         </button>
         <div class="disc-body">
           <p class="disc-what">Deux filtres pour coller à ta salle et à ton expérience :
@@ -153,7 +153,7 @@
     <div class="lib-bar">
       <p id="result-count" class="result-count" role="status"></p>
       <div class="lib-bar-actions">
-        <button class="btn btn-ghost btn-sm" id="fav-filter" aria-pressed="false">☆ Favoris</button>
+        <button class="btn btn-ghost btn-sm" id="fav-filter" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg> Favoris</button>
         <button class="btn btn-ghost btn-sm" id="goto-ajouter">+ Référencer</button>
       </div>
     </div>
@@ -190,7 +190,7 @@
         <input type="file" id="imp-f-fichier" accept="image/*,text/plain,.txt,.md,.csv" class="visually-hidden">
 
         <div class="program-actions" style="margin-bottom:12px">
-          <button class="btn btn-ghost" id="imp-contexte">＋ Photo ou fichier</button>
+          <button class="btn btn-ghost" id="imp-contexte"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg> Photo ou fichier</button>
           <button class="btn btn-ghost" id="imp-coller">Coller le texte</button>
         </div>
 
@@ -327,7 +327,7 @@
           <button type="button" class="disc-toggle" aria-expanded="false">
             <span class="disc-sum"><span class="disc-title">Repos calculé automatiquement</span>
               <span class="disc-meta">par exercice, selon ton objectif</span></span>
-            <span class="disc-more">Détails<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></span></span>
+            <span class="disc-more">Détails<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span></span>
           </button>
           <div class="disc-body">
             <p class="disc-what">Le temps de repos n'est pas un réglage unique : il change à chaque exercice
@@ -361,9 +361,9 @@
             <span class="hdr-pill-dot">●</span>
             <span class="hdr-pill-chrono" id="hdr-pill-chrono">00:00</span>
             <span class="hdr-pill-left" id="hdr-pill-left"></span>
-            <span class="hdr-pill-chev" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></span>
+            <span class="hdr-pill-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span>
           </button>
-          <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-check"/></svg></button>
+          <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true"><use href="#ic-tick"/></svg></button>
         </div>
 
         <!-- État complet -->
@@ -371,9 +371,9 @@
         <div class="live-title-row">
           <h2 id="live-title" class="display-sm">Séance en cours</h2>
           <div class="live-title-actions">
-            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-up"/></svg></button>
-            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></button>
-            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-pause"/></svg> Pause</button>
+            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-up"/></svg></button>
+            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></button>
+            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause"><svg class="icon" aria-hidden="true"><use href="#ic-pause"/></svg> Pause</button>
             <span class="live-dot">● EN DIRECT</span>
           </div>
         </div>
@@ -381,7 +381,7 @@
         <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
         <div id="pause-banner" class="pause-banner hidden">
           <span>Séance en pause — navigue librement, rien n'est perdu.</span>
-          <button class="btn btn-primary btn-sm" id="pause-resume"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-play"/></svg> Reprendre</button>
+          <button class="btn btn-primary btn-sm" id="pause-resume"><svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg> Reprendre</button>
         </div>
 
         <div class="live-chronos">
@@ -426,7 +426,8 @@
 
       <div class="program-actions live-actions-flow">
         <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
-        <button class="btn btn-ghost" id="live-superset"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-bolt"/></svg> Super set</button>
+        <button class="btn btn-ghost" id="live-superset"><svg class="icon" aria-hidden="true"><use href="#ic-zap"/></svg> Super set</button>
+        <button class="btn btn-ghost" id="live-reorder"><svg class="icon" aria-hidden="true"><use href="#ic-arrows-v"/></svg> Ordre</button>
         <button class="btn btn-primary" id="live-finish">Terminer</button>
         <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
       </div>
@@ -435,6 +436,13 @@
       <div id="ss-pick-bar" class="ss-pick-bar hidden">
         <span id="ss-pick-msg">Touche le <strong>premier</strong> exercice du super set.</span>
         <button class="btn btn-ghost btn-sm" id="ss-pick-cancel">Annuler</button>
+      </div>
+      <!-- Barre de réorganisation : même principe que celle du super set.
+           Les cartes se replient toutes et chacune porte ses deux flèches. -->
+      <div id="reorder-bar" class="ss-pick-bar hidden">
+        <span id="reorder-msg">Touche <strong>deux</strong> exercices pour les échanger, ou <strong>fais-les glisser</strong>.
+          Les flèches déplacent d'un cran. Un super set se déplace d'un bloc.</span>
+        <button class="btn btn-primary btn-sm" id="reorder-done">Terminé</button>
       </div>
 
       <div id="live-exercises"></div>
@@ -473,7 +481,7 @@
       <div class="rest-controls">
         <button class="btn btn-ghost" id="rest-minus">−15 s</button>
         <button class="btn btn-ghost" id="rest-plus">+15 s</button>
-        <button class="btn btn-ghost" id="rest-minimize" title="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg> Réduire</button>
+        <button class="btn btn-ghost" id="rest-minimize" title="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg> Réduire</button>
       </div>
       <button class="btn btn-primary btn-lg" id="rest-resume">Reprendre l'entraînement</button>
     </div>
@@ -483,7 +491,7 @@
   <div id="picker" class="modal hidden">
     <div class="modal-backdrop" id="picker-backdrop"></div>
     <div class="modal-box">
-      <button class="modal-close" id="picker-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
+      <button class="modal-close" id="picker-close" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#ic-x"/></svg></button>
       <h2 class="display-sm">Ajouter un exercice</h2>
       <input type="search" id="picker-search" placeholder="Rechercher parmi tous les exercices…">
       <div class="picker-suggest">
@@ -596,7 +604,7 @@
   <div id="builder" class="modal hidden">
     <div class="modal-backdrop"></div>
     <div class="modal-box builder-box">
-      <button class="modal-close" id="builder-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
+      <button class="modal-close" id="builder-close" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#ic-x"/></svg></button>
       <div id="builder-content"></div>
     </div>
   </div>
@@ -606,7 +614,7 @@
   <div id="session-modal" class="modal hidden">
     <div class="modal-backdrop"></div>
     <div class="modal-box">
-      <button class="modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
+      <button class="modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#ic-x"/></svg></button>
       <div id="session-modal-content"></div>
     </div>
   </div>
@@ -624,7 +632,7 @@
         <span class="sheet-grip-bar"></span>
       </div>
       <h2 class="panel-title" id="panel-title">Panneau</h2>
-      <button class="modal-close" id="panel-close" aria-label="Fermer le panneau"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
+      <button class="modal-close" id="panel-close" aria-label="Fermer le panneau"><svg class="icon" aria-hidden="true"><use href="#ic-x"/></svg></button>
       <div class="sheet-scroll"><div id="panel-host"></div></div>
     </div>
   </div>
@@ -639,17 +647,24 @@
            aria-label="Glisser pour agrandir ou réduire le panneau">
         <span class="sheet-grip-bar"></span>
       </div>
-      <button class="modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
+      <button class="modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true"><use href="#ic-x"/></svg></button>
       <div class="sheet-scroll"><div id="modal-content"></div></div>
     </div>
   </div>
 
   <!-- Bouton RÉGLAGES : remplace la bascule de thème de la barre du haut,
-       qui disparaît sur mobile (point 3). Discret, ancré en bas à droite
-       au-dessus de la barre d'onglets, il ne recouvre aucun contenu et
-       s'efface dès qu'une séance est en cours (la mini-barre prend la place). -->
-  <button id="settings-fab" class="settings-fab" aria-label="Réglages : thème, son de repos">
-    <span class="sf-ico" id="settings-fab-ico" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-moon"/></svg></span>
+       qui disparaît sur mobile (point 3). Ancré en bas à droite au-dessus
+       de la barre d'onglets.
+       >>> IL A LONGTEMPS PORTÉ UNE LUNE <<< En héritant de la bascule de
+       thème, il en avait gardé le glyphe : ☾ en sombre, ☀ en clair. Sur
+       un téléphone, où la barre du haut n'existe pas, c'était la SEULE
+       porte d'entrée des réglages — et elle annonçait « jour/nuit », pas
+       « réglages ». Elle porte maintenant un engrenage ET le mot, parce
+       qu'une icône seule laisse encore deviner. Le choix du thème, lui,
+       n'a pas bougé : il est dans le panneau. -->
+  <button id="settings-fab" class="settings-fab" aria-label="Réglages : thème, son de repos, version installée">
+    <span class="sf-ico" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-settings"/></svg></span>
+    <span class="sf-lab">Réglages</span>
   </button>
 
   <!-- Mini-barre : la séance en cours te suit dans toute l'app -->
@@ -676,6 +691,7 @@
   <!-- avant les vues qui l'utilisent : tracking.js et home.js appellent
        statInfo() dès leur premier rendu, au chargement -->
   <script src="js/stats-info.js"></script>
+  <script src="js/pave.js"></script>
   <script src="js/workout.js"></script>
   <script src="js/plein-ecran.js"></script>
   <script src="js/tracking.js"></script>
@@ -683,6 +699,8 @@
   <script src="js/exercice-nouveau.js"></script>
   <script src="js/import-programme.js"></script>
   <script src="js/programs.js"></script>
+  <script src="js/push.js"></script>
   <script src="js/shell.js"></script>
+  <script src="js/transitions.js"></script>
 </body>
 </html>

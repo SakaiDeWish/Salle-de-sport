@@ -297,7 +297,7 @@ function renderDashboard() {
       ${disclosure("dash.goal", {
         summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
           <span class="disc-meta">cette semaine · streak ${gs.streak} sem.${statInfo("streak")}
-          ${gs.achievedThisWeek ? '<span class="goal-ok">✓ atteint</span>' : ""}</span>`,
+          ${gs.achievedThisWeek ? `<span class="goal-ok">${icon("tick")} atteint</span>` : ""}</span>`,
         label: "Régler",
         detail: `<label class="goal-adjust">Séances / semaine
             <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
@@ -330,7 +330,7 @@ function renderDashboard() {
               <span class="badge-ico">${icon(b.ico)}</span>
               <span class="badge-nom">${esc(b.nom)}</span>
               <span class="badge-desc">${esc(b.desc)}</span>
-              ${b.ok ? '<span class="badge-check">✓</span>'
+              ${b.ok ? `<span class="badge-check">${icon("tick")}</span>`
                      : (b.binaire ? "" : `<span class="badge-prog" role="img"
                           aria-label="Avancement : ${esc(badgeAvance(b))}">${badgeRing(b)}</span>`)}
               ${b.ok || b.binaire ? "" : `<span class="badge-compte">${esc(badgeAvance(b))}</span>`}
@@ -509,7 +509,7 @@ function renderSessionsPanel() {
     return (va - vb) * sessionsState.sortDir;
   });
 
-  const arrow = k => sessionsState.sortBy === k ? (sessionsState.sortDir === 1 ? " ↑" : " ↓") : "";
+  const arrow = k => sessionsState.sortBy === k ? (" " + icon(sessionsState.sortDir === 1 ? "arrow-up" : "arrow-down")) : "";
 
   panel.innerHTML = `
     <div class="sessions-controls">
@@ -775,9 +775,9 @@ function renderCalendar() {
   panel.innerHTML = `
     <div class="card cal-card">
       <div class="cal-nav">
-        <button class="btn btn-ghost btn-sm" id="cal-prev" aria-label="Mois précédent">←</button>
+        <button class="btn btn-ghost btn-sm" id="cal-prev" aria-label="Mois précédent">${icon("chevron-left")}</button>
         <h3 class="panel-title cal-title">${monthName.charAt(0).toUpperCase() + monthName.slice(1)}</h3>
-        <button class="btn btn-ghost btn-sm" id="cal-next" aria-label="Mois suivant">→</button>
+        <button class="btn btn-ghost btn-sm" id="cal-next" aria-label="Mois suivant">${icon("chevron-right")}</button>
       </div>
       <div class="cal-grid cal-head">
         ${["L", "M", "M", "J", "V", "S", "D"].map(d => `<span class="cal-dow">${d}</span>`).join("")}
@@ -801,7 +801,7 @@ function renderCalendar() {
             </button>`;
           }).join("")}
           <span class="cal-week-status ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "goal-ok" : ""}">
-            ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? "✓" : `${gs.perWeek.get(w.key) || 0}/${gs.goal}`}
+            ${(gs.perWeek.get(w.key) || 0) >= gs.goal ? icon("tick") : `${gs.perWeek.get(w.key) || 0}/${gs.goal}`}
           </span>
         </div>`).join("")}
 
@@ -857,7 +857,65 @@ function renderCalDayDetail(sessions) {
     b.addEventListener("click", () => openSessionModal(b.dataset.id)));
 }
 
-/* ---------- Service worker (PWA hors-ligne) ---------- */
+/* ---------- Service worker (PWA hors-ligne) ----------
+
+   L'enregistrement seul ne suffisait pas. Une app ajoutée à l'écran
+   d'accueil n'est pas rechargée quand on la rouvre depuis le sélecteur
+   d'applications : le service worker se met à jour en silence, mais la
+   page continue d'exécuter le JavaScript chargé des jours plus tôt. Une
+   fonctionnalité livrée restait donc invisible, sans rien à l'écran qui
+   permette de s'en apercevoir.
+
+   Trois ajouts, tous passifs : on CHERCHE une mise à jour à l'ouverture
+   et à chaque retour au premier plan ; on PRÉVIENT quand il y en a une ;
+   on ne recharge JAMAIS tout seul — recharger sous le pouce de quelqu'un
+   au milieu d'une série serait pire que le défaut qu'on corrige. */
+function versionDuServiceWorker() {
+  return new Promise(resolve => {
+    const sw = navigator.serviceWorker && navigator.serviceWorker.controller;
+    if (!sw || typeof MessageChannel === "undefined") return resolve(null);
+    const canal = new MessageChannel();
+    const stop = setTimeout(() => resolve(null), 1500);
+    canal.port1.onmessage = e => { clearTimeout(stop); resolve(e.data); };
+    try { sw.postMessage({ type: "version" }, [canal.port2]); }
+    catch { clearTimeout(stop); resolve(null); }
+  });
+}
+
+let majAnnoncee = false;
+function annonceMaj() {
+  if (majAnnoncee) return;
+  majAnnoncee = true;
+  toast("Nouvelle version disponible — touche ici pour recharger", 60000);
+  const t = document.getElementById("toast");
+  if (!t) return;
+  t.classList.add("toast-action");
+  t.addEventListener("click", () => location.reload(), { once: true });
+}
+
 if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-  navigator.serviceWorker.register("sw.js").catch(() => { /* hors ligne / non supporté */ });
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    const cherche = () => { try { reg.update(); } catch { /* hors ligne */ } };
+    cherche();
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) cherche(); });
+    /* Une version est téléchargée et attend : on le dit, sans l'imposer. */
+    if (reg.waiting && navigator.serviceWorker.controller) annonceMaj();
+    reg.addEventListener("updatefound", () => {
+      const neuf = reg.installing;
+      if (!neuf) return;
+      neuf.addEventListener("statechange", () => {
+        if (neuf.state === "installed" && navigator.serviceWorker.controller) annonceMaj();
+      });
+    });
+  }).catch(() => { /* hors ligne / non supporté */ });
+
+  /* Le cas le plus traître : le service worker a DÉJÀ pris la main et
+     sert du neuf, pendant que cette page-ci exécute encore l'ancien
+     code. Rien ne le signalait. La comparaison des deux numéros le
+     révèle — c'est à ça que sert leur duplication. */
+  navigator.serviceWorker.addEventListener("controllerchange", annonceMaj);
+  window.addEventListener("load", () => setTimeout(() =>
+    versionDuServiceWorker().then(v => {
+      if (v && typeof APP_VERSION !== "undefined" && v !== APP_VERSION) annonceMaj();
+    }), 1200));
 }

@@ -94,7 +94,7 @@ function arreterHold() {
   saveLive();
   renderLiveExercises();
   const champ = document.getElementById("temps-" + i);
-  if (champ) { champ.value = String(s); champ.focus(); }
+  if (champ) champ.value = String(s);
 }
 
 /* Suggestion de progression (double progression). Tant que toutes les
@@ -143,6 +143,87 @@ function progressionHint(ex) {
   }
   return `Garde ta charge, vise ${cible} reps sur chaque série${suffixe}.`;
 }
+
+/* ==================== TENDANCE PAR SÉRIE ====================
+
+   Le conseil de progression répond une fois par exercice : « monte »
+   ou « garde ». Mais une séance se perd rarement d'un bloc : les deux
+   premières séries passent, la troisième lâche. Une petite flèche à
+   côté de chaque série validée le montre au moment où ça arrive.
+
+   CONTRE QUOI. La série de même numéro dans memoDepart, la mémoire
+   figée au démarrage : la série 3 d'aujourd'hui face à la série 3 de
+   la dernière fois. Une série sans équivalent n'a rien à dire.
+
+   MIEUX, C'EST QUOI. Le poids d'abord, puis les reps : plus de l'un et
+   pas moins de l'autre, c'est mieux. Quand ils se contredisent (plus
+   lourd mais moins de reps), le 1RM estimé d'Epley tranche, la formule
+   déjà utilisée par l'estimateur : 70 × 6 bat 60 × 8. Sans charge, ce
+   sont les reps. Pour un maintien, le lest puis les secondes, et rien
+   quand ils se contredisent : il n'y a pas d'Epley du gainage.
+
+   Renvoie 1, 0, -1, ou null quand il n'y a rien à comparer. */
+function tendanceSerie(s, avant, statique) {
+  if (!s || !avant) return null;
+  const cmp = (a, b) => (a > b) - (a < b);
+  const pA = s.poids ?? null, pB = avant.poids ?? null;
+  if ((pA == null) !== (pB == null)) return null;   // lesté d'un côté seulement
+  const dP = pA == null ? 0 : cmp(pA, pB);
+  if (statique) {
+    if (s.secondes == null || avant.secondes == null) return null;
+    const dT = cmp(s.secondes, avant.secondes);
+    if (dP === 0) return dT;
+    if (dT === 0 || dT === dP) return dP;
+    return null;
+  }
+  if (s.reps == null || avant.reps == null) return null;
+  const dR = cmp(s.reps, avant.reps);
+  if (dP === 0) return dR;
+  if (dR === 0 || dR === dP) return dP;
+  return cmp(pA * (1 + s.reps / 30), pB * (1 + avant.reps / 30));
+}
+
+function badgeTendance(ex, j, statique) {
+  const avant = (ex.memoDepart || [])[j];
+  const t = tendanceSerie(ex.sets[j], avant, statique);
+  if (t == null) return "";
+  const ref = statique
+    ? `${avant.poids != null ? avant.poids + " kg, " : ""}${fmtSec(avant.secondes)}`
+    : `${avant.poids != null ? avant.poids + " kg × " : ""}${avant.reps} reps`;
+  const [cls, glyphe, mot] = t > 0 ? ["up", icon("arrow-up"), "Mieux"] : t < 0 ? ["down", icon("arrow-down"), "Moins bien"] : ["eq", "=", "Pareil"];
+  const texte = `${mot} que la dernière fois (${ref})`;
+  return ` <span class="set-trend set-trend-${cls}" title="${esc(texte)}" aria-label="${esc(texte)}">${glyphe}</span>`;
+}
+
+/* ==================== ÉCRAN ALLUMÉ ====================
+
+   Entre deux séries, le téléphone posé sur le banc se met en veille, et
+   il faut le déverrouiller pour voir le repos ou valider la série. On
+   demande donc au navigateur de garder l'écran allumé tant qu'une
+   séance est ouverte (API Screen Wake Lock).
+
+   Le système relâche ce verrou dès que l'app passe en arrière-plan :
+   on le redemande au retour (visibilitychange). Navigateur sans l'API,
+   batterie faible ou refus : l'écran se met en veille comme avant, ce
+   n'est qu'un confort, pas une fonction dont la séance dépend. */
+let verrouEcran = null;
+async function garderEcranAllume() {
+  if (!live || verrouEcran || document.hidden || !("wakeLock" in navigator)) return;
+  try {
+    verrouEcran = await navigator.wakeLock.request("screen");
+    verrouEcran.addEventListener("release", () => { verrouEcran = null; });
+  } catch (e) {
+    verrouEcran = null;
+    console.info("GymCoach : écran allumé refusé par le navigateur", e && e.name);
+  }
+}
+function libererEcran() {
+  if (verrouEcran) verrouEcran.release().catch(() => {});
+  verrouEcran = null;
+}
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) garderEcranAllume();
+});
 
 /* Référence temporelle : figée pendant une pause */
 function nowRef() { return (live && live.pausedAt) ? live.pausedAt : Date.now(); }
@@ -282,6 +363,7 @@ function beep(force, volume) {
   /* À 0 %, on ne fabrique aucun oscillateur : une rampe exponentielle
      vers zéro n'existe pas, et un bip inaudible reste un bip payé. */
   if (sonOn && pic > 0.0002) {
+    if (typeof baisseLesAutres === "function") baisseLesAutres();
     try {
       const ctx = audioContext();
       if (ctx) {
@@ -303,6 +385,63 @@ function beep(force, volume) {
   if (vibOn) {
     try { navigator.vibrate && navigator.vibrate(180); } catch { /* non supporté */ }
   }
+}
+
+/* Voix du décompte « 3, 2, 1 » avant la reprise. Synthèse vocale du
+   navigateur (aucun fichier audio) : suit le volume du bip, se tait si le
+   son est coupé ou si l'appareil n'a pas de voix. */
+STORAGE_KEYS.restVoice = "gymcoach.restVoice";
+/* Baisse la musique/podcast d'une autre app pendant le décompte.
+   `navigator.audioSession` (Safari iOS 16.4+, Chrome récent) : le type
+   « transient » déclare un son bref qui doit passer AU-DESSUS des autres
+   (ils baissent, puis remontent d'eux-mêmes). Ni la page ni l'app ne
+   peut régler le volume d'une autre app : c'est au système de le faire.
+   Détecté, jamais exigé : sans l'API, la voix est dite normalement. */
+let finDuck = null;
+function baisseLesAutres() {
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = "transient";
+  } catch { /* API absente ou refusée */ }
+  clearTimeout(finDuck);
+  finDuck = setTimeout(() => {
+    try { if (navigator.audioSession) navigator.audioSession.type = "auto"; } catch { /* idem */ }
+  }, 1800);
+}
+
+function annonce(n) {
+  if (localStorage.getItem(STORAGE_KEYS.restVoice) === "0") return;
+  if (localStorage.getItem(STORAGE_KEYS.restSound) === "0") return;
+  const vol = restVolume() / 100;
+  if (vol <= 0 || !("speechSynthesis" in window)) return;
+  try {
+    const u = new SpeechSynthesisUtterance(String(n));
+    u.lang = "fr-FR"; u.volume = vol; u.rate = 1.1;
+    baisseLesAutres();
+    window.speechSynthesis.cancel();   // jamais de file qui prend du retard
+    window.speechSynthesis.speak(u);
+  } catch { /* voix indisponible : silencieux, jamais bloquant */ }
+}
+
+/* Notification de reprise, posée par le service worker pour apparaître
+   aussi quand l'app est en arrière-plan. Limite assumée : une page ne peut
+   pas programmer une notification à l'avance. Elle part d'un minuteur de la
+   page, que le système peut geler écran verrouillé. Seul un serveur
+   d'envoi (Web Push) le garantirait. */
+STORAGE_KEYS.restNotif = "gymcoach.restNotif";
+function notifOn() {
+  return localStorage.getItem(STORAGE_KEYS.restNotif) === "1" &&
+    "Notification" in window && Notification.permission === "granted";
+}
+async function notifierReprise(exName) {
+  if (!notifOn() || !document.hidden) return;
+  if (typeof pushConfigure === "function" && pushConfigure()) return;   // le serveur s'en charge
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const opts = { body: exName || "", tag: "gymcoach-reprise", renotify: true,
+      icon: "icon.svg", vibrate: [200, 100, 200] };
+    if (reg) reg.showNotification("Repos terminé — on reprend", opts);
+    else new Notification("Repos terminé — on reprend", opts);
+  } catch { /* notification indisponible : jamais bloquant */ }
 }
 
 /* Vibration SEULE, sans le bip. Même interrupteur que le signal de fin
@@ -375,12 +514,21 @@ function saveLive() { saveJSON(STORAGE_KEYS.live, live); }
    (terminer et abandonner) passent par là, ce qui les empêche de
    diverger comme elles avaient commencé à le faire. */
 function clearLive() {
+  bonusRows.clear(); openNext = -1;
+  for (const k in saisie) delete saisie[k];
   localStorage.removeItem(STORAGE_KEYS.live);
   live = null;
   rest = null;
   restMinimized = false;
   if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+  libererEcran();           // plus de séance, plus de raison de garder l'écran
   if (elRestOverlay) elRestOverlay.classList.add("hidden");
+  /* Même raison que ci-dessus, pour les deux modes d'édition de liste :
+     sans séance, ni l'appairage ni la réorganisation n'ont de carte à
+     toucher, et leur barre resterait affichée par-dessus l'écran suivant
+     en proposant une action devenue impossible. */
+  reordering = false; reorderBar(false);
+  ssPicking = false; ssPickFirst = null; ssPickBar(false);
   updateMinibar();          // sans ça, la barre garde son dernier texte
 }
 
@@ -395,7 +543,7 @@ function newLiveExercise(ex, target, restSec, rir, tempo) {
     tempo: tempo || null,          // ex : "2-3 s en descente, explosif en montée"
     // charges/reps/rir de la dernière séance de cet exercice, figés ici pour
     // que la suggestion de progression ne bouge pas en cours de séance
-    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir }),
+    memoDepart: (getLastWeights()[ex.id] || []).map(s => s && { poids: s.poids, reps: s.reps, rir: s.rir, secondes: s.secondes ?? null }),
     restSec: restSec || (ex.type ? smartRest(ex) : getDefaultRest()),
     restAuto: !restSec,
     sets: [],                      // { poids, reps, doneAt, restAfter }
@@ -612,7 +760,7 @@ function renderProgramDayButtons() {
   const container = document.getElementById("program-day-buttons");
   const program = loadJSON(STORAGE_KEYS.program, null);
   if (!program) {
-    container.innerHTML = `<p class="video-hint">💡 Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
+    container.innerHTML = `<p class="video-hint">${icon("bulb")} Génère un programme dans l'onglet « Programme » pour lancer directement une de tes séances ici.</p>`;
     return;
   }
   /* Bouton « départ » (.btn-go) : la pastille d'accent s'étend et prend
@@ -657,6 +805,7 @@ function showLive() {
   if (liveTimer) clearInterval(liveTimer);
   liveTimer = setInterval(tick, 250);
   tick();
+  garderEcranAllume();
 }
 
 function totalRestMs() {
@@ -828,7 +977,7 @@ function applyHeaderMin(on) {
   elLive.classList.toggle("hdr-min", on);
   const btn = document.getElementById("live-hdr-toggle");
   if (btn) {
-    btn.innerHTML = icon(on ? "chev-down" : "chev-up");
+    btn.innerHTML = icon(on ? "chevron-down" : "chevron-up");
     btn.title = on ? "Agrandir le chrono" : "Réduire le chrono";
   }
   tick();
@@ -952,14 +1101,14 @@ function tick() {
          seconde : tick() bat quatre fois plus vite qu'elles. */
       const preavis = s <= REST_PREAVIS_S;
       cd.classList.toggle("preavis", preavis);
-      if (preavis && rest.preavis !== s) { rest.preavis = s; vibre(REST_PREAVIS_MS); }
+      if (preavis && rest.preavis !== s) { rest.preavis = s; vibre(REST_PREAVIS_MS); annonce(s); }
       if (ring) {
         ring.classList.remove("ring-over");
         // l'anneau se vide à mesure que le repos s'écoule
         ring.style.strokeDashoffset = RING_CIRC * (1 - remaining / rest.targetSec);
       }
     } else {
-      if (!rest.beeped) { beep(); rest.beeped = true; }
+      if (!rest.beeped) { beep(); rest.beeped = true; notifierReprise(rest.exName); }
       cd.textContent = "+" + fmtSec(Math.floor(-remaining));
       cd.classList.remove("preavis");
       cd.classList.add("overtime");
@@ -1018,165 +1167,197 @@ function ssAssemble(cartes) {
     const memo = ssIsRemembered(gid);
     out.push(`<div class="ss-group" data-ss="${gid}">
       <div class="ss-head">
-        <span class="ss-badge">${icon("bolt")} Super set</span>
+        <span class="ss-badge">${icon("zap")} Super set</span>
         <span class="ss-flow">${noms.map((n, k) => n + " (" + series[k] + ")").join(" → ")}
           · repos ${ssRest(gid)} s après la paire</span>
         <span class="ss-actions">
-          <button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
-            memo ? "★ Mémorisé" : "☆ Mémoriser"}</button>
-          <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>
+          ${reordering
+            ? moveButtons(membres[0], "blk",
+                blocIndex(membres[0]) > 0,
+                blocIndex(membres[0]) < reorderBlocks().length - 1,
+                "le super set", "Le groupe entier")
+            : `<button class="btn btn-ghost btn-sm ss-memo" data-ss="${gid}">${
+                 memo ? icon("star", "on") + " Mémorisé" : icon("star") + " Mémoriser"}</button>
+               <button class="btn btn-danger-ghost btn-sm ss-break" data-ss="${gid}">Dissocier</button>`}
         </span>
       </div>
       ${membres.map((k, r) => cartes[k] + (r < membres.length - 1
-        ? '<div class="ss-link">↓ enchaîne sans repos</div>' : "")).join("")}
+        ? '<div class="ss-link">'+ icon("arrow-down") + ' enchaîne sans repos</div>' : "")).join("")}
     </div>`);
   }
   return out.join("");
 }
 
-function renderLiveExercises() {
-  if (live.exercises.length === 0) {
-    elLiveExercises.innerHTML = `<div class="card empty-live">
-      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer.</p>
-    </div>`;
-    updateProgress();
-    if (typeof peRefresh === "function") peRefresh();
+/* ---------- Séries à cocher ----------
+   Une série se VALIDE d'un tap sur sa case. Le formulaire complet (poids,
+   reps, RIR, notes, tableau modifiable) reste disponible dans « Détail »,
+   replié par défaut : à la salle on veut cocher, pas remplir un
+   formulaire. Les champs existent toujours dans la page, seulement cachés :
+   validateSet les lit par leur id comme avant, rien n'a changé dessous. */
+let openNext = -1;               // carte dont le réglage de la prochaine série est ouvert
+const bonusRows = new Set();     // exercices où l'on a demandé une série en plus
+
+/* Répétitions / secondes prescrites : « 3 × 10 » -> 10, « 3 × 45 s » -> 45 s */
+function targetRepsOf(ex) {
+  const m = String(ex.target || "").match(/[x×]\s*(\d+)/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+function targetSecondsOf(ex) {
+  const m = String(ex.target || "").match(/(\d+)\s*s\b/i);
+  return m ? parseInt(m[1], 10) : null;
+}
+/* Valeurs proposées pour la PROCHAINE série : celles de la dernière fois,
+   à défaut celles de la série qui vient d'être faite, à défaut la
+   prescription. Cocher revient donc à dire « pareil ». */
+const saisie = {};      // ce qu'on a TAPÉ pour la prochaine série, qui survit aux rendus
+function prefillSet(ex, i) {
+  const n = ex.sets.length;
+  const tape = champ => {
+    const v = saisie[i + ":" + n + ":" + champ];
+    return v === undefined ? undefined : (v === "" ? null : parseFloat(v));
+  };
+  const base = prefillBase(ex);
+  const out = {};
+  for (const [k, champ] of [["poids", "poids"], ["reps", "reps"], ["rir", "rir"], ["secondes", "temps"]]) {
+    const t = tape(champ);
+    out[k] = t === undefined ? base[k] : t;
+  }
+  return out;
+}
+function prefillBase(ex) {
+  const n = ex.sets.length;
+  const mem = recallSet(ex.exId, n) || null;
+  const prev = n ? ex.sets[n - 1] : null;
+  return {
+    poids: mem ? mem.poids : (prev ? prev.poids : null),
+    reps: mem && mem.reps != null ? mem.reps : (prev && prev.reps != null ? prev.reps : targetRepsOf(ex)),
+    rir: mem ? mem.rir : null,
+    secondes: mem && mem.secondes != null ? mem.secondes : (prev && prev.secondes != null ? prev.secondes : targetSecondsOf(ex))
+  };
+}
+function resumeSerie(statique, poids, reps, secondes, rir) {
+  const kg = poids != null ? poids + " kg" : (statique ? "" : "au poids du corps");
+  if (statique) return [kg, secondes != null ? fmtSec(secondes) : "—"].filter(Boolean).join(" · ");
+  return [poids != null ? `${poids} kg × ${reps ?? "—"}` : `${reps ?? "—"} reps`, rir != null ? `${rir} en réserve` : ""]
+    .filter(Boolean).join(" · ");
+}
+function casesHtml(ex, i, statique, p, pre) {
+  const nb = ex.sets.length;
+  const slots = p.target != null ? Math.max(p.target, nb) : nb;
+  const lignes = [];
+  const chev = ouvert => `<span class="cb-chev${ouvert ? " open" : ""}" aria-hidden="true">${icon("chevron-down")}</span>`;
+  for (let j = 0; j < nb; j++) {
+    const s = ex.sets[j];
+    const ed = editingSet && editingSet.i === i && editingSet.j === j;
+    lignes.push(`<li class="cb-row done${ed ? " open" : ""}">
+      <button type="button" class="cb on" data-undo-i="${i}" data-undo-j="${j}" aria-label="Série ${j + 1} validée — toucher pour dé-valider">${icon("tick")}</button>
+      <button type="button" class="cb-main" data-open-i="${i}" data-open-j="${j}" aria-expanded="${ed}" aria-label="Modifier la série ${j + 1}">
+        <span class="cb-lab">Série ${j + 1}</span>
+        <span class="cb-sum">${s.note ? icon("message") + " " : ""}${esc(resumeSerie(statique, s.poids, s.reps, s.secondes, s.rir))}${badgeTendance(ex, j, statique)}</span>
+        ${chev(ed)}
+      </button>
+    </li>`);
+    if (ed) lignes.push(`<li class="cb-edit">${editionSerie(ex, i, j, statique)}</li>`);
+  }
+  const prochaine = nb < slots || p.target == null || bonusRows.has(ex);
+  if (prochaine) {
+    const ouv = openNext === i;
+    lignes.push(`<li class="cb-row next${ouv ? " open" : ""}">
+      <button type="button" class="cb" data-check="${i}" aria-label="Valider la série ${nb + 1}"></button>
+      <button type="button" class="cb-main" data-open-i="${i}" data-open-j="${nb}" aria-expanded="${ouv}" aria-label="Régler la série ${nb + 1}">
+        <span class="cb-lab">Série ${nb + 1}${nb >= slots && p.target != null ? " (en plus)" : ""}</span>
+        <span class="cb-sum" id="cb-sum-${i}">${esc(resumeSerie(statique, pre.poids, pre.reps, pre.secondes, pre.rir))}</span>
+        ${chev(ouv)}
+      </button>
+    </li>`);
+    lignes.push(`<li class="cb-edit next-edit${ouv ? "" : " live-detail-off"}">${formulaireProchaine(ex, i, statique, pre)}</li>`);
+  }
+  for (let j = nb + 1; j < slots; j++) {
+    lignes.push(`<li class="cb-row todo"><span class="cb off" aria-hidden="true"></span>
+      <span class="cb-lab">Série ${j + 1}</span><span class="cb-sum">à venir</span></li>`);
+  }
+  /* Pied de liste : combien de séries on veut faire, et « j'ai fini ».
+     − retire une série à venir, + en ajoute une ; « Valider l'exercice »
+     clôt l'exercice avec les séries déjà faites (4 prévues, 3 faites,
+     on s'arrête : l'exercice est terminé, ni plus ni moins). */
+  const prevu = Math.max(slots, 1);
+  const peutRetirer = prevu > Math.max(nb, 1);
+  const pied = `<li class="cb-pied">
+      <div class="cb-nb" role="group" aria-label="Nombre de séries prévues">
+        <button type="button" class="cb-nb-btn" data-nb="-1" data-i="${i}" ${peutRetirer ? "" : "disabled"} aria-label="Retirer une série">${icon("minus")}</button>
+        <span class="cb-nb-val"><strong>${prevu}</strong> série${prevu > 1 ? "s" : ""} prévue${prevu > 1 ? "s" : ""}</span>
+        <button type="button" class="cb-nb-btn" data-nb="1" data-i="${i}" ${prevu < 20 ? "" : "disabled"} aria-label="Ajouter une série">${icon("plus")}</button>
+      </div>
+      ${nb > 0 && !p.fini ? `<button type="button" class="btn btn-ghost btn-sm cb-fin" data-fin="${i}">${icon("tick")} Valider l'exercice</button>` : ""}
+    </li>`;
+  return `<ul class="cb-list">${lignes.join("")}${pied}</ul>`;
+}
+/* Fixe le nombre de séries prévues dans la prescription (« 3 × 10 » ->
+   « 4 × 10 »). Sans prescription (séance libre), on en crée une. */
+function fixeNbSeries(ex, n) {
+  n = Math.max(1, Math.min(20, n));
+  if (ex.target && /^\s*\d+/.test(String(ex.target))) {
+    ex.target = String(ex.target).replace(/^(\s*)\d+/, "$1" + n);
+  } else {
+    const derniere = ex.sets[ex.sets.length - 1];
+    const stat = estStatique(ex);
+    const val = stat ? (derniere && derniere.secondes ? derniere.secondes + " s" : "30 s")
+                     : (derniere && derniere.reps ? derniere.reps : 10);
+    ex.target = `${n} × ${val}`;
+  }
+}
+
+function changerNbSeries(i, delta) {
+  const ex = live.exercises[i];
+  const p = exerciseProgress(ex);
+  const actuel = Math.max(p.target != null ? p.target : ex.sets.length, 1);
+  const n = Math.max(ex.sets.length, 1, Math.min(20, actuel + delta));
+  if (n === actuel) return;
+  bonusRows.delete(ex);
+  fixeNbSeries(ex, n);
+  vibre(10);
+  saveLive();
+  renderLiveExercises();
+}
+
+/* « J'ai fini » : l'exercice est clos avec les séries déjà faites, puis on
+   passe au suivant s'il en reste un à faire. */
+function validerExercice(i) {
+  const ex = live.exercises[i];
+  if (!ex.sets.length) return;
+  bonusRows.delete(ex);
+  fixeNbSeries(ex, ex.sets.length);
+  openNext = -1; editingSet = null;
+  vibre([12, 40, 12]);
+  saveLive();
+  const suivant = i === live.currentIndex ? nextUnfinished(i) : null;
+  if (suivant != null) setCurrentExercise(suivant);
+  else renderLiveExercises();
+}
+
+/* Cocher : on valide avec ce que la case annonce. Si un champ obligatoire
+   est vide (rien à proposer), on montre le détail et on y met le curseur. */
+function cocherSerie(i) {
+  const ex = live.exercises[i];
+  const statique = estStatique(ex);
+  const champ = document.getElementById((statique ? "temps-" : "reps-") + i);
+  const chronoEnCours = statique && holdEnCours(i);
+  if (!chronoEnCours && !(champ && parseInt(champ.value, 10) > 0)) {
+    openNext = i; editingSet = null;
+    renderLiveExercises();
+    const c = document.getElementById((statique ? "temps-" : "reps-") + i);
+    if (c) c.focus();
     return;
   }
+  validateSet(i);
+}
 
-  // accordéon : un seul exercice déplié — celui en cours par défaut
-  if (expandedIndex == null || expandedIndex >= live.exercises.length)
-    expandedIndex = live.currentIndex;
-
-  const cartes = live.exercises.map((ex, i) => {
-    const isCurrent = i === live.currentIndex;
-    const open = i === expandedIndex;
-    const p = exerciseProgress(ex);
-    // ligne récapitulative de l'exercice replié : séries faites + charges
-    /* Mesuré en temps ou en répétitions : la question se pose une fois
-       par carte, et décide du tableau, du formulaire et de l'édition. */
-    const statique = estStatique(ex);
-    const poidsUtilises = [...new Set(ex.sets.map(s => s.poids).filter(v => v != null))];
-    /* Un maintien s'y résume par le temps TOTAL tenu : « 3 séries ·
-       02:15 tenu » dit quelque chose, « 3 séries » seul ne dit rien. */
-    const tempsTotal = ex.sets.reduce((t, x) => t + (x.secondes || 0), 0);
-    const recap = !ex.sets.length ? "aucune série"
-      : `${ex.sets.length} série${ex.sets.length > 1 ? "s" : ""}` + (statique
-          ? (tempsTotal ? ` · ${fmtSec(tempsTotal)} tenu` : "")
-          : (poidsUtilises.length ? " · " + poidsUtilises.slice(0, 4).join(" / ") + " kg" : ""));
-    return `
-    <div class="card live-ex ${isCurrent ? "live-ex-current" : ""} ${open ? "live-ex-open" : "live-ex-collapsed"} ${p.fini ? "live-ex-done" : ""}" data-i="${i}">
-      <button type="button" class="live-ex-head" data-toggle="${i}" aria-expanded="${open}">
-        <div class="live-ex-id">
-          <h3>${esc(ex.nom)}</h3>
-          <p class="day-focus live-ex-sub">
-            ${LABELS.groupes[ex.groupe] || ""}
-            ${ex.target ? " · " + esc(ex.target) : ""}
-            ${ex.rir ? " · RIR " + esc(ex.rir) : ""}
-            · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
-          </p>
-          ${ex.tempo ? `<p class="day-focus live-ex-tempo">Tempo : ${esc(ex.tempo)}</p>` : ""}
-          <p class="day-focus live-ex-recap">${esc(recap)}</p>
-        </div>
-        <div class="live-ex-right">
-          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? "✓ Terminé" : esc(p.texte)}</span>
-          <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
-          ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
-          <span class="live-ex-chev" aria-hidden="true">${icon("chev-down")}</span>
-        </div>
-      </button>
-
-      <div class="live-ex-body"><div class="live-ex-body-inner">
-      <div class="live-ex-tools">
-        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
-        ${isCurrent ? `<button class="btn btn-ghost btn-sm ex-plein" data-i="${i}">${icon("expand")} Plein écran</button>` : ""}
-        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
-        ${isCurrent && p.fini && nextUnfinished(i) != null
-          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
-      </div>
-
-      ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
-
-      ${ex.sets.length ? `
-      <table class="sets-table">
-        <thead><tr><th>Série</th>${statique
-          ? `<th>Temps</th><th>Lest (kg)</th>`
-          : `<th>Poids (kg)</th><th>Reps</th><th>RIR</th>`}<th>Repos</th></tr></thead>
-        <tbody>
-          ${ex.sets.map((s, j) => {
-            /* En affichage réduit, seule la DERNIÈRE série reste visible.
-               Ce marquage est explicite : la règle CSS s'appuyait avant
-               sur :last-child, ce qui a cessé d'être vrai le jour où
-               chaque série a gagné une ligne de note en dessous. */
-            const der = j === ex.sets.length - 1 ? " set-last" : "";
-            const editing = editingSet && editingSet.i === i && editingSet.j === j;
-            if (editing) return `
-              <tr class="set-editing">
-                <td colspan="${statique ? 4 : 5}">
-                  <div class="set-edit-row">
-                    <span class="set-edit-n">Série ${j + 1}</span>
-                    <input type="number" inputmode="decimal" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
-                    ${statique
-                      ? `<input type="number" inputmode="numeric" min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
-                      : `<input type="number" inputmode="numeric" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
-                         <input type="number" inputmode="numeric" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
-                    <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
-                    <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
-                    <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
-                  </div>
-                  <!-- La note vit ici aussi : on revient sur une série pour
-                       la corriger OU pour dire comment elle s'est passée,
-                       et rien n'oblige à deviner laquelle des deux avant
-                       d'ouvrir. -->
-                  <div class="set-edit-note">
-                    <input type="text" id="ed-note" maxlength="${NOTE_MAX}" class="set-note-input"
-                      placeholder="Note (facultatif) — ex : aidé sur les 2 dernières"
-                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
-                  </div>
-                  <div class="note-suggests">
-                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="ed-note">${esc(t)}</button>`).join("")}
-                  </div>
-                </td>
-              </tr>`;
-            const noting = notingSet && notingSet.i === i && notingSet.j === j;
-            if (noting) return `
-              <tr class="set-editing">
-                <td colspan="${statique ? 4 : 5}">
-                  <div class="set-note-row">
-                    <span class="set-edit-n">Série ${j + 1}</span>
-                    <input type="text" id="note-input" maxlength="100" class="set-note-input"
-                      placeholder="Ex : aidé sur les 2 dernières, bien contrôlé…"
-                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
-                    <button class="btn btn-primary btn-sm note-save" data-i="${i}" data-j="${j}">OK</button>
-                    <button class="btn btn-ghost btn-sm note-cancel">Annuler</button>
-                  </div>
-                  <div class="note-suggests">
-                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="note-input">${esc(t)}</button>`).join("")}
-                  </div>
-                </td>
-              </tr>`;
-            return `
-            <tr class="set-row${s.note ? " set-noted" : ""}${der}" data-i="${i}" data-j="${j}" tabindex="0" role="button"
-                title="Modifier cette série" aria-label="Modifier la série ${j + 1}">
-              <td>✔ ${j + 1}</td>
-              ${statique
-                ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td>
-                   <td>${s.poids != null ? s.poids : "—"}</td>`
-                : `<td>${s.poids != null ? s.poids : "—"}</td><td>${s.reps}</td>
-                   <td>${s.rir != null ? s.rir : "—"}</td>`}
-              <td>${s.restAfter != null ? fmtSec(s.restAfter) : "…"}<span class="set-edit-hint">✎</span></td>
-            </tr>
-            <tr class="set-note-line${der}">
-              <td colspan="${statique ? 4 : 5}">
-                <button type="button" class="set-note-btn${s.note ? " on" : ""}" data-note-i="${i}" data-note-j="${j}"
-                  aria-label="${s.note ? "Modifier la note de la série " + (j + 1) : "Ajouter une note à la série " + (j + 1)}">${
-                  s.note ? `💬 ${esc(s.note)}` : "＋ note"}</button>
-              </td>
-            </tr>`;
-          }).join("")}
-        </tbody>
-      </table>` : ""}
-
+/* Formulaire de la PROCHAINE série (pas-à-pas) et rappel de la dernière
+   fois. Il vit sous la ligne de la série, replié tant qu'on ne l'ouvre pas ;
+   les champs restent dans la page, seulement cachés : validateSet les lit
+   par leur id comme avant. */
+function formulaireProchaine(ex, i, statique, pre) {
+  return `
       ${(() => {
         const mem = recallSet(ex.exId, ex.sets.length);
         if (!mem) return "";
@@ -1195,62 +1376,216 @@ function renderLiveExercises() {
            charge bouge par paliers de 2,5 kg — deux taps valent mieux que
            le clavier numérique avec les mains moites. Le champ reste
            tapable pour une valeur inhabituelle. -->
-      ${statique ? `
-      <!-- CHRONO DE MAINTIEN. On ne demande pas à quelqu'un en gainage
-           de compter dans sa tête : le bouton tient le compte, et se
-           contente de remplir le champ en s'arrêtant. -->
-      <div class="hold-bloc${holdEnCours(i) ? " on" : ""}">
-        <span class="hold-val" id="hold-val-${i}">${fmtSec(holdEnCours(i) ? holdSecondes() : 0)}</span>
-        <button type="button" class="btn ${holdEnCours(i) ? "btn-danger-ghost" : "btn-primary"} hold-go" data-i="${i}">
-          ${holdEnCours(i) ? "Arrêter" : icon("play") + " Démarrer le maintien"}
-        </button>
-      </div>` : ""}
       <div class="set-form">
         ${statique ? `
         <div class="stepper" data-step="5" data-min="1">
           <button type="button" class="step-btn" data-target="temps-${i}" data-delta="-1" aria-label="Cinq secondes de moins">−</button>
-          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).secondes ?? ""}">
+          <input type="number" inputmode="none" min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
+            value="${pre.secondes ?? ""}">
           <button type="button" class="step-btn" data-target="temps-${i}" data-delta="1" aria-label="Cinq secondes de plus">+</button>
         </div>
-        <div class="stepper" data-step="2.5" data-min="0">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg de lest">−</button>
-          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg de lest">+</button>
+        <div class="stepper" data-step="${pasPoids(ex.exId)}" data-min="0">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer du lest">−</button>
+          <input type="number" inputmode="none" min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
+            value="${pre.poids ?? ""}">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter du lest">+</button>
+          <button type="button" class="step-pas" data-exid="${ex.exId}" aria-label="Changer le pas du poids">±${fmtNb(pasPoids(ex.exId))}</button>
         </div>` : `
-        <div class="stepper" data-step="2.5" data-min="0">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer 2,5 kg">−</button>
-          <input type="number" inputmode="decimal" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).poids ?? ""}">
-          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter 2,5 kg">+</button>
+        <div class="stepper" data-step="${pasPoids(ex.exId)}" data-min="0">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer du poids">−</button>
+          <input type="number" inputmode="none" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
+            value="${pre.poids ?? ""}">
+          <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter du poids">+</button>
+          <button type="button" class="step-pas" data-exid="${ex.exId}" aria-label="Changer le pas du poids">±${fmtNb(pasPoids(ex.exId))}</button>
         </div>
         <div class="stepper" data-step="1" data-min="1">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
-          <input type="number" inputmode="numeric" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).reps ?? ""}">
+          <input type="number" inputmode="none" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
+            value="${pre.reps ?? ""}">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
         </div>
         <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
           <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
-          <input type="number" inputmode="numeric" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
-            value="${(recallSet(ex.exId, ex.sets.length) || {}).rir ?? ""}">
+          <input type="number" inputmode="none" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
+            value="${pre.rir ?? ""}">
           <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
         </div>`}
-        <button class="btn btn-primary validate-set" data-i="${i}">✔ Valider la série</button>
-        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
-        <button class="btn btn-danger-ghost remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
       </div>
+  `;
+}
+/* Édition d'une série DÉJÀ validée, sous sa propre ligne : poids, reps,
+   RIR, note, et dé-validation. */
+function editionSerie(ex, i, j, statique) {
+  const s = ex.sets[j];
+  return `
+                  <div class="set-edit-row">
+                    <span class="set-edit-n">Série ${j + 1}</span>
+                    <input type="number" inputmode="none" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
+                    ${statique
+                      ? `<input type="number" inputmode="none" min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
+                      : `<input type="number" inputmode="none" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                         <input type="number" inputmode="none" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
+                    <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
+                    <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
+                    <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
+                  </div>
+                  <!-- La note vit ici aussi : on revient sur une série pour
+                       la corriger OU pour dire comment elle s'est passée,
+                       et rien n'oblige à deviner laquelle des deux avant
+                       d'ouvrir. -->
+                  <div class="set-edit-note">
+                    <input type="text" id="ed-note" maxlength="${NOTE_MAX}" class="set-note-input"
+                      placeholder="Note (facultatif) — ex : aidé sur les 2 dernières"
+                      value="${esc(s.note || "")}" aria-label="Note sur cette série">
+                  </div>
+                  <div class="note-suggests">
+                    ${NOTE_RAPIDES.map(t => `<button type="button" class="chip note-chip" data-cible="ed-note">${esc(t)}</button>`).join("")}
+                  </div>
+    ${s.restAfter != null ? `<p class="set-sub-line">Repos pris : ${fmtSec(s.restAfter)}</p>` : ""}
+  `;
+}
+
+/* ---------- Aperçu du mouvement, dans la carte de l'exercice ----------
+   Pendant une série on regarde l'écran entre deux efforts : le schéma
+   animé de l'exercice y est donc rendu DANS la carte ouverte, au-dessus
+   du formulaire, sans passer par la fiche. Seule la carte dépliée en
+   porte un : un schéma animé par exercice de la liste, c'est autant
+   d'animations qui tournent pour rien. Le choix « afficher / masquer »
+   est mémorisé, parce qu'un écran de téléphone est petit et que
+   certains préfèrent récupérer la place. */
+const APERCU_KEY = "gymcoach.apercu";
+function apercuOn() {
+  try { return localStorage.getItem(APERCU_KEY) !== "0"; } catch { return true; }
+}
+function apercuHtml(ex) {
+  if (typeof motionSVG !== "function") return "";
+  const def = allExercisesForUI().find(e => e.id === ex.exId);
+  if (!def) return "";
+  const on = apercuOn();
+  let fig = "";
+  if (on) {
+    /* Le schéma animé seulement : la seconde vue statique, quand elle
+       existe, reste dans la fiche — ici elle doublerait la hauteur. */
+    const tmp = document.createElement("div");
+    tmp.innerHTML = motionSVG(def);
+    tmp.querySelectorAll(".motion-statique").forEach(n => n.remove());
+    fig = tmp.innerHTML;
+  }
+  return `<div class="live-apercu${on ? "" : " live-apercu-off"}">
+    <button type="button" class="live-apercu-toggle" aria-expanded="${on}">
+      <span>Aperçu du mouvement</span><span aria-hidden="true">${on ? "Masquer " + icon("chevron-up") : "Afficher " + icon("chevron-down")}</span>
+    </button>
+    ${on ? `<div class="live-apercu-fig">${fig}</div>` : ""}
+  </div>`;
+}
+
+function renderLiveExercises() {
+  if (live.exercises.length === 0) {
+    elLiveExercises.innerHTML = `<div class="card empty-live">
+      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer.</p>
+    </div>`;
+    updateProgress();
+    if (typeof peRefresh === "function") peRefresh();
+    return;
+  }
+
+  // accordéon : un seul exercice déplié — celui en cours par défaut
+  if (expandedIndex == null || expandedIndex >= live.exercises.length)
+    expandedIndex = live.currentIndex;
+
+  const cartes = live.exercises.map((ex, i) => {
+    const isCurrent = i === live.currentIndex;
+    /* En réorganisation, TOUT est replié : on déplace en voyant la liste,
+       pas en voyant un formulaire de série. */
+    const open = !reordering && i === expandedIndex;
+    const choisi = reordering && swapSel === ex;
+    const p = exerciseProgress(ex);
+    // ligne récapitulative de l'exercice replié : séries faites + charges
+    /* Mesuré en temps ou en répétitions : la question se pose une fois
+       par carte, et décide du tableau, du formulaire et de l'édition. */
+    const statique = estStatique(ex);
+    const pre = prefillSet(ex, i);
+    const poidsUtilises = [...new Set(ex.sets.map(s => s.poids).filter(v => v != null))];
+    /* Un maintien s'y résume par le temps TOTAL tenu : « 3 séries ·
+       02:15 tenu » dit quelque chose, « 3 séries » seul ne dit rien. */
+    const tempsTotal = ex.sets.reduce((t, x) => t + (x.secondes || 0), 0);
+    const recap = !ex.sets.length ? "aucune série"
+      : `${ex.sets.length} série${ex.sets.length > 1 ? "s" : ""}` + (statique
+          ? (tempsTotal ? ` · ${fmtSec(tempsTotal)} tenu` : "")
+          : (poidsUtilises.length ? " · " + poidsUtilises.slice(0, 4).join(" / ") + " kg" : ""));
+    return `
+    <div class="card live-ex ${choisi ? "reorder-sel" : ""} ${isCurrent ? "live-ex-current" : ""} ${open ? "live-ex-open" : "live-ex-collapsed"} ${p.fini ? "live-ex-done" : ""}" data-i="${i}">
+      <button type="button" class="live-ex-head" data-toggle="${i}" aria-expanded="${open}">
+        <div class="live-ex-id">
+          <h3>${esc(ex.nom)}</h3>
+          <p class="day-focus live-ex-sub">
+            ${LABELS.groupes[ex.groupe] || ""}
+            ${ex.target ? " · " + esc(ex.target) : ""}
+            ${ex.rir ? " · RIR " + esc(ex.rir) : ""}
+            · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
+          </p>
+          ${ex.tempo ? `<p class="day-focus live-ex-tempo">Tempo : ${esc(ex.tempo)}</p>` : ""}
+          <p class="day-focus live-ex-recap">${esc(recap)}</p>
+        </div>
+        <div class="live-ex-right">
+          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? icon("tick") + " Terminé" : esc(p.texte)}</span>
+          <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
+          ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
+          <span class="live-ex-chev" aria-hidden="true">${icon("chevron-down")}</span>
+        </div>
+      </button>
+      ${reordering ? moveStrip(i) : ""}
+
+      <div class="live-ex-body"><div class="live-ex-body-inner">
+      ${open ? apercuHtml(ex) : ""}
+      <div class="live-ex-tools">
+        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Fiche</button>
+        ${isCurrent ? `<button class="btn btn-ghost btn-sm ex-plein" data-i="${i}">${icon("expand")} Plein écran</button>` : ""}
+        ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">${icon("arrows-v")} Ordre</button>` : ""}
+        <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative" aria-label="Remplacer par une alternative">${icon("swap")}</button>
+        <button class="btn btn-danger-ghost btn-sm remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
+        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
+        ${isCurrent && p.fini && nextUnfinished(i) != null
+          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
+      </div>
+
+      ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
+
+      ${casesHtml(ex, i, statique, p, pre)}
+
+      ${statique ? `
+      <!-- CHRONO DE MAINTIEN. On ne demande pas à quelqu'un en gainage
+           de compter dans sa tête : le bouton tient le compte, et se
+           contente de remplir le champ en s'arrêtant. Il reste visible
+           hors du détail : c'est lui, pas un formulaire, qui sert ici. -->
+      <div class="hold-bloc${holdEnCours(i) ? " on" : ""}">
+        <span class="hold-val" id="hold-val-${i}">${fmtSec(holdEnCours(i) ? holdSecondes() : 0)}</span>
+        <button type="button" class="btn ${holdEnCours(i) ? "btn-danger-ghost" : "btn-primary"} hold-go" data-i="${i}">
+          ${holdEnCours(i) ? icon("stop") + " Arrêter" : icon("play") + " Démarrer le maintien"}
+        </button>
+      </div>` : ""}
+
       </div></div><!-- /live-ex-body -->
     </div>`;
   });
-  elLiveExercises.innerHTML = ssAssemble(cartes);
+  /* Bandeau de liste. Le bouton « ↕ Ordre » de l'en-tête de séance est
+     au-dessus de tout : une fois la page défilée jusqu'à l'exercice en
+     cours, il n'est plus à l'écran, et on pouvait croire la fonction
+     disparue. Ce bandeau, lui, est collé à la liste. */
+  const bandeau = live.exercises.length > 1 && !reordering
+    ? `<div class="live-list-head">
+         <span>Exercices · ${live.exercises.length}</span>
+         <button type="button" class="btn btn-ghost btn-sm ex-move">${icon("arrows-v")} Ordre</button>
+       </div>` : "";
+  elLiveExercises.innerHTML = bandeau + ssAssemble(cartes);
   if (typeof peRefresh === "function") peRefresh();   // le plein écran relit ces champs
 
   /* Accordéon : ouvrir un exercice replie les autres (point 3) */
   elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
     head.addEventListener("click", () => {
       const i = parseInt(head.dataset.toggle, 10);
+      if (Date.now() - dernierGeste < 450) return;      // fin d'un glisser ou d'un appui long
+      if (reordering) { toucheEchange(i); return; }
       expandedIndex = (expandedIndex === i) ? -1 : i;   // re-tap = tout replier
       renderLiveExercises();
     }));
@@ -1264,12 +1599,59 @@ function renderLiveExercises() {
       holdEnCours(i) ? arreterHold() : demarrerHold(i);
     }));
 
-  elLiveExercises.querySelectorAll(".validate-set").forEach(btn =>
-    btn.addEventListener("click", () => validateSet(parseInt(btn.dataset.i, 10))));
+  elLiveExercises.querySelectorAll(".cb[data-check]").forEach(btn =>
+    btn.addEventListener("click", () => cocherSerie(+btn.dataset.check)));
+  elLiveExercises.querySelectorAll(".cb[data-undo-i]").forEach(btn =>
+    btn.addEventListener("click", () => unvalidateSet(+btn.dataset.undoI, +btn.dataset.undoJ)));
+  elLiveExercises.querySelectorAll(".cb-nb-btn").forEach(btn =>
+    btn.addEventListener("click", () => changerNbSeries(+btn.dataset.i, +btn.dataset.nb)));
+  elLiveExercises.querySelectorAll(".cb-fin").forEach(btn =>
+    btn.addEventListener("click", () => validerExercice(+btn.dataset.fin)));
+  elLiveExercises.querySelectorAll(".cb-bonus").forEach(btn =>
+    btn.addEventListener("click", () => { bonusRows.add(live.exercises[+btn.dataset.bonus]); renderLiveExercises(); }));
+  elLiveExercises.querySelectorAll(".cb-main").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const i = +btn.dataset.openI, j = +btn.dataset.openJ;
+      const ex = live.exercises[i];
+      if (j < ex.sets.length) {                    // série validée : on la modifie
+        const deja = editingSet && editingSet.i === i && editingSet.j === j;
+        editingSet = deja ? null : { i, j }; openNext = -1;
+      } else {                                      // prochaine série : on la règle
+        openNext = openNext === i ? -1 : i; editingSet = null;
+      }
+      notingSet = null;
+      renderLiveExercises();
+    }));
+  /* La ligne de la prochaine série annonce ce qu'un tap va enregistrer :
+     elle suit donc les champs quand on les modifie dans le détail. */
+  live.exercises.forEach((ex, i) => {
+    const out = document.getElementById("cb-sum-" + i);
+    if (!out) return;
+    const st = estStatique(ex);
+    const maj = () => {
+      const g = id => { const el = document.getElementById(id + i); return el && el.value !== "" ? parseFloat(el.value) : null; };
+      out.textContent = resumeSerie(st, g("poids-"), g("reps-"), g("temps-"), g("rir-"));
+    };
+    ["poids-", "reps-", "temps-", "rir-"].forEach(id => {
+      const el = document.getElementById(id + i); if (el) el.addEventListener("input", maj);
+    });
+  });
   elLiveExercises.querySelectorAll(".set-current, .go-next").forEach(btn =>
     btn.addEventListener("click", e => {
       e.stopPropagation();                       // ne pas replier via l'en-tête
       setCurrentExercise(parseInt(btn.dataset.i, 10));
+    }));
+  elLiveExercises.querySelectorAll(".ex-move").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      reorderStart();
+      const bar = document.getElementById("reorder-bar");
+      if (bar) bar.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }));
+  elLiveExercises.querySelectorAll(".live-apercu-toggle").forEach(btn =>
+    btn.addEventListener("click", () => {
+      try { localStorage.setItem(APERCU_KEY, apercuOn() ? "0" : "1"); } catch {}
+      renderLiveExercises();
     }));
   elLiveExercises.querySelectorAll(".remove-ex").forEach(btn =>
     btn.addEventListener("click", () => removeExercise(parseInt(btn.dataset.i, 10))));
@@ -1310,6 +1692,17 @@ function renderLiveExercises() {
     if (e.key === "Escape") { editingSet = null; renderLiveExercises(); }
   });
 
+  /* Flèches de réorganisation. Elles vivent HORS du bouton d'en-tête —
+     un bouton dans un bouton n'est pas du HTML valide — mais un clic qui
+     remonterait jusqu'à la carte replierait l'accordéon au passage. */
+  elLiveExercises.classList.toggle("reordering", reordering);
+  elLiveExercises.querySelectorAll(".mv").forEach(btn =>
+    btn.addEventListener("click", e => {
+      e.preventDefault(); e.stopPropagation();
+      const i = +btn.dataset.i, d = +btn.dataset.dir;
+      btn.dataset.mv === "in" ? moveInGroup(i, d) : moveBlock(i, d);
+    }));
+
   elLiveExercises.querySelectorAll(".ss-break").forEach(btn =>
     btn.addEventListener("click", () => ssBreak(btn.dataset.ss)));
   elLiveExercises.querySelectorAll(".ss-memo").forEach(btn =>
@@ -1332,17 +1725,6 @@ function renderLiveExercises() {
     elLiveExercises.classList.remove("ss-picking");
   }
 
-  /* Série validée : un tap l'ouvre en édition (B2) */
-  elLiveExercises.querySelectorAll(".set-row").forEach(tr => {
-    const open = () => {
-      editingSet = { i: +tr.dataset.i, j: +tr.dataset.j };
-      renderLiveExercises();
-      const f = document.getElementById("ed-poids");
-      if (f) f.focus();
-    };
-    tr.addEventListener("click", open);
-    tr.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); open(); } });
-  });
   elLiveExercises.querySelectorAll(".set-edit-cancel").forEach(b =>
     b.addEventListener("click", () => { editingSet = null; renderLiveExercises(); }));
   elLiveExercises.querySelectorAll(".set-edit-save").forEach(b =>
@@ -1705,6 +2087,7 @@ function stepValue(btn) {
   if (Number.isFinite(min)) v = Math.max(min, v);
   champ.value = String(Math.round(v * 100) / 100);
   champ.dispatchEvent(new Event("input", { bubbles: true }));
+  if (typeof rebond === "function") rebond(champ, 0.94, 1.08, 260);
 }
 
 function validateSet(i) {
@@ -1745,6 +2128,7 @@ function validateSet(i) {
 
   const set = { poids: isNaN(poids) ? null : poids, reps, rir, secondes, doneAt: now, restAfter: null, note: "" };
   ex.sets.push(set);
+  openNext = -1;
   rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps, set.rir, set.secondes);
   saveLive();
   renderLiveExercises();
@@ -1772,6 +2156,11 @@ function validateSet(i) {
   const cible = ex.ss ? ssRest(ex.ss) : ex.restSec;
   rest = { setRef: { exIndex: i, setIndex: ex.sets.length - 1 }, exName: ex.nom, startAt: now, targetSec: cible, beeped: false };
   restMinimized = false;
+  /* Minuteur d'arrière-plan : tick() dort quand la page est masquée. */
+  const ref = rest;
+  if (typeof pushProgrammer === "function") pushProgrammer(cible, ex.nom);
+  setTimeout(() => { if (rest === ref && !ref.beeped && nowRef() - ref.startAt >= ref.targetSec * 1000 - 200) { ref.beeped = true; beep(); notifierReprise(ref.exName); } },
+    cible * 1000 + 100);
   document.getElementById("rest-exercise-name").textContent = ex.ss
     ? "Super set bouclé — repos " + cible + " s"
     : ex.nom + " — série " + ex.sets.length + " terminée";
@@ -1788,6 +2177,7 @@ function endRest() {
   const ex = live.exercises[rest.setRef.exIndex];
   if (ex && ex.sets[rest.setRef.setIndex]) ex.sets[rest.setRef.setIndex].restAfter = actual;
   rest = null;
+  if (typeof pushAnnuler === "function") pushAnnuler();
   elRestOverlay.classList.add("hidden");
   saveLive();
   renderLiveExercises();
@@ -1801,7 +2191,7 @@ document.getElementById("rest-minimize").addEventListener("click", () => {
   elRestOverlay.classList.add("hidden");
   tick();
 });
-document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; tick(); } });
+document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; if (typeof pushProgrammer === "function") pushProgrammer(Math.max(1, Math.ceil(rest.targetSec - (nowRef() - rest.startAt) / 1000)), rest.exName); tick(); } });
 document.getElementById("rest-minus").addEventListener("click", () => { if (rest) { rest.targetSec = Math.max(5, rest.targetSec - 15); tick(); } });
 
 /* ---------- Sélecteur d'exercice ---------- */
@@ -1828,7 +2218,7 @@ function renderPickerList(query) {
   list = list.slice(0, 40);
   document.getElementById("picker-list").innerHTML = list.map(ex => `
     <button class="picker-item" data-exid="${esc(ex.id)}">
-      <span>${typeof isFavorite === "function" && isFavorite(ex.id) ? '<span class="pick-fav">★</span> ' : ""}${esc(ex.nom)}</span>
+      <span>${typeof isFavorite === "function" && isFavorite(ex.id) ? '<span class="pick-fav">' + icon("star", "on") + '</span> ' : ""}${esc(ex.nom)}</span>
       <span class="tag">${LABELS.groupes[ex.groupe]}</span>
     </button>`).join("") || `<p class="video-hint">Aucun exercice trouvé.</p>`;
   document.querySelectorAll(".picker-item").forEach(btn =>
@@ -1893,7 +2283,7 @@ function renderSuggestions() {
     ${sugg.map((e, i) => `
       <button class="picker-item suggest-item ${inSession.has(e.id) ? "suggest-added" : ""}" data-exid="${esc(e.id)}">
         <span>${i + 1}. ${esc(e.nom)}</span>
-        <span class="tag">${inSession.has(e.id) ? "✓ Ajouté" : e.type === "poly" ? "Polyarticulaire" : "Isolation"}</span>
+        <span class="tag">${inSession.has(e.id) ? icon("tick") + " Ajouté" : e.type === "poly" ? "Polyarticulaire" : "Isolation"}</span>
       </button>`).join("")}`;
   zone.querySelectorAll(".suggest-item").forEach(b =>
     b.addEventListener("click", () => {
@@ -1971,9 +2361,359 @@ function ssPickTap(i) {
   ssCreate(a, i);
 }
 
-document.getElementById("live-superset").addEventListener("click", () =>
-  ssPicking ? ssPickCancel() : ssPickStart());
+document.getElementById("live-superset").addEventListener("click", () => {
+  if (reordering) reorderStop();
+  ssPicking ? ssPickCancel() : ssPickStart();
+});
 document.getElementById("ss-pick-cancel").addEventListener("click", ssPickCancel);
+
+/* ==================== RÉORGANISER LA SÉANCE ====================
+
+   L'ordre d'une séance ne survit pas toujours à la salle : le banc est
+   pris, la cage est occupée, on garde le mouvement mais on le repousse.
+   Jusqu'ici il fallait retirer l'exercice et le rajouter — ce qui perdait
+   ses séries déjà validées.
+
+   UN MODE, PAS DES FLÈCHES PARTOUT. Deux boutons de plus sur chaque
+   carte, en permanence, c'est deux occasions de plus de se tromper de
+   cible entre deux séries. La réorganisation est donc un MODE, comme
+   l'appairage du super set : on y entre, les cartes se replient toutes,
+   on déplace, on en sort. Les deux modes s'excluent.
+
+   >>> CE QU'ON DÉPLACE, C'EST UN BLOC <<<
+   Un super set tient sa promesse — « s'enchaîne sans repos » — par
+   l'ADJACENCE de ses membres : ssCreate va jusqu'à déplacer le second
+   exercice pour l'obtenir. Laisser une flèche faire sortir un membre du
+   groupe casserait cette promesse en silence. L'unité de déplacement est
+   donc le bloc : un exercice seul, ou un groupe entier. À l'intérieur
+   d'un groupe, les flèches échangent deux membres SANS jamais franchir
+   la frontière du bloc. Dans les deux cas l'adjacence est préservée par
+   construction, pas par vigilance.
+
+   >>> LES INDICES MENTENT DÈS QU'ON TOUCHE À LA LISTE <<<
+   La leçon est déjà écrite plus haut, à ssApplyRemembered, et elle vaut
+   ici mot pour mot. Quatre repères de l'écran sont des indices —
+   l'exercice en cours, celui qui est déplié, le maintien en cours d'une
+   part, la série en cours d'édition d'autre part. Réordonner sans les
+   retraduire ferait pointer « en cours » sur un autre exercice et
+   attribuerait un chrono de gainage au voisin. appliqueOrdre() les
+   capture donc par RÉFÉRENCE D'OBJET avant, et les retrouve après. Les
+   deux repères de saisie (édition, note) ne sont pas retraduits mais
+   ANNULÉS : on ne réordonne pas en plein milieu d'une correction. */
+let reordering = false;
+
+/* Découpe la séance en blocs déplaçables : [début, fin] inclus. */
+function reorderBlocks() {
+  const out = [];
+  if (!live) return out;
+  for (let i = 0; i < live.exercises.length; i++) {
+    const gid = live.exercises[i].ss;
+    if (!gid) { out.push([i, i]); continue; }
+    let j = i;
+    while (j + 1 < live.exercises.length && live.exercises[j + 1].ss === gid) j++;
+    out.push([i, j]);
+    i = j;
+  }
+  return out;
+}
+
+/* Rang du bloc qui contient l'exercice i (−1 s'il n'y en a pas). */
+function blocIndex(i) {
+  return reorderBlocks().findIndex(([a, z]) => i >= a && i <= z);
+}
+
+/* Pose un nouvel ordre et retraduit tous les repères. */
+function appliqueOrdre(nouvel) {
+  const courant  = live.exercises[live.currentIndex] || null;
+  const deplie   = expandedIndex >= 0 ? live.exercises[expandedIndex] : null;
+  const maintenu = live.holdStart ? live.exercises[live.holdIndex] : null;
+  live.exercises = nouvel;
+  const pos = o => { const k = live.exercises.indexOf(o); return k < 0 ? null : k; };
+  live.currentIndex = courant ? (pos(courant) ?? 0) : 0;
+  if (maintenu) {
+    const k = pos(maintenu);
+    if (k == null) { live.holdStart = null; live.holdIndex = null; }
+    else live.holdIndex = k;
+  }
+  expandedIndex = deplie ? (pos(deplie) ?? -1) : -1;
+  editingSet = null; notingSet = null;
+  saveLive();
+  renderLiveExercises();
+}
+
+/* Déplace le bloc qui contient i d'un cran vers le haut (-1) ou le bas. */
+function moveBlock(i, dir) {
+  const blocs = reorderBlocks();
+  const b = blocIndex(i);
+  const c = b + dir;
+  if (b < 0 || c < 0 || c >= blocs.length) return;
+  const seg = ([a, z]) => live.exercises.slice(a, z + 1);
+  const nouvel = [];
+  blocs.forEach((bl, k) => {
+    if (k === b) return;                         // le bloc déplacé se repose ailleurs
+    if (k === c && dir < 0) nouvel.push(...seg(blocs[b]));
+    nouvel.push(...seg(bl));
+    if (k === c && dir > 0) nouvel.push(...seg(blocs[b]));
+  });
+  vibre(12);
+  appliqueOrdre(nouvel);
+}
+
+/* Échange deux membres D'UN MÊME super set. La condition `a.ss === b.ss`
+   n'est pas une précaution de plus : c'est elle qui interdit à un membre
+   de sortir du groupe par les flèches. */
+function moveInGroup(i, dir) {
+  const j = i + dir;
+  const a = live.exercises[i], b = live.exercises[j];
+  if (!a || !b || !a.ss || a.ss !== b.ss) return;
+  const nouvel = live.exercises.slice();
+  nouvel[i] = b; nouvel[j] = a;
+  vibre(12);
+  appliqueOrdre(nouvel);
+}
+
+/* Les deux flèches d'une carte. Un exercice seul déplace son bloc ; un
+   membre de super set se déplace à l'intérieur du sien — le groupe
+   entier, lui, se déplace depuis son en-tête. */
+function moveStrip(i) {
+  const ex = live.exercises[i];
+  const dedans = !!ex.ss;
+  const membres = dedans ? ssMembers(ex.ss) : [i];
+  const rang = membres.indexOf(i);
+  const b = blocIndex(i);
+  const haut = dedans ? rang > 0 : b > 0;
+  const bas  = dedans ? rang < membres.length - 1 : b < reorderBlocks().length - 1;
+  return moveButtons(i, dedans ? "in" : "blk", haut, bas, ex.nom,
+    dedans ? "Dans le super set" : "");
+}
+
+function moveButtons(i, quoi, haut, bas, nom, lbl) {
+  return `<div class="live-ex-move">
+    ${lbl ? `<span class="live-ex-move-lbl">${esc(lbl)}</span>` : ""}
+    <button type="button" class="btn btn-ghost btn-sm mv" data-i="${i}" data-mv="${quoi}"
+      data-dir="-1" ${haut ? "" : "disabled"} aria-label="Monter ${esc(nom)}">${icon("arrow-up")}</button>
+    <button type="button" class="btn btn-ghost btn-sm mv" data-i="${i}" data-mv="${quoi}"
+      data-dir="1" ${bas ? "" : "disabled"} aria-label="Descendre ${esc(nom)}">${icon("arrow-down")}</button>
+  </div>`;
+}
+
+function reorderBar(on) {
+  const bar = document.getElementById("reorder-bar");
+  if (bar) bar.classList.toggle("hidden", !on);
+}
+
+/* ---------- Échange en touchant deux exercices ----------
+   Premier toucher : l'exercice est choisi. Second toucher : ils
+   échangent leurs places. Deux membres d'un même super set s'échangent
+   entre eux ; sinon ce sont les BLOCS (exercice seul ou super set entier)
+   qui s'échangent, pour ne jamais casser un groupe. */
+let swapSel = null;
+let dernierGeste = 0;                 // horodatage d'un glisser / appui long, pour étouffer le clic qui suit
+
+function majMessageOrdre() {
+  const m = document.getElementById("reorder-msg");
+  if (!m) return;
+  m.innerHTML = swapSel
+    ? `Touche l'exercice à échanger avec <strong>${esc(swapSel.nom)}</strong>.`
+    : `Touche <strong>deux</strong> exercices pour les échanger, ou <strong>fais-les glisser</strong>. Les flèches déplacent d'un cran.`;
+}
+
+function toucheEchange(i) {
+  const ex = live.exercises[i];
+  if (!ex) return;
+  if (!swapSel || swapSel === ex) {
+    swapSel = swapSel === ex ? null : ex;
+    vibre(10); majMessageOrdre(); renderLiveExercises();
+    return;
+  }
+  const a = live.exercises.indexOf(swapSel), b = i;
+  swapSel = null;
+  if (a < 0) { majMessageOrdre(); renderLiveExercises(); return; }
+  const nouvel = live.exercises.slice();
+  if (ex.ss && live.exercises[a].ss === ex.ss) {
+    nouvel[a] = live.exercises[b]; nouvel[b] = live.exercises[a];        // dans le même groupe
+  } else {
+    const blocs = reorderBlocks();
+    const ba = blocIndex(a), bb = blocIndex(b);
+    const seg = ([x, z]) => live.exercises.slice(x, z + 1);
+    const ordre = blocs.map((_, k) => k === ba ? bb : k === bb ? ba : k);
+    nouvel.length = 0;
+    ordre.forEach(k => nouvel.push(...seg(blocs[k])));
+  }
+  vibre([12, 40, 12]);
+  majMessageOrdre();
+  appliqueOrdre(nouvel);
+}
+
+/* ---------- Glisser-déposer ----------
+   Les cartes gigotent (mode réorganisation) ; on attrape l'en-tête d'un
+   exercice et on le fait glisser : les autres s'écartent en direct, et au
+   lâcher la carte se pose dans son créneau. Un bloc (super set) glisse
+   d'un seul tenant. `translate` / `rotate` sont des propriétés
+   individuelles : elles se cumulent avec le transform des animations. */
+let drag = null;
+const SEUIL_DRAG = 7;
+
+function blocsDom() {
+  return [...elLiveExercises.children].filter(n => n.matches(".live-ex, .ss-group"));
+}
+
+function dragDebut(e) {
+  if (!reordering || e.button > 0) return;
+  /* Toute la carte (repliée) est une prise, pas seulement son titre. */
+  const carte = e.target.closest(".live-ex");
+  if (!carte || e.target.closest(".mv, .ss-actions .btn")) return;
+  const bloc = carte.closest(".ss-group") || carte;
+  drag = { id: e.pointerId, bloc, x0: e.clientX, y0: e.clientY, actif: false };
+}
+
+function dragActive() {
+  const blocs = blocsDom();
+  const d = blocs.indexOf(drag.bloc);
+  if (d < 0 || blocs.length !== reorderBlocks().length) { drag = null; return; }
+  const rects = blocs.map(b => b.getBoundingClientRect());
+  const y = window.scrollY;
+  drag.blocs = blocs; drag.d = d; drag.t = d;
+  drag.mid = rects.map(r => r.top + y + r.height / 2);
+  drag.h = rects.map(r => r.height);
+  drag.espace = blocs.length > 1 ? Math.max(0, (d < blocs.length - 1 ? rects[d + 1].top - rects[d].bottom : rects[d].top - rects[d - 1].bottom)) : 8;
+  drag.py0 = drag.y0 + y;
+  drag.actif = true;
+  drag.bloc.classList.add("glisse");
+  elLiveExercises.classList.add("en-glisse");
+  vibre(15);
+  document.body.style.userSelect = "none";
+  const defile = () => {
+    if (!drag || !drag.actif) return;
+    const h = window.innerHeight, c = drag.cy;
+    if (c < 90) window.scrollBy(0, -Math.ceil((90 - c) / 6));
+    else if (c > h - 90) window.scrollBy(0, Math.ceil((c - (h - 90)) / 6));
+    dragPlace();
+    drag.raf = requestAnimationFrame(defile);
+  };
+  drag.raf = requestAnimationFrame(defile);
+}
+
+function dragPlace() {
+  const dy = drag.cy + window.scrollY - drag.py0;
+  drag.bloc.style.translate = `0 ${dy}px`;
+  const centre = drag.mid[drag.d] + dy;
+  let t = 0;
+  drag.mid.forEach((m, k) => { if (k !== drag.d && m < centre) t++; });
+  drag.t = t;
+  const decal = drag.h[drag.d] + drag.espace;
+  drag.blocs.forEach((b, k) => {
+    if (k === drag.d) return;
+    const m = k < drag.d ? k : k - 1;
+    b.style.translate = k < drag.d && m >= t ? `0 ${decal}px` : k > drag.d && m < t ? `0 ${-decal}px` : "";
+  });
+}
+
+function dragBouge(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  drag.cy = e.clientY;
+  if (!drag.actif) {
+    if (Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < SEUIL_DRAG) return;
+    dragActive();
+    if (!drag) return;
+  }
+  e.preventDefault();
+  dragPlace();
+}
+
+function dragFin(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const g = drag; drag = null;
+  if (!g.actif) return;
+  cancelAnimationFrame(g.raf);
+  document.body.style.userSelect = "";
+  dernierGeste = Date.now();
+  elLiveExercises.classList.remove("en-glisse");
+  g.bloc.classList.remove("glisse");
+  if (e.type === "pointercancel" || g.t === g.d) {            // rien ne change : tout revient en place
+    g.blocs.forEach(b => { b.style.translate = ""; });
+    return;
+  }
+  const blocs = reorderBlocks();
+  const seg = ([a, z]) => live.exercises.slice(a, z + 1);
+  const autres = blocs.filter((_, k) => k !== g.d);
+  autres.splice(g.t, 0, blocs[g.d]);
+  vibre([12, 40, 12]);
+  appliqueOrdre(autres.flatMap(seg));    // le FLIP fait glisser chaque carte de où elle est à où elle va
+}
+
+elLiveExercises.addEventListener("pointerdown", dragDebut);
+/* Un toucher ailleurs que sur le titre (marge, flèches exclues) compte aussi. */
+elLiveExercises.addEventListener("click", e => {
+  if (!reordering || e.target.closest(".live-ex-head, .mv, .ss-actions")) return;
+  if (Date.now() - dernierGeste < 450) return;
+  const carte = e.target.closest(".live-ex");
+  if (carte) toucheEchange(+carte.dataset.i);
+});
+window.addEventListener("pointermove", dragBouge, { passive: false });
+window.addEventListener("pointerup", dragFin);
+window.addEventListener("pointercancel", dragFin);
+
+/* Appui long sur un exercice : entre en mode réorganisation, comme sur
+   l'écran d'accueil d'un iPhone. On lève ensuite le doigt, puis on glisse. */
+(function () {
+  let minuteur = null, x0 = 0, y0 = 0;
+  const annule = () => { clearTimeout(minuteur); minuteur = null; };
+  elLiveExercises.addEventListener("pointerdown", e => {
+    if (reordering || !live || live.exercises.length < 2) return;
+    const tete = e.target.closest(".live-ex-head");
+    if (!tete || e.button > 0) return;
+    x0 = e.clientX; y0 = e.clientY;
+    const i = +tete.dataset.toggle;
+    minuteur = setTimeout(() => {
+      minuteur = null;
+      dernierGeste = Date.now();
+      vibre(25);
+      reorderStart();
+      swapSel = live.exercises[i] || null;       // l'exercice pressé est déjà choisi pour un échange
+      majMessageOrdre(); renderLiveExercises();
+    }, 520);
+  });
+  window.addEventListener("pointermove", e => {
+    if (minuteur && Math.hypot(e.clientX - x0, e.clientY - y0) > 9) annule();
+  });
+  window.addEventListener("pointerup", annule);
+  window.addEventListener("pointercancel", annule);
+  elLiveExercises.addEventListener("contextmenu", e => { if (e.target.closest(".live-ex-head")) e.preventDefault(); });
+})();
+
+function reorderStart() {
+  if (!live || live.exercises.length < 2) {
+    alert("Il faut au moins deux exercices pour changer l'ordre.");
+    return;
+  }
+  if (ssPicking) ssPickCancel();
+  reordering = true;
+  swapSel = null; majMessageOrdre();
+  editingSet = null; notingSet = null;
+  reorderBar(true);
+  renderLiveExercises();
+}
+
+function reorderStop() {
+  reordering = false; swapSel = null;
+  if (drag) { cancelAnimationFrame(drag.raf); drag = null; }
+  reorderBar(false);
+  expandedIndex = live ? live.currentIndex : -1;
+  renderLiveExercises();
+}
+
+document.getElementById("live-reorder").addEventListener("click", () =>
+  reordering ? reorderStop() : reorderStart());
+document.getElementById("reorder-done").addEventListener("click", reorderStop);
+
+/* Ce qu'on tape dans le détail ne doit pas s'effacer quand la carte est
+   redessinée (ouvrir/fermer le détail, minuteur, etc.). */
+elLiveExercises.addEventListener("input", e => {
+  const m = /^(poids|reps|rir|temps)-(\d+)$/.exec(e.target.id || "");
+  if (!m || !live || !live.exercises[+m[2]]) return;
+  saisie[m[2] + ":" + live.exercises[+m[2]].sets.length + ":" + m[1]] = e.target.value;
+});
 
 /* ---------- Fin de séance ---------- */
 document.getElementById("live-pause").addEventListener("click", pauseSession);
@@ -2086,7 +2826,7 @@ function recapHtml(r, editable) {
   if (!a) return "";                    // séance d'avant cette version
   const puces = (a.points || []).map(p => `
     <li class="recap-pt recap-${p.sig === "+" ? "ok" : p.sig === "!" ? "warn" : "mid"}">
-      <span class="recap-sig" aria-hidden="true">${p.sig === "+" ? "✓" : p.sig === "!" ? "⚠" : "~"}</span>
+      <span class="recap-sig" aria-hidden="true">${p.sig === "+" ? icon("tick") : p.sig === "!" ? icon("alert") : "~"}</span>
       <span>${esc(p.txt)}${p.ex ? ` <span class="recap-ex">· ${esc(p.ex)}</span>` : ""}</span>
     </li>`).join("");
   return `
@@ -2196,7 +2936,7 @@ function showSummary(r) {
         <p class="feedback" id="summary-feel-feedback"></p>
       </div>
       ${renderSessionDetail(r)}
-      <button class="btn btn-primary btn-lg" id="summary-back">↩ Retour aux séances</button>
+      <button class="btn btn-primary btn-lg" id="summary-back">${icon("undo")} Retour aux séances</button>
     </div>`;
 
   renderWarmupFix(r);
@@ -2233,7 +2973,7 @@ function showSummary(r) {
     if (typeof renderProgramsPanel === "function") renderProgramsPanel();
     addBtn.disabled = true;
     document.getElementById("add-to-program-feedback").textContent =
-      `✓ Ajoutée à « ${pr.nom || "ton programme"} » comme séance ${day.numero}.`;
+      `Ajoutée à « ${pr.nom || "ton programme"} » comme séance ${day.numero}.`;
   });
 
   let summaryRpe = null;
@@ -2259,7 +2999,7 @@ function showSummary(r) {
       const program = loadJSON(STORAGE_KEYS.program, null);
       if (!program || summaryDiff === "correcte") {
         zone.innerHTML = summaryDiff === "correcte"
-          ? '<p class="video-hint">Parfait, on ne change rien : la difficulté est bien calibrée. 👌</p>' : "";
+          ? '<p class="video-hint">Parfait, on ne change rien : la difficulté est bien calibrée.</p>' : "";
         return;
       }
       const dure = summaryDiff === "dure";
@@ -2282,7 +3022,7 @@ function showSummary(r) {
       elSummary.querySelectorAll(".rpe-chip").forEach(x =>
         x.classList.toggle("active", parseInt(x.dataset.rpe, 10) === summaryRpe));
       saveFeel();
-      document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré ✓" : "";
+      document.getElementById("summary-feel-feedback").textContent = summaryRpe ? "Ressenti enregistré" : "";
     }));
   const recapEdit = document.getElementById("recap-edit");
   if (recapEdit) recapEdit.addEventListener("change", () => {
@@ -2293,7 +3033,7 @@ function showSummary(r) {
 
   document.getElementById("summary-notes").addEventListener("change", () => {
     saveFeel();
-    document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées ✓";
+    document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées";
   });
   document.getElementById("summary-back").addEventListener("click", showSetup);
 }
@@ -2303,7 +3043,7 @@ function renderSessionDetail(r) {
     const stat = estStatique(ex);
     return `
     <div class="session-ex">
-      <h4><span class="ico">${GROUP_ICONS[ex.groupe] || "🏋️"} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
+      <h4><span class="ico">${GROUP_ICONS[ex.groupe] || icon("dumbbell")} </span>${esc(ex.nom)} <span class="ex-chrono">${fmtClock(ex.dureeMs)}</span></h4>
       <table class="sets-table">
         <thead><tr><th>Série</th>${stat
           ? `<th>Temps</th><th>Lest</th>`
@@ -2313,7 +3053,7 @@ function renderSessionDetail(r) {
             ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td>`
             : `<td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td><td>${s.rir != null ? s.rir : "—"}</td>`}
           <td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
-          ${s.note ? `<tr class="set-note-line"><td colspan="${stat ? 4 : 5}">💬 ${esc(s.note)}</td></tr>` : ""}`).join("")}
+          ${s.note ? `<tr class="set-note-line"><td colspan="${stat ? 4 : 5}">${icon("message")} ${esc(s.note)}</td></tr>` : ""}`).join("")}
         </tbody>
       </table>
     </div>`; }).join("")}</div>`;

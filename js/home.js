@@ -154,7 +154,7 @@ function serieCardHtml(gs) {
           <div class="serie-explique">
             <p><strong>${icon("check")}</strong> Valide ton objectif hebdo (${gs.goal} séance${gs.goal > 1 ? "s" : ""}) au moins une fois pour commencer la série.</p>
             <p><strong>${icon("flame")}</strong> Chaque semaine où l'objectif est de nouveau atteint prolonge la série d'un cran.</p>
-            <p><strong>↻</strong> Une semaine ratée la ramène à zéro — mais elle n'efface ni ta plus longue série, ni le total déjà validé.</p>
+            <p><strong>${icon("rotate")}</strong> Une semaine ratée la ramène à zéro — mais elle n'efface ni ta plus longue série, ni le total déjà validé.</p>
           </div>`
       })}
     </div>`;
@@ -178,8 +178,8 @@ function homeCustomizePanel() {
             <span>${esc(HOME_CARD_LABELS[c.key] || c.key)}</span>
           </label>
           <span class="hc-order">
-            <button class="btn-ic hc-up" data-key="${esc(c.key)}" title="Monter" aria-label="Monter" ${i === 0 ? "disabled" : ""}>▲</button>
-            <button class="btn-ic hc-down" data-key="${esc(c.key)}" title="Descendre" aria-label="Descendre" ${i === cards.length - 1 ? "disabled" : ""}>▼</button>
+            <button class="btn-ic hc-up" data-key="${esc(c.key)}" title="Monter" aria-label="Monter" ${i === 0 ? "disabled" : ""}>${icon("arrow-up")}</button>
+            <button class="btn-ic hc-down" data-key="${esc(c.key)}" title="Descendre" aria-label="Descendre" ${i === cards.length - 1 ? "disabled" : ""}>${icon("arrow-down")}</button>
           </span>
         </li>`).join("")}
     </ul>
@@ -343,8 +343,23 @@ function renderHome() {
       </div>` : ""}
     </section>
     ${rendered.join("")}
+    <div class="home-maj">
+      <span class="home-maj-ver">${icon("refresh")} Version <strong>${esc(typeof APP_VERSION !== "undefined" ? APP_VERSION : "")}</strong>
+        <span id="home-maj-etat"></span></span>
+      <button class="btn btn-ghost btn-sm" id="home-maj" type="button">Mettre à jour</button>
+    </div>
     ${homeCustomizePanel()}
   `;
+  const majBtn = document.getElementById("home-maj");
+  if (majBtn) majBtn.addEventListener("click", () => rechargerApp(majBtn));
+  /* Dit si la page tourne sur l'ancien code : le service worker actif
+     annonce sa version, la page annonce la sienne. */
+  if (typeof versionDuServiceWorker === "function") versionDuServiceWorker().then(v => {
+    const etat = document.getElementById("home-maj-etat");
+    if (!etat || !v) return;
+    if (v === APP_VERSION) etat.textContent = "· à jour";
+    else { etat.textContent = "· " + v + " disponible"; majBtn && majBtn.classList.replace("btn-ghost", "btn-primary"); }
+  });
 
   const start = document.getElementById("home-start");
   if (start) start.addEventListener("click", () => {
@@ -596,7 +611,7 @@ function renderNutriResult(d) {
           <li><strong>Compléments :</strong> seules la <em>créatine monohydrate</em> (3-5 g/jour) et la <em>whey</em> ont une efficacité solidement démontrée. La caféine aide avant une grosse séance. Le reste est optionnel.</li>
           <li><strong>Journée type :</strong> flocons + œufs · riz-poulet-légumes · collation protéinée · poisson-patates douces-légumes.</li>
         </ul>
-        <p class="disclaimer">⚠️ Estimations générales, pas une prescription. Pas de restriction sévère : en cas de doute, d'antécédents médicaux ou de troubles alimentaires, parles-en à un médecin ou un(e) diététicien(ne).</p>`
+        <p class="disclaimer">${icon("alert")} Estimations générales, pas une prescription. Pas de restriction sévère : en cas de doute, d'antécédents médicaux ou de troubles alimentaires, parles-en à un médecin ou un(e) diététicien(ne).</p>`
       })}
     </div>
 

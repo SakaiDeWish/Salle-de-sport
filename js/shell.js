@@ -125,10 +125,45 @@ function applyTheme(theme) {
   localStorage.setItem("gymcoach.theme", theme);
   const lab = document.getElementById("theme-toggle-label");
   if (lab) lab.textContent = theme === "gamifie" ? "Épuré" : "Gamifié";
-  const ico = document.getElementById("settings-fab-ico");
-  if (ico) ico.innerHTML = icon(theme === "gamifie" ? "moon" : "sun");
+  /* Le bouton des réglages ne change plus de glyphe avec le thème : il
+     portait ☾ ou ☀ et se lisait donc comme une bascule jour/nuit, alors
+     qu'il ouvre tous les réglages — et que sur téléphone c'est le seul
+     accès. Il porte un engrenage fixe. */
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", theme === "gamifie" ? "#0a0a0b" : "#f6f1e7");
+}
+
+/* ==================== NUMÉRO DE VERSION ====================
+
+   « Est-ce que j'ai bien la nouvelle version ? » n'avait aucune réponse
+   depuis le téléphone : rien, nulle part, ne disait ce qui tournait. Or
+   une app installée sur l'écran d'accueil peut rester des jours sans
+   jamais recharger sa page — le service worker se met à jour, le code
+   DÉJÀ CHARGÉ ne change pas, et une fonctionnalité livrée reste
+   invisible sans que personne puisse le constater.
+
+   Ce numéro est porté par le CODE DE LA PAGE. Affiché dans Réglages, il
+   dit donc ce qui tourne vraiment, pas ce qui est publié : s'il est en
+   retard sur le site, c'est la preuve que la page est périmée. C'est
+   précisément ce qu'on veut pouvoir lire.
+
+   >>> À BUMPER AVEC `CACHE` DANS sw.js — les deux vont par paire <<<
+   Et leur désaccord n'est pas un risque, c'est le capteur : quand le
+   service worker actif annonce une version différente de celle-ci, la
+   page est en retard sur lui, et l'app le dit (voir tracking.js). */
+const APP_VERSION = "v73";
+
+/* Recharger l'app pour prendre la dernière version : demande au service
+   worker de chercher, lui dit de s'installer s'il attend, puis recharge la
+   page. Le bouton vit à l'ACCUEIL ; il vivait dans Réglages, que la
+   pastille de séance masquait justement quand on en avait besoin. */
+async function rechargerApp(btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Recherche…"; }
+  try {
+    const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+    if (reg) { await reg.update(); if (reg.waiting) reg.waiting.postMessage({ type: "skip" }); }
+  } catch { /* hors ligne : le rechargement reste utile */ }
+  location.reload();
 }
 
 function settingsHtml() {
@@ -139,8 +174,8 @@ function settingsHtml() {
       <div class="set-row">
         <span class="set-lab">Thème</span>
         <div class="seg-mini" role="group" aria-label="Choix du thème">
-          <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">☾ Sombre</button>
-          <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">☀ Clair</button>
+          <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">${icon("moon")} Sombre</button>
+          <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">${icon("sun")} Clair</button>
         </div>
       </div>
     </div>
@@ -170,6 +205,19 @@ function settingsHtml() {
         <input type="checkbox" id="set-vibrate" ${restVibrateOn() ? "checked" : ""}>
       </label>
       <label class="set-row set-check">
+        <span class="set-lab">Voix du décompte
+          <span class="set-sub">Dit « 3, 2, 1 » à voix haute avant la reprise. Suit le
+            volume du bip et se tait si le son est coupé.</span></span>
+        <input type="checkbox" id="set-voice" ${localStorage.getItem("gymcoach.restVoice") !== "0" ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Notification de reprise
+          <span class="set-sub" id="set-notif-sub">Une notification à la fin du repos quand l'app est
+            en arrière-plan. Sans serveur, le système peut la retarder ou la perdre écran
+            verrouillé.</span></span>
+        <input type="checkbox" id="set-notif" ${typeof notifOn === "function" && notifOn() ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
         <span class="set-lab">Rappel si un exercice traîne
           <span class="set-sub">Double vibration quand un exercice dépasse la durée prévue
             par le programme — ses séries, plus ses repos. En séance libre, aucune durée
@@ -195,6 +243,11 @@ function settingsHtml() {
 
     <div class="card set-card">
       <h3 class="set-h">À propos</h3>
+      <div class="set-row">
+        <span class="set-lab">Version installée
+          <span class="set-sub" id="set-version-sub">Celle qui tourne en ce moment sur cet appareil.</span></span>
+        <span class="set-version" id="set-version">${esc(APP_VERSION)}</span>
+      </div>
       <p class="set-sub">GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute,
         consulte un professionnel de santé.</p>
     </div>`;
@@ -238,6 +291,20 @@ function openSettings() {
     localStorage.setItem(STORAGE_KEYS.restVolume, vol.value);
     if (typeof beep === "function") beep(true, +vol.value);
   });
+  const nt = document.getElementById("set-notif");
+  nt.addEventListener("change", async () => {
+    if (!nt.checked) { localStorage.setItem(STORAGE_KEYS.restNotif, "0"); return; }
+    let ok = "Notification" in window;
+    if (ok && Notification.permission === "default") ok = (await Notification.requestPermission()) === "granted";
+    else if (ok) ok = Notification.permission === "granted";
+    if (ok && typeof pushAbonnement === "function") { try { await pushAbonnement(true); } catch { /* repli : notification locale */ } }
+    nt.checked = ok;
+    localStorage.setItem(STORAGE_KEYS.restNotif, ok ? "1" : "0");
+    if (!ok) document.getElementById("set-notif-sub").textContent =
+      "Notifications refusées ou indisponibles : autorise-les dans les réglages du navigateur.";
+  });
+  document.getElementById("set-voice").addEventListener("change", e =>
+    localStorage.setItem("gymcoach.restVoice", e.target.checked ? "1" : "0"));
   v.addEventListener("change", () => localStorage.setItem(STORAGE_KEYS.restVibrate, v.checked ? "1" : "0"));
   const dbd = document.getElementById("set-debord");
   if (dbd) dbd.addEventListener("change", () =>
@@ -248,6 +315,21 @@ function openSettings() {
   const as = document.getElementById("set-autostop");
   if (as) as.addEventListener("change", () =>
     localStorage.setItem(STORAGE_KEYS.autoStop, as.value));
+
+  /* MISE À JOUR MANUELLE. Le rechargement seul ne suffit pas toujours :
+     si un service worker plus récent attend son tour, il faut d'abord le
+     laisser prendre la main. On lui demande donc de s'installer, puis on
+     recharge — et au pire, on recharge quand même. */
+  /* Compare ce que la PAGE exécute avec ce que le service worker ACTIF
+     a mis en cache. Un écart signifie que la page est restée sur
+     l'ancien code — c'est le cas « je ne vois pas le changement ». */
+  versionDuServiceWorker().then(v => {
+    const sub = document.getElementById("set-version-sub");
+    if (!sub || !v) return;
+    if (v === APP_VERSION) { sub.textContent = "À jour — c'est la dernière version publiée."; return; }
+    sub.innerHTML = `Une version plus récente (<strong>${esc(v)}</strong>) est déjà
+      téléchargée : recharge pour l'utiliser.`;
+  });
 }
 
 document.getElementById("settings-fab").addEventListener("click", openSettings);
@@ -308,7 +390,7 @@ applyTheme(currentTheme());
   btn.className = "to-chrono";
   btn.type = "button";
   btn.setAttribute("aria-label", "Revenir au chronomètre");
-  btn.innerHTML = icon("chev-up");
+  btn.innerHTML = icon("chevron-up");
   btn.addEventListener("click", () => {
     if (typeof toggleHeaderManual === "function") toggleHeaderManual(false);
     window.scrollTo({ top: 0, behavior: "smooth" });

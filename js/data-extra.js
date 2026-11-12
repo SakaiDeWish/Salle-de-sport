@@ -320,6 +320,43 @@ const EXERCISES_EXTRA = [
     videoQuery: "développé épaules machine technique"
   },
   {
+    id: "developpe-epaules-convergent",
+    nom: "Développé épaules machine convergente",
+    groupe: "epaules", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Deltoïdes antérieur et moyen, triceps",
+    description: "Le développé guidé dont les poignées se rapprochent en montant : au lieu d'un rail vertical, chaque bras suit un arc incliné vers l'axe du corps, plus proche du trajet naturel de l'épaule. Les deux bras sont indépendants.",
+    execution: [
+      "Règle le siège pour que les poignées soient à hauteur d'oreilles, coudes sous les poignets.",
+      "Pousse vers le haut en laissant les poignées se rapprocher : c'est la machine qui impose ce trajet, ne le contrarie pas.",
+      "Redescends lentement jusqu'à la hauteur d'oreilles, sans laisser les charges claquer."
+    ],
+    erreurs: [
+      "Siège trop bas : la poignée démarre au-dessus des oreilles et le bas de l'amplitude disparaît.",
+      "Pousser plus fort d'un côté : les bras étant indépendants, le déséquilibre ne se voit pas.",
+      "Verrouiller les coudes d'un coup en haut."
+    ],
+    videoQuery: "converging shoulder press machine technique épaules"
+  },
+  {
+    id: "developpe-militaire-guide",
+    nom: "Développé militaire assis à la machine guidée",
+    groupe: "epaules", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Deltoïdes antérieur et moyen, triceps",
+    description: "Le développé au-dessus de la tête avec une barre montée sur rails verticaux : assis, dos plaqué, rien à équilibrer. En échange, la barre ne peut pas reculer au-dessus de la tête comme le fait une barre libre — elle reste devant le visage d'un bout à l'autre.",
+    execution: [
+      "Règle le dossier presque vertical et place le banc pour que la barre descende devant le visage, à quelques centimètres du nez.",
+      "Prise pronation un peu plus large que les épaules, coudes sous la barre, puis déverrouille-la du rail.",
+      "Descends jusqu'au menton et pousse à la verticale : ne cherche pas à ramener la barre au-dessus de la tête, le rail ne le permet pas.",
+      "Incliner le dossier d'environ 20° rapproche la barre de l'aplomb de l'épaule — son bras de levier passe de 22 à 13 cm, mais le haut des pectoraux prend alors une part du travail."
+    ],
+    erreurs: [
+      "Banc mal placé : trop en arrière la barre racle le visage, trop en avant l'épaule part en flexion extrême.",
+      "Cambrer le bas du dos pour aider — le dossier est là pour l'en empêcher.",
+      "Croire que bras tendus est un repos : la barre reste devant l'épaule, le deltoïde ne relâche jamais."
+    ],
+    videoQuery: "développé militaire assis machine guidée smith technique épaules"
+  },
+  {
     id: "pec-deck-inverse",
     nom: "Pec-deck inversé (reverse fly)",
     groupe: "epaules", materiel: "machine", niveau: "debutant", type: "iso",
@@ -390,6 +427,252 @@ const EXERCISES_EXTRA = [
     ],
     erreurs: ["Reculer le buste.", "Coudes qui avancent.", "Relâcher en bas."],
     videoQuery: "curl poulie basse biceps technique"
+  },
+  {
+    id: "curl-poulie-incline",
+    nom: "Curl à la poulie basse, banc incliné",
+    groupe: "biceps", materiel: "poulie", niveau: "intermediaire", type: "iso",
+    muscles: "Biceps (longue portion)",
+    description: "Le curl incliné, mais avec un câble au lieu d'haltères. Aux haltères, le bras qui pend n'est presque pas chargé en bas, là où le biceps est le plus étiré ; le câble, lui, charge justement cette position. En échange, il charge nettement moins le haut du mouvement.",
+    execution: [
+      "Banc incliné à 45-60°, dos plaqué, bras pendants derrière la ligne du corps. Poulie au sol, SOUS le banc ou juste devant lui.",
+      "Poignée en supination, épaules basses et plaquées au dossier.",
+      "Monte la poignée vers les épaules sans avancer les coudes.",
+      "Redescends lentement jusqu'au bras presque tendu : c'est la position où le câble travaille le mieux."
+    ],
+    erreurs: [
+      "Poulie derrière le banc : le câble tire la main vers l'arrière et AIDE la flexion en bas au lieu de lui résister.",
+      "Poulie trop loin devant : en haut, le câble finit par aider la montée.",
+      "Avancer les épaules ou les coudes pour monter la charge."
+    ],
+    videoQuery: "curl poulie basse banc incliné biceps technique incline cable curl"
+  },
+  {
+    id: "curl-incline-marteau",
+    nom: "Curl incliné marteau",
+    groupe: "biceps", materiel: "halteres", niveau: "intermediaire", type: "iso",
+    muscles: "Brachial, brachio-radial, biceps (longue portion)",
+    description: "Le curl incliné en prise neutre, pouces vers le haut. Le bras part derrière le corps comme au curl incliné classique, donc la longue portion du biceps est étirée au départ, mais la prise neutre déplace une partie du travail vers le brachial et le brachio-radial, les muscles qui épaississent le bras et l'avant-bras.",
+    execution: [
+      "Banc incliné à 45-60°, dos plaqué, bras pendants derrière la ligne du corps, haltères en prise neutre (paumes face à face).",
+      "Monte les haltères vers les épaules sans tourner les poignets : les pouces restent vers le haut du début à la fin.",
+      "Garde les coudes fixes et les épaules plaquées au dossier.",
+      "Redescends lentement jusqu'au bras presque tendu."
+    ],
+    erreurs: [
+      "Tourner les poignets en supination en montant : ce n'est plus un marteau.",
+      "Avancer les épaules pour aider la montée.",
+      "Descente relâchée : c'est en bas que l'étirement est utile."
+    ],
+    videoQuery: "curl incliné marteau haltères technique incline hammer curl"
+  },
+  {
+    id: "curl-incline-bas",
+    nom: "Curl incliné, banc bas (30°)",
+    groupe: "biceps", materiel: "halteres", niveau: "avance", type: "iso",
+    muscles: "Biceps (longue portion)",
+    description: "Le curl incliné sur un banc presque couché, à environ 30°. Les bras pendent à la verticale, donc l'épaule est en extension de 60° par rapport au tronc, contre environ 34° sur un banc à 56° : la longue portion du biceps est étirée au maximum. C'est aussi une position proche de la limite de l'épaule : on la réserve aux pratiquants à l'aise.",
+    execution: [
+      "Banc incliné à 30°, dos et tête plaqués, bras pendant VERTICALEMENT à côté du banc, haltères en supination.",
+      "Monte les haltères vers les épaules sans avancer les coudes ni décoller les épaules du dossier.",
+      "Redescends lentement jusqu'au bras presque tendu, sans te laisser tirer vers l'avant par les haltères.",
+      "Si l'avant de l'épaule tire ou pince, remonte le dossier d'un cran : ne force pas cette position."
+    ],
+    erreurs: [
+      "Décoller les épaules du banc pour gagner de l'amplitude : l'étirement vient du bras en arrière, pas d'un buste qui avance.",
+      "Charge trop lourde : le bras tendu derrière le corps est une position fragile pour l'épaule.",
+      "Coudes qui avancent en montant."
+    ],
+    videoQuery: "curl incliné 30 degrés haltères banc bas étirement biceps technique"
+  },
+  {
+    id: "developpe-semi-incline-halteres",
+    nom: "Développé semi-incliné aux haltères",
+    groupe: "pectoraux", materiel: "halteres", niveau: "intermediaire", type: "poly",
+    muscles: "Pectoraux (haut et milieu), deltoïdes antérieurs, triceps",
+    description: "Le développé aux haltères sur un banc réglé à environ 15°, entre le plat et l'incliné classique. Les haltères montent à la verticale, au-dessus des épaules : plus le dossier est relevé, plus le bras se retrouve fléchi par rapport au tronc (105° à 15°, contre 90° à plat et 120° à 30°). C'est un réglage de compromis qui décale légèrement la charge vers le haut des pectoraux sans trop faire intervenir les épaules.",
+    execution: [
+      "Règle le banc à environ 15° : un cran au-dessus du plat, bien en dessous de l'incliné classique. Dos, tête et fessiers plaqués.",
+      "Haltères au-dessus des épaules, bras presque tendus, coudes sans verrouillage brutal.",
+      "Descends en contrôlant jusqu'à ce que les haltères arrivent au niveau de la poitrine, coudes à environ 45-70° du buste.",
+      "Repousse à la verticale, au-dessus des épaules, en expirant."
+    ],
+    erreurs: [
+      "Incliner le banc de plus en plus au fil des séries : au-delà de 30-45°, les épaules prennent le relais.",
+      "Pousser les haltères vers l'avant, vers les pieds, au lieu de monter à la verticale au-dessus des épaules.",
+      "Descendre trop bas et sur-étirer l'épaule.",
+      "Cambrer le dos pour compenser la charge."
+    ],
+    videoQuery: "développé semi incliné haltères technique pectoraux banc 15 degrés"
+  },
+  {
+    id: "elevation-y-incline-halteres",
+    nom: "Élévation en Y sur banc incliné aux haltères",
+    groupe: "epaules", materiel: "halteres", niveau: "intermediaire", type: "iso",
+    muscles: "Trapèzes inférieur et moyen, deltoïdes postérieurs",
+    description: "À plat ventre sur un banc incliné à 30-45°, la poitrine appuyée, tu montes les bras tendus en forme de Y, au-dessus de la tête. Le banc supprime tout élan du buste, et la charge, très légère, travaille le bas et le milieu du dos plutôt que le haut des trapèzes.",
+    execution: [
+      "Banc incliné à 30-45°, poitrine et ventre contre le dossier, pieds au sol, bras pendants verticalement de part et d'autre du banc, haltères légers, pouces vers le haut.",
+      "Monte les deux bras en même temps, tendus, en les écartant en Y : environ 30 à 35° de part et d'autre du prolongement de ton tronc, comme si tu voulais t'allonger dans le prolongement de ton corps.",
+      "Arrête quand les bras prolongent le tronc, omoplates descendues et serrées, sans hausser les épaules vers les oreilles.",
+      "Redescends lentement jusqu'aux bras pendants."
+    ],
+    erreurs: [
+      "Charge trop lourde : les épaules montent vers les oreilles et le haut des trapèzes prend le relais.",
+      "Décoller la poitrine du banc ou se cambrer pour aller chercher de la hauteur.",
+      "Plier les coudes : l'exercice se joue bras tendus.",
+      "Balancer les bras en bas pour prendre de l'élan."
+    ],
+    videoQuery: "élévation en Y banc incliné haltères trapèzes inférieurs technique incline y raise"
+  },
+  {
+    id: "souleve-de-terre-barre-hexagonale",
+    nom: "Soulevé de terre à la barre hexagonale",
+    groupe: "dos", materiel: "barre", niveau: "intermediaire", type: "poly",
+    muscles: "Quadriceps, fessiers, ischio-jambiers, érecteurs du rachis, trapèzes",
+    description: "Le soulevé de terre dans une barre en losange (trap bar) : tu te places à l'intérieur, les mains de chaque côté du corps. La barre n'a plus à contourner les tibias, donc les tibias restent verticaux, le buste se redresse et les hanches partent plus bas qu'au soulevé classique. C'est un soulevé plus accessible, qui sollicite davantage les quadriceps.",
+    execution: [
+      "Place-toi au centre de la barre, pieds largeur de hanches, les poignées à hauteur de tes mains quand tu te penches. Les poignées hautes raccourcissent la course.",
+      "Saisis les poignées, bras tendus, dos plat, poitrine haute. Les tibias sont verticaux et la charge est à l'aplomb du milieu du pied.",
+      "Pousse le sol : genoux et hanches s'étendent ensemble, les épaules montent au moins aussi vite que les hanches.",
+      "Verrouille les hanches en haut sans te pencher en arrière, puis redescends en contrôlant."
+    ],
+    erreurs: [
+      "Laisser les hanches monter avant les épaules : le dos prend la charge et ce n'est plus qu'un soulevé jambes tendues.",
+      "Arrondir le bas du dos au décollage.",
+      "Plier les bras pour tirer la barre.",
+      "Se cambrer en haut au lieu de verrouiller les hanches."
+    ],
+    videoQuery: "soulevé de terre barre hexagonale trap bar deadlift technique"
+  },
+  {
+    id: "clean-and-press",
+    nom: "Épaulé-développé à la barre (clean and press)",
+    groupe: "epaules", materiel: "barre", niveau: "avance", type: "poly",
+    muscles: "Corps entier : quadriceps, fessiers, ischio-jambiers, érecteurs, trapèzes, deltoïdes, triceps",
+    description: "La barre part du sol, monte aux clavicules en un seul geste explosif (l'épaulé), puis est poussée au-dessus de la tête (le développé). C'est un exercice complet et technique : la jambe et le dos font monter la barre, l'épaule la termine. À apprendre léger, de préférence avec un coach.",
+    execution: [
+      "Barre au sol contre les tibias, pieds largeur de hanches, dos plat, bras tendus, épaules au-dessus de la barre.",
+      "Pousse le sol : genoux et hanches s'étendent, la barre glisse le long des tibias puis des cuisses, bras tendus, sans tirer avec les bras.",
+      "Quand la barre atteint les hanches, étends-toi complètement, hausse les épaules, puis plie les bras en amenant la barre contre le corps et reçois-la sur les clavicules, coudes en avant, genoux légèrement fléchis pour amortir.",
+      "Redresse-toi, puis pousse la barre au-dessus de la tête en passant le visage, jusqu'aux bras tendus, la barre à l'aplomb du milieu du pied.",
+      "Redescends la barre aux clavicules, puis au sol en la gardant contre les cuisses et les tibias."
+    ],
+    erreurs: [
+      "Tirer avec les bras avant que les hanches soient étendues : la barre s'écarte du corps et le geste perd sa puissance.",
+      "Laisser la barre s'éloigner des tibias et des cuisses : le dos prend la charge.",
+      "Recevoir la barre avec les coudes bas : elle roule vers l'avant et le développé devient un effort de dos.",
+      "Cambrer ou pousser avec les jambes pendant le développé : c'est alors un push press, pas un développé strict."
+    ],
+    videoQuery: "clean and press barre épaulé développé technique"
+  },
+  {
+    id: "presse-cuisses-pieds-hauts",
+    nom: "Presse à cuisses, pieds hauts",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "intermediaire", type: "poly",
+    muscles: "Fessiers, ischio-jambiers, quadriceps",
+    description: "La presse inclinée avec les pieds posés dans le haut du plateau. À 90° de genou, la hanche est beaucoup plus fléchie (44° d'angle intérieur contre 60° pieds au milieu et 76° pieds bas), et le genou finit plus près du buste : c'est le réglage associé aux fessiers et aux ischio-jambiers.",
+    execution: [
+      "Dos et bassin plaqués, pieds largeur d'épaules dans le haut du plateau, talons bien appuyés.",
+      "Descends en contrôlant jusqu'à ce que le genou arrive vers 90°, sans que le bassin décolle du dossier.",
+      "Pousse dans les talons, sans verrouiller les genoux en haut."
+    ],
+    erreurs: [
+      "Laisser le bassin décoller en bas : plus les pieds sont hauts, plus la hanche se ferme et plus c'est facile.",
+      "Descendre trop bas pour compenser.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses pieds hauts fessiers ischios technique"
+  },
+  {
+    id: "presse-cuisses-pieds-bas",
+    nom: "Presse à cuisses, pieds bas",
+    groupe: "quadriceps", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse inclinée avec les pieds posés dans le bas du plateau. À 90° de genou, la hanche reste ouverte (76° d'angle intérieur contre 60° pieds au milieu) et le genou voyage davantage : c'est le réglage associé aux quadriceps.",
+    execution: [
+      "Dos et bassin plaqués, pieds largeur d'épaules dans le bas du plateau, talons bien appuyés.",
+      "Descends en contrôlant jusqu'à environ 90° de flexion de genou.",
+      "Pousse dans l'ensemble du pied, talon compris, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Soulever les talons : plus le pied est bas, moins il y a de place pour le talon.",
+      "Verrouiller les genoux sous charge lourde.",
+      "Genoux qui rentrent."
+    ],
+    videoQuery: "presse à cuisses pieds bas quadriceps technique"
+  },
+  {
+    id: "presse-cuisses-pieds-ecartes",
+    nom: "Presse à cuisses, pieds écartés",
+    groupe: "ischios-fessiers", materiel: "machine", niveau: "intermediaire", type: "poly",
+    muscles: "Fessiers, adducteurs, quadriceps",
+    description: "La presse inclinée avec les pieds beaucoup plus larges que les hanches, pointes légèrement ouvertes et genoux dans l'axe des pieds. Ici l'écartement se lit de face, pas de profil : de profil le chariot ne parcourt que 7,5 % de plus.",
+    execution: [
+      "Dos et bassin plaqués, pieds nettement plus larges que les épaules, pointes légèrement ouvertes.",
+      "Descends en contrôlant en gardant les genoux dans l'axe de tes pieds.",
+      "Pousse dans les talons, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Genoux qui rentrent vers l'intérieur : à cet écartement c'est la faute la plus fréquente.",
+      "Pieds trop larges pour ta mobilité de hanche : le bassin décolle plus tôt.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses pieds écartés adducteurs fessiers technique"
+  },
+  {
+    id: "presse-cuisses-pieds-serres",
+    nom: "Presse à cuisses, pieds serrés",
+    groupe: "quadriceps", materiel: "machine", niveau: "intermediaire", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse inclinée avec les pieds plus proches l'un de l'autre que les hanches. De profil, le mouvement est quasi identique à celui des pieds au milieu ; la différence se lit de face, sur la seconde vue.",
+    execution: [
+      "Dos et bassin plaqués, pieds serrés au milieu du plateau, talons bien appuyés.",
+      "Descends en contrôlant jusqu'à environ 90° de flexion de genou, genoux dans l'axe des pieds.",
+      "Pousse dans les talons, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Genoux qui se rapprochent l'un de l'autre au fil de la descente.",
+      "Bassin qui décolle en bas.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses pieds serrés quadriceps technique"
+  },
+  {
+    id: "presse-cuisses-horizontale",
+    nom: "Presse à cuisses horizontale (assise)",
+    groupe: "quadriceps", materiel: "machine", niveau: "debutant", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse assise, dossier presque vertical et plateau vertical : on pousse à l'horizontale. Dans nos réglages, à 90° de genou l'angle de hanche est de 47° contre 60° sur la presse à 45° : la hanche est plus fermée.",
+    execution: [
+      "Assis, dos contre le dossier, pieds largeur d'épaules au milieu du plateau, à peu près à hauteur des hanches.",
+      "Descends en contrôlant jusqu'à environ 90° de flexion de genou.",
+      "Pousse dans les talons, sans verrouiller les genoux."
+    ],
+    erreurs: [
+      "Décoller le bas du dos du dossier en descendant trop bas.",
+      "Pousser sur la pointe des pieds.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses horizontale assise technique"
+  },
+  {
+    id: "presse-cuisses-verticale",
+    nom: "Presse à cuisses verticale (allongée)",
+    groupe: "quadriceps", materiel: "machine", niveau: "avance", type: "poly",
+    muscles: "Quadriceps, fessiers",
+    description: "La presse verticale : tu es allongé sur le dos et tu pousses le plateau vers le plafond. C'est la presse qui ferme le plus la hanche : dans nos réglages, à 90° de genou l'angle de hanche est de 37°, contre 47° sur la presse horizontale et 60° à 45°.",
+    execution: [
+      "Allongé sur le dos, pieds largeur d'épaules à l'aplomb des hanches, plateau au-dessus du bassin.",
+      "Descends en contrôlant : le genou vient près du buste, arrête-toi vers 90° de flexion de genou.",
+      "Pousse vers le plafond sans verrouiller les genoux et sans décoller le bassin."
+    ],
+    erreurs: [
+      "Laisser le bassin décoller en bas : sur cette presse la hanche se ferme tôt.",
+      "Descendre trop bas, genoux contre la poitrine.",
+      "Verrouiller les genoux sous charge lourde."
+    ],
+    videoQuery: "presse à cuisses verticale allongée technique"
   },
   {
     id: "curl-spider",
@@ -1849,6 +2132,25 @@ const EXERCISES_COMBLE = [
     videoQuery: "extension triceps allongée haltères skull crusher dumbbell technique"
   },
   {
+    id: "barre-au-front-incline",
+    nom: "Barre au front, banc incliné",
+    groupe: "triceps", materiel: "barre", niveau: "intermediaire", type: "iso",
+    muscles: "Triceps (longue portion surtout)",
+    description: "Le barre au front sur un banc incliné à environ 30° : le bras vertical se retrouve plus fléchi par rapport au tronc (120° au lieu de 103° à plat), ce qui étire davantage la longue portion du triceps avant même de commencer. En échange, la barre touche le front plus tôt : l'amplitude du coude est plus courte.",
+    execution: [
+      "Dossier à 30°, tête et dos plaqués, barre EZ en pronation, bras VERTICAUX au-dessus des épaules.",
+      "Fléchis les coudes pour amener la barre vers le front : elle touche avant d'arriver derrière la tête, c'est normal.",
+      "Seuls les avant-bras bougent, les coudes restent fixes et pointés vers le plafond.",
+      "Tends les bras en contractant les triceps."
+    ],
+    erreurs: [
+      "Laisser les coudes partir vers l'arrière pour descendre derrière la tête : l'épaule se met à bouger, ça devient un pull-over.",
+      "Dossier trop incliné : à 45° la barre arrive au front quasi bras tendus, il ne reste presque rien à fléchir.",
+      "Écarter les coudes vers l'extérieur."
+    ],
+    videoQuery: "barre au front banc incliné triceps technique skull crusher incline"
+  },
+  {
     id: "farmer-walk",
     nom: "Farmer walk (port de charge)",
     groupe: "dos", materiel: "halteres", niveau: "debutant", type: "poly",
@@ -2034,6 +2336,28 @@ const EXERCISE_ALIASES = {
   "curl-pupitre": ["preacher curl", "curl larry scott"],
   "extension-poulie": ["triceps pushdown", "pushdown", "extension barre poulie"],
   "barre-au-front": ["skull crusher", "skullcrusher", "french press"],
+  "presse-cuisses-pieds-hauts": ["leg press high feet", "leg press feet high", "presse pieds hauts", "presse à cuisses pieds hauts fessiers"],
+  "presse-cuisses-pieds-bas": ["leg press low feet", "leg press feet low", "presse pieds bas", "presse à cuisses pieds bas quadriceps"],
+  "presse-cuisses-pieds-ecartes": ["wide stance leg press", "leg press wide", "presse pieds écartés", "presse à cuisses pieds larges"],
+  "presse-cuisses-pieds-serres": ["narrow stance leg press", "close stance leg press", "presse pieds serrés", "presse à cuisses pieds rapprochés"],
+  "presse-cuisses-horizontale": ["horizontal leg press", "seated leg press", "presse assise", "presse à cuisses assise", "presse horizontale"],
+  "presse-cuisses-verticale": ["vertical leg press", "presse verticale", "presse à cuisses allongée", "presse à cuisses couchée"],
+  "clean-and-press": ["clean and press", "clean & press", "épaulé développé", "épaulé-développé", "power clean and press",
+                      "épaulé jeté développé", "clean press", "barre épaulé développé"],
+  "souleve-de-terre-barre-hexagonale": ["trap bar deadlift", "hex bar deadlift", "hexagonal bar deadlift",
+                                         "soulevé de terre trap bar", "soulevé de terre barre hex",
+                                         "soulevé de terre hexbar", "deadlift trap bar"],
+  "elevation-y-incline-halteres": ["incline y raise", "prone y raise", "y raise", "chest supported y raise",
+                                    "élévation en y", "élévations en y banc incliné", "y raise banc incliné"],
+  "developpe-semi-incline-halteres": ["low incline dumbbell press", "low incline press", "15 degree incline press",
+                                      "développé incliné léger haltères", "développé banc peu incliné"],
+  "curl-incline-marteau": ["incline hammer curl", "hammer curl incliné", "curl marteau incliné"],
+  "curl-incline-bas": ["low incline curl", "30 degree incline curl", "curl incliné banc bas",
+                       "curl incliné 30 degrés", "curl incliné allongé"],
+  "curl-poulie-incline": ["incline cable curl", "cable incline curl", "curl incliné à la poulie",
+                          "curl poulie banc incliné", "curl poulie basse incliné"],
+  "barre-au-front-incline": ["incline skull crusher", "incline skullcrusher", "incline lying triceps extension",
+                             "barre au front inclinée", "extension triceps banc incliné"],
   "developpe-couche-prise-serree": ["close grip bench press", "CGBP"],
   "squat-barre": ["back squat", "squat arrière"],
   "front-squat": ["squat avant", "squat clavicule"],
@@ -2111,6 +2435,11 @@ const EXERCISE_ALIASES = {
   "elevations-laterales-poulie": ["cable lateral raise"],
   "rowing-menton": ["upright row", "tirage menton"],
   "developpe-epaules-machine": ["machine shoulder press", "développé épaules guidé"],
+  "developpe-epaules-convergent": ["converging shoulder press", "iso-lateral shoulder press",
+                                   "développé épaules convergent", "machine convergente épaules"],
+  "developpe-militaire-guide": ["smith machine shoulder press", "smith machine overhead press",
+                                "développé militaire guidé", "développé épaules barre guidée",
+                                "military press smith"],
   "pec-deck-inverse": ["reverse pec deck", "rear delt machine"],
   "gainage-lateral": ["side plank"],
   "hollow-hold": ["hollow body hold"],
