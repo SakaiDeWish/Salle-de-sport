@@ -1040,6 +1040,7 @@ function renderLiveExercises() {
       <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer.</p>
     </div>`;
     updateProgress();
+    if (typeof peRefresh === "function") peRefresh();
     return;
   }
 
@@ -1088,6 +1089,7 @@ function renderLiveExercises() {
       <div class="live-ex-body"><div class="live-ex-body-inner">
       <div class="live-ex-tools">
         <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
+        ${isCurrent ? `<button class="btn btn-ghost btn-sm ex-plein" data-i="${i}">${icon("expand")} Plein écran</button>` : ""}
         ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
           ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
@@ -1243,6 +1245,7 @@ function renderLiveExercises() {
     </div>`;
   });
   elLiveExercises.innerHTML = ssAssemble(cartes);
+  if (typeof peRefresh === "function") peRefresh();   // le plein écran relit ces champs
 
   /* Accordéon : ouvrir un exercice replie les autres (point 3) */
   elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>

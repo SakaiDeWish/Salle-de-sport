@@ -444,6 +444,20 @@
     <section id="seance-summary" class="hidden"></section>
   </main>
 
+  <!-- Plein écran de l'exercice en cours (js/plein-ecran.js). Sous le repos (z-index 200). -->
+  <div id="plein-ecran" class="pe hidden" role="dialog" aria-modal="true" aria-label="Exercice en plein écran">
+    <div class="pe-bar">
+      <button type="button" class="pe-close" id="pe-close" aria-label="Fermer le plein écran"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
+      <p class="pe-pos" id="pe-pos" aria-live="polite"></p>
+      <button type="button" class="pe-rest hidden" id="pe-rest" aria-label="Revoir le minuteur de repos"></button>
+    </div>
+    <div class="pe-stage" id="pe-stage">
+      <button type="button" class="pe-edge pe-edge-prev" id="pe-prev" aria-label="Exercice précédent"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-left"/></svg></button>
+      <button type="button" class="pe-edge pe-edge-next" id="pe-next" aria-label="Exercice suivant"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-right"/></svg></button>
+    </div>
+    <div class="pe-foot" id="pe-foot"></div>
+  </div>
+
   <!-- Overlay minuteur de repos : plein écran, anneau de progression animé -->
   <div id="rest-overlay" class="rest-overlay hidden">
     <div class="rest-box">
@@ -663,6 +677,7 @@
        statInfo() dès leur premier rendu, au chargement -->
   <script src="js/stats-info.js"></script>
   <script src="js/workout.js"></script>
+  <script src="js/plein-ecran.js"></script>
   <script src="js/tracking.js"></script>
   <script src="js/home.js"></script>
   <script src="js/exercice-nouveau.js"></script>
