@@ -141,7 +141,7 @@ const libState = { favOnly: false };
 
 function renderLibrary() {
   const kicker = document.getElementById("biblio-kicker");
-  if (kicker) kicker.textContent = "Bibliothèque · " + allExercisesForUI().length + " mouvements";
+  if (kicker) kicker.textContent = "Bibliothèque, " + allExercisesForUI().length + " mouvements";
   const q = normalize(searchInput.value.trim());
   const g = filterGroupe.value, m = filterMateriel.value, n = filterNiveau.value;
 
@@ -576,7 +576,7 @@ function renderProgram(pr) {
 
   programOutput.innerHTML = `
     <div class="program-header card">
-      <p class="kicker">${objIcon(pr.objectif)} ${esc(pr.objectifLabel || "Programme personnalisé")}</p>
+      <p class="hero-count">${objIcon(pr.objectif)} ${esc(pr.objectifLabel || "Programme personnalisé")}</p>
       <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
       <p class="program-meta">
         ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${pr.splitLabel ? pr.splitLabel + " · " : ""}${materielLabels[pr.materiel]}

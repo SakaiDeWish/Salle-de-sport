@@ -828,7 +828,7 @@ function applyHeaderMin(on) {
   elLive.classList.toggle("hdr-min", on);
   const btn = document.getElementById("live-hdr-toggle");
   if (btn) {
-    btn.textContent = on ? "⌄" : "⌃";
+    btn.innerHTML = icon(on ? "chev-down" : "chev-up");
     btn.title = on ? "Agrandir le chrono" : "Réduire le chrono";
   }
   tick();
@@ -1018,7 +1018,7 @@ function ssAssemble(cartes) {
     const memo = ssIsRemembered(gid);
     out.push(`<div class="ss-group" data-ss="${gid}">
       <div class="ss-head">
-        <span class="ss-badge">⚡ Super set</span>
+        <span class="ss-badge">${icon("bolt")} Super set</span>
         <span class="ss-flow">${noms.map((n, k) => n + " (" + series[k] + ")").join(" → ")}
           · repos ${ssRest(gid)} s après la paire</span>
         <span class="ss-actions">
@@ -1037,7 +1037,7 @@ function ssAssemble(cartes) {
 function renderLiveExercises() {
   if (live.exercises.length === 0) {
     elLiveExercises.innerHTML = `<div class="card empty-live">
-      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer. 💪</p>
+      <p>Ta séance est vide pour l'instant : ajoute ton premier exercice pour commencer.</p>
     </div>`;
     updateProgress();
     return;
@@ -1081,16 +1081,16 @@ function renderLiveExercises() {
           <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? "✓ Terminé" : esc(p.texte)}</span>
           <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
           ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
-          <span class="live-ex-chev" aria-hidden="true">⌄</span>
+          <span class="live-ex-chev" aria-hidden="true">${icon("chev-down")}</span>
         </div>
       </button>
 
       <div class="live-ex-body"><div class="live-ex-body-inner">
       <div class="live-ex-tools">
         <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Voir la fiche</button>
-        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">▶ Passer à cet exercice</button>`}
+        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
-          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">▶ Exercice suivant</button>` : ""}
+          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
       </div>
 
       ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
@@ -1200,7 +1200,7 @@ function renderLiveExercises() {
       <div class="hold-bloc${holdEnCours(i) ? " on" : ""}">
         <span class="hold-val" id="hold-val-${i}">${fmtSec(holdEnCours(i) ? holdSecondes() : 0)}</span>
         <button type="button" class="btn ${holdEnCours(i) ? "btn-danger-ghost" : "btn-primary"} hold-go" data-i="${i}">
-          ${holdEnCours(i) ? "■ Arrêter" : "▶ Démarrer le maintien"}
+          ${holdEnCours(i) ? "Arrêter" : icon("play") + " Démarrer le maintien"}
         </button>
       </div>` : ""}
       <div class="set-form">

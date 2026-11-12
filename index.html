@@ -14,7 +14,7 @@
   <!-- Typographies : Anton (display condensé) + Inter (corps) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Geist+Mono:wght@500;600&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -61,7 +61,6 @@
   <!-- ==================== VUE NUTRITION ==================== -->
   <main id="view-nutrition" class="view">
     <section class="hero">
-      <p class="kicker">Carburant</p>
       <h1 class="display">Ta<br>nutrition<span class="accent">.</span></h1>
       <p class="hero-sub">Des repères calculés pour toi. L'assiette compte autant que la barre.</p>
     </section>
@@ -79,7 +78,7 @@
   <!-- ==================== VUE BIBLIOTHÈQUE ==================== -->
   <main id="view-bibliotheque" class="view">
     <section class="hero">
-      <p class="kicker" id="biblio-kicker">Bibliothèque</p>
+      <p class="hero-count" id="biblio-kicker">Bibliothèque</p>
       <h1 class="display">Tous les<br>exercices<span class="accent">.</span></h1>
       <p class="hero-sub">Technique, muscles ciblés, erreurs et vidéo pour chaque mouvement.</p>
     </section>
@@ -109,7 +108,7 @@
         <button type="button" class="disc-toggle" aria-expanded="false">
           <span class="disc-sum"><span class="disc-title">Matériel &amp; niveau</span>
             <span class="disc-meta" id="lib-filter-state">tout</span></span>
-          <span class="disc-more">Filtrer<span class="disc-chev" aria-hidden="true">⌄</span></span>
+          <span class="disc-more">Filtrer<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></span></span>
         </button>
         <div class="disc-body">
           <p class="disc-what">Deux filtres pour coller à ta salle et à ton expérience :
@@ -164,7 +163,6 @@
   <!-- ==================== VUE PROGRAMME ==================== -->
   <main id="view-programme" class="view">
     <section class="hero">
-      <p class="kicker">Coaching personnalisé</p>
       <h1 class="display">Ton<br>programme<span class="accent">.</span></h1>
       <p class="hero-sub">Quelques questions, et ton plan s'adapte à ton objectif et ton matériel.</p>
     </section>
@@ -182,7 +180,7 @@
          réellement faire d'une photo — et ce qu'il ne sait pas. -->
     <section id="panel-importer" class="suivi-panel hidden">
       <div class="card">
-        <h3 class="set-h">Importer un programme</h3>
+        <h2 class="set-h">Importer un programme</h2>
 
         <!-- Champs de fichier cachés : les tuiles de la feuille les
              déclenchent. capture="environment" ouvre l'appareil photo
@@ -218,10 +216,10 @@
         <label>
           Ton objectif
           <select id="p-objectif" required>
-            <option value="masse">💪 Prise de masse musculaire</option>
-            <option value="force">🏋️ Force maximale</option>
-            <option value="seche">🔥 Sèche / Perte de gras</option>
-            <option value="forme">⚡ Remise en forme / Tonification</option>
+            <option value="masse">Prise de masse musculaire</option>
+            <option value="force">Force maximale</option>
+            <option value="seche">Sèche / Perte de gras</option>
+            <option value="forme">Remise en forme / Tonification</option>
           </select>
         </label>
         <label>
@@ -314,7 +312,6 @@
     <!-- Écran 1 : démarrage -->
     <section id="seance-setup">
       <section class="hero">
-        <p class="kicker">Mode entraînement</p>
         <h1 class="display">Ta séance<br>en direct<span class="accent">.</span></h1>
         <p class="hero-sub">Chronos, repos précis, et tout ce que tu fais vraiment enregistré.</p>
       </section>
@@ -330,7 +327,7 @@
           <button type="button" class="disc-toggle" aria-expanded="false">
             <span class="disc-sum"><span class="disc-title">Repos calculé automatiquement</span>
               <span class="disc-meta">par exercice, selon ton objectif</span></span>
-            <span class="disc-more">Détails<span class="disc-chev" aria-hidden="true">⌄</span></span>
+            <span class="disc-more">Détails<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></span></span>
           </button>
           <div class="disc-body">
             <p class="disc-what">Le temps de repos n'est pas un réglage unique : il change à chaque exercice
@@ -364,9 +361,9 @@
             <span class="hdr-pill-dot">●</span>
             <span class="hdr-pill-chrono" id="hdr-pill-chrono">00:00</span>
             <span class="hdr-pill-left" id="hdr-pill-left"></span>
-            <span class="hdr-pill-chev" aria-hidden="true">⌄</span>
+            <span class="hdr-pill-chev" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></span>
           </button>
-          <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance">✓</button>
+          <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-check"/></svg></button>
         </div>
 
         <!-- État complet -->
@@ -374,9 +371,9 @@
         <div class="live-title-row">
           <h2 id="live-title" class="display-sm">Séance en cours</h2>
           <div class="live-title-actions">
-            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance">⌃</button>
-            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit">⌄</button>
-            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause">⏸ Pause</button>
+            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-up"/></svg></button>
+            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg></button>
+            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-pause"/></svg> Pause</button>
             <span class="live-dot">● EN DIRECT</span>
           </div>
         </div>
@@ -384,7 +381,7 @@
         <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
         <div id="pause-banner" class="pause-banner hidden">
           <span>Séance en pause — navigue librement, rien n'est perdu.</span>
-          <button class="btn btn-primary btn-sm" id="pause-resume">▶ Reprendre</button>
+          <button class="btn btn-primary btn-sm" id="pause-resume"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-play"/></svg> Reprendre</button>
         </div>
 
         <div class="live-chronos">
@@ -429,7 +426,7 @@
 
       <div class="program-actions live-actions-flow">
         <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
-        <button class="btn btn-ghost" id="live-superset">⚡ Super set</button>
+        <button class="btn btn-ghost" id="live-superset"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-bolt"/></svg> Super set</button>
         <button class="btn btn-primary" id="live-finish">Terminer</button>
         <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
       </div>
@@ -462,7 +459,7 @@
       <div class="rest-controls">
         <button class="btn btn-ghost" id="rest-minus">−15 s</button>
         <button class="btn btn-ghost" id="rest-plus">+15 s</button>
-        <button class="btn btn-ghost" id="rest-minimize" title="Réduire : le repos continue dans la mini-barre">⌄ Réduire</button>
+        <button class="btn btn-ghost" id="rest-minimize" title="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-chev-down"/></svg> Réduire</button>
       </div>
       <button class="btn btn-primary btn-lg" id="rest-resume">Reprendre l'entraînement</button>
     </div>
@@ -472,7 +469,7 @@
   <div id="picker" class="modal hidden">
     <div class="modal-backdrop" id="picker-backdrop"></div>
     <div class="modal-box">
-      <button class="modal-close" id="picker-close" aria-label="Fermer">✕</button>
+      <button class="modal-close" id="picker-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
       <h2 class="display-sm">Ajouter un exercice</h2>
       <input type="search" id="picker-search" placeholder="Rechercher parmi tous les exercices…">
       <div class="picker-suggest">
@@ -496,7 +493,6 @@
   <!-- ==================== VUE AJOUTER ==================== -->
   <main id="view-ajouter" class="view">
     <section class="hero">
-      <p class="kicker">Ta bibliothèque personnelle</p>
       <h1 class="display">Référence<br>un exercice<span class="accent">.</span></h1>
       <p class="hero-sub">Sauvegardés sur cet appareil, utilisables dans tes séances.</p>
     </section>
@@ -563,7 +559,6 @@
   <!-- ==================== VUE SUIVI ==================== -->
   <main id="view-suivi" class="view">
     <section class="hero">
-      <p class="kicker">Progression</p>
       <h1 class="display">Ton<br>suivi<span class="accent">.</span></h1>
       <p class="hero-sub">Statistiques, records, calendrier et objectif hebdomadaire.</p>
     </section>
@@ -587,7 +582,7 @@
   <div id="builder" class="modal hidden">
     <div class="modal-backdrop"></div>
     <div class="modal-box builder-box">
-      <button class="modal-close" id="builder-close" aria-label="Fermer">✕</button>
+      <button class="modal-close" id="builder-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
       <div id="builder-content"></div>
     </div>
   </div>
@@ -597,7 +592,7 @@
   <div id="session-modal" class="modal hidden">
     <div class="modal-backdrop"></div>
     <div class="modal-box">
-      <button class="modal-close" aria-label="Fermer">✕</button>
+      <button class="modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
       <div id="session-modal-content"></div>
     </div>
   </div>
@@ -615,7 +610,7 @@
         <span class="sheet-grip-bar"></span>
       </div>
       <h2 class="panel-title" id="panel-title">Panneau</h2>
-      <button class="modal-close" id="panel-close" aria-label="Fermer le panneau">✕</button>
+      <button class="modal-close" id="panel-close" aria-label="Fermer le panneau"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
       <div class="sheet-scroll"><div id="panel-host"></div></div>
     </div>
   </div>
@@ -630,7 +625,7 @@
            aria-label="Glisser pour agrandir ou réduire le panneau">
         <span class="sheet-grip-bar"></span>
       </div>
-      <button class="modal-close" aria-label="Fermer">✕</button>
+      <button class="modal-close" aria-label="Fermer"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-x"/></svg></button>
       <div class="sheet-scroll"><div id="modal-content"></div></div>
     </div>
   </div>
@@ -640,7 +635,7 @@
        au-dessus de la barre d'onglets, il ne recouvre aucun contenu et
        s'efface dès qu'une séance est en cours (la mini-barre prend la place). -->
   <button id="settings-fab" class="settings-fab" aria-label="Réglages : thème, son de repos">
-    <span class="sf-ico" id="settings-fab-ico" aria-hidden="true">◐</span>
+    <span class="sf-ico" id="settings-fab-ico" aria-hidden="true"><svg class="icon" aria-hidden="true" focusable="false"><use href="#ic-moon"/></svg></span>
   </button>
 
   <!-- Mini-barre : la séance en cours te suit dans toute l'app -->

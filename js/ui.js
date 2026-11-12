@@ -108,7 +108,7 @@ function disclosure(key, { summary, detail, what = "", label = "Détails", dflt 
   return `<div class="disc${open ? " disc-open" : ""}" data-disc="${esc(key)}">
     <button type="button" class="disc-toggle" aria-expanded="${open}">
       <span class="disc-sum">${summary}</span>
-      <span class="disc-more">${esc(label)}<span class="disc-chev" aria-hidden="true">⌄</span></span>
+      <span class="disc-more">${esc(label)}<span class="disc-chev" aria-hidden="true">${icon("chev-down")}</span></span>
     </button>
     <div class="disc-body">
       ${what ? `<p class="disc-what">${what}</p>` : ""}

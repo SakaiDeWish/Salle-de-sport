@@ -126,7 +126,7 @@ function applyTheme(theme) {
   const lab = document.getElementById("theme-toggle-label");
   if (lab) lab.textContent = theme === "gamifie" ? "Épuré" : "Gamifié";
   const ico = document.getElementById("settings-fab-ico");
-  if (ico) ico.textContent = theme === "gamifie" ? "☾" : "☀";
+  if (ico) ico.innerHTML = icon(theme === "gamifie" ? "moon" : "sun");
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", theme === "gamifie" ? "#0a0a0b" : "#f6f1e7");
 }
@@ -308,7 +308,7 @@ applyTheme(currentTheme());
   btn.className = "to-chrono";
   btn.type = "button";
   btn.setAttribute("aria-label", "Revenir au chronomètre");
-  btn.innerHTML = '<span aria-hidden="true">⌃</span>';
+  btn.innerHTML = icon("chev-up");
   btn.addEventListener("click", () => {
     if (typeof toggleHeaderManual === "function") toggleHeaderManual(false);
     window.scrollTo({ top: 0, behavior: "smooth" });

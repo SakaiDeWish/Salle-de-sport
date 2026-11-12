@@ -48,6 +48,13 @@ const ICON_SPRITE = `
   <symbol id="ic-link" viewBox="0 0 24 24"><path d="M9 15l6-6"/><path d="M11 6.5 13 4.5a4 4 0 0 1 6 6L17 12.5"/><path d="M13 17.5 11 19.5a4 4 0 0 1-6-6L7 11.5"/></symbol>
   <symbol id="ic-video" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></symbol>
   <symbol id="ic-party" viewBox="0 0 24 24"><path d="M6 10 3 21l11-3"/><path d="M6 10c3 1 7 5 8 8"/><path d="M13 6l.8-3M17 8l2.5-2.5M19 12l3-.5" /></symbol>
+  <!-- Interface : chevrons, pause, fermer, thème -->
+  <symbol id="ic-chev-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="ic-chev-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="ic-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="ic-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></symbol>
+  <symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/></symbol>
   <!-- Groupes musculaires -->
   <symbol id="ic-g-pectoraux" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M12 7c-4-2-8 0-8 4 0 3 3 5 8 5"/><path d="M12 7c4-2 8 0 8 4 0 3-3 5-8 5"/></symbol>
   <symbol id="ic-g-dos" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M12 5C9 5 5 6.5 4 10c2.5.5 4.5 2.5 5 6l3-2"/><path d="M12 5c3 0 7 1.5 8 5-2.5.5-4.5 2.5-5 6l-3-2"/></symbol>
