@@ -3470,7 +3470,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 }
 .pe-bar {
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  min-height: 56px; padding: 4px 8px;
+  min-height: 48px; padding: 0 8px;
 }
 .pe-close {
   justify-self: start;
@@ -3488,58 +3488,94 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
   cursor: pointer;
 }
 
+/* Tout tient sur un écran, sans défilement : le haut (nom, schéma, tableau
+   des séries) prend la place qui reste, la bande de saisie a une hauteur
+   fixe. Les bandes de bord s'arrêtent au-dessus d'elle pour lui laisser
+   toute la largeur. */
+.pe { --pe-saisie-h: 128px; }
 .pe-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: pan-y; }
 .pe-pane {
-  position: absolute; inset: 0; overflow-y: auto;
-  padding: 4px 56px 20px;                       /* 56 px : la place des bandes de bord */
-  display: flex; flex-direction: column; gap: clamp(8px, 1.5vh, 14px);
+  position: absolute; inset: 0; overflow: hidden;
+  padding: 0 12px 8px;
+  display: flex; flex-direction: column; gap: 8px;
   -webkit-user-select: none; user-select: none;
   will-change: transform;
 }
+.pe-haut {
+  flex: 1; min-height: 0; padding: 0 36px;      /* 36 + 12 : la place des bandes de bord */
+  display: flex; flex-direction: column; gap: clamp(6px, 1.1vh, 10px);
+}
 .pe-name {
   font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(1.6rem, min(8vw, 4.2vh), 2.4rem); line-height: 1.05; letter-spacing: 0.02em;
+  font-size: clamp(1.35rem, 4.2vh, 1.75rem); line-height: 1.05; letter-spacing: 0.02em;
   text-wrap: balance; outline: none;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.pe-info { display: grid; gap: 2px; }
-.pe-line { color: var(--text-soft); font-size: 0.95rem; }
-.pe-set { font-weight: 700; font-size: 1.1rem; }
+.pe-line {
+  color: var(--text-soft); font-size: 0.85rem; line-height: 1.25;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
 
-.pe-field { display: grid; gap: 6px; text-align: center; }
-.pe-label { color: var(--text-soft); font-size: 0.85rem; font-weight: 700; }
+/* Schéma animé de la fiche : il prend la hauteur libre, légende et commandes
+   restent dans la fiche. Seule la mention « générique » est gardée : elle
+   dit que le dessin n'est pas celui de l'exercice. */
+.pe-schema { flex: 1 1 0; min-height: 80px; display: flex; }
+.pe-schema .motion-wrap { flex: 1; min-width: 0; min-height: 0; margin: 0; padding: 4px; display: flex; flex-direction: column; }
+.pe-schema .motion-wrap svg { flex: 1 1 0; min-height: 0; width: 100%; max-height: none; }
+.pe-schema .motion-cap, .pe-schema .motion-vue, .pe-schema .motion-wrap + .motion-wrap,
+.pe-schema .motion-tag:not(.motion-tag-warn) { display: none; }
+.pe-schema .motion-tag { top: 6px; right: 8px; }
+
+/* Tableau des séries : une ligne par série, la séance précédente à côté. */
+.pe-series-tete, .pe-ligne {
+  display: grid; grid-template-columns: 38px minmax(0, 1.5fr) minmax(0, 1fr) 22px;
+  align-items: center; column-gap: 8px; padding: 0 6px;
+}
+.pe-series-tete { color: var(--text-soft); font-size: 0.75rem; font-weight: 700; margin-bottom: 2px; }
+.pe-series { display: grid; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.pe-ligne { min-height: 30px; border-radius: var(--radius-sm); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+.pe-n { color: var(--text-soft); font-weight: 700; }
+.pe-avant { color: var(--text-soft); }
+.pe-fait small { color: var(--text-soft); font-size: 0.8rem; }
+.pe-courant { background: var(--accent-soft); font-weight: 700; }
+.pe-courant .pe-fait { color: var(--accent-2); }
+.pe-prevu .pe-fait { color: var(--text-soft); }
+.pe-ok .icon { width: 20px; height: 20px; color: var(--green); }
+
+/* Bande de saisie : trois colonnes, chacune valeur + deux boutons de pas. */
+.pe-saisie {
+  flex: none; height: var(--pe-saisie-h);
+  display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 6px;
+}
+.pe-field { display: grid; grid-template-rows: auto 52px 46px; gap: 6px; text-align: center; min-width: 0; }
+.pe-label { color: var(--text-soft); font-size: 0.8rem; font-weight: 700; line-height: 1.1; }
 .pe-val {
-  width: 100%; min-width: 0; text-align: center;
+  width: 100%; min-width: 0; height: 52px; text-align: center;
   background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
   color: var(--text); font-family: var(--font-display); font-variant-numeric: tabular-nums;
-  line-height: 1.05; padding: 4px 6px;
+  font-size: 2.1rem; line-height: 1; padding: 0 4px;
   -webkit-user-select: text; user-select: text;
   -moz-appearance: textfield; appearance: textfield;
 }
+.pe-field:first-child .pe-val { color: var(--accent-2); }
 .pe-val::-webkit-outer-spin-button, .pe-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .pe-val::placeholder { color: var(--text-soft); opacity: 0.85; }
 .pe-val:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 0; border-color: var(--accent-2); }
-/* Les tailles suivent aussi la hauteur : un iPhone dans Safari en offre moins
-   qu'en application installée, et le RIR ne doit pas passer sous le pli. */
-.pe-val-xl { font-size: clamp(3.4rem, min(24vw, 10.5vh), 6rem); color: var(--accent-2); }
-.pe-val-lg { font-size: clamp(2.6rem, min(15vw, 6.5vh), 4rem); }
-.pe-val-md { font-size: clamp(1.8rem, 5vh, 2.2rem); }
-
-.pe-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.pe-row { display: grid; grid-template-columns: 76px minmax(0, 1fr) 76px; gap: 10px; align-items: stretch; }
+.pe-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
 .pe-step {
-  min-height: clamp(48px, 6vh, 56px); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  min-height: 46px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-sm);
   background: var(--bg-soft); color: var(--text);
-  font-family: var(--font-body); font-size: 1.15rem; font-weight: 700;
+  font-family: var(--font-body); font-size: 1rem; font-weight: 700;
   font-variant-numeric: tabular-nums;
   touch-action: manipulation; -webkit-touch-callout: none; cursor: pointer;
 }
 .pe-step:active { background: var(--card-hover); }
 
 .pe-hold { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.pe-hold-val { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 2rem; }
+.pe-hold-val { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 1.7rem; }
 
 .pe-edge {
-  position: absolute; top: 0; bottom: 0; z-index: 2; width: 44px;
+  position: absolute; top: 0; bottom: calc(var(--pe-saisie-h) + 8px); z-index: 2; width: 44px;
   border: 0; background: transparent; color: var(--text-soft); font-size: 1.5rem;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   touch-action: manipulation;
@@ -3551,6 +3587,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 .pe-close:focus-visible, .pe-step:focus-visible, .pe-edge:focus-visible, .pe-rest:focus-visible,
 .pe-foot .btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
-.pe-foot { display: grid; gap: 8px; padding: 10px 16px 14px; }
-.pe-go { width: 100%; min-height: 56px; margin: 0; font-size: 1.05rem; }
-.pe-more { width: 100%; min-height: 48px; }
+.pe-foot { display: grid; gap: 6px; padding: 4px 16px 12px; }
+.pe-ensuite { color: var(--text-soft); font-size: 0.85rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pe-go { width: 100%; min-height: 52px; margin: 0; font-size: 1.05rem; }
+.pe-more { width: 100%; min-height: 44px; }

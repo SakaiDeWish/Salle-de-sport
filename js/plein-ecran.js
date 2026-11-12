@@ -48,70 +48,95 @@ function peValeur(i, champ, cleSerie) {
   return inp.value;
 }
 
-/* Un champ numérique : libellé, grosse valeur éditable, deux boutons de pas.
+/* Un champ numérique de la bande de saisie : libellé, valeur éditable, deux boutons de pas.
    Le pas vient du pas-à-pas de la liste : une seule définition par champ. */
-function peChamp(i, id, champ, cleSerie, libelle, taille) {
+function peChamp(i, id, champ, cleSerie, libelle) {
   const plus = document.querySelector(`.step-btn[data-target="${champ}-${i}"][data-delta="1"]`);
   const pas = plus ? parseFloat(plus.closest(".stepper").dataset.step) || 1 : 0;
   const mode = champ === "poids" ? "decimal" : "numeric";
-  const entree = `<input class="pe-val pe-val-${taille}" id="pe-in-${id}" data-champ="${champ}" type="number"
-        inputmode="${mode}" min="0" step="${champ === "poids" ? "0.5" : "1"}" placeholder="0"
-        value="${esc(peValeur(i, champ, cleSerie))}">`;
   const bouton = d => `<button type="button" class="pe-step" data-champ="${champ}" data-delta="${d}"
-        aria-label="${d < 0 ? "Retirer" : "Ajouter"} ${peFr(pas)} ${libelle.toLowerCase()}">${d < 0 ? "−" : "+"} ${peFr(pas)}</button>`;
-  /* Le champ secondaire (RIR, lest) tient sur une ligne : − valeur +.
-     Les deux gros champs gardent les boutons dessous, plus larges au pouce. */
-  if (taille === "md") return `
-    <div class="pe-field">
-      <label class="pe-label" for="pe-in-${id}">${libelle}</label>
-      <div class="pe-row">${pas ? bouton(-1) : ""}${entree}${pas ? bouton(1) : ""}</div>
-    </div>`;
+        aria-label="${d < 0 ? "Retirer" : "Ajouter"} ${peFr(pas)} ${libelle.toLowerCase()}">${d < 0 ? "−" : "+"}${peFr(pas)}</button>`;
   return `
     <div class="pe-field">
       <label class="pe-label" for="pe-in-${id}">${libelle}</label>
-      ${entree}
+      <input class="pe-val" id="pe-in-${id}" data-champ="${champ}" type="number"
+        inputmode="${mode}" min="0" step="${champ === "poids" ? "0.5" : "1"}" placeholder="0"
+        value="${esc(peValeur(i, champ, cleSerie))}">
       ${pas ? `<div class="pe-steps">${bouton(-1)}${bouton(1)}</div>` : ""}
     </div>`;
 }
 
-/* Ce que l'on visait : la série précédente de la séance, sinon celle de
-   la fois d'avant (c'est elle qui préremplit le formulaire). */
-function peReference(i) {
+/* Une série en quelques caractères : « 60 × 10 », « 10 reps » (poids du corps)
+   ou le temps d'un maintien. */
+function peSerieTexte(s, statique) {
+  if (!s) return "";
+  if (statique) return [s.secondes ? fmtSec(s.secondes) : "", s.poids ? `+${peFr(s.poids)} kg` : ""].filter(Boolean).join(" ");
+  if (!s.reps) return "";
+  return s.poids ? `${peFr(s.poids)} × ${s.reps}` : `${s.reps} reps`;
+}
+
+/* Le tableau des séries, en lecture seule : ce qui est fait, la série en
+   cours, ce qui reste, et la séance précédente à côté. Au plus cinq lignes,
+   pour que la hauteur de l'écran ne dépende jamais du nombre de séries.
+   La séance précédente vient de `memoDepart`, figé au début de l'exercice :
+   `recallSet` bouge dès qu'une série est validée. */
+function peSeriesHTML(i) {
   const ex = live.exercises[i];
+  const p = exerciseProgress(ex);
   const statique = estStatique(ex);
-  const dire = s => statique
-    ? [s.secondes ? fmtSec(s.secondes) : "", s.poids ? `${peFr(s.poids)} kg de lest` : ""].filter(Boolean).join(", ")
-    : [s.poids != null ? `${peFr(s.poids)} kg` : "", s.reps ? `${s.reps} reps` : ""].filter(Boolean).join(", ");
-  const derniere = ex.sets[ex.sets.length - 1];
-  if (derniere) return `Série précédente : ${dire(derniere)}`;
-  const avant = recallSet(ex.exId, 0);
-  return avant ? `Séance précédente : ${dire(avant)}` : "";
+  const fait = ex.sets.length;
+  const total = Math.max(p.target != null ? p.target : fait + 1, fait);
+  const courant = fait < total ? fait : -1;
+  const lignes = 5;
+  const debut = Math.max(0, Math.min(courant >= 0 ? courant - 2 : total - lignes, total - lignes));
+  let html = "";
+  for (let k = debut; k < Math.min(total, debut + lignes); k++) {
+    const s = ex.sets[k];
+    const avantSet = Array.isArray(ex.memoDepart) ? ex.memoDepart[k] : recallSet(ex.exId, k);
+    const avant = peSerieTexte(avantSet, statique);
+    const rir = s && !statique && s.rir != null && s.rir !== "" ? ` <small>RIR ${esc(s.rir)}</small>` : "";
+    const etat = s ? "fait" : k === courant ? "courant" : "prevu";
+    const contenu = s ? esc(peSerieTexte(s, statique)) + rir : k === courant ? "en cours" : "–";
+    html += `<li class="pe-ligne pe-${etat}"${k === courant ? ' aria-current="step"' : ""}>
+      <span class="pe-n">${k + 1}</span>
+      <span class="pe-fait">${contenu}</span>
+      <span class="pe-avant">${avant ? esc(avant) : "–"}</span>
+      <span class="pe-ok">${s ? `${icon("check")}<span class="visually-hidden">validée</span>` : ""}</span>
+    </li>`;
+  }
+  return `<div class="pe-series-bloc">
+    <p class="pe-series-tete" aria-hidden="true"><span>Série</span><span>Fait</span><span>Avant</span><span></span></p>
+    <ol class="pe-series" aria-label="Séries de l'exercice">${html}</ol>
+  </div>`;
+}
+
+/* Le schéma animé de la fiche, en aperçu permanent. Sans lui l'écran
+   n'a plus de visuel : une erreur est journalisée, pas avalée. */
+function peSchemaHTML(ex) {
+  const fiche = allExercisesForUI().find(e => e.id === ex.exId) || { ...ex, id: ex.exId };
+  try { return motionSVG(fiche); }
+  catch (err) { console.error("Schéma indisponible pour " + ex.exId, err); return ""; }
 }
 
 function pePaneHTML(i) {
   const ex = live.exercises[i];
-  const p = exerciseProgress(ex);
   const statique = estStatique(ex);
-  const serie = p.fini ? "Terminé"
-    : p.target != null ? `Série ${ex.sets.length + 1} sur ${p.target}` : `Série ${ex.sets.length + 1}`;
-  const ref = peReference(i);
+  const infos = [ex.target ? `Cible ${ex.target}` : "", ex.rir ? `RIR visé ${ex.rir}` : "", ex.tempo ? `tempo ${ex.tempo}` : ""]
+    .filter(Boolean).join(", ");
+  const avecRir = !statique && (ex.rir || peValeur(i, "rir", "rir") !== "");
   const champs = statique
-    ? `${holdBloc(i)}
-       ${peChamp(i, "temps", "temps", "secondes", "Temps (s)", "xl")}
-       ${peChamp(i, "poids", "poids", "poids", "Lest (kg)", "md")}`
-    : `${peChamp(i, "poids", "poids", "poids", "Poids (kg)", "xl")}
-       ${peChamp(i, "reps", "reps", "reps", "Répétitions", "lg")}
-       ${ex.rir || peValeur(i, "rir", "rir") !== "" ? peChamp(i, "rir", "rir", "rir", "RIR", "md") : ""}`;
+    ? [peChamp(i, "temps", "temps", "secondes", "Temps (s)"), peChamp(i, "poids", "poids", "poids", "Lest (kg)")]
+    : [peChamp(i, "poids", "poids", "poids", "Poids (kg)"), peChamp(i, "reps", "reps", "reps", "Répétitions"),
+       avecRir ? peChamp(i, "rir", "rir", "rir", "RIR") : ""].filter(Boolean);
   return `
-    <h2 class="pe-name" tabindex="-1">${esc(ex.nom)}</h2>
-    <div class="pe-info">
-      ${ex.target ? `<p class="pe-line">Cible : ${esc(ex.target)}</p>` : ""}
-      ${ex.rir ? `<p class="pe-line">RIR visé : ${esc(ex.rir)}</p>` : ""}
-      ${ex.tempo ? `<p class="pe-line">Tempo : ${esc(ex.tempo)}</p>` : ""}
+    <div class="pe-haut">
+      <h2 class="pe-name" tabindex="-1">${esc(ex.nom)}</h2>
+      ${infos ? `<p class="pe-line">${esc(infos)}</p>` : ""}
+      <div class="pe-schema">${peSchemaHTML(ex)}</div>
+      ${statique ? holdBloc(i) : ""}
+      ${peSeriesHTML(i)}
     </div>
-    <p class="pe-set">${serie}</p>
-    ${ref ? `<p class="pe-line">${esc(ref)}</p>` : ""}
-    ${champs}`;
+    <div class="pe-saisie" style="--n:${champs.length}">${champs.join("")}</div>`;
 }
 
 /* Chrono de maintien : le bouton de la liste fait le travail, on le déclenche. */
@@ -125,9 +150,11 @@ function holdBloc(i) {
 
 function peFootHTML(i) {
   const p = exerciseProgress(live.exercises[i]);
-  if (!p.fini) return `<button type="button" class="btn btn-primary pe-go" data-act="valider">Valider la série</button>`;
+  const suiv = live.exercises[i + 1];
+  const ensuite = `<p class="pe-ensuite">${suiv ? `Ensuite : ${esc(suiv.nom)}` : "Dernier exercice"}</p>`;
+  if (!p.fini) return `${ensuite}<button type="button" class="btn btn-primary pe-go" data-act="valider">Valider la série</button>`;
   const suivant = nextUnfinished(i);
-  return `<button type="button" class="btn btn-primary pe-go" data-act="${suivant != null ? "suivant" : "fermer"}">${suivant != null ? "Exercice suivant" : "Fermer"}</button>
+  return `${ensuite}<button type="button" class="btn btn-primary pe-go" data-act="${suivant != null ? "suivant" : "fermer"}">${suivant != null ? "Exercice suivant" : "Fermer"}</button>
     <button type="button" class="btn btn-ghost pe-more" data-act="valider">Ajouter une série</button>`;
 }
 
