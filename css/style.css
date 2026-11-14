@@ -3520,11 +3520,15 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 /* =========================================================
    PLEIN ÉCRAN DE L'EXERCICE (js/plein-ecran.js)
    Sous le repos (z-index 200), au-dessus de tout le reste.
-   Le poids est le plus grand chiffre de l'écran ; le volt n'y marque
-   que ce chiffre et l'action principale. Aucun effet au survol.
+   Un HUD : le schéma animé de l'exercice occupe la scène, les données
+   se posent dans les coins du bas (séries à gauche, valeurs à droite).
+   Toucher le schéma le met au premier plan : les données s'effacent.
+   Le volt ne marque que le poids et l'action principale. Aucun effet
+   au survol.
    ========================================================= */
 .pe-open { overflow: hidden; }
 .pe {
+  --pe-bas: clamp(234px, 34vh, 290px);        /* hauteur réservée aux données du bas */
   position: fixed; inset: 0; z-index: 150;
   display: flex; flex-direction: column;
   background: var(--bg); color: var(--text);
@@ -3535,125 +3539,168 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
   min-height: 48px; padding: 0 8px;
 }
-.pe-close {
-  justify-self: start;
-  width: 48px; height: 48px; border: 0; border-radius: var(--radius-sm);
-  background: transparent; color: var(--text-soft); font-size: 1.4rem;
+.pe-close, .pe-arrow {
+  width: 44px; height: 44px; border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-soft);
   display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  touch-action: manipulation;
 }
-.pe-close:active { background: var(--card-hover); }
-.pe-pos { font-weight: 700; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.pe-close { justify-self: start; }
+.pe-close:active, .pe-arrow:active:not(:disabled) { background: var(--card-hover); }
+.pe-arrow:disabled { opacity: 0.25; cursor: default; }
+.pe-nav { display: flex; align-items: center; }
+.pe-pos { min-width: 3.6em; text-align: center; font-weight: 700; color: var(--text-soft); font-variant-numeric: tabular-nums; }
 .pe-rest {
-  justify-self: end; min-height: 44px; padding: 0 16px;
+  justify-self: end; min-height: 40px; padding: 0 14px;
   border: 1px solid var(--accent); border-radius: 999px;
   background: var(--card); color: var(--text);
-  font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 1rem;
+  font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 0.95rem;
   cursor: pointer;
 }
 
-/* Tout tient sur un écran, sans défilement : le haut (nom, schéma, tableau
-   des séries) prend la place qui reste, la bande de saisie a une hauteur
-   fixe. Les bandes de bord s'arrêtent au-dessus d'elle pour lui laisser
-   toute la largeur. */
-.pe { --pe-saisie-h: 128px; }
 .pe-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: pan-y; }
 .pe-pane {
   position: absolute; inset: 0; overflow: hidden;
-  padding: 0 12px 8px;
-  display: flex; flex-direction: column; gap: 8px;
   -webkit-user-select: none; user-select: none;
   will-change: transform;
 }
-.pe-haut {
-  flex: 1; min-height: 0; padding: 0 36px;      /* 36 + 12 : la place des bandes de bord */
-  display: flex; flex-direction: column; gap: clamp(6px, 1.1vh, 10px);
+
+/* Scène : le schéma, plein cadre, au-dessus des données du bas. */
+.pe-scene {
+  position: absolute; inset: 62px 0 var(--pe-bas) 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 0 6px; overflow: hidden;
 }
+.pe-fig { width: 100%; max-height: 100%; min-height: 0; display: flex; }
+.pe-scene .motion-wrap {
+  flex: 1; min-width: 0; min-height: 0; max-height: 100%; margin: 0; padding: 0;
+  background: transparent; border: 0; box-shadow: none;
+  display: flex; flex-direction: column;
+}
+.pe-scene .motion-wrap > svg { flex: 1 1 auto; width: 100%; height: auto; min-height: 0; max-height: 100%; }
+.pe-scene .motion-cap, .pe-scene .motion-vue, .pe-scene .motion-wrap + .motion-wrap,
+.pe-scene .motion-tag:not(.motion-tag-warn) { display: none; }
+.pe-scene .motion-tag { top: 6px; right: 8px; }
+
+/* Détail : les données s'effacent, le schéma garde sa largeur et gagne sa
+   légende, ses commandes et sa seconde vue. Il glisse à sa nouvelle place. */
+.pe-detail .pe-scene { inset: 0; padding: 52px 12px 16px; justify-content: safe center; gap: 14px; overflow-y: auto; }
+.pe-detail .pe-fig { flex: none; width: 100%; }
+.pe-detail .pe-scene .motion-wrap { flex: none; width: 100%; max-height: none; }
+.pe-detail .pe-scene .motion-wrap > svg { flex: none; }
+.pe-detail .pe-scene .motion-cap { display: flex; }
+.pe-detail .pe-scene .motion-vue { display: block; }
+.pe-detail .pe-scene .motion-wrap + .motion-wrap { display: flex; flex: none; }
+.pe-detail .pe-scene .mo-ctl { flex: none; margin-left: auto; gap: 8px; }
+.pe-detail .pe-scene .mo-btn { flex: none; width: auto; min-width: 44px; height: 40px; }
+
+.pe-loupe {
+  position: absolute; top: 4px; right: 8px; z-index: 3;
+  width: 44px; height: 44px; border: 0; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-soft);
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer;
+  touch-action: manipulation;
+}
+.pe-loupe:active { background: var(--card-hover); }
+.pe-loupe-ferme, .pe-detail .pe-loupe-ouvre { display: none; }
+.pe-detail .pe-loupe-ferme { display: inline-flex; }
+
+/* HUD : calque de données. Le calque laisse passer les touchers, ses
+   éléments les reprennent. */
+.pe-hud {
+  position: absolute; inset: 0; padding: 4px 12px 8px;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto 1fr auto;
+  column-gap: 8px; pointer-events: none;
+}
+.pe-hud > * { pointer-events: auto; transition: opacity 0.26s ease-out, transform 0.3s ease-out, visibility 0s linear 0s; }
+.pe-detail .pe-hud > * { opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, 0s, 0.3s; }
+.pe-detail .pe-tete { transform: translateY(-8px); }
+.pe-detail .pe-bas { transform: translateX(-24px); }
+.pe-detail .pe-lire { transform: translateX(24px); }
+
+.pe-tete { grid-column: 1 / -1; padding-right: 48px; min-width: 0; }
 .pe-name {
   font-family: var(--font-display); font-weight: 400;
-  font-size: clamp(1.35rem, 4.2vh, 1.75rem); line-height: 1.05; letter-spacing: 0.02em;
+  font-size: clamp(1.3rem, 3.9vh, 1.65rem); line-height: 1.05; letter-spacing: 0.02em;
   text-wrap: balance; outline: none;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.pe-line {
-  color: var(--text-soft); font-size: 0.85rem; line-height: 1.25;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
+.pe-line { margin-top: 2px; color: var(--text-soft); font-size: 0.85rem; line-height: 1.25; }
 
-/* Schéma animé de la fiche : il prend la hauteur libre, légende et commandes
-   restent dans la fiche. Seule la mention « générique » est gardée : elle
-   dit que le dessin n'est pas celui de l'exercice. */
-.pe-schema { flex: 1 1 0; min-height: 80px; display: flex; }
-.pe-schema .motion-wrap { flex: 1; min-width: 0; min-height: 0; margin: 0; padding: 4px; display: flex; flex-direction: column; }
-.pe-schema .motion-wrap svg { flex: 1 1 0; min-height: 0; width: 100%; max-height: none; }
-.pe-schema .motion-cap, .pe-schema .motion-vue, .pe-schema .motion-wrap + .motion-wrap,
-.pe-schema .motion-tag:not(.motion-tag-warn) { display: none; }
-.pe-schema .motion-tag { top: 6px; right: 8px; }
-
-/* Tableau des séries : une ligne par série, la séance précédente à côté. */
-.pe-series-tete, .pe-ligne {
-  display: grid; grid-template-columns: 38px minmax(0, 1.5fr) minmax(0, 1fr) 22px;
-  align-items: center; column-gap: 8px; padding: 0 6px;
+/* Séries, en bas à gauche. */
+.pe-bas { grid-row: 3; grid-column: 1; align-self: end; justify-self: start; min-width: 0; }
+.pe-series {
+  list-style: none; margin: 0; padding: 6px 10px 6px 6px; display: grid; gap: 1px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); border-radius: var(--radius-sm);
 }
-.pe-series-tete { color: var(--text-soft); font-size: 0.75rem; font-weight: 700; margin-bottom: 2px; }
-.pe-series { display: grid; gap: 2px; list-style: none; margin: 0; padding: 0; }
-.pe-ligne { min-height: 30px; border-radius: var(--radius-sm); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
-.pe-n { color: var(--text-soft); font-weight: 700; }
-.pe-avant { color: var(--text-soft); }
-.pe-fait small { color: var(--text-soft); font-size: 0.8rem; }
-.pe-courant { background: var(--accent-soft); font-weight: 700; }
-.pe-courant .pe-fait { color: var(--accent-2); }
-.pe-prevu .pe-fait { color: var(--text-soft); }
-.pe-ok .icon { width: 20px; height: 20px; color: var(--green); }
-
-/* Bande de saisie : trois colonnes, chacune valeur + deux boutons de pas. */
-.pe-saisie {
-  flex: none; height: var(--pe-saisie-h);
-  display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 6px;
+.pe-ligne {
+  display: grid; grid-template-columns: 24px auto; align-items: center; column-gap: 6px;
+  min-height: 28px; font-size: 0.95rem; font-variant-numeric: tabular-nums;
 }
-.pe-field { display: grid; grid-template-rows: auto 52px 46px; gap: 6px; text-align: center; min-width: 0; }
-.pe-label { color: var(--text-soft); font-size: 0.8rem; font-weight: 700; line-height: 1.1; }
-.pe-val {
-  width: 100%; min-width: 0; height: 52px; text-align: center;
-  background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
-  color: var(--text); font-family: var(--font-display); font-variant-numeric: tabular-nums;
-  font-size: 2.1rem; line-height: 1; padding: 0 4px;
-  -webkit-user-select: text; user-select: text;
-  -moz-appearance: textfield; appearance: textfield;
-}
-.pe-field:first-child .pe-val { color: var(--accent-2); }
-.pe-val::-webkit-outer-spin-button, .pe-val::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.pe-val::placeholder { color: var(--text-soft); opacity: 0.85; }
-.pe-val:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 0; border-color: var(--accent-2); }
-.pe-steps { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-.pe-step {
-  min-height: 46px; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-sm);
-  background: var(--bg-soft); color: var(--text);
-  font-family: var(--font-body); font-size: 1rem; font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  touch-action: manipulation; -webkit-touch-callout: none; cursor: pointer;
-}
-.pe-step:active { background: var(--card-hover); }
+.pe-n { color: var(--text-soft); font-weight: 700; text-align: center; }
+.pe-n .icon { width: 16px; height: 16px; color: var(--green); vertical-align: -0.18em; }
+.pe-r small { color: var(--text-soft); font-size: 0.78rem; }
+.pe-prevu .pe-r { color: var(--text-soft); }
+.pe-courant .pe-n { color: var(--accent-2); }
+.pe-courant .pe-r { font-weight: 700; }
 
-.pe-hold { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.pe-hold-val { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 1.7rem; }
-
-.pe-edge {
-  position: absolute; top: 0; bottom: calc(var(--pe-saisie-h) + 8px); z-index: 2; width: 44px;
-  border: 0; background: transparent; color: var(--text-soft); font-size: 1.5rem;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
+/* Valeurs, en bas à droite : la valeur est un bouton qui ouvre le pavé,
+   les deux petits boutons font le pas. */
+.pe-lire {
+  grid-row: 2 / 4; grid-column: 2; align-self: end;
+  display: grid; gap: 4px; padding: 6px 8px 6px 12px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); border-radius: var(--radius-sm);
+}
+.pe-champ { display: grid; grid-template-columns: auto 38px; align-items: center; column-gap: 8px; }
+.pe-lecture {
+  display: grid; justify-items: end; gap: 0; min-width: 62px; min-height: 44px; padding: 0;
+  background: none; border: 0; color: inherit; font: inherit; text-align: right; cursor: pointer;
   touch-action: manipulation;
 }
-.pe-edge-prev { left: 0; }
-.pe-edge-next { right: 0; }
-.pe-edge:active:not(:disabled) { background: var(--accent-soft); }
-.pe-edge:disabled { opacity: 0.25; cursor: default; }
-.pe-close:focus-visible, .pe-step:focus-visible, .pe-edge:focus-visible, .pe-rest:focus-visible,
-.pe-foot .btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.pe-label { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; line-height: 1.1; }
+.pe-vl { display: flex; align-items: baseline; gap: 3px; }
+.pe-v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 2.1rem; line-height: 1; }
+.pe-champ:first-child .pe-v { color: var(--accent-2); font-size: 2.5rem; }
+.pe-v.vide { color: var(--text-soft); }
+.pe-u { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; }
+.pe-steps { display: grid; gap: 2px; }
+.pe-step {
+  width: 38px; height: 34px; padding: 0;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg-soft); color: var(--text);
+  display: inline-flex; align-items: center; justify-content: center;
+  touch-action: manipulation; -webkit-touch-callout: none; cursor: pointer;
+}
+.pe-step .icon { width: 16px; height: 16px; }
+.pe-step:active { background: var(--card-hover); }
+.pe-open .pave-lien { display: none; }          /* le clavier du téléphone n'a pas de champ visible ici */
 
-.pe-foot { display: grid; gap: 6px; padding: 4px 16px 12px; }
-.pe-ensuite { color: var(--text-soft); font-size: 0.85rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pe-go { width: 100%; min-height: 52px; margin: 0; font-size: 1.05rem; }
+.pe-hold { grid-row: 2; grid-column: 1; align-self: end; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.pe-hold-val { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 1.7rem; }
+
+.pe-close:focus-visible, .pe-arrow:focus-visible, .pe-step:focus-visible, .pe-lecture:focus-visible,
+.pe-loupe:focus-visible, .pe-rest:focus-visible, .pe-foot .btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+/* Pied : la suite du programme, puis l'action. */
+.pe-foot { display: grid; gap: 6px; padding: 2px 16px 12px; transition: opacity 0.26s ease-out, visibility 0s linear 0s; }
+.pe-detail .pe-foot { opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, 0.26s; }
+.pe-ensuite { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.pe-ensuite span { color: var(--text-soft); font-size: 0.85rem; white-space: nowrap; }
+.pe-ensuite strong {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--font-display); font-weight: 400; font-size: 1.1rem; letter-spacing: 0.04em; color: var(--text);
+}
+.pe-go {
+  width: 100%; min-height: 44px; margin: 0; font-size: 1rem;
+  background: var(--accent); background-image: none; text-transform: none; letter-spacing: 0.01em;
+}
 .pe-more { width: 100%; min-height: 44px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pe-hud > *, .pe-foot { transition-duration: 0.12s; }
+  .pe-detail .pe-tete, .pe-detail .pe-bas, .pe-detail .pe-lire { transform: none; }
+}
+
 /* ---------- Aperçu du mouvement dans la séance ---------- */
 .live-apercu { margin: 10px 0 4px; }
 .live-apercu-toggle {
