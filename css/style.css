@@ -3712,6 +3712,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
   background: var(--card, var(--bg)); border: 1px solid var(--border); border-radius: 18px 18px 0 0;
   padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
 }
+.pe-note-feuille:focus { outline: none; }
 .pe-note-titre { font-weight: 700; }
 .pe-note-in {
   width: 100%; min-height: 48px; padding: 0 12px; border-radius: var(--radius-sm);

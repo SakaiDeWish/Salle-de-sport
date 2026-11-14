@@ -370,7 +370,6 @@ document.addEventListener("click", e => {
   if (puce) {
     const inp = document.getElementById("pe-note-in");
     inp.value = ((inp.value ? inp.value.replace(/\s*$/, "") + ", " : "") + puce.dataset.puce).slice(0, NOTE_MAX);
-    inp.focus();
     return;
   }
   if (e.target.closest("[data-note=ok]")) { peNoteFermer(); return; }
@@ -461,7 +460,7 @@ function peNoteConstruire() {
   f.setAttribute("aria-labelledby", "pe-note-titre");
   f.innerHTML = `
     <div class="pe-note-fond" data-note="ok"></div>
-    <div class="pe-note-feuille">
+    <div class="pe-note-feuille" tabindex="-1">
       <p class="pe-note-titre" id="pe-note-titre"></p>
       <input type="text" id="pe-note-in" class="pe-note-in" maxlength="${NOTE_MAX}" enterkeyhint="done"
         placeholder="Ex : aidé sur les 2 dernières" aria-labelledby="pe-note-titre">
@@ -479,7 +478,7 @@ function peNoteOuvrir() {
   f.querySelector("#pe-note-titre").textContent = `Note pour la série ${ex.sets.length + 1}`;
   f.querySelector("#pe-note-in").value = pe.notes.get(ex) || "";
   f.classList.remove("hidden");
-  f.querySelector("#pe-note-in").focus({ preventScroll: true });
+  f.querySelector(".pe-note-feuille").focus({ preventScroll: true });   // pas sur le champ : le clavier du téléphone ne s'ouvre que si on touche le champ
 }
 function peNoteFermer() {
   const f = document.getElementById("pe-note");
