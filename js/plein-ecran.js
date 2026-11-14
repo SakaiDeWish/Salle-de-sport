@@ -480,6 +480,7 @@ elPe.addEventListener("pointermove", e => {
     elPe.classList.add("pe-tient");                                  // le reste de l'écran s'estompe
     peScrub.el.closest(".pe-champ").classList.add("pe-champ-tenu");
     peBulleEl().classList.add("on");
+    peBullePos();
   }
   peScrub.el.style.setProperty("--dx", dx + "px");   // la règle défile avec le doigt
   const cran = Math.trunc(dx / PE_CRAN);
@@ -494,12 +495,11 @@ elPe.addEventListener("pointermove", e => {
     if (Number.isFinite(val)) peScrub.derniere = val;
     if (typeof vibre === "function") vibre(palier ? 28 : 10);
   }
-  peBullePos(e.clientX, e.clientY);
   peBulleMaj();
 });
 
-/* Bulle au-dessus du doigt : le doigt cache le chiffre qu'il fait défiler,
-   la bulle le montre, avec l'écart depuis le début du geste. */
+/* Bulle fixe : le doigt cache le chiffre qu'il fait défiler, la bulle le
+   montre toujours au même endroit, avec l'écart depuis le début du geste. */
 let peBulle = null;
 function peBulleEl() {
   if (!peBulle) {
@@ -511,11 +511,11 @@ function peBulleEl() {
   }
   return peBulle;
 }
-function peBullePos(x, y) {
+function peBullePos() {
+  /* Fixe : au centre de l'écran, au-dessus des valeurs. Elle ne suit pas le
+     doigt, on lit toujours le chiffre au même endroit. */
   if (!peBulle) return;
-  const L = elPe.clientWidth;
-  const m = peBulle.firstElementChild.offsetWidth / 2 + 8;            // la bulle reste entière dans l'écran
-  peBulle.style.translate = `${Math.min(Math.max(x, m), L - m)}px ${Math.max(y - 96, 110)}px`;
+  peBulle.style.translate = `${elPe.clientWidth / 2}px ${Math.round(elPe.clientHeight * 0.4)}px`;
 }
 function peBulleMaj() {
   if (!peScrub || !peBulle) return;
