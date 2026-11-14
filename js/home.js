@@ -687,14 +687,20 @@ function renderTools() {
     const target = parseFloat(e.target.value);
     const out = document.getElementById("plate-result");
     if (!target || target < 20) { out.textContent = "—"; return; }
-    let side = (target - 20) / 2;
-    const plates = [25, 20, 15, 10, 5, 2.5, 1.25];
-    const used = [];
-    for (const pl of plates) while (side >= pl - 0.001) { used.push(pl); side -= pl; }
+    const { pris: used, reste: side } = disquesParCote(target);
     out.innerHTML = used.length
       ? `Par côté : <strong>${used.join(" + ")} kg</strong>${side > 0.01 ? ` (reste ${side.toFixed(2)} kg non chargeable)` : ""}`
       : "Barre seule (20 kg)";
   });
+}
+
+/* Disques à mettre de chaque côté d'une barre de 20 kg pour atteindre `total`,
+   les plus lourds d'abord. Partagé avec le plein écran (js/plein-ecran.js). */
+function disquesParCote(total) {
+  let reste = (total - 20) / 2;
+  const pris = [];
+  for (const pl of [25, 20, 15, 10, 5, 2.5, 1.25]) while (reste >= pl - 0.001) { pris.push(pl); reste -= pl; }
+  return { pris, reste: reste > 0.01 ? reste : 0 };
 }
 
 /* ---------- Initialisation ---------- */

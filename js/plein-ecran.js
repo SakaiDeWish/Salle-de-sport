@@ -457,7 +457,17 @@ elPe.addEventListener("pointerdown", e => {
   const champ = l.closest(".pe-champ").dataset.champ;
   const src = document.getElementById(champ + "-" + pe.index);
   const v0 = src ? parseFloat(src.value) || 0 : 0;
-  peScrub = { id: e.pointerId, el: l, champ, x0: e.clientX, cran: 0, actif: false, v0, derniere: v0, unite: l.dataset.unite || "" };
+  /* Pour le cadran : le pas du champ, la même série de la séance précédente
+     (« avant »), et si l'exercice se fait à la barre (on montre les disques). */
+  const plus = document.querySelector(`.step-btn[data-target="${champ}-${pe.index}"][data-delta="1"]`);
+  const pas = plus ? parseFloat(plus.closest(".stepper").dataset.step) || 1 : 1;
+  const ref = parseFloat(l.closest(".pe-champ").dataset.ref);
+  const fiche = allExercisesForUI().find(f => f.id === live.exercises[pe.index].exId);
+  peScrub = {
+    id: e.pointerId, el: l, champ, x0: e.clientX, cran: 0, actif: false, v0, derniere: v0, unite: l.dataset.unite || "",
+    pas, ref: Number.isFinite(ref) ? ref : null, passe: Number.isFinite(ref) && v0 > ref,
+    barre: champ === "poids" && !!fiche && fiche.materiel === "barre"
+  };
   l.style.setProperty("--dx", "0px");
   l.classList.add("presse");                       // la valeur grossit dès l'appui : on voit qu'elle est « tenue »
 });
@@ -471,54 +481,159 @@ elPe.addEventListener("pointermove", e => {
     peScrub.el.setPointerCapture(e.pointerId);
     elPe.classList.add("pe-tient");                                  // le reste de l'écran s'estompe
     peScrub.el.closest(".pe-champ").classList.add("pe-champ-tenu");
-    peBulleEl().classList.add("on");
-    peBullePos();
+    const b = peBulleEl();
+    b.toggleAttribute("data-barre", peScrub.barre);
+    b.querySelector(".pe-bulle-v").textContent = "";                  // les chiffres se refont, ils ne roulent pas depuis l'ancienne valeur
+    b.querySelector(".pe-disques").textContent = "";
+    peScrub.W = b.querySelector(".pe-bulle-tape").clientWidth;
+    peBulleMaj(0);
+    b.classList.add("on");
   }
   peScrub.el.style.setProperty("--dx", dx + "px");   // la règle défile avec le doigt
   const cran = Math.trunc(dx / PE_CRAN);
+  let dernierSens = 0;
   while (peScrub.cran !== cran) {
     const sens = cran > peScrub.cran ? 1 : -1;
+    dernierSens = sens;
     peStep(peScrub.champ, sens);
     peScrub.cran += sens;
     const src = document.getElementById(peScrub.champ + "-" + pe.index);
     const val = src ? parseFloat(src.value) : NaN;
-    /* Un cran net à chaque pas, un coup plus long à chaque palier de 10 kg. */
+    /* Un cran net à chaque pas, un coup plus long à chaque palier de 10 kg,
+       et un coup franc quand on dépasse ce qu'on avait fait la séance d'avant. */
     const palier = peScrub.champ === "poids" && Number.isFinite(val) && Math.floor(val / 10) !== Math.floor(peScrub.derniere / 10);
     if (Number.isFinite(val)) peScrub.derniere = val;
-    if (typeof vibre === "function") vibre(palier ? 28 : 10);
+    let franchi = false;
+    if (peScrub.ref != null && Number.isFinite(val) && (val > peScrub.ref) !== peScrub.passe) { peScrub.passe = !peScrub.passe; franchi = true; }
+    if (typeof vibre === "function") vibre(franchi ? 45 : palier ? 28 : 10);
   }
-  peBulleMaj();
+  if (dernierSens) peBulleMaj(dernierSens);
+  peBulleTape(dx);
 });
 
-/* Bulle fixe : le doigt cache le chiffre qu'il fait défiler, la bulle le
-   montre toujours au même endroit, avec l'écart depuis le début du geste. */
+/* Le cadran : pendant qu'on fait défiler une valeur, le doigt cache le
+   chiffre. Une bande s'ouvre au centre de l'écran, toujours au même endroit :
+   le chiffre en grand, qui roule comme un compteur ; une règle qui suit le
+   doigt au pixel près, avec un repère « avant » (la même série la séance
+   précédente) et le trait de ce qu'on a parcouru ; et, pour un exercice à la
+   barre, la barre qui se charge de disques sous le doigt. */
 let peBulle = null;
 function peBulleEl() {
   if (!peBulle) {
     peBulle = document.createElement("div");
     peBulle.className = "pe-bulle";
     peBulle.setAttribute("aria-hidden", "true");
-    peBulle.innerHTML = `<div class="pe-bulle-in"><span class="pe-bulle-v"></span><span class="pe-bulle-u"></span><span class="pe-bulle-d"></span></div>`;
+    peBulle.innerHTML = `<div class="pe-bulle-in">
+      <div class="pe-bulle-haut"><span class="pe-bulle-v"></span><span class="pe-bulle-cote"><span class="pe-bulle-u"></span><span class="pe-bulle-d"></span></span></div>
+      <div class="pe-bulle-tape">
+        <span class="pe-bulle-trace"></span>
+        <span class="pe-bulle-avant" hidden><span class="pe-bulle-avant-t"></span></span>
+        <span class="pe-bulle-aiguille"></span>
+      </div>
+      <div class="pe-bulle-barre"><span class="pe-collier"></span><div class="pe-disques"></div></div>
+      <p class="pe-bulle-par"></p>
+    </div>`;
     elPe.appendChild(peBulle);
   }
   return peBulle;
 }
-function peBullePos() {
-  /* Fixe : au centre de l'écran, au-dessus des valeurs. Elle ne suit pas le
-     doigt, on lit toujours le chiffre au même endroit. */
-  if (!peBulle) return;
-  peBulle.style.translate = `${elPe.clientWidth / 2}px ${Math.round(elPe.clientHeight * 0.4)}px`;
+
+/* Les chiffres roulent : seul le chiffre qui change glisse (vers le haut quand
+   la valeur monte, vers le bas quand elle descend). Si le nombre de chiffres
+   change, tout est refait et apparaît en fondu. */
+function peChiffres(el, txt, sens) {
+  const nouveaux = [...txt];
+  const boites = [...el.children];
+  const reduit = peReduit(), duree = reduit ? 80 : 130, h = sens > 0 ? 100 : -100;
+  if (boites.length !== nouveaux.length) {
+    el.innerHTML = nouveaux.map(c => `<span class="ch"><span>${c}</span></span>`).join("");
+    if (boites.length) el.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: duree });
+    return;
+  }
+  nouveaux.forEach((c, k) => {
+    const boite = boites[k];
+    while (boite.children.length > 1) boite.firstElementChild.remove();   // un roulement encore en cours : on le termine
+    const vieux = boite.firstElementChild;
+    if (vieux.textContent === c) return;
+    const neuf = document.createElement("span");
+    neuf.textContent = c;
+    boite.appendChild(neuf);
+    vieux.animate([{ transform: "translateY(0)", opacity: 1 }, { transform: reduit ? "none" : `translateY(${-h}%)`, opacity: 0 }],
+      { duration: duree, easing: PE_EASE, fill: "forwards" });
+    neuf.animate([{ transform: reduit ? "none" : `translateY(${h}%)`, opacity: 0 }, { transform: "translateY(0)", opacity: 1 }],
+      { duration: duree, easing: PE_EASE }).finished.catch(() => {}).then(() => { if (vieux.isConnected) vieux.remove(); });
+  });
 }
-function peBulleMaj() {
+
+/* La barre : les disques à mettre de chaque côté (même calcul que l'outil de
+   l'accueil). Un disque qui change entre en grossissant, un disque en trop
+   s'efface. Hauteur et épaisseur imitent de vrais disques. */
+const PE_DISQUES = { 25: [72, 18], 20: [66, 18], 15: [56, 16], 10: [46, 15], 5: [36, 12], 2.5: [28, 10], 1.25: [22, 8] };
+function peDisque(p) {
+  const d = document.createElement("span");
+  const [h, w] = PE_DISQUES[p];
+  d.className = "pe-disque";
+  d.dataset.p = p;
+  d.style.cssText = `height:${h}px;width:${w}px`;
+  d.animate([{ transform: peReduit() ? "none" : "scale(0.4)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }],
+    { duration: peReduit() ? 80 : 160, easing: PE_EASE });
+  return d;
+}
+function peBarreMaj(v) {
+  const box = peBulle.querySelector(".pe-disques");
+  const total = parseFloat(v);
+  const { pris, reste } = Number.isFinite(total) && total >= 20 ? disquesParCote(total) : { pris: [], reste: 0 };
+  const vivants = [...box.children].filter(e => !e.dataset.sort);
+  pris.forEach((p, i) => {
+    const el = vivants[i];
+    if (el && +el.dataset.p === p) return;
+    const n = peDisque(p);
+    if (el) { el.dataset.sort = "1"; box.replaceChild(n, el); } else box.appendChild(n);
+  });
+  vivants.slice(pris.length).forEach(el => {
+    el.dataset.sort = "1";
+    el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 100 }).finished.catch(() => {}).then(() => el.remove());
+  });
+  peBulle.querySelector(".pe-bulle-par").textContent = !Number.isFinite(total) || total < 20 ? "Moins que la barre (20 kg)"
+    : pris.length ? `Par côté : ${pris.map(peFr).join(" + ")}${reste ? `, reste ${peFr(reste)}` : ""}` : "Barre seule";
+}
+
+function peBulleMaj(sens) {
   if (!peScrub || !peBulle) return;
   const src = document.getElementById(peScrub.champ + "-" + pe.index);
   const v = src ? src.value : "";
-  peBulle.querySelector(".pe-bulle-v").textContent = v === "" ? "–" : peFr(v);
+  peChiffres(peBulle.querySelector(".pe-bulle-v"), v === "" ? "–" : peFr(v), sens);
   peBulle.querySelector(".pe-bulle-u").textContent = peScrub.unite;
   const e = peEcartTexte(v, peScrub.v0);
   const d = peBulle.querySelector(".pe-bulle-d");
   d.textContent = e.texte;
   d.dataset.sens = e.sens;
+  if (peScrub.barre) peBarreMaj(v);
+}
+
+/* La règle suit le doigt en continu (le chiffre, lui, change tous les PE_CRAN px).
+   Si la valeur est bloquée (zéro), la règle s'arrête avec elle. */
+function peBulleTape(dx) {
+  if (!peScrub || !peBulle) return;
+  const t = peBulle.querySelector(".pe-bulle-tape");
+  const W = peScrub.W || t.clientWidth;
+  const src = document.getElementById(peScrub.champ + "-" + pe.index);
+  const val = src ? parseFloat(src.value) : NaN;
+  const snap = Number.isFinite(val) ? ((val - peScrub.v0) / peScrub.pas) * PE_CRAN : dx;
+  const dxEff = Math.abs(snap - peScrub.cran * PE_CRAN) < 1 ? dx : snap;
+  t.style.setProperty("--dx", dxEff + "px");
+  const tr = t.querySelector(".pe-bulle-trace");
+  tr.style.left = (W / 2 + Math.min(0, -dxEff)) + "px";
+  tr.style.width = Math.abs(dxEff) + "px";
+  const av = t.querySelector(".pe-bulle-avant");
+  if (peScrub.ref == null) { av.hidden = true; return; }
+  av.hidden = false;
+  const x = W / 2 + ((peScrub.ref - peScrub.v0) / peScrub.pas) * PE_CRAN - dxEff;
+  const marge = 48;
+  av.style.left = Math.min(W - marge, Math.max(marge, x)) + "px";
+  av.dataset.passe = peScrub.passe ? "1" : "";
+  const nom = "avant " + peFr(peScrub.ref);
+  av.firstElementChild.textContent = nom;
 }
 function peScrubStop(e) {
   if (!peScrub || e.pointerId !== peScrub.id) return;
