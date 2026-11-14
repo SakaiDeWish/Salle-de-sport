@@ -3528,7 +3528,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
    ========================================================= */
 .pe-open { overflow: hidden; }
 .pe {
-  --pe-bas: clamp(262px, 36vh, 310px);        /* hauteur réservée aux données du bas */
+  --pe-bas: 132px;                            /* hauteur réservée aux trois chiffres, sous le schéma */
   position: fixed; inset: 0; z-index: 150;
   display: flex; flex-direction: column;
   background: var(--bg); color: var(--text);
@@ -3630,7 +3630,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 .pe-detail .pe-hud > * { opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, 0s, 0.3s; }
 .pe-detail .pe-tete { transform: translateY(-8px); }
 .pe-detail .pe-bas { transform: translateX(-24px); }
-.pe-detail .pe-lire { transform: translateX(24px); }
+.pe-detail .pe-lire { transform: translateY(24px); }
 
 .pe-tete { grid-column: 1 / -1; padding-right: 48px; min-width: 0; }
 .pe-name {
@@ -3641,47 +3641,49 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 }
 .pe-line { margin-top: 2px; color: var(--text-soft); font-size: 0.85rem; line-height: 1.25; }
 
-/* Séries, en bas à gauche. */
-.pe-bas { grid-row: 3; grid-column: 1; align-self: end; justify-self: start; min-width: 0; }
-.pe-series {
-  list-style: none; margin: 0; padding: 6px 10px 6px 6px; display: grid; gap: 1px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent); border-radius: var(--radius-sm);
+/* Frise des séries, sur le bord gauche sous le titre : une pastille par
+   série, reliées par un trait. Le trait qui précède une série vire au vert
+   quand la série d'avant est faite. */
+.pe-bas { grid-row: 2; grid-column: 1; align-self: start; justify-self: start; min-width: 0; padding-top: 14px; }
+.pe-frise { list-style: none; margin: 0; padding: 0 0 0 2px; display: flex; flex-direction: column; align-items: center; width: 28px; }
+.pe-pt {
+  position: relative; flex: none; width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--border); background: transparent;
+  display: flex; align-items: center; justify-content: center;
 }
-.pe-ligne {
-  display: grid; grid-template-columns: 24px auto; align-items: center; column-gap: 6px;
-  min-height: 28px; font-size: 0.95rem; font-variant-numeric: tabular-nums;
+.pe-pt + .pe-pt { margin-top: 20px; }
+.pe-pt + .pe-pt::before {                     /* le trait vers la pastille d'avant */
+  content: ""; position: absolute; left: 50%; bottom: 100%; width: 2px; height: 20px; margin-left: -1px;
+  background: var(--border);
 }
-.pe-n { color: var(--text-soft); font-weight: 700; text-align: center; }
-.pe-n .icon { width: 16px; height: 16px; color: var(--green); vertical-align: -0.18em; }
-.pe-r small { color: var(--text-soft); font-size: 0.78rem; }
-.pe-prevu .pe-r { color: var(--text-soft); }
-.pe-courant .pe-n { color: var(--accent-2); }
-.pe-courant .pe-r { font-weight: 700; }
+.pe-pt.apres-fait::before { background: var(--green); }
+.pe-pt.pe-fait { background: var(--green); border-color: var(--green); }
+.pe-pt.pe-courant {
+  width: 24px; height: 24px; border-color: var(--accent); background: var(--bg);
+  color: var(--accent-2); font-size: 0.75rem; font-weight: 700; font-variant-numeric: tabular-nums;
+}
 
-/* Valeurs, en bas à droite : la valeur est un bouton qui ouvre le pavé,
-   les deux petits boutons font le pas. */
-.pe-lire {
-  grid-row: 2 / 4; grid-column: 2; align-self: end;
-  display: grid; gap: 12px; padding: 10px 10px 10px 16px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent); border-radius: var(--radius-sm);
-}
-.pe-champ { display: grid; grid-template-columns: auto 38px; align-items: center; column-gap: 16px; }
+/* Les trois chiffres, en bas, sans cadre. La valeur est un bouton : un tap
+   ouvre le pavé, glisser la fait défiler. */
+.pe-lire { grid-row: 3; grid-column: 1 / -1; align-self: end; display: grid; gap: 2px; }
+.pe-champs { display: flex; align-items: flex-end; }
+.pe-champ { flex: 1 1 0; min-width: 0; display: flex; justify-content: center; }
+.pe-champ:first-child { flex-grow: 1.3; }
 .pe-lecture {
-  display: grid; justify-items: end; gap: 6px; min-width: 70px; min-height: 44px; padding: 0;
-  background: none; border: 0; color: inherit; font: inherit; text-align: right; cursor: ew-resize;
+  position: relative; display: grid; justify-items: center; gap: 2px; width: 100%; min-height: 44px; padding: 4px 0 2px;
+  background: none; border: 0; color: inherit; font: inherit; text-align: center; cursor: ew-resize;
   touch-action: none; -webkit-touch-callout: none;
 }
-.pe-label { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; line-height: 1.1; }
-.pe-vl { display: flex; align-items: baseline; gap: 6px; }
+.pe-label { color: var(--text-soft); font-size: 0.8rem; font-weight: 600; line-height: 1.1; }
+.pe-indice { text-align: center; color: var(--text-soft); font-size: 0.8rem; }
 /* Retour visuel quand on tient une valeur : elle grossit à l'appui, grossit
    encore et passe en volt quand le doigt la fait défiler, et une règle
    graduée défile sous le chiffre avec le doigt. */
-.pe-lecture { position: relative; }
-.pe-v { transform-origin: right center; transition: scale 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.16s ease-out; }
+.pe-v { transform-origin: 50% 100%; transition: scale 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.16s ease-out; }
 .pe-lecture.presse .pe-v { scale: 1.1; }
 .pe-lecture.scrub .pe-v { scale: 1.22; color: var(--accent); }
 .pe-regle {
-  position: absolute; left: 0; right: 0; bottom: -5px; height: 8px; opacity: 0; pointer-events: none;
+  position: relative; width: 100%; height: 6px; margin-block: 1px -2px; opacity: 0; pointer-events: none;
   background-image: repeating-linear-gradient(90deg, var(--text-soft) 0 1px, transparent 1px 12px);
   background-position-x: var(--dx, 0px);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
@@ -3693,10 +3695,11 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 /* Concentration : pendant le défilement, seul ce qui est tenu reste net. */
 .pe-bar, .pe-scene, .pe-loupe, .pe-champ { transition: opacity 0.18s ease-out; }
 .pe-tient .pe-bar, .pe-tient .pe-scene, .pe-tient .pe-loupe, .pe-tient .pe-tete,
-.pe-tient .pe-bas, .pe-tient .pe-foot, .pe-tient .pe-champ:not(.pe-champ-tenu) { opacity: 0.25; }
+.pe-tient .pe-bas, .pe-tient .pe-foot, .pe-tient .pe-indice, .pe-tient .pe-champ:not(.pe-champ-tenu) { opacity: 0.25; }
+.pe-indice { transition: opacity 0.18s ease-out; }
 
 /* Écart avec la séance précédente, à côté du libellé. */
-.pe-label { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; }
+.pe-label { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
 .pe-ecart { font-weight: 700; font-variant-numeric: tabular-nums; }
 .pe-ecart:empty { display: none; }
 .pe-ecart[data-sens="hausse"] { color: var(--accent-2); }
@@ -3721,44 +3724,27 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 @media (prefers-reduced-motion: reduce) {
   .pe-bulle-in { transition-duration: 0.08s; transform: translate(-50%, -100%); }
   .pe-bulle.on .pe-bulle-in { transform: translate(-50%, -100%); }
-  .pe-bar, .pe-scene, .pe-loupe, .pe-champ { transition-duration: 0.1s; }
+  .pe-bar, .pe-scene, .pe-loupe, .pe-champ, .pe-indice { transition-duration: 0.1s; }
 }
-.pe-step { transition: scale 0.08s ease-out, background-color 0.08s ease-out; }
-.pe-step:active { scale: 0.92; }
 @media (prefers-reduced-motion: reduce) {
   .pe-v { transition-duration: 0.08s; }
   .pe-lecture.presse .pe-v { scale: 1.05; }
   .pe-lecture.scrub .pe-v { scale: 1.1; }
 }
-.pe-v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 2.1rem; line-height: 1; }
-.pe-champ:first-child .pe-v { color: var(--accent-2); font-size: 2.5rem; }
+/* Chiffres : le poids prend la place, les deux autres suivent. Tailles
+   liées à la largeur pour que « 102,5 » tienne à 360 px. */
+.pe-v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: min(11vw, 3.4rem); line-height: 1; }
+.pe-champ:first-child .pe-v { color: var(--accent-2); font-size: min(14vw, 4rem); }
 .pe-v.vide { color: var(--text-soft); }
-.pe-u { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; }
-.pe-steps { display: grid; gap: 6px; }
-.pe-step {
-  width: 38px; height: 34px; padding: 0;
-  border: 1px solid var(--border); border-radius: 8px;
-  background: var(--bg-soft); color: var(--text);
-  display: inline-flex; align-items: center; justify-content: center;
-  touch-action: manipulation; -webkit-touch-callout: none; cursor: pointer;
-}
-.pe-step .icon { width: 16px; height: 16px; }
-.pe-step:active { background: var(--card-hover); }
 .pe-open .pave-lien { display: none; }          /* le clavier du téléphone n'a pas de champ visible ici */
 
-.pe-hold { grid-row: 2; grid-column: 1; align-self: end; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.pe-hold { grid-row: 2; grid-column: 1 / -1; justify-self: center; align-self: end; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
 .pe-hold-val { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 1.7rem; }
 
-.pe-close:focus-visible, .pe-arrow:focus-visible, .pe-step:focus-visible, .pe-lecture:focus-visible,
+.pe-close:focus-visible, .pe-arrow:focus-visible, .pe-lecture:focus-visible,
 .pe-loupe:focus-visible, .pe-rest:focus-visible, .pe-foot .btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
 /* Pied : la suite du programme, puis l'action. */
-@media (max-height: 700px) {                    /* petits écrans : un peu moins d'air entre les valeurs */
-  .pe { --pe-bas: 246px; }
-  .pe-lire { gap: 6px; padding-block: 6px; }
-  .pe-step { height: 30px; }
-  .pe-steps { gap: 4px; }
-}
 .pe-foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 2px 16px 12px; transition: opacity 0.26s ease-out, visibility 0s linear 0s; }
 .pe-detail .pe-foot { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, 0.26s; }
 .pe-rang { display: flex; align-items: center; justify-content: space-between; gap: 10px; }

@@ -60,25 +60,21 @@ function peEcartTexte(v, ref) {
   return { texte: (d > 0 ? "+" : "−") + peFr(Math.abs(d)), sens: d > 0 ? "hausse" : "baisse" };
 }
 function peLecture(i, champ, cleSerie, libelle, unite) {
-  const src = document.getElementById(champ + "-" + i);
-  if (!src) return "";
-  const plus = document.querySelector(`.step-btn[data-target="${champ}-${i}"][data-delta="1"]`);
-  const pas = plus ? parseFloat(plus.closest(".stepper").dataset.step) || 1 : 0;
+  if (!document.getElementById(champ + "-" + i)) return "";
   const v = peValeur(i, champ, cleSerie);
   const exo = live.exercises[i];
   const memo = Array.isArray(exo.memoDepart) ? exo.memoDepart[exo.sets.length] : null;
   const ref = memo && memo[cleSerie] != null && memo[cleSerie] !== "" ? memo[cleSerie] : null;
   const ec = ref != null && v !== "" ? peEcartTexte(v, ref) : { texte: "", sens: "" };
-  const bouton = d => `<button type="button" class="pe-step" data-champ="${champ}" data-delta="${d}"
-        aria-label="${d < 0 ? "Retirer" : "Ajouter"} ${peFr(pas)} ${libelle.toLowerCase()}">${icon(d < 0 ? "minus" : "plus")}</button>`;
+  /* Pas de boutons − et + : on tape pour saisir, on glisse pour changer, les
+     flèches du clavier font le pas (voir l'écouteur « keydown »). */
   return `
     <div class="pe-champ" data-champ="${champ}"${ref != null ? ` data-ref="${esc(ref)}"` : ""}>
-      <button type="button" class="pe-lecture" data-saisie="${champ}" aria-label="${libelle} : ${v === "" ? "vide" : esc(peFr(v))}. Toucher pour saisir.">
-        <span class="pe-label">${libelle}<span class="pe-ecart" data-sens="${ec.sens}" title="Écart avec la séance précédente">${ec.texte}</span></span>
-        <span class="pe-vl"><span class="pe-v${v === "" ? " vide" : ""}">${v === "" ? "–" : esc(peFr(v))}</span>${unite ? `<span class="pe-u">${unite}</span>` : ""}</span>
+      <button type="button" class="pe-lecture" data-saisie="${champ}" data-unite="${esc(unite)}">
+        <span class="pe-v${v === "" ? " vide" : ""}">${v === "" ? "–" : esc(peFr(v))}</span>
         <span class="pe-regle" aria-hidden="true"></span>
+        <span class="pe-label">${libelle}${unite ? " " + unite : ""}<span class="pe-ecart" data-sens="${ec.sens}" title="Écart avec la séance précédente">${ec.texte}</span></span>
       </button>
-      ${pas ? `<div class="pe-steps">${bouton(-1)}${bouton(1)}</div>` : ""}
     </div>`;
 }
 
@@ -96,30 +92,45 @@ function peSerieTexte(s, statique) {
    précédente (`memoDepart`, figé au début de l'exercice : `recallSet` bouge
    dès qu'une série est validée). Au plus cinq lignes, pour que la hauteur
    de l'écran ne dépende jamais du nombre de séries. */
-function peSeriesHTML(i) {
+/* Où en est l'exercice : combien de séries faites, laquelle est en cours. */
+function peSeriesEtat(i) {
   const ex = live.exercises[i];
   const p = exerciseProgress(ex);
-  const statique = estStatique(ex);
   const fait = ex.sets.length;
   const total = Math.max(p.target != null ? p.target : fait + 1, fait);
-  const courant = fait < total ? fait : -1;
-  const lignes = 5;
-  const debut = Math.max(0, Math.min(courant >= 0 ? courant - 2 : total - lignes, total - lignes));
+  return { ex, fait, total, courant: fait < total ? fait : -1, statique: estStatique(ex) };
+}
+function peAvantTexte(e, k) {
+  const avantSet = Array.isArray(e.ex.memoDepart) ? e.ex.memoDepart[k] : recallSet(e.ex.exId, k);
+  return peSerieTexte(avantSet, e.statique);
+}
+
+/* Sous le nom : la série en cours et ce qu'on avait fait à la même série la fois d'avant. */
+function peSousTitre(i) {
+  const e = peSeriesEtat(i);
+  if (e.courant < 0) return `${e.fait} série${e.fait > 1 ? "s" : ""} faite${e.fait > 1 ? "s" : ""}`;
+  const avant = peAvantTexte(e, e.courant);
+  return `Série ${e.courant + 1} sur ${e.total}${avant ? ", avant " + avant : ""}`;
+}
+
+/* La frise : une pastille par série sur le bord gauche, reliées par un trait
+   qui vire au vert une fois la série faite. La série en cours est plus grosse
+   et porte son numéro. Au plus six pastilles, pour que la hauteur de l'écran
+   ne dépende jamais du nombre de séries. Le détail de chaque série est dans
+   son libellé accessible. */
+function peFriseHTML(i) {
+  const e = peSeriesEtat(i);
+  const max = 6;
+  const debut = Math.max(0, Math.min(e.courant >= 0 ? e.courant - 2 : e.total - max, e.total - max));
   let html = "";
-  for (let k = debut; k < Math.min(total, debut + lignes); k++) {
-    const s = ex.sets[k];
-    const avantSet = Array.isArray(ex.memoDepart) ? ex.memoDepart[k] : recallSet(ex.exId, k);
-    const avant = peSerieTexte(avantSet, statique);
-    const etat = s ? "fait" : k === courant ? "courant" : "prevu";
-    const rir = s && !statique && s.rir != null && s.rir !== "" ? ` <small>RIR ${esc(s.rir)}</small>` : "";
-    const texte = s ? esc(peSerieTexte(s, statique)) + rir
-      : avant ? (k === courant ? `<small>avant</small> ${esc(avant)}` : esc(avant)) : "–";
-    html += `<li class="pe-ligne pe-${etat}"${k === courant ? ' aria-current="step"' : ""}>
-      <span class="pe-n">${s ? icon("check") : k + 1}</span>
-      <span class="pe-r">${texte}${s && s.note ? ` <span class="pe-note-ico" title="${esc(s.note)}">${icon("message")}</span>` : ""}</span>
-    </li>`;
+  for (let k = debut; k < Math.min(e.total, debut + max); k++) {
+    const s = e.ex.sets[k];
+    const etat = s ? "fait" : k === e.courant ? "courant" : "prevu";
+    const texte = s ? peSerieTexte(s, e.statique) : peAvantTexte(e, k);
+    const nom = `Série ${k + 1}, ${s ? "faite" : k === e.courant ? "en cours" : "à venir"}${texte ? " : " + texte : ""}`;
+    html += `<li class="pe-pt pe-${etat}${k > debut && e.ex.sets[k - 1] ? " apres-fait" : ""}" aria-label="${esc(nom)}"${k === e.courant ? ' aria-current="step"' : ""}>${k === e.courant ? `<span>${k + 1}</span>` : ""}</li>`;
   }
-  return `<ol class="pe-series" aria-label="Séries de l'exercice">${html}</ol>`;
+  return `<ol class="pe-frise" aria-label="Séries de l'exercice">${html}</ol>`;
 }
 
 /* Le schéma animé de la fiche, plein cadre derrière les données. Sans lui
@@ -166,11 +177,12 @@ function peHudHTML(i) {
   return `
     <header class="pe-tete">
       <h2 class="pe-name" tabindex="-1">${esc(ex.nom)}</h2>
+      <p class="pe-line">${esc(peSousTitre(i))}</p>
       ${infos ? `<p class="pe-line">${esc(infos)}</p>` : ""}
     </header>
     ${statique ? holdBloc(i) : ""}
-    <div class="pe-bas">${peSeriesHTML(i)}</div>
-    ${lire ? `<div class="pe-lire">${lire}</div>` : ""}`;
+    <div class="pe-bas">${peFriseHTML(i)}</div>
+    ${lire ? `<div class="pe-lire"><div class="pe-champs">${lire}</div><p class="pe-indice">Glisse un chiffre, touche pour saisir</p></div>` : ""}`;
 }
 
 function pePaneHTML(i) {
@@ -430,28 +442,9 @@ document.addEventListener("click", e => {
     else peFermer();
     return;
   }
-  /* Au clavier un bouton de pas n'envoie qu'un clic (detail 0) ; au doigt,
-     le pointerdown ci-dessous a déjà compté et répète. */
-  const step = e.target.closest(".pe-step");
-  if (step && e.detail === 0) { peStep(step.dataset.champ, step.dataset.delta); return; }
   /* Toucher le schéma lui-même, hors de ses boutons, ouvre ou ferme le détail. */
   if (e.target.closest(".pe-scene") && !e.target.closest("button, a, .pe-guide")) peDetail(!pe.detail);
 });
-
-/* Appui long sur − ou + : le pas se répète. */
-let peRepet = null;
-function peStopRepet() { clearTimeout(peRepet); clearInterval(peRepet); peRepet = null; }
-elPe.addEventListener("pointerdown", e => {
-  const b = e.target.closest(".pe-step");
-  if (!b) return;
-  e.preventDefault();                                   // pas de focus ni de sélection au doigt
-  peStep(b.dataset.champ, b.dataset.delta);
-  peRepet = setTimeout(() => {
-    peRepet = setInterval(() => peStep(b.dataset.champ, b.dataset.delta), 110);
-  }, 420);
-});
-["pointerup", "pointercancel", "pointerleave", "contextmenu"].forEach(t =>
-  elPe.addEventListener(t, peStopRepet, true));
 
 /* Faire défiler une valeur : le doigt posé sur le poids, les reps ou le RIR,
    glisser vers la droite augmente, vers la gauche diminue, d'un pas tous les
@@ -464,8 +457,7 @@ elPe.addEventListener("pointerdown", e => {
   const champ = l.closest(".pe-champ").dataset.champ;
   const src = document.getElementById(champ + "-" + pe.index);
   const v0 = src ? parseFloat(src.value) || 0 : 0;
-  const u = l.querySelector(".pe-u");
-  peScrub = { id: e.pointerId, el: l, champ, x0: e.clientX, cran: 0, actif: false, v0, derniere: v0, unite: u ? u.textContent : "" };
+  peScrub = { id: e.pointerId, el: l, champ, x0: e.clientX, cran: 0, actif: false, v0, derniere: v0, unite: l.dataset.unite || "" };
   l.style.setProperty("--dx", "0px");
   l.classList.add("presse");                       // la valeur grossit dès l'appui : on voit qu'elle est « tenue »
 });
@@ -662,6 +654,13 @@ document.addEventListener("keydown", e => {
     return;
   }
   if (e.target.matches && e.target.matches("input, textarea")) return;
+  /* Sans boutons − et +, les flèches sur une valeur font le pas. */
+  const lec = e.target.closest && e.target.closest(".pe-lecture");
+  if (lec && /^Arrow(Left|Right|Up|Down)$/.test(e.key)) {
+    e.preventDefault();
+    peStep(lec.closest(".pe-champ").dataset.champ, /Right|Up/.test(e.key) ? 1 : -1);
+    return;
+  }
   if (e.key === "ArrowLeft") { e.preventDefault(); peAller(pe.index - 1, -1); }
   if (e.key === "ArrowRight") { e.preventDefault(); peAller(pe.index + 1, 1); }
 });
