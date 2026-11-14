@@ -52,18 +52,29 @@ function peValeur(i, champ, cleSerie) {
    La valeur est un bouton, pas un champ : un tap ouvre le pavé numérique de
    l'app (js/pave.js) sur le champ caché de la liste, qui reste la source
    de vérité. Le pas vient du pas-à-pas de la liste : une seule définition. */
+/* L'écart avec la même série de la séance précédente (`memoDepart`) : « +5 »,
+   « −2,5 ». Vide s'il n'y a rien à comparer ou si la valeur n'a pas bougé. */
+function peEcartTexte(v, ref) {
+  const d = Math.round((parseFloat(v) - parseFloat(ref)) * 100) / 100;
+  if (!Number.isFinite(d) || d === 0) return { texte: "", sens: "" };
+  return { texte: (d > 0 ? "+" : "−") + peFr(Math.abs(d)), sens: d > 0 ? "hausse" : "baisse" };
+}
 function peLecture(i, champ, cleSerie, libelle, unite) {
   const src = document.getElementById(champ + "-" + i);
   if (!src) return "";
   const plus = document.querySelector(`.step-btn[data-target="${champ}-${i}"][data-delta="1"]`);
   const pas = plus ? parseFloat(plus.closest(".stepper").dataset.step) || 1 : 0;
   const v = peValeur(i, champ, cleSerie);
+  const exo = live.exercises[i];
+  const memo = Array.isArray(exo.memoDepart) ? exo.memoDepart[exo.sets.length] : null;
+  const ref = memo && memo[cleSerie] != null && memo[cleSerie] !== "" ? memo[cleSerie] : null;
+  const ec = ref != null && v !== "" ? peEcartTexte(v, ref) : { texte: "", sens: "" };
   const bouton = d => `<button type="button" class="pe-step" data-champ="${champ}" data-delta="${d}"
         aria-label="${d < 0 ? "Retirer" : "Ajouter"} ${peFr(pas)} ${libelle.toLowerCase()}">${icon(d < 0 ? "minus" : "plus")}</button>`;
   return `
-    <div class="pe-champ" data-champ="${champ}">
+    <div class="pe-champ" data-champ="${champ}"${ref != null ? ` data-ref="${esc(ref)}"` : ""}>
       <button type="button" class="pe-lecture" data-saisie="${champ}" aria-label="${libelle} : ${v === "" ? "vide" : esc(peFr(v))}. Toucher pour saisir.">
-        <span class="pe-label">${libelle}</span>
+        <span class="pe-label">${libelle}<span class="pe-ecart" data-sens="${ec.sens}" title="Écart avec la séance précédente">${ec.texte}</span></span>
         <span class="pe-vl"><span class="pe-v${v === "" ? " vide" : ""}">${v === "" ? "–" : esc(peFr(v))}</span>${unite ? `<span class="pe-u">${unite}</span>` : ""}</span>
         <span class="pe-regle" aria-hidden="true"></span>
       </button>
@@ -364,6 +375,13 @@ document.addEventListener("input", e => {
   if (out) {
     out.textContent = v === "" ? "–" : peFr(v);
     out.classList.toggle("vide", v === "");
+    const ch = out.closest(".pe-champ");
+    const chip = ch && ch.querySelector(".pe-ecart");
+    if (chip) {
+      const ec = ch.dataset.ref !== undefined && v !== "" ? peEcartTexte(v, ch.dataset.ref) : { texte: "", sens: "" };
+      chip.textContent = ec.texte;
+      chip.dataset.sens = ec.sens;
+    }
     if (typeof rebond === "function") rebond(out, 0.92, 1.1, 200);
   }
 });
@@ -443,7 +461,11 @@ let peScrub = null, peScrubFin = 0;
 elPe.addEventListener("pointerdown", e => {
   const l = e.target.closest(".pe-lecture");
   if (!l || pe.moving) return;
-  peScrub = { id: e.pointerId, el: l, champ: l.closest(".pe-champ").dataset.champ, x0: e.clientX, cran: 0, actif: false };
+  const champ = l.closest(".pe-champ").dataset.champ;
+  const src = document.getElementById(champ + "-" + pe.index);
+  const v0 = src ? parseFloat(src.value) || 0 : 0;
+  const u = l.querySelector(".pe-u");
+  peScrub = { id: e.pointerId, el: l, champ, x0: e.clientX, cran: 0, actif: false, v0, derniere: v0, unite: u ? u.textContent : "" };
   l.style.setProperty("--dx", "0px");
   l.classList.add("presse");                       // la valeur grossit dès l'appui : on voit qu'elle est « tenue »
 });
@@ -455,6 +477,9 @@ elPe.addEventListener("pointermove", e => {
     peScrub.actif = true;
     peScrub.el.classList.add("scrub");
     peScrub.el.setPointerCapture(e.pointerId);
+    elPe.classList.add("pe-tient");                                  // le reste de l'écran s'estompe
+    peScrub.el.closest(".pe-champ").classList.add("pe-champ-tenu");
+    peBulleEl().classList.add("on");
   }
   peScrub.el.style.setProperty("--dx", dx + "px");   // la règle défile avec le doigt
   const cran = Math.trunc(dx / PE_CRAN);
@@ -462,12 +487,53 @@ elPe.addEventListener("pointermove", e => {
     const sens = cran > peScrub.cran ? 1 : -1;
     peStep(peScrub.champ, sens);
     peScrub.cran += sens;
-    if (typeof vibre === "function") vibre(6);
+    const src = document.getElementById(peScrub.champ + "-" + pe.index);
+    const val = src ? parseFloat(src.value) : NaN;
+    /* Un cran net à chaque pas, un coup plus long à chaque palier de 10 kg. */
+    const palier = peScrub.champ === "poids" && Number.isFinite(val) && Math.floor(val / 10) !== Math.floor(peScrub.derniere / 10);
+    if (Number.isFinite(val)) peScrub.derniere = val;
+    if (typeof vibre === "function") vibre(palier ? 28 : 10);
   }
+  peBullePos(e.clientX, e.clientY);
+  peBulleMaj();
 });
+
+/* Bulle au-dessus du doigt : le doigt cache le chiffre qu'il fait défiler,
+   la bulle le montre, avec l'écart depuis le début du geste. */
+let peBulle = null;
+function peBulleEl() {
+  if (!peBulle) {
+    peBulle = document.createElement("div");
+    peBulle.className = "pe-bulle";
+    peBulle.setAttribute("aria-hidden", "true");
+    peBulle.innerHTML = `<div class="pe-bulle-in"><span class="pe-bulle-v"></span><span class="pe-bulle-u"></span><span class="pe-bulle-d"></span></div>`;
+    elPe.appendChild(peBulle);
+  }
+  return peBulle;
+}
+function peBullePos(x, y) {
+  if (!peBulle) return;
+  const L = elPe.clientWidth;
+  const m = peBulle.firstElementChild.offsetWidth / 2 + 8;            // la bulle reste entière dans l'écran
+  peBulle.style.translate = `${Math.min(Math.max(x, m), L - m)}px ${Math.max(y - 96, 110)}px`;
+}
+function peBulleMaj() {
+  if (!peScrub || !peBulle) return;
+  const src = document.getElementById(peScrub.champ + "-" + pe.index);
+  const v = src ? src.value : "";
+  peBulle.querySelector(".pe-bulle-v").textContent = v === "" ? "–" : peFr(v);
+  peBulle.querySelector(".pe-bulle-u").textContent = peScrub.unite;
+  const e = peEcartTexte(v, peScrub.v0);
+  const d = peBulle.querySelector(".pe-bulle-d");
+  d.textContent = e.texte;
+  d.dataset.sens = e.sens;
+}
 function peScrubStop(e) {
   if (!peScrub || e.pointerId !== peScrub.id) return;
   peScrub.el.classList.remove("scrub", "presse");
+  elPe.classList.remove("pe-tient");
+  peScrub.el.closest(".pe-champ").classList.remove("pe-champ-tenu");
+  if (peBulle) peBulle.classList.remove("on");
   if (peScrub.actif) peScrubFin = performance.now() + 350;
   peScrub = null;
 }
