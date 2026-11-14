@@ -14,7 +14,7 @@
    (qui sont aussi les boutons Précédent et Suivant), flèches du clavier.
    ========================================================= */
 
-const pe = { open: false, index: 0, pane: null, foot: "", moving: false, timer: null, detail: false };
+const pe = { open: false, index: 0, pane: null, foot: "", moving: false, timer: null, detail: false, notes: new WeakMap() };
 
 const elPe = document.getElementById("plein-ecran");
 const elPeStage = document.getElementById("pe-stage");
@@ -104,7 +104,7 @@ function peSeriesHTML(i) {
       : avant ? (k === courant ? `<small>avant</small> ${esc(avant)}` : esc(avant)) : "–";
     html += `<li class="pe-ligne pe-${etat}"${k === courant ? ' aria-current="step"' : ""}>
       <span class="pe-n">${s ? icon("check") : k + 1}</span>
-      <span class="pe-r">${texte}</span>
+      <span class="pe-r">${texte}${s && s.note ? ` <span class="pe-note-ico" title="${esc(s.note)}">${icon("message")}</span>` : ""}</span>
     </li>`;
   }
   return `<ol class="pe-series" aria-label="Séries de l'exercice">${html}</ol>`;
@@ -164,7 +164,11 @@ function holdBloc(i) {
 function peFootHTML(i) {
   const p = exerciseProgress(live.exercises[i]);
   const suiv = live.exercises[i + 1];
-  const ensuite = `<p class="pe-ensuite">${suiv ? `<span>Ensuite</span><strong>${esc(suiv.nom)}</strong>` : "<span>Dernier exercice</span>"}</p>`;
+  const note = pe.notes.get(live.exercises[i]);
+  const ensuite = `<div class="pe-rang">
+    <p class="pe-ensuite">${suiv ? `<span>Ensuite</span><strong>${esc(suiv.nom)}</strong>` : "<span>Dernier exercice</span>"}</p>
+    <button type="button" class="pe-note-btn${note ? " on" : ""}" data-act="note" aria-label="${note ? "Modifier la note de la série en cours" : "Ajouter une note à la série en cours"}">${icon("message")}<span>${note ? "Note ajoutée" : "Note"}</span></button>
+  </div>`;
   if (!p.fini) return `${ensuite}<button type="button" class="btn btn-primary pe-go" data-act="valider">Valider la série</button>`;
   const suivant = nextUnfinished(i);
   return `${ensuite}<button type="button" class="btn btn-primary pe-go" data-act="${suivant != null ? "suivant" : "fermer"}">${suivant != null ? "Exercice suivant" : "Fermer"}</button>
@@ -292,7 +296,15 @@ function peValider() {
     const n = parseInt(f && f.value, 10);
     if (!n || n < 1) { if (f) ouvrirPave(f); return; }
   }
+  const avant = ex.sets.length;
   validateSet(v);
+  const note = pe.notes.get(ex);
+  if (note && ex.sets.length > avant) {            // la note en attente part avec la série validée
+    ex.sets[ex.sets.length - 1].note = note;
+    pe.notes.delete(ex);
+    saveLive();
+    renderLiveExercises();
+  }
   if (!pe.open) return;
   /* Superset : l'exercice courant a changé tout seul, l'affichage le suit. */
   const cur = live.currentIndex;
@@ -354,8 +366,17 @@ document.addEventListener("click", e => {
     if (go) go.click();
     return;
   }
+  const puce = e.target.closest("[data-puce]");
+  if (puce) {
+    const inp = document.getElementById("pe-note-in");
+    inp.value = ((inp.value ? inp.value.replace(/\s*$/, "") + ", " : "") + puce.dataset.puce).slice(0, NOTE_MAX);
+    inp.focus();
+    return;
+  }
+  if (e.target.closest("[data-note=ok]")) { peNoteFermer(); return; }
   const lecture = e.target.closest("[data-saisie]");
   if (lecture) {
+    if (performance.now() < peScrubFin) return;     // le doigt vient de faire défiler la valeur : pas un tap
     const f = document.getElementById(lecture.dataset.saisie + "-" + pe.index);
     if (f) ouvrirPave(f);
     return;
@@ -364,6 +385,7 @@ document.addEventListener("click", e => {
   if (act) {
     const a = act.dataset.act;
     if (a === "detail") peDetail(!pe.detail);
+    else if (a === "note") peNoteOuvrir();
     else if (a === "plus") { bonusRows.add(live.exercises[pe.index]); renderLiveExercises(); }
     else if (a === "valider") peValider();
     else if (a === "suivant") { const n = nextUnfinished(pe.index); if (n != null) peAller(n, n > pe.index ? 1 : -1); }
@@ -393,6 +415,85 @@ elPe.addEventListener("pointerdown", e => {
 ["pointerup", "pointercancel", "pointerleave", "contextmenu"].forEach(t =>
   elPe.addEventListener(t, peStopRepet, true));
 
+/* Faire défiler une valeur : le doigt posé sur le poids, les reps ou le RIR,
+   glisser vers la droite augmente, vers la gauche diminue, d'un pas tous les
+   PE_CRAN pixels. Un simple tap ouvre toujours le pavé. */
+const PE_CRAN = 24;
+let peScrub = null, peScrubFin = 0;
+elPe.addEventListener("pointerdown", e => {
+  const l = e.target.closest(".pe-lecture");
+  if (!l || pe.moving) return;
+  peScrub = { id: e.pointerId, el: l, champ: l.closest(".pe-champ").dataset.champ, x0: e.clientX, cran: 0, actif: false };
+});
+elPe.addEventListener("pointermove", e => {
+  if (!peScrub || e.pointerId !== peScrub.id) return;
+  const dx = e.clientX - peScrub.x0;
+  if (!peScrub.actif) {
+    if (Math.abs(dx) < 10) return;
+    peScrub.actif = true;
+    peScrub.el.classList.add("scrub");
+    peScrub.el.setPointerCapture(e.pointerId);
+  }
+  const cran = Math.trunc(dx / PE_CRAN);
+  while (peScrub.cran !== cran) {
+    const sens = cran > peScrub.cran ? 1 : -1;
+    peStep(peScrub.champ, sens);
+    peScrub.cran += sens;
+    if (typeof vibre === "function") vibre(6);
+  }
+});
+function peScrubStop(e) {
+  if (!peScrub || e.pointerId !== peScrub.id) return;
+  peScrub.el.classList.remove("scrub");
+  if (peScrub.actif) peScrubFin = performance.now() + 350;
+  peScrub = null;
+}
+elPe.addEventListener("pointerup", peScrubStop);
+elPe.addEventListener("pointercancel", peScrubStop);
+
+/* Note de la série en cours : elle part avec la série quand on la valide. */
+function peNoteConstruire() {
+  const f = document.createElement("div");
+  f.id = "pe-note";
+  f.className = "pe-note hidden";
+  f.setAttribute("role", "dialog");
+  f.setAttribute("aria-modal", "true");
+  f.setAttribute("aria-labelledby", "pe-note-titre");
+  f.innerHTML = `
+    <div class="pe-note-fond" data-note="ok"></div>
+    <div class="pe-note-feuille">
+      <p class="pe-note-titre" id="pe-note-titre"></p>
+      <input type="text" id="pe-note-in" class="pe-note-in" maxlength="${NOTE_MAX}" enterkeyhint="done"
+        placeholder="Ex : aidé sur les 2 dernières" aria-labelledby="pe-note-titre">
+      <div class="pe-note-puces">${NOTE_RAPIDES.map(t => `<button type="button" class="chip" data-puce="${esc(t)}">${esc(t)}</button>`).join("")}</div>
+      <button type="button" class="btn btn-primary pe-note-ok" data-note="ok">OK</button>
+    </div>`;
+  elPe.appendChild(f);
+  feuilleGlisser(f.querySelector(".pe-note-feuille"), peNoteFermer, e => e.target.closest("input"));
+  f.querySelector("#pe-note-in").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); peNoteFermer(); } });
+  return f;
+}
+function peNoteOuvrir() {
+  const ex = live.exercises[pe.index];
+  const f = document.getElementById("pe-note") || peNoteConstruire();
+  f.querySelector("#pe-note-titre").textContent = `Note pour la série ${ex.sets.length + 1}`;
+  f.querySelector("#pe-note-in").value = pe.notes.get(ex) || "";
+  f.classList.remove("hidden");
+  f.querySelector("#pe-note-in").focus({ preventScroll: true });
+}
+function peNoteFermer() {
+  const f = document.getElementById("pe-note");
+  if (!f || f.classList.contains("hidden")) return;
+  const ex = live.exercises[pe.index];
+  const v = f.querySelector("#pe-note-in").value.trim().slice(0, NOTE_MAX);
+  if (v) pe.notes.set(ex, v); else pe.notes.delete(ex);    // fermer n'est jamais une perte : la note est gardée
+  f.classList.add("hidden");
+  f.querySelector("#pe-note-in").blur();
+  peBarre();
+  const b = elPeFoot.querySelector(".pe-note-btn");
+  if (b) b.focus({ preventScroll: true });
+}
+
 /* Glisser horizontalement : le contenu suit le doigt, puis glisse ou revient. */
 let peDrag = null;
 elPeStage.addEventListener("pointerdown", e => {
@@ -407,9 +508,17 @@ elPeStage.addEventListener("pointermove", e => {
   const dx = e.clientX - peDrag.x0, dy = e.clientY - peDrag.y0;
   if (!peDrag.actif) {
     if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-    if (Math.abs(dy) > Math.abs(dx)) { peDrag = null; return; }       // défilement vertical
+    if (Math.abs(dy) > Math.abs(dx)) {
+      if (dy > 0 && !pe.detail) peDrag.ferme = true;                  // vers le bas : fermer la fenêtre
+      else { peDrag = null; return; }                                 // vers le haut, ou défilement du détail
+    }
     peDrag.actif = true;
     elPeStage.setPointerCapture(e.pointerId);
+  }
+  if (peDrag.ferme) {
+    peDrag.dy = Math.max(0, dy);
+    elPe.style.transform = `translateY(${peDrag.dy}px)`;
+    return;
   }
   const voisin = pe.index + (dx < 0 ? 1 : -1);
   const existe = voisin >= 0 && voisin < peN();
@@ -421,6 +530,17 @@ function peFinDrag(e, annule) {
   const d = peDrag;
   peDrag = null;
   if (!d.actif) return;
+  if (d.ferme) {
+    const h = elPe.offsetHeight;
+    const v = d.dy / Math.max(1, performance.now() - d.t0);
+    const ferme = !annule && (d.dy > h * 0.25 || (v > 0.5 && d.dy > 40));
+    const a = elPe.animate(
+      [{ transform: `translateY(${d.dy}px)` }, { transform: `translateY(${ferme ? h : 0}px)` }],
+      { duration: peReduit() ? 140 : 300, easing: PE_EASE });
+    elPe.style.transform = ferme ? `translateY(${h}px)` : "";
+    a.finished.catch(() => {}).then(() => { if (ferme) peFermer(); elPe.style.transform = ""; });
+    return;
+  }
   const L = elPeStage.clientWidth;
   const vitesse = Math.abs(d.dx) / Math.max(1, performance.now() - d.t0);
   const sens = d.dx < 0 ? 1 : -1;
@@ -437,6 +557,11 @@ elPeStage.addEventListener("pointercancel", e => peFinDrag(e, true));
 document.addEventListener("keydown", e => {
   if (!pe.open || peRepos()) return;
   if (typeof pave !== "undefined" && pave) return;                    // le pavé a ses propres touches
+  const feuille = document.getElementById("pe-note");
+  if (feuille && !feuille.classList.contains("hidden")) {              // la note aussi
+    if (e.key === "Escape") { e.preventDefault(); peNoteFermer(); }
+    return;
+  }
   if (e.key === "Escape" && pe.detail) { e.preventDefault(); peDetail(false); return; }
   if (e.key === "Escape") { e.preventDefault(); peFermer(); return; }
   if (e.key === "Tab") {                                              // focus piégé dans le plein écran

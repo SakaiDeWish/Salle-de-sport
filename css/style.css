@@ -3528,7 +3528,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
    ========================================================= */
 .pe-open { overflow: hidden; }
 .pe {
-  --pe-bas: clamp(234px, 34vh, 290px);        /* hauteur réservée aux données du bas */
+  --pe-bas: clamp(262px, 36vh, 310px);        /* hauteur réservée aux données du bas */
   position: fixed; inset: 0; z-index: 150;
   display: flex; flex-direction: column;
   background: var(--bg); color: var(--text);
@@ -3558,7 +3558,8 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
   cursor: pointer;
 }
 
-.pe-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: pan-y; }
+.pe-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; }
+.pe-detail .pe-stage { touch-action: pan-y; }
 .pe-pane {
   position: absolute; inset: 0; overflow: hidden;
   -webkit-user-select: none; user-select: none;
@@ -3648,22 +3649,23 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
    les deux petits boutons font le pas. */
 .pe-lire {
   grid-row: 2 / 4; grid-column: 2; align-self: end;
-  display: grid; gap: 4px; padding: 6px 8px 6px 12px;
+  display: grid; gap: 12px; padding: 10px 10px 10px 16px;
   background: color-mix(in srgb, var(--bg) 82%, transparent); border-radius: var(--radius-sm);
 }
-.pe-champ { display: grid; grid-template-columns: auto 38px; align-items: center; column-gap: 8px; }
+.pe-champ { display: grid; grid-template-columns: auto 38px; align-items: center; column-gap: 16px; }
 .pe-lecture {
-  display: grid; justify-items: end; gap: 0; min-width: 62px; min-height: 44px; padding: 0;
-  background: none; border: 0; color: inherit; font: inherit; text-align: right; cursor: pointer;
-  touch-action: manipulation;
+  display: grid; justify-items: end; gap: 6px; min-width: 70px; min-height: 44px; padding: 0;
+  background: none; border: 0; color: inherit; font: inherit; text-align: right; cursor: ew-resize;
+  touch-action: none; -webkit-touch-callout: none;
 }
 .pe-label { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; line-height: 1.1; }
-.pe-vl { display: flex; align-items: baseline; gap: 3px; }
+.pe-vl { display: flex; align-items: baseline; gap: 6px; }
+.pe-lecture.scrub .pe-v { color: var(--accent); }
 .pe-v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 2.1rem; line-height: 1; }
 .pe-champ:first-child .pe-v { color: var(--accent-2); font-size: 2.5rem; }
 .pe-v.vide { color: var(--text-soft); }
 .pe-u { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; }
-.pe-steps { display: grid; gap: 2px; }
+.pe-steps { display: grid; gap: 6px; }
 .pe-step {
   width: 38px; height: 34px; padding: 0;
   border: 1px solid var(--border); border-radius: 8px;
@@ -3682,9 +3684,43 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 .pe-loupe:focus-visible, .pe-rest:focus-visible, .pe-foot .btn:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
 
 /* Pied : la suite du programme, puis l'action. */
-.pe-foot { display: grid; gap: 6px; padding: 2px 16px 12px; transition: opacity 0.26s ease-out, visibility 0s linear 0s; }
+@media (max-height: 700px) {                    /* petits écrans : un peu moins d'air entre les valeurs */
+  .pe { --pe-bas: 246px; }
+  .pe-lire { gap: 6px; padding-block: 6px; }
+  .pe-step { height: 30px; }
+  .pe-steps { gap: 4px; }
+}
+.pe-foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 2px 16px 12px; transition: opacity 0.26s ease-out, visibility 0s linear 0s; }
 .pe-detail .pe-foot { opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, 0.26s; }
-.pe-ensuite { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.pe-rang { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pe-ensuite { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex: 1; }
+.pe-note-btn {
+  flex: none; min-height: 36px; padding: 0 10px; border: 1px solid var(--border); border-radius: 999px;
+  background: transparent; color: var(--text-soft); font: inherit; font-size: 0.85rem; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; touch-action: manipulation;
+}
+.pe-note-btn .icon { width: 16px; height: 16px; }
+.pe-note-btn.on { color: var(--accent-2); border-color: var(--accent); }
+.pe-note-btn:focus-visible, .pe-note-in:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.pe-note-ico .icon { width: 14px; height: 14px; color: var(--text-soft); vertical-align: -0.12em; }
+
+/* Feuille de note : monte du bas, se ferme en la glissant vers le bas. */
+.pe-note { position: absolute; inset: 0; z-index: 6; display: flex; align-items: flex-end; }
+.pe-note-fond { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.pe-note-feuille {
+  position: relative; width: 100%; display: grid; gap: 12px; touch-action: none;
+  background: var(--card, var(--bg)); border: 1px solid var(--border); border-radius: 18px 18px 0 0;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+}
+.pe-note-titre { font-weight: 700; }
+.pe-note-in {
+  width: 100%; min-height: 48px; padding: 0 12px; border-radius: var(--radius-sm);
+  background: var(--bg-soft); border: 1px solid var(--border); color: var(--text);
+  font: inherit; font-size: 1rem; -webkit-user-select: text; user-select: text; touch-action: manipulation;
+}
+.pe-note-puces { display: flex; flex-wrap: wrap; gap: 8px; }
+.pe-note-ok { min-height: 44px; background-image: none; background-color: var(--accent); text-transform: none; letter-spacing: 0.01em; }
+
 .pe-ensuite span { color: var(--text-soft); font-size: 0.85rem; white-space: nowrap; }
 .pe-ensuite strong {
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -3831,6 +3867,7 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 .pave.hidden { display: none; }
 .pave-fond { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
 .pave-feuille {
+  touch-action: none;
   position: relative; width: 100%; max-width: 440px; max-height: 94vh; overflow-y: auto;
   background: var(--card, var(--bg)); border: 1px solid var(--border);
   border-radius: 18px 18px 0 0; padding: 14px 16px calc(16px + env(safe-area-inset-bottom));

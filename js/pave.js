@@ -100,6 +100,7 @@ function construirePave() {
       <button type="button" class="btn btn-primary pave-ok" data-pave="ok">OK</button>
     </div>`;
   document.body.appendChild(paveEl);
+  feuilleGlisser(paveEl.querySelector(".pave-feuille"), fermerPave);
   paveEl.addEventListener("click", e => {
     const t = e.target.closest("[data-k],[data-pave],[data-disque]");
     if (!t || !pave) return;
@@ -124,6 +125,47 @@ function construirePave() {
     }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && pave) fermerPave(); });
+}
+
+/* Glisser vers le bas pour fermer une feuille (pavé, note...). La feuille suit
+   le doigt, puis glisse hors de l'écran ou revient : elle ne saute jamais.
+   `ignore(e)` écarte les départs qui ne doivent pas lancer le geste (un champ
+   de texte, par exemple). Un simple tap n'est jamais pris pour un glissement. */
+function feuilleGlisser(feuille, fermer, ignore) {
+  let d = null;
+  const reduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  feuille.addEventListener("pointerdown", e => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (ignore && ignore(e)) return;
+    d = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dy: 0, actif: false, t0: performance.now() };
+  });
+  feuille.addEventListener("pointermove", e => {
+    if (!d || e.pointerId !== d.id) return;
+    const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+    if (!d.actif) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      if (dy <= 0 || Math.abs(dx) > dy) { d = null; return; }       // vers le haut ou de côté : pas un geste de fermeture
+      d.actif = true;
+      feuille.setPointerCapture(e.pointerId);
+    }
+    d.dy = Math.max(0, dy);
+    feuille.style.transform = `translateY(${d.dy}px)`;
+  });
+  const fin = (e, annule) => {
+    if (!d || e.pointerId !== d.id) return;
+    const x = d; d = null;
+    if (!x.actif) return;
+    const h = feuille.offsetHeight;
+    const v = x.dy / Math.max(1, performance.now() - x.t0);
+    const ferme = !annule && (x.dy > h * 0.3 || (v > 0.5 && x.dy > 40));
+    const a = feuille.animate(
+      [{ transform: `translateY(${x.dy}px)` }, { transform: `translateY(${ferme ? h : 0}px)` }],
+      { duration: reduit() ? 140 : 220, easing: "cubic-bezier(0.4, 0, 0.2, 1)" });
+    feuille.style.transform = ferme ? `translateY(${h}px)` : "";
+    a.finished.catch(() => {}).then(() => { if (ferme) fermer(); feuille.style.transform = ""; });
+  };
+  feuille.addEventListener("pointerup", e => fin(e, false));
+  feuille.addEventListener("pointercancel", e => fin(e, true));
 }
 
 function frappe(k) {
