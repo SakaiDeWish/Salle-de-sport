@@ -65,6 +65,7 @@ function peLecture(i, champ, cleSerie, libelle, unite) {
       <button type="button" class="pe-lecture" data-saisie="${champ}" aria-label="${libelle} : ${v === "" ? "vide" : esc(peFr(v))}. Toucher pour saisir.">
         <span class="pe-label">${libelle}</span>
         <span class="pe-vl"><span class="pe-v${v === "" ? " vide" : ""}">${v === "" ? "–" : esc(peFr(v))}</span>${unite ? `<span class="pe-u">${unite}</span>` : ""}</span>
+        <span class="pe-regle" aria-hidden="true"></span>
       </button>
       ${pas ? `<div class="pe-steps">${bouton(-1)}${bouton(1)}</div>` : ""}
     </div>`;
@@ -360,7 +361,11 @@ document.addEventListener("input", e => {
   if (!m || +m[2] !== pe.index) return;
   const v = e.target.value;
   const out = elPe.querySelector(`.pe-champ[data-champ="${m[1]}"] .pe-v`);
-  if (out) { out.textContent = v === "" ? "–" : peFr(v); out.classList.toggle("vide", v === ""); }
+  if (out) {
+    out.textContent = v === "" ? "–" : peFr(v);
+    out.classList.toggle("vide", v === "");
+    if (typeof rebond === "function") rebond(out, 0.92, 1.1, 200);
+  }
 });
 
 /* ---------- Événements ---------- */
@@ -439,6 +444,8 @@ elPe.addEventListener("pointerdown", e => {
   const l = e.target.closest(".pe-lecture");
   if (!l || pe.moving) return;
   peScrub = { id: e.pointerId, el: l, champ: l.closest(".pe-champ").dataset.champ, x0: e.clientX, cran: 0, actif: false };
+  l.style.setProperty("--dx", "0px");
+  l.classList.add("presse");                       // la valeur grossit dès l'appui : on voit qu'elle est « tenue »
 });
 elPe.addEventListener("pointermove", e => {
   if (!peScrub || e.pointerId !== peScrub.id) return;
@@ -449,6 +456,7 @@ elPe.addEventListener("pointermove", e => {
     peScrub.el.classList.add("scrub");
     peScrub.el.setPointerCapture(e.pointerId);
   }
+  peScrub.el.style.setProperty("--dx", dx + "px");   // la règle défile avec le doigt
   const cran = Math.trunc(dx / PE_CRAN);
   while (peScrub.cran !== cran) {
     const sens = cran > peScrub.cran ? 1 : -1;
@@ -459,7 +467,7 @@ elPe.addEventListener("pointermove", e => {
 });
 function peScrubStop(e) {
   if (!peScrub || e.pointerId !== peScrub.id) return;
-  peScrub.el.classList.remove("scrub");
+  peScrub.el.classList.remove("scrub", "presse");
   if (peScrub.actif) peScrubFin = performance.now() + 350;
   peScrub = null;
 }

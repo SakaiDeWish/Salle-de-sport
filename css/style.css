@@ -3673,7 +3673,30 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 }
 .pe-label { color: var(--text-soft); font-size: 0.78rem; font-weight: 600; line-height: 1.1; }
 .pe-vl { display: flex; align-items: baseline; gap: 6px; }
-.pe-lecture.scrub .pe-v { color: var(--accent); }
+/* Retour visuel quand on tient une valeur : elle grossit à l'appui, grossit
+   encore et passe en volt quand le doigt la fait défiler, et une règle
+   graduée défile sous le chiffre avec le doigt. */
+.pe-lecture { position: relative; }
+.pe-v { transform-origin: right center; transition: scale 0.16s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.16s ease-out; }
+.pe-lecture.presse .pe-v { scale: 1.1; }
+.pe-lecture.scrub .pe-v { scale: 1.22; color: var(--accent); }
+.pe-regle {
+  position: absolute; left: 0; right: 0; bottom: -5px; height: 8px; opacity: 0; pointer-events: none;
+  background-image: repeating-linear-gradient(90deg, var(--text-soft) 0 1px, transparent 1px 12px);
+  background-position-x: var(--dx, 0px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+  transition: opacity 0.16s ease-out;
+}
+.pe-lecture.presse .pe-regle { opacity: 1; }
+.pe-lecture.scrub .pe-regle { background-image: repeating-linear-gradient(90deg, var(--accent) 0 1px, transparent 1px 12px); }
+.pe-step { transition: scale 0.08s ease-out, background-color 0.08s ease-out; }
+.pe-step:active { scale: 0.92; }
+@media (prefers-reduced-motion: reduce) {
+  .pe-v { transition-duration: 0.08s; }
+  .pe-lecture.presse .pe-v { scale: 1.05; }
+  .pe-lecture.scrub .pe-v { scale: 1.1; }
+}
 .pe-v { font-family: var(--font-display); font-variant-numeric: tabular-nums; font-size: 2.1rem; line-height: 1; }
 .pe-champ:first-child .pe-v { color: var(--accent-2); font-size: 2.5rem; }
 .pe-v.vide { color: var(--text-soft); }
