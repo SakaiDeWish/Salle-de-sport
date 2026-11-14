@@ -121,7 +121,23 @@ function peSchemaHTML(ex) {
 /* La scène (le schéma) ne se redessine pas quand les données changent :
    sinon l'animation repartirait à chaque série validée. */
 function peSceneHTML(i) {
-  return `<div class="pe-fig">${peSchemaHTML(live.exercises[i])}</div>`;
+  return `<div class="pe-fig">${peSchemaHTML(live.exercises[i])}</div>${peGuideHTML(live.exercises[i])}`;
+}
+
+/* Le guide d'exécution de la fiche, visible seulement dans le mode détail :
+   étapes, erreurs à éviter et lien vers une démonstration vidéo. Ce sont
+   les textes de l'app, rien d'externe n'est copié. */
+function peGuideHTML(ex) {
+  const fiche = allExercisesForUI().find(e => e.id === ex.exId);
+  if (!fiche) return "";
+  const etapes = (fiche.execution || []).map(s => `<li>${esc(s)}</li>`).join("");
+  const pieges = (fiche.erreurs || []).map(s => `<li>${esc(s)}</li>`).join("");
+  if (!etapes && !pieges) return "";
+  return `<div class="pe-guide">
+    ${etapes ? `<h3>Comment l'exécuter</h3><ol class="pe-pas">${etapes}</ol>` : ""}
+    ${pieges ? `<h3>Erreurs à éviter</h3><ul class="pe-pieges">${pieges}</ul>` : ""}
+    <a class="pe-video" href="${esc(youtubeSearchUrl(fiche))}" target="_blank" rel="noopener noreferrer">Voir une démonstration en vidéo</a>
+  </div>`;
 }
 
 function peHudHTML(i) {
@@ -396,7 +412,7 @@ document.addEventListener("click", e => {
   const step = e.target.closest(".pe-step");
   if (step && e.detail === 0) { peStep(step.dataset.champ, step.dataset.delta); return; }
   /* Toucher le schéma lui-même, hors de ses boutons, ouvre ou ferme le détail. */
-  if (e.target.closest(".pe-scene") && !e.target.closest("button")) peDetail(!pe.detail);
+  if (e.target.closest(".pe-scene") && !e.target.closest("button, a, .pe-guide")) peDetail(!pe.detail);
 });
 
 /* Appui long sur − ou + : le pas se répète. */
