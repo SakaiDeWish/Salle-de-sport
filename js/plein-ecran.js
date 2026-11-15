@@ -66,10 +66,11 @@ function peLecture(i, champ, cleSerie, libelle, unite) {
   const memo = Array.isArray(exo.memoDepart) ? exo.memoDepart[exo.sets.length] : null;
   const ref = memo && memo[cleSerie] != null && memo[cleSerie] !== "" ? memo[cleSerie] : null;
   const ec = ref != null && v !== "" ? peEcartTexte(v, ref) : { texte: "", sens: "" };
+  const rec = champ === "poids" ? peRecord(exo) : null;
   /* Pas de boutons − et + : on tape pour saisir, on glisse pour changer, les
      flèches du clavier font le pas (voir l'écouteur « keydown »). */
   return `
-    <div class="pe-champ" data-champ="${champ}"${ref != null ? ` data-ref="${esc(ref)}"` : ""}>
+    <div class="pe-champ" data-champ="${champ}"${ref != null ? ` data-ref="${esc(ref)}"` : ""}${rec != null ? ` data-rec="${esc(rec)}"` : ""}>
       <button type="button" class="pe-lecture" data-saisie="${champ}" data-unite="${esc(unite)}">
         <span class="pe-v${v === "" ? " vide" : ""}">${v === "" ? "–" : esc(peFr(v))}</span>
         <span class="pe-regle" aria-hidden="true"></span>
@@ -111,6 +112,123 @@ function peSousTitre(i) {
   if (e.courant < 0) return `${e.fait} série${e.fait > 1 ? "s" : ""} faite${e.fait > 1 ? "s" : ""}`;
   const avant = peAvantTexte(e, e.courant);
   return `Série ${e.courant + 1} sur ${e.total}${avant ? ", avant " + avant : ""}`;
+}
+
+/* ---------- Aides : objectif du jour, record, montée en charge ---------- */
+
+/* Pas du champ (le même que celui de la liste), 2,5 kg à défaut. */
+function pePasChamp(champ, i) {
+  const plus = document.querySelector(`.step-btn[data-target="${champ}-${i}"][data-delta="1"]`);
+  return (plus && parseFloat(plus.closest(".stepper").dataset.step)) || 2.5;
+}
+
+/* Objectif du jour : double progression. Tant que le haut de la fourchette de
+   reps (« 4 × 8-12 » : 12) n'est pas atteint, une rep de plus au même poids ;
+   une fois atteint, un pas de charge et retour en bas de la fourchette. Si la
+   même série de la dernière fois est allée au bout (RIR 0), on ne pousse pas :
+   pas d'objectif. Un repère à appliquer d'un tap, jamais saisi à ta place. */
+function peObjectif(i) {
+  const e = peSeriesEtat(i);
+  if (e.courant < 0 || e.statique) return null;
+  const avant = Array.isArray(e.ex.memoDepart) ? e.ex.memoDepart[e.courant] : recallSet(e.ex.exId, e.courant);
+  if (!avant || !(avant.reps > 0)) return null;
+  if (avant.rir !== undefined && avant.rir !== null && avant.rir !== "" && Number(avant.rir) <= 0) return null;
+  const m = /(\d+)\s*[-–]\s*(\d+)/.exec(e.ex.target || "") || /(\d+)\s*$/.exec(e.ex.target || "");
+  const bas = m ? +m[1] : null, haut = m ? +(m[2] || m[1]) : null;
+  const lesté = avant.poids > 0;
+  if (lesté && haut != null && avant.reps >= haut) {
+    return { poids: Math.round((avant.poids + pePasChamp("poids", i)) * 100) / 100, reps: bas != null && bas < haut ? bas : avant.reps };
+  }
+  return { poids: lesté ? avant.poids : null, reps: avant.reps + 1 };
+}
+
+/* Le record de charge de cet exercice dans l'historique (séries à répétitions). */
+function peRecord(ex) {
+  let best = null;
+  for (const r of getHistory())
+    for (const x of r.exercises)
+      if (x.exId === ex.exId)
+        for (const s of x.sets) if (s.reps && s.poids > 0 && (best === null || s.poids > best)) best = s.poids;
+  return best;
+}
+
+/* Montée vers une charge de travail à la barre : barre seule, puis 50, 70, 85 %
+   (et 93 % à partir de 100 kg), arrondis à 2,5 kg, jamais au-dessus de la charge. */
+function peMontee(W) {
+  if (!(W >= 40)) return [];
+  const lignes = [{ poids: 20, reps: 10 }];
+  const paliers = [[0.5, 5], [0.7, 3], [0.85, 2]].concat(W >= 100 ? [[0.93, 1]] : []);
+  for (const [f, reps] of paliers) {
+    const p = Math.round(W * f / 2.5) * 2.5;
+    if (p > lignes[lignes.length - 1].poids && p < W) lignes.push({ poids: p, reps });
+  }
+  return lignes.length >= 2 ? lignes : [];
+}
+
+function peAidesHTML(i) {
+  const e = peSeriesEtat(i);
+  if (e.courant < 0 || e.statique) return "";
+  const o = peObjectif(i);
+  const pv = parseFloat(peValeur(i, "poids", "poids")), rv = parseFloat(peValeur(i, "reps", "reps"));
+  const pose = o && (o.poids == null || pv === o.poids) && rv === o.reps;
+  const fiche = allExercisesForUI().find(f => f.id === e.ex.exId);
+  const monte = e.fait === 0 && fiche && fiche.materiel === "barre" ? peMontee(Number.isFinite(pv) ? pv : 0) : [];
+  let html = "";
+  if (o && !pose) {
+    const txt = o.poids != null ? `${peFr(o.poids)} × ${o.reps}` : `${o.reps} reps`;
+    html += `<button type="button" class="pe-aide" data-act="viser" aria-label="Viser ${esc(txt)}, appliquer aux valeurs"><span>Viser</span><strong>${esc(txt)}</strong></button>`;
+  }
+  if (monte.length) html += `<button type="button" class="pe-aide" data-act="monte"><span>Montée en charge</span></button>`;
+  return html ? `<div class="pe-aides">${html}</div>` : "";
+}
+
+function peViser() {
+  const o = peObjectif(pe.index);
+  if (!o) return;
+  for (const [champ, v] of [["poids", o.poids], ["reps", o.reps]]) {
+    const f = v != null && document.getElementById(champ + "-" + pe.index);
+    if (!f) continue;
+    f.value = String(v);
+    f.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+  if (typeof vibre === "function") vibre(12);
+  peRefresh();
+}
+
+/* La montée en charge : une feuille, pour mémoire. Rien n'est enregistré. */
+function peMonteOuvrir() {
+  const i = pe.index, pv = parseFloat(peValeur(i, "poids", "poids"));
+  const lignes = peMontee(pv);
+  if (!lignes.length) return;
+  let f = document.getElementById("pe-monte");
+  if (!f) {
+    f = document.createElement("div");
+    f.id = "pe-monte";
+    f.className = "pe-note pe-monte hidden";
+    f.setAttribute("role", "dialog");
+    f.setAttribute("aria-modal", "true");
+    f.setAttribute("aria-labelledby", "pe-monte-titre");
+    f.innerHTML = `<div class="pe-note-fond" data-monte="ok"></div><div class="pe-note-feuille" tabindex="-1"></div>`;
+    elPe.appendChild(f);
+    feuilleGlisser(f.querySelector(".pe-note-feuille"), peMonteFermer);
+  }
+  f.querySelector(".pe-note-feuille").innerHTML = `
+    <p class="pe-note-titre" id="pe-monte-titre">Montée vers ${esc(peFr(pv))} kg</p>
+    <ol class="pe-monte-liste">${lignes.map(l => {
+      const cote = l.poids <= 20 ? "barre seule" : "par côté " + disquesParCote(l.poids).pris.map(peFr).join(" + ");
+      return `<li><strong>${esc(peFr(l.poids))} kg</strong><span>× ${l.reps}</span><em>${esc(cote)}</em></li>`;
+    }).join("")}</ol>
+    <p class="pe-monte-pied">Un repère : rien n'est enregistré. Valide seulement tes séries de travail.</p>
+    <button type="button" class="btn btn-primary pe-note-ok" data-monte="ok">OK</button>`;
+  f.classList.remove("hidden");
+  f.querySelector(".pe-note-feuille").focus({ preventScroll: true });
+}
+function peMonteFermer() {
+  const f = document.getElementById("pe-monte");
+  if (!f || f.classList.contains("hidden")) return;
+  f.classList.add("hidden");
+  const b = elPe.querySelector('[data-act="monte"]');
+  if (b) b.focus({ preventScroll: true });
 }
 
 /* La frise : une pastille par série sur le bord gauche, reliées par un trait
@@ -182,7 +300,7 @@ function peHudHTML(i) {
     </header>
     ${statique ? holdBloc(i) : ""}
     <div class="pe-bas">${peFriseHTML(i)}</div>
-    ${lire ? `<div class="pe-lire"><div class="pe-champs">${lire}</div><p class="pe-indice">Glisse un chiffre, touche pour saisir</p></div>` : ""}`;
+    ${lire ? `<div class="pe-lire"><div class="pe-champs">${lire}</div>${peAidesHTML(i) || '<p class="pe-indice">Glisse un chiffre, touche pour saisir</p>'}</div>` : ""}`;
 }
 
 function pePaneHTML(i) {
@@ -396,6 +514,16 @@ document.addEventListener("input", e => {
     }
     if (typeof rebond === "function") rebond(out, 0.92, 1.1, 200);
   }
+  /* L'objectif et la montée dépendent des valeurs : les puces suivent. */
+  if (m[1] === "poids" || m[1] === "reps") {
+    const lire = elPe.querySelector(".pe-lire"), cur = lire && lire.querySelector(".pe-aides, .pe-indice");
+    const html = peAidesHTML(pe.index) || '<p class="pe-indice">Glisse un chiffre, touche pour saisir</p>';
+    if (cur && cur.outerHTML !== html.trim()) {
+      const t = document.createElement("div");
+      t.innerHTML = html;
+      cur.replaceWith(t.firstElementChild);
+    }
+  }
 });
 
 /* ---------- Événements ---------- */
@@ -424,6 +552,7 @@ document.addEventListener("click", e => {
     return;
   }
   if (e.target.closest("[data-note=ok]")) { peNoteFermer(); return; }
+  if (e.target.closest("[data-monte=ok]")) { peMonteFermer(); return; }
   const lecture = e.target.closest("[data-saisie]");
   if (lecture) {
     if (performance.now() < peScrubFin) return;     // le doigt vient de faire défiler la valeur : pas un tap
@@ -437,6 +566,8 @@ document.addEventListener("click", e => {
     if (a === "detail") peDetail(!pe.detail);
     else if (a === "note") peNoteOuvrir();
     else if (a === "plus") { bonusRows.add(live.exercises[pe.index]); renderLiveExercises(); }
+    else if (a === "viser") peViser();
+    else if (a === "monte") peMonteOuvrir();
     else if (a === "valider") peValider();
     else if (a === "suivant") { const n = nextUnfinished(pe.index); if (n != null) peAller(n, n > pe.index ? 1 : -1); }
     else peFermer();
@@ -462,10 +593,12 @@ elPe.addEventListener("pointerdown", e => {
   const plus = document.querySelector(`.step-btn[data-target="${champ}-${pe.index}"][data-delta="1"]`);
   const pas = plus ? parseFloat(plus.closest(".stepper").dataset.step) || 1 : 1;
   const ref = parseFloat(l.closest(".pe-champ").dataset.ref);
+  const rec = parseFloat(l.closest(".pe-champ").dataset.rec);
   const fiche = allExercisesForUI().find(f => f.id === live.exercises[pe.index].exId);
   peScrub = {
     id: e.pointerId, el: l, champ, x0: e.clientX, cran: 0, actif: false, v0, derniere: v0, unite: l.dataset.unite || "",
     pas, ref: Number.isFinite(ref) ? ref : null, passe: Number.isFinite(ref) && v0 > ref,
+    rec: Number.isFinite(rec) ? rec : null, recPasse: Number.isFinite(rec) && v0 > rec,
     barre: champ === "poids" && !!fiche && fiche.materiel === "barre"
   };
   l.style.setProperty("--dx", "0px");
@@ -508,7 +641,10 @@ elPe.addEventListener("pointermove", e => {
     if (Number.isFinite(val)) peScrub.derniere = val;
     let franchi = false;
     if (peScrub.ref != null && Number.isFinite(val) && (val > peScrub.ref) !== peScrub.passe) { peScrub.passe = !peScrub.passe; franchi = true; }
-    if (typeof vibre === "function") vibre(franchi ? 45 : palier ? 28 : 10);
+    /* Le record, lui : trois coups en montant au-dessus (le plus fort de tous). */
+    let record = false;
+    if (peScrub.rec != null && Number.isFinite(val) && (val > peScrub.rec) !== peScrub.recPasse) { peScrub.recPasse = !peScrub.recPasse; record = peScrub.recPasse; franchi = true; }
+    if (typeof vibre === "function") vibre(record ? [40, 40, 40, 40, 80] : franchi ? 45 : palier ? 28 : 10);
   }
   if (dernierSens) peBulleMaj(dernierSens);
   peBulleTape(dx);
@@ -529,6 +665,7 @@ function peBulleEl() {
       <div class="pe-bulle-haut"><span class="pe-bulle-v"></span><span class="pe-bulle-u"></span></div>
       <div class="pe-bulle-tape">
         <span class="pe-bulle-avant" hidden><span class="pe-bulle-avant-t"></span></span>
+        <span class="pe-bulle-avant pe-bulle-rec" hidden><span class="pe-bulle-avant-t"></span></span>
       </div>
       <div class="pe-bulle-barre"><span class="pe-collier"></span><div class="pe-disques"></div></div>
       <p class="pe-bulle-par"></p>
@@ -628,15 +765,23 @@ function peBulleTape(dx) {
     const k = Math.max(0, 1 - Math.abs(m - u) / 2.5);     // 1 au centre, 0 à 2,5 graduations
     el.style.setProperty("--k", (k * k).toFixed(3));
   });
-  const av = t.querySelector(".pe-bulle-avant");
-  if (peScrub.ref == null) { av.hidden = true; return; }
-  av.hidden = false;
-  const x = W / 2 + ((peScrub.ref - peScrub.v0) / peScrub.pas) * PE_CRAN - dxEff;
-  const marge = 48;
-  av.style.left = Math.min(W - marge, Math.max(marge, x)) + "px";
-  av.dataset.passe = peScrub.passe ? "1" : "";
-  const nom = "avant " + peFr(peScrub.ref);
-  av.firstElementChild.textContent = nom;
+  /* Deux repères sur la règle : « avant » (la même série la dernière fois) et
+     « record » (la charge la plus lourde jamais faite sur cet exercice). Ils
+     passent en volt quand on les dépasse. S'ils se touchent, le record descend d'un cran. */
+  const marge = 56;
+  const pose = (el, ref, texte, passe) => {
+    if (ref == null) { el.hidden = true; return null; }
+    el.hidden = false;
+    const x = Math.min(W - marge, Math.max(marge, W / 2 + ((ref - peScrub.v0) / peScrub.pas) * PE_CRAN - dxEff));
+    el.style.left = x + "px";
+    el.dataset.passe = passe ? "1" : "";
+    el.firstElementChild.textContent = texte;
+    return x;
+  };
+  const xa = pose(t.querySelector(".pe-bulle-avant:not(.pe-bulle-rec)"), peScrub.ref, "avant " + peFr(peScrub.ref), peScrub.passe);
+  const rc = t.querySelector(".pe-bulle-rec");
+  const xr = pose(rc, peScrub.rec, peScrub.recPasse ? "record battu" : "record " + peFr(peScrub.rec), peScrub.recPasse);
+  rc.classList.toggle("bas", xa != null && xr != null && Math.abs(xa - xr) < 90);
 }
 function peScrubStop(e) {
   if (!peScrub || e.pointerId !== peScrub.id) return;
@@ -756,6 +901,11 @@ elPeStage.addEventListener("pointercancel", e => peFinDrag(e, true));
 document.addEventListener("keydown", e => {
   if (!pe.open || peRepos()) return;
   if (typeof pave !== "undefined" && pave) return;                    // le pavé a ses propres touches
+  const monte = document.getElementById("pe-monte");
+  if (monte && !monte.classList.contains("hidden")) {                   // la montée aussi
+    if (e.key === "Escape") { e.preventDefault(); peMonteFermer(); }
+    return;
+  }
   const feuille = document.getElementById("pe-note");
   if (feuille && !feuille.classList.contains("hidden")) {              // la note aussi
     if (e.key === "Escape") { e.preventDefault(); peNoteFermer(); }
