@@ -449,7 +449,38 @@ async function notifierReprise(exName) {
    ailleurs sous un autre nom. */
 function vibre(motif) {
   if (localStorage.getItem(STORAGE_KEYS.restVibrate) === "0") return;
-  try { navigator.vibrate && navigator.vibrate(motif); } catch { /* non supporté */ }
+  try {
+    if (navigator.vibrate) { navigator.vibrate(motif); return; }
+    tapIos(motif);
+  } catch { /* non supporté */ }
+}
+
+/* iOS (Safari et écran d'accueil) n'a pas navigator.vibrate. Depuis iOS 17.4,
+   basculer un <input type="checkbox" switch> donne un retour haptique : on
+   clique un interrupteur caché, un tic par tronçon « vibre » du motif.
+   ponytail: un seul tic, pas de durée ni d'intensité ; non vérifiable sans iPhone. */
+let ticIos = null, ticIosAt = 0;
+function tapIos(motif) {
+  if (!ticIos) {
+    ticIos = document.createElement("label");
+    ticIos.style.display = "none";
+    ticIos.innerHTML = '<input type="checkbox" switch>';
+    document.body.appendChild(ticIos);
+  }
+  const tronçons = Array.isArray(motif) ? motif : [motif];
+  let t = 0;
+  tronçons.forEach((ms, k) => {
+    if (k % 2 === 0) {
+      if (t === 0) tic(); else setTimeout(tic, t);
+    }
+    t += ms;
+  });
+}
+function tic() {
+  const now = Date.now();
+  if (now - ticIosAt < 25) return;       // pas d'engorgement quand le doigt défile vite
+  ticIosAt = now;
+  ticIos.click();
 }
 
 /* ==================== PRÉAVIS DE REPRISE ====================
