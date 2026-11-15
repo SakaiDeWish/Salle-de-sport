@@ -515,8 +515,7 @@ elPe.addEventListener("pointermove", e => {
    chiffre. Une bande s'ouvre au centre de l'écran, toujours au même endroit :
    le chiffre en grand, qui roule comme un compteur ; une règle qui suit le
    doigt au pixel près, avec un repère « avant » (la même série la séance
-   précédente) et le trait de ce qu'on a parcouru ; et, pour un exercice à la
-   barre, la barre qui se charge de disques sous le doigt. */
+   précédente) ; et, pour un exercice à la barre, la barre qui se charge de disques sous le doigt. */
 let peBulle = null;
 function peBulleEl() {
   if (!peBulle) {
@@ -524,9 +523,8 @@ function peBulleEl() {
     peBulle.className = "pe-bulle";
     peBulle.setAttribute("aria-hidden", "true");
     peBulle.innerHTML = `<div class="pe-bulle-in">
-      <div class="pe-bulle-haut"><span class="pe-bulle-v"></span><span class="pe-bulle-cote"><span class="pe-bulle-u"></span><span class="pe-bulle-d"></span></span></div>
+      <div class="pe-bulle-haut"><span class="pe-bulle-v"></span><span class="pe-bulle-u"></span></div>
       <div class="pe-bulle-tape">
-        <span class="pe-bulle-trace"></span>
         <span class="pe-bulle-avant" hidden><span class="pe-bulle-avant-t"></span></span>
         <span class="pe-bulle-aiguille"></span>
       </div>
@@ -568,7 +566,7 @@ function peChiffres(el, txt, sens) {
 /* La barre : les disques à mettre de chaque côté (même calcul que l'outil de
    l'accueil). Un disque qui change entre en grossissant, un disque en trop
    s'efface. Hauteur et épaisseur imitent de vrais disques. */
-const PE_DISQUES = { 25: [72, 18], 20: [66, 18], 15: [56, 16], 10: [46, 15], 5: [36, 12], 2.5: [28, 10], 1.25: [22, 8] };
+const PE_DISQUES = { 25: [56, 14], 20: [52, 14], 15: [44, 13], 10: [36, 12], 5: [28, 10], 2.5: [22, 8], 1.25: [18, 6] };
 function peDisque(p) {
   const d = document.createElement("span");
   const [h, w] = PE_DISQUES[p];
@@ -604,10 +602,6 @@ function peBulleMaj(sens) {
   const v = src ? src.value : "";
   peChiffres(peBulle.querySelector(".pe-bulle-v"), v === "" ? "–" : peFr(v), sens);
   peBulle.querySelector(".pe-bulle-u").textContent = peScrub.unite;
-  const e = peEcartTexte(v, peScrub.v0);
-  const d = peBulle.querySelector(".pe-bulle-d");
-  d.textContent = e.texte;
-  d.dataset.sens = e.sens;
   if (peScrub.barre) peBarreMaj(v);
 }
 
@@ -622,9 +616,6 @@ function peBulleTape(dx) {
   const snap = Number.isFinite(val) ? ((val - peScrub.v0) / peScrub.pas) * PE_CRAN : dx;
   const dxEff = Math.abs(snap - peScrub.cran * PE_CRAN) < 1 ? dx : snap;
   t.style.setProperty("--dx", dxEff + "px");
-  const tr = t.querySelector(".pe-bulle-trace");
-  tr.style.left = (W / 2 + Math.min(0, -dxEff)) + "px";
-  tr.style.width = Math.abs(dxEff) + "px";
   const av = t.querySelector(".pe-bulle-avant");
   if (peScrub.ref == null) { av.hidden = true; return; }
   av.hidden = false;

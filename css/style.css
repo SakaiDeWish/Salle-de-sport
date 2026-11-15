@@ -3707,59 +3707,51 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 
 /* Le cadran : une bande pleine largeur, fixe à 40 % de la hauteur, qui
    s'ouvre depuis son milieu pendant qu'on fait défiler une valeur. Fond
-   plein (le schéma est derrière) : on lit le chiffre sans effort. */
+   plein, sans bordure : le schéma disparaît derrière, le chiffre se lit seul. */
 .pe-bulle { position: absolute; left: 0; right: 0; top: 40%; translate: 0 -50%; z-index: 7; pointer-events: none; }
 .pe-bulle-in {
-  display: grid; justify-items: center; gap: 6px; padding: 12px 0 10px;
-  background: var(--bg); border-block: 1px solid var(--border);
+  display: grid; justify-items: center; gap: 4px; padding: 8px 0;
+  background: var(--bg);
   clip-path: inset(50% 0); opacity: 0;
   transition: clip-path 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.12s ease-out;
 }
 .pe-bulle.on .pe-bulle-in { clip-path: inset(0); opacity: 1; }
-.pe-bulle-haut { display: flex; align-items: flex-end; gap: 10px; }
+.pe-bulle-haut { display: flex; align-items: flex-end; gap: 8px; }
 .pe-bulle-v {
   display: inline-flex; font-family: var(--font-display); font-variant-numeric: tabular-nums;
-  font-size: min(28vw, 8.5rem); line-height: 0.95; color: var(--accent);
+  font-size: min(24vw, 7rem); line-height: 0.95; color: var(--accent);
 }
 .pe-bulle-v .ch { position: relative; display: inline-block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
 .pe-bulle-v .ch > span { display: block; }
 .pe-bulle-v .ch > span + span { position: absolute; left: 0; top: 0; }
-.pe-bulle-cote { display: grid; gap: 2px; padding-bottom: 0.3rem; }
-.pe-bulle-u { color: var(--text-soft); font-size: 1rem; font-weight: 600; }
-.pe-bulle-d { font-family: var(--font-display); font-size: 1.7rem; line-height: 1; }
-.pe-bulle-d:empty { display: none; }
-.pe-bulle-d[data-sens="hausse"] { color: var(--accent-2); }
-.pe-bulle-d[data-sens="baisse"] { color: var(--text-soft); }
+.pe-bulle-u { color: var(--text-soft); font-size: 1rem; font-weight: 600; padding-bottom: 0.2rem; }
 
-/* La règle : graduée au pas du champ (24 px), elle défile avec le doigt, de
-   façon continue. L'aiguille est fixe au centre. Le trait volt est ce qu'on a
-   parcouru depuis le début du geste. « avant » est la même série d'avant. */
+/* La règle : une graduation au pas du champ (24 px), qui défile avec le doigt
+   de façon continue. L'aiguille est fixe au centre. « avant » est la même
+   série la séance précédente : il passe en volt quand on le dépasse. */
 .pe-bulle-tape {
-  --dx: 0px; position: relative; width: 100%; height: 52px; overflow: hidden;
+  --dx: 0px; position: relative; width: 100%; height: 44px; overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
 }
-.pe-bulle-tape::before, .pe-bulle-tape::after {              /* petites graduations, puis une grande tous les 4 pas */
+.pe-bulle-tape::before {
   content: ""; position: absolute; inset: 0; background-repeat: repeat-x; background-position: calc(50% - var(--dx)) 100%;
+  background-image: linear-gradient(90deg, transparent 11px, var(--text-soft) 11px 13px, transparent 13px); background-size: 24px 14px;
 }
-.pe-bulle-tape::before { background-image: linear-gradient(90deg, transparent 11px, var(--text-soft) 11px 13px, transparent 13px); background-size: 24px 14px; }
-.pe-bulle-tape::after { background-image: linear-gradient(90deg, transparent 47px, var(--text) 47px 49px, transparent 49px); background-size: 96px 24px; }
-.pe-bulle-trace { position: absolute; bottom: 0; height: 5px; background: color-mix(in srgb, var(--accent) 55%, transparent); }
-.pe-bulle-aiguille { position: absolute; left: 50%; bottom: 0; width: 3px; height: 38px; margin-left: -1.5px; background: var(--accent); border-radius: 2px; }
+.pe-bulle-aiguille { position: absolute; left: 50%; bottom: 0; width: 3px; height: 28px; margin-left: -1.5px; background: var(--accent); border-radius: 2px; }
 .pe-bulle-avant { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed var(--text-soft); color: var(--text-soft); }
 .pe-bulle-avant[hidden] { display: none; }
 .pe-bulle-avant-t { position: absolute; top: 0; left: 0; translate: -50% 0; padding: 0 6px; background: var(--bg); font-size: 0.8rem; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pe-bulle-avant[data-passe="1"] { border-left-color: var(--accent); color: var(--accent-2); }
 
-/* La barre, seulement pour un exercice à la barre : le collier fixe, puis les
+/* La barre, seulement pour un exercice à la barre : le collier, puis les
    disques par côté, les plus lourds près du collier. */
 .pe-bulle-barre, .pe-bulle-par { display: none; }
 .pe-bulle[data-barre] .pe-bulle-barre { display: flex; }
 .pe-bulle[data-barre] .pe-bulle-par { display: block; }
-.pe-bulle-barre { position: relative; align-items: center; width: 100%; height: 76px; padding-left: 24%; box-sizing: border-box; }
-.pe-bulle-barre::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 6px; margin-top: -3px; background: var(--border); }
-.pe-collier { position: relative; flex: none; width: 10px; height: 32px; margin-right: 3px; border-radius: 2px; background: var(--text-soft); }
-.pe-disques { position: relative; display: flex; align-items: center; gap: 3px; }
+.pe-bulle-barre { align-items: center; justify-content: center; height: 58px; }
+.pe-collier { flex: none; width: 8px; height: 26px; margin-right: 3px; border-radius: 2px; background: var(--text-soft); }
+.pe-disques { display: flex; align-items: center; gap: 3px; }
 .pe-disque { flex: none; border-radius: 3px; background: var(--text); transform-origin: 0 50%; }
 .pe-bulle-par { color: var(--text-soft); font-size: 0.9rem; font-weight: 600; min-height: 1.2em; }
 
