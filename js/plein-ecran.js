@@ -485,12 +485,15 @@ elPe.addEventListener("pointermove", e => {
     b.toggleAttribute("data-barre", peScrub.barre);
     b.querySelector(".pe-bulle-v").textContent = "";                  // les chiffres se refont, ils ne roulent pas depuis l'ancienne valeur
     b.querySelector(".pe-disques").textContent = "";
-    peScrub.W = b.querySelector(".pe-bulle-tape").clientWidth;
+    const tape = b.querySelector(".pe-bulle-tape");
+    peScrub.W = tape.clientWidth;
+    tape.querySelectorAll(".pe-t").forEach(e => e.remove());
+    peScrub.ticks = Array.from({ length: Math.ceil(peScrub.W / PE_CRAN) + 3 }, () => tape.appendChild(Object.assign(document.createElement("i"), { className: "pe-t" })));
     peBulleMaj(0);
     b.classList.add("on");
   }
   peScrub.el.style.setProperty("--dx", dx + "px");   // la règle défile avec le doigt
-  const cran = Math.trunc(dx / PE_CRAN);
+  const cran = Math.round(dx / PE_CRAN);             // la valeur change à mi-chemin entre deux graduations : la graduation choisie est toujours la plus proche du centre
   let dernierSens = 0;
   while (peScrub.cran !== cran) {
     const sens = cran > peScrub.cran ? 1 : -1;
@@ -526,7 +529,6 @@ function peBulleEl() {
       <div class="pe-bulle-haut"><span class="pe-bulle-v"></span><span class="pe-bulle-u"></span></div>
       <div class="pe-bulle-tape">
         <span class="pe-bulle-avant" hidden><span class="pe-bulle-avant-t"></span></span>
-        <span class="pe-bulle-aiguille"></span>
       </div>
       <div class="pe-bulle-barre"><span class="pe-collier"></span><div class="pe-disques"></div></div>
       <p class="pe-bulle-par"></p>
@@ -615,7 +617,17 @@ function peBulleTape(dx) {
   const val = src ? parseFloat(src.value) : NaN;
   const snap = Number.isFinite(val) ? ((val - peScrub.v0) / peScrub.pas) * PE_CRAN : dx;
   const dxEff = Math.abs(snap - peScrub.cran * PE_CRAN) < 1 ? dx : snap;
-  t.style.setProperty("--dx", dxEff + "px");
+  /* Pas d'aiguille posée par-dessus : la graduation de la valeur courante est une
+     graduation de la règle (plus haute, en volt), elle défile avec les autres.
+     Chaque graduation garde un indice m (valeur = départ + m pas) ; l'indice ne
+     change que pour celle qui sort de la bande, jamais pour une graduation visible. */
+  const u = dxEff / PE_CRAN, n = peScrub.ticks.length;
+  const cur = Number.isFinite(val) ? Math.round((val - peScrub.v0) / peScrub.pas) : peScrub.cran;
+  peScrub.ticks.forEach((el, i) => {
+    const m = i + n * Math.round((u - i) / n);
+    el.style.translate = (W / 2 + (m - u) * PE_CRAN) + "px 0";
+    el.dataset.d = Math.min(2, Math.abs(m - cur));
+  });
   const av = t.querySelector(".pe-bulle-avant");
   if (peScrub.ref == null) { av.hidden = true; return; }
   av.hidden = false;
