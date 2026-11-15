@@ -2130,6 +2130,7 @@ function validateSet(i) {
   ex.sets.push(set);
   openNext = -1;
   rememberSet(ex.exId, ex.sets.length - 1, set.poids, set.reps, set.rir, set.secondes);
+  vibre([30, 40, 70]);       // série validée : deux tapes puis une plus longue, distinctes des pas de valeur (10 à 45 ms)
   saveLive();
   renderLiveExercises();
 
