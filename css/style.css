@@ -3706,16 +3706,29 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 .pe-ecart[data-sens="baisse"] { color: var(--text-soft); }
 
 /* Le cadran : une bande pleine largeur, fixe à 40 % de la hauteur, qui
-   s'ouvre depuis son milieu pendant qu'on fait défiler une valeur. Fond
-   plein, sans bordure : le schéma disparaît derrière, le chiffre se lit seul. */
+   s'ouvre depuis son milieu pendant qu'on fait défiler une valeur. Le fond est
+   un verre dépoli (le schéma passe en flou derrière) dont les bords haut et
+   bas se fondent dans l'écran. Le verre est une couche à part : le masque de
+   fondu ne touche pas le chiffre ni la règle. Il est sur .pe-bulle et non sur
+   .pe-bulle-in, dont le clip-path l'isolerait de ce qu'il doit flouter. */
 .pe-bulle { position: absolute; left: 0; right: 0; top: 40%; translate: 0 -50%; z-index: 7; pointer-events: none; }
+.pe-bulle::before {
+  content: ""; position: absolute; inset: -30px 0;
+  background: color-mix(in srgb, var(--bg) 46%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5); backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 34px, #000 calc(100% - 34px), transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 34px, #000 calc(100% - 34px), transparent);
+  clip-path: inset(50% 0); opacity: 0;
+  transition: clip-path 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.12s ease-out;
+}
+.pe-bulle.on::before { clip-path: inset(0); opacity: 1; }
 .pe-bulle-in {
-  display: grid; justify-items: center; gap: 4px; padding: 8px 0;
-  background: var(--bg);
+  position: relative; display: grid; justify-items: center; gap: 4px; padding: 8px 0;
   clip-path: inset(50% 0); opacity: 0;
   transition: clip-path 0.24s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.12s ease-out;
 }
 .pe-bulle.on .pe-bulle-in { clip-path: inset(0); opacity: 1; }
+.pe-tient .pe-scene { opacity: 0.6; }                /* le schéma reste lisible à travers le verre */
 .pe-bulle-haut { display: flex; align-items: flex-end; gap: 8px; }
 .pe-bulle-v {
   display: inline-flex; font-family: var(--font-display); font-variant-numeric: tabular-nums;
@@ -3734,16 +3747,18 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
 }
+/* Chaque graduation grandit et passe au volt à mesure qu'elle approche du
+   centre (--k de 0 à 1, posé par peBulleTape) : le pic est toujours la
+   graduation de la valeur courante, sans état à basculer ni transition. */
 .pe-t {
-  position: absolute; left: 0; bottom: 0; width: 2px; height: 14px; margin-left: -1px; border-radius: 1px;
-  background: var(--text-soft); transition: height 0.12s ease-out, background-color 0.12s ease-out;
+  position: absolute; left: 0; bottom: 0; width: calc(2px + var(--k, 0) * 1px); margin-left: calc(-1px - var(--k, 0) * 0.5px);
+  height: calc(14px + var(--k, 0) * 20px); border-radius: 1px;
+  background: color-mix(in srgb, var(--accent) calc(var(--k, 0) * 100%), var(--text-soft));
 }
-.pe-t[data-d="1"] { height: 20px; }
-.pe-t[data-d="0"] { height: 32px; width: 3px; margin-left: -1.5px; background: var(--accent); }
 .pe-bulle-avant { z-index: 1; }
 .pe-bulle-avant { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed var(--text-soft); color: var(--text-soft); }
 .pe-bulle-avant[hidden] { display: none; }
-.pe-bulle-avant-t { position: absolute; top: 0; left: 0; translate: -50% 0; padding: 0 6px; background: var(--bg); font-size: 0.8rem; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pe-bulle-avant-t { position: absolute; top: 0; left: 0; translate: -50% 0; padding: 0 6px; background: color-mix(in srgb, var(--bg) 70%, transparent); font-size: 0.8rem; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .pe-bulle-avant[data-passe="1"] { border-left-color: var(--accent); color: var(--accent-2); }
 
 /* La barre, seulement pour un exercice à la barre : le collier, puis les
@@ -3759,7 +3774,8 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 
 @media (prefers-reduced-motion: reduce) {
   .pe-bulle-in { transition: opacity 0.1s ease-out; clip-path: none; }
-  .pe-bar, .pe-scene, .pe-loupe, .pe-champ, .pe-indice, .pe-t { transition-duration: 0.1s; }
+  .pe-bar, .pe-scene, .pe-loupe, .pe-champ, .pe-indice { transition-duration: 0.1s; }
+  .pe-bulle::before { transition: opacity 0.1s ease-out; clip-path: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pe-v { transition-duration: 0.08s; }

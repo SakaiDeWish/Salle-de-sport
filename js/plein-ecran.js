@@ -622,11 +622,11 @@ function peBulleTape(dx) {
      Chaque graduation garde un indice m (valeur = départ + m pas) ; l'indice ne
      change que pour celle qui sort de la bande, jamais pour une graduation visible. */
   const u = dxEff / PE_CRAN, n = peScrub.ticks.length;
-  const cur = Number.isFinite(val) ? Math.round((val - peScrub.v0) / peScrub.pas) : peScrub.cran;
   peScrub.ticks.forEach((el, i) => {
     const m = i + n * Math.round((u - i) / n);
     el.style.translate = (W / 2 + (m - u) * PE_CRAN) + "px 0";
-    el.dataset.d = Math.min(2, Math.abs(m - cur));
+    const k = Math.max(0, 1 - Math.abs(m - u) / 2.5);     // 1 au centre, 0 à 2,5 graduations
+    el.style.setProperty("--k", (k * k).toFixed(3));
   });
   const av = t.querySelector(".pe-bulle-avant");
   if (peScrub.ref == null) { av.hidden = true; return; }
