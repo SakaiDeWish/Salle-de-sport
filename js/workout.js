@@ -2936,6 +2936,7 @@ function showSummary(r) {
         <p class="feedback" id="summary-feel-feedback"></p>
       </div>
       ${renderSessionDetail(r)}
+      <button class="btn btn-ghost btn-lg" id="summary-share">Partager en image</button>
       <button class="btn btn-primary btn-lg" id="summary-back">${icon("undo")} Retour aux séances</button>
     </div>`;
 
@@ -3036,6 +3037,7 @@ function showSummary(r) {
     document.getElementById("summary-feel-feedback").textContent = "Notes enregistrées";
   });
   document.getElementById("summary-back").addEventListener("click", showSetup);
+  document.getElementById("summary-share").addEventListener("click", e => partagerSeance(r, e.currentTarget));
 }
 
 function renderSessionDetail(r) {

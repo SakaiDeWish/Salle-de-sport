@@ -4143,3 +4143,41 @@ body:has(#seance-live:not(.hidden)) .settings-fab { display: none; } /* il recou
 .cb-nb-btn:disabled { opacity: .3; cursor: not-allowed; }
 .cb-nb-btn .icon { width: .9rem; height: .9rem; stroke-width: 2.6; }
 .cb-fin { color: var(--accent-2); }
+
+/* Fantôme : l'écart de volume avec la dernière séance, à côté du rang de l'exercice,
+   et une piste fine en bas de la barre (la marque est la séance d'avant). */
+.pe-bar { position: relative; }
+.pe-fant { margin-left: 10px; font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pe-fant.devant { color: var(--accent-2); }
+.pe-fant.derriere { color: var(--text-soft); }
+.pe-fant-piste { position: absolute; left: 16px; right: 16px; bottom: 0; height: 3px; background: var(--bg-soft); border-radius: 2px; }
+.pe-fant-piste[hidden] { display: none; }
+.pe-fant-piste i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--text-soft); border-radius: 2px; transition: width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.pe-fant-piste i[data-devant="1"] { background: var(--accent); }
+.pe-fant-piste b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--text); transition: left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+
+/* Volume de la semaine : le mannequin et les jauges. Les zones : 1 sous le minimum,
+   2 suffisant, 3 idéale (volt), 4 trop (orange). */
+.vc-corps { display: flex; justify-content: center; gap: 28px; margin-bottom: 14px; }
+.vc-fig { margin: 0; width: min(38vw, 150px); text-align: center; }
+.vc-fig svg { width: 100%; height: auto; display: block; }
+.vc-fig figcaption { color: var(--text-soft); font-size: 0.8rem; font-weight: 600; margin-top: 4px; }
+.vc-ne { fill: var(--bg-soft); }
+.vc-r { fill: var(--bg-soft); transition: fill 0.4s ease; }
+.vc-r[data-z="1"], .vc-legende [data-z="1"], .vc-fill[data-z="1"] { fill: color-mix(in srgb, var(--accent) 28%, var(--bg-soft)); background: color-mix(in srgb, var(--accent) 28%, var(--bg-soft)); }
+.vc-r[data-z="2"], .vc-legende [data-z="2"], .vc-fill[data-z="2"] { fill: color-mix(in srgb, var(--accent) 58%, var(--bg-soft)); background: color-mix(in srgb, var(--accent) 58%, var(--bg-soft)); }
+.vc-r[data-z="3"], .vc-legende [data-z="3"], .vc-fill[data-z="3"] { fill: var(--accent); background: var(--accent); }
+.vc-r[data-z="4"], .vc-legende [data-z="4"], .vc-fill[data-z="4"] { fill: #ff7a45; background: #ff7a45; }
+.vc-liste { display: grid; gap: 8px; }
+.vc-row { display: grid; grid-template-columns: 8.5rem 1fr 2rem; gap: 10px; align-items: center; }
+.vc-nom { font-size: 0.82rem; font-weight: 600; color: var(--text-soft); }
+.vc-jauge {
+  position: relative; height: 10px; border-radius: 999px; overflow: hidden;
+  background: linear-gradient(90deg, var(--bg-soft) var(--mev), color-mix(in srgb, var(--accent) 12%, var(--bg-soft)) var(--mev) var(--mav),
+    color-mix(in srgb, var(--accent) 24%, var(--bg-soft)) var(--mav) var(--mrv), color-mix(in srgb, #ff7a45 24%, var(--bg-soft)) var(--mrv));
+}
+.vc-fill { position: absolute; left: 0; top: 2px; bottom: 2px; border-radius: 999px; fill: none; transition: width 0.5s ease; }
+.vc-n { text-align: right; font-size: 0.8rem; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.vc-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 12px; color: var(--text-soft); font-size: 0.78rem; }
+.vc-legende span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+@media (prefers-reduced-motion: reduce) { .vc-r, .vc-fill, .pe-fant-piste i, .pe-fant-piste b { transition-duration: 0.1s; } }

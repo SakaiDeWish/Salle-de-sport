@@ -335,9 +335,36 @@ function peFootHTML(i) {
 
 /* ---------- Affichage ---------- */
 
+/* Le fantôme : la séance contre la dernière fois, à nombre de séries égal. Pour
+   chaque exercice déjà entamé, le volume (charge × reps) de ses séries faites
+   face à celui des mêmes séries de la séance d'avant (`memoDepart`). Rien à
+   comparer sans charge des deux côtés : pas de fantôme. */
+function peFantome() {
+  let moi = 0, lui = 0;
+  const vol = s => (s && s.poids > 0 && s.reps > 0 ? s.poids * s.reps : 0);
+  for (const ex of live.exercises) {
+    const n = ex.sets.length;
+    if (!n) continue;
+    ex.sets.forEach(s => { moi += vol(s); });
+    (Array.isArray(ex.memoDepart) ? ex.memoDepart : []).slice(0, n).forEach(s => { lui += vol(s); });
+  }
+  return moi > 0 && lui > 0 ? { moi, lui } : null;
+}
+
 function peBarre() {
   const n = peN();
-  elPePos.innerHTML = `<span class="visually-hidden">Exercice ${pe.index + 1} sur ${n}</span><span aria-hidden="true">${pe.index + 1} / ${n}</span>`;
+  const f = peFantome(), d = f ? Math.round(f.moi - f.lui) : 0;
+  const fant = f ? `<span class="pe-fant ${d >= 0 ? "devant" : "derriere"}" title="Face à la dernière séance, au même point">${d === 0 ? "égal" : (d > 0 ? "+" : "−") + Math.abs(d) + " kg"}</span>` : "";
+  elPePos.innerHTML = `<span class="visually-hidden">Exercice ${pe.index + 1} sur ${n}${f ? `, ${d >= 0 ? "devant" : "derrière"} la dernière séance de ${Math.abs(d)} kilos` : ""}</span><span aria-hidden="true">${pe.index + 1} / ${n}</span>${fant ? `<span aria-hidden="true">${fant}</span>` : ""}`;
+  let piste = elPePos.closest(".pe-bar").querySelector(".pe-fant-piste");
+  if (!piste) { piste = document.createElement("div"); piste.className = "pe-fant-piste"; piste.setAttribute("aria-hidden", "true"); piste.innerHTML = "<i></i><b></b>"; elPePos.closest(".pe-bar").appendChild(piste); }
+  piste.hidden = !f;
+  if (f) {
+    const max = Math.max(f.moi, f.lui);
+    piste.firstChild.style.width = (f.moi / max * 100).toFixed(1) + "%";
+    piste.firstChild.dataset.devant = f.moi >= f.lui ? "1" : "";
+    piste.lastChild.style.left = (f.lui / max * 100).toFixed(1) + "%";
+  }
   elPePrev.disabled = pe.index <= 0;
   elPeNext.disabled = pe.index >= n - 1;
   const html = peFootHTML(pe.index);

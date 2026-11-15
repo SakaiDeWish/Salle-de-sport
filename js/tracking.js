@@ -374,6 +374,8 @@ function renderDashboard() {
       })}
     </div>` : ""}
 
+    ${typeof volumeBlocHTML === "function" ? volumeBlocHTML() : ""}
+
     ${prs.length ? `
     <div class="card">
       ${disclosure("dash.prs", {
@@ -629,11 +631,13 @@ function openSessionModal(id, edit = false) {
       <div class="program-actions">
         <button class="btn btn-ghost" id="sm-edit">Modifier</button>
         <button class="btn btn-primary" id="sm-dup">Dupliquer (rejouer)</button>
+        <button class="btn btn-ghost" id="sm-share">Partager en image</button>
         <button class="btn btn-ghost" id="sm-to-program">Créer un programme</button>
         <button class="btn btn-danger-ghost" id="sm-del">Supprimer</button>
       </div>`;
     document.getElementById("sm-edit").addEventListener("click", () => openSessionModal(id, true));
     document.getElementById("sm-dup").addEventListener("click", () => duplicateSession(id));
+    document.getElementById("sm-share").addEventListener("click", e => partagerSeance(r, e.currentTarget));
     document.getElementById("sm-to-program").addEventListener("click", () => {
       closeSessionModal();
       activateView("programme");
