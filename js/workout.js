@@ -527,7 +527,7 @@ function clearLive() {
      sans séance, ni l'appairage ni la réorganisation n'ont de carte à
      toucher, et leur barre resterait affichée par-dessus l'écran suivant
      en proposant une action devenue impossible. */
-  reordering = false; reorderBar(false);
+  reordering = false; reorderBar(false); if (typeof railDefilement === "function") railDefilement(false);
   ssPicking = false; ssPickFirst = null; ssPickBar(false);
   updateMinibar();          // sans ça, la barre garde son dernier texte
 }
@@ -2550,6 +2550,7 @@ function toucheEchange(i) {
    individuelles : elles se cumulent avec le transform des animations. */
 let drag = null;
 const SEUIL_DRAG = 7;
+const ZONE_DEFILE = 120;          // hauteur (px) des bandes de bord qui font défiler pendant un glisser
 
 function blocsDom() {
   return [...elLiveExercises.children].filter(n => n.matches(".live-ex, .ss-group"));
@@ -2578,13 +2579,20 @@ function dragActive() {
   drag.actif = true;
   drag.bloc.classList.add("glisse");
   elLiveExercises.classList.add("en-glisse");
+  document.body.classList.add("drag-actif");
   vibre(15);
   document.body.style.userSelect = "none";
   const defile = () => {
     if (!drag || !drag.actif) return;
-    const h = window.innerHeight, c = drag.cy;
-    if (c < 90) window.scrollBy(0, -Math.ceil((90 - c) / 6));
-    else if (c > h - 90) window.scrollBy(0, Math.ceil((c - (h - 90)) / 6));
+    const h = window.innerHeight, c = drag.cy, Z = ZONE_DEFILE;
+    /* Plus on s'enfonce dans la zone, plus ça défile vite ; et toujours au
+       moins 5 px par image, sinon tenir le doigt au bord ne ferait rien. */
+    let v = 0;
+    if (c < Z) v = -(4 + 14 * Math.min(1, (Z - c) / Z));
+    else if (c > h - Z) v = 4 + 14 * Math.min(1, (c - (h - Z)) / Z);
+    document.body.classList.toggle("zone-haut", v < 0);
+    document.body.classList.toggle("zone-bas", v > 0);
+    if (v) window.scrollBy(0, v);
     dragPlace();
     drag.raf = requestAnimationFrame(defile);
   };
@@ -2626,6 +2634,7 @@ function dragFin(e) {
   document.body.style.userSelect = "";
   dernierGeste = Date.now();
   elLiveExercises.classList.remove("en-glisse");
+  document.body.classList.remove("drag-actif", "zone-haut", "zone-bas");
   g.bloc.classList.remove("glisse");
   if (e.type === "pointercancel" || g.t === g.d) {            // rien ne change : tout revient en place
     g.blocs.forEach(b => { b.style.translate = ""; });
@@ -2679,6 +2688,39 @@ window.addEventListener("pointercancel", dragFin);
   elLiveExercises.addEventListener("contextmenu", e => { if (e.target.closest(".live-ex-head")) e.preventDefault(); });
 })();
 
+/* ---------- Rail de défilement (mode réorganisation) ----------
+   Deux boutons flottants : un appui bref saute d'un écran, un appui
+   maintenu défile en continu. Un second doigt peut s'en servir PENDANT
+   qu'un exercice est tenu avec le premier. Les bandes de bord, elles,
+   défilent toutes seules quand l'exercice tenu s'en approche. */
+function railDefilement(on) {
+  let rail = document.getElementById("reorder-rail");
+  if (!on) { if (rail) rail.classList.add("hidden"); return; }
+  if (!rail) {
+    rail = document.createElement("div");
+    rail.id = "reorder-rail";
+    rail.className = "reorder-rail hidden";
+    rail.innerHTML = `
+      <button type="button" data-sens="-1" aria-label="Défiler vers le haut">${icon("chevron-up")}</button>
+      <button type="button" data-sens="1" aria-label="Défiler vers le bas">${icon("chevron-down")}</button>`;
+    document.body.appendChild(rail);
+    rail.querySelectorAll("button").forEach(btn => {
+      const sens = +btn.dataset.sens;
+      let raf = null, debut = 0, long = false;
+      const boucle = () => { if (Date.now() - debut > 220) { long = true; window.scrollBy(0, sens * 14); } raf = requestAnimationFrame(boucle); };
+      const stop = () => {
+        if (raf == null) return;
+        cancelAnimationFrame(raf); raf = null;
+        if (!long) window.scrollBy({ top: sens * window.innerHeight * 0.7, behavior: "smooth" });   // appui bref : un écran
+      };
+      btn.addEventListener("pointerdown", e => { e.preventDefault(); debut = Date.now(); long = false; btn.setPointerCapture(e.pointerId); raf = requestAnimationFrame(boucle); });
+      btn.addEventListener("pointerup", stop);
+      btn.addEventListener("pointercancel", () => { if (raf != null) { cancelAnimationFrame(raf); raf = null; } });
+    });
+  }
+  rail.classList.remove("hidden");
+}
+
 function reorderStart() {
   if (!live || live.exercises.length < 2) {
     alert("Il faut au moins deux exercices pour changer l'ordre.");
@@ -2686,6 +2728,7 @@ function reorderStart() {
   }
   if (ssPicking) ssPickCancel();
   reordering = true;
+  railDefilement(true);
   swapSel = null; majMessageOrdre();
   editingSet = null; notingSet = null;
   reorderBar(true);
@@ -2694,6 +2737,8 @@ function reorderStart() {
 
 function reorderStop() {
   reordering = false; swapSel = null;
+  railDefilement(false);
+  document.body.classList.remove("drag-actif", "zone-haut", "zone-bas");
   if (drag) { cancelAnimationFrame(drag.raf); drag = null; }
   reorderBar(false);
   expandedIndex = live ? live.currentIndex : -1;
