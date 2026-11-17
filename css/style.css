@@ -3763,3 +3763,32 @@ body.live-on .settings-fab { bottom: calc(158px + env(safe-area-inset-bottom)); 
 .cb-nb-btn:disabled { opacity: .3; cursor: not-allowed; }
 .cb-nb-btn .icon { width: .9rem; height: .9rem; stroke-width: 2.6; }
 .cb-fin { color: var(--accent-2); }
+
+
+/* =========================================================
+   RAIL DE DÉFILEMENT + BANDES DE BORD (réorganisation)
+   ========================================================= */
+.reorder-rail {
+  position: fixed; right: 10px; top: 50%; translate: 0 -50%; z-index: 45;
+  display: flex; flex-direction: column; gap: 10px; touch-action: none;
+}
+.reorder-rail.hidden { display: none; }
+.reorder-rail button {
+  width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card, var(--bg)) 92%, transparent); color: var(--text);
+  box-shadow: 0 6px 18px rgba(0,0,0,.35); display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; padding: 0; backdrop-filter: blur(6px); -webkit-tap-highlight-color: transparent;
+  transition: transform .38s var(--ressort, ease), background .16s ease;
+}
+.reorder-rail button:active { transform: scale(.86); transition-duration: .08s; background: var(--accent); color: var(--bg); }
+.reorder-rail .icon { width: 1.4rem; height: 1.4rem; stroke-width: 2.6; }
+
+/* Bandes de bord : visibles seulement quand on tient un exercice. */
+body.drag-actif::before, body.drag-actif::after {
+  content: ""; position: fixed; left: 0; right: 0; height: 120px; z-index: 44; pointer-events: none;
+  opacity: .55; transition: opacity .2s ease;
+}
+body.drag-actif::before { top: 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--accent) 28%, transparent), transparent); }
+body.drag-actif::after { bottom: 0; background: linear-gradient(to top, color-mix(in srgb, var(--accent) 28%, transparent), transparent); }
+body.zone-haut::before, body.zone-bas::after { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .reorder-rail button { transition: none; } }
