@@ -2580,6 +2580,10 @@ function dragActive() {
   drag.bloc.classList.add("glisse");
   elLiveExercises.classList.add("en-glisse");
   document.body.classList.add("drag-actif");
+  /* `html { scroll-behavior: smooth }` transforme chaque scrollBy d'une image
+     en un défilement lissé aussitôt annulé par le suivant : la page ne
+     bougeait presque pas. Pendant un glisser, le défilement est direct. */
+  document.documentElement.style.scrollBehavior = "auto";
   vibre(15);
   document.body.style.userSelect = "none";
   const defile = () => {
@@ -2635,6 +2639,7 @@ function dragFin(e) {
   dernierGeste = Date.now();
   elLiveExercises.classList.remove("en-glisse");
   document.body.classList.remove("drag-actif", "zone-haut", "zone-bas");
+  document.documentElement.style.scrollBehavior = "";
   g.bloc.classList.remove("glisse");
   if (e.type === "pointercancel" || g.t === g.d) {            // rien ne change : tout revient en place
     g.blocs.forEach(b => { b.style.translate = ""; });
@@ -2707,15 +2712,22 @@ function railDefilement(on) {
     rail.querySelectorAll("button").forEach(btn => {
       const sens = +btn.dataset.sens;
       let raf = null, debut = 0, long = false;
-      const boucle = () => { if (Date.now() - debut > 220) { long = true; window.scrollBy(0, sens * 14); } raf = requestAnimationFrame(boucle); };
+      const boucle = () => {
+        if (Date.now() - debut > 220) { long = true; document.documentElement.style.scrollBehavior = "auto"; window.scrollBy(0, sens * 14); }
+        raf = requestAnimationFrame(boucle);
+      };
       const stop = () => {
         if (raf == null) return;
         cancelAnimationFrame(raf); raf = null;
+        document.documentElement.style.scrollBehavior = "";
         if (!long) window.scrollBy({ top: sens * window.innerHeight * 0.7, behavior: "smooth" });   // appui bref : un écran
       };
       btn.addEventListener("pointerdown", e => { e.preventDefault(); debut = Date.now(); long = false; btn.setPointerCapture(e.pointerId); raf = requestAnimationFrame(boucle); });
       btn.addEventListener("pointerup", stop);
-      btn.addEventListener("pointercancel", () => { if (raf != null) { cancelAnimationFrame(raf); raf = null; } });
+      btn.addEventListener("pointercancel", () => {
+        if (raf != null) { cancelAnimationFrame(raf); raf = null; }
+        document.documentElement.style.scrollBehavior = "";
+      });
     });
   }
   rail.classList.remove("hidden");
@@ -2738,6 +2750,7 @@ function reorderStart() {
 function reorderStop() {
   reordering = false; swapSel = null;
   railDefilement(false);
+  document.documentElement.style.scrollBehavior = "";
   document.body.classList.remove("drag-actif", "zone-haut", "zone-bas");
   if (drag) { cancelAnimationFrame(drag.raf); drag = null; }
   reorderBar(false);
