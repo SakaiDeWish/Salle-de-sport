@@ -2592,11 +2592,15 @@ function dragActive() {
     /* Plus on s'enfonce dans la zone, plus ça défile vite ; et toujours au
        moins 5 px par image, sinon tenir le doigt au bord ne ferait rien. */
     let v = 0;
-    if (c < Z) v = -(4 + 14 * Math.min(1, (Z - c) / Z));
-    else if (c > h - Z) v = 4 + 14 * Math.min(1, (c - (h - Z)) / Z);
+    if (c < Z) v = -(3 + 9 * Math.min(1, (Z - c) / Z));
+    else if (c > h - Z) v = 3 + 9 * Math.min(1, (c - (h - Z)) / Z);
+    /* La vitesse monte et retombe en douceur (pas de à-coup) et reste un
+       entier : un défilement fractionnaire fait trembler la page. */
+    drag.vLisse = (drag.vLisse || 0) + (v - (drag.vLisse || 0)) * 0.12;
+    const pas = Math.abs(drag.vLisse) < 0.5 ? 0 : Math.round(drag.vLisse);
     document.body.classList.toggle("zone-haut", v < 0);
     document.body.classList.toggle("zone-bas", v > 0);
-    if (v) window.scrollBy(0, v);
+    if (pas) window.scrollBy(0, pas);
     dragPlace();
     drag.raf = requestAnimationFrame(defile);
   };
@@ -2607,8 +2611,17 @@ function dragPlace() {
   const dy = drag.cy + window.scrollY - drag.py0;
   drag.bloc.style.translate = `0 ${dy}px`;
   const centre = drag.mid[drag.d] + dy;
-  let t = 0;
-  drag.mid.forEach((m, k) => { if (k !== drag.d && m < centre) t++; });
+  /* Hystérésis : un voisin n'est « dépassé » qu'à 14 px au-delà de son
+     milieu, et ne redevient « non dépassé » qu'à 14 px en deçà. Sans ça,
+     une carte qui hésite pile sur la frontière fait trembler toute la liste. */
+  const HYST = 14;
+  let t = 0, m = 0;
+  drag.mid.forEach((mid, k) => {
+    if (k === drag.d) return;
+    const dejaPasse = m < drag.t;
+    if (centre > mid + (dejaPasse ? -HYST : HYST)) t++;
+    m++;
+  });
   drag.t = t;
   const decal = drag.h[drag.d] + drag.espace;
   drag.blocs.forEach((b, k) => {
