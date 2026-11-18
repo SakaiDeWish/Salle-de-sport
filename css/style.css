@@ -3792,3 +3792,10 @@ body.drag-actif::before { top: 0; background: linear-gradient(to bottom, color-m
 body.drag-actif::after { bottom: 0; background: linear-gradient(to top, color-mix(in srgb, var(--accent) 28%, transparent), transparent); }
 body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .reorder-rail button { transition: none; } }
+
+
+/* Pendant qu'on tient un exercice, les autres se calment : plus de
+   gigotement ni de ressort, juste un glissement net qui s'écarte. */
+.reordering.en-glisse > .live-ex:not(.glisse), .reordering.en-glisse > .ss-group:not(.glisse) {
+  animation: none; rotate: 0deg; transition: translate 0.18s ease-out;
+}
