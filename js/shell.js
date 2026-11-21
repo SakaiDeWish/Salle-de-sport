@@ -169,7 +169,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v81";
+const APP_VERSION = "v82";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -199,6 +199,12 @@ function settingsHtml() {
           <button class="segm ${t === "opale" ? "active" : ""}" data-theme="opale">${icon("gem")} Opale</button>
         </div>
       </div>
+      <label class="set-row set-check">
+        <span class="set-lab">Reflets selon l'inclinaison
+          <span class="set-sub" id="set-tilt-sub">Thème Opale : les liserés irisés des cartes suivent l'inclinaison du téléphone
+            (capteur de mouvement, avec ton accord).</span></span>
+        <input type="checkbox" id="set-tilt" ${localStorage.getItem("gymcoach.tilt") === "1" ? "checked" : ""}>
+      </label>
     </div>
 
     <div class="card set-card">
@@ -311,6 +317,14 @@ function openSettings() {
   vol.addEventListener("change", () => {
     localStorage.setItem(STORAGE_KEYS.restVolume, vol.value);
     if (typeof beep === "function") beep(true, +vol.value);
+  });
+  const tilt = document.getElementById("set-tilt");
+  if (tilt) tilt.addEventListener("change", async () => {
+    const ok = typeof opaleTiltActive === "function" ? await opaleTiltActive(tilt.checked) : false;
+    if (!ok && tilt.checked) {
+      tilt.checked = false; localStorage.setItem("gymcoach.tilt", "0");
+      document.getElementById("set-tilt-sub").textContent = "Capteur de mouvement refusé ou indisponible sur cet appareil.";
+    }
   });
   const nt = document.getElementById("set-notif");
   nt.addEventListener("change", async () => {
