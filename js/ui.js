@@ -167,7 +167,8 @@ function closeSheet() {
   const box = document.getElementById("sheet-box");
   if (box) { box.style.transition = ""; box.style.transform = ""; }
   // laisse l'animation de sortie se jouer avant de masquer
-  setTimeout(() => { if (!el.classList.contains("sheet-in")) el.classList.add("hidden"); }, 240);
+  setTimeout(() => { if (!el.classList.contains("sheet-in")) el.classList.add("hidden"); },
+    Math.round(240 * (typeof vit === "function" ? vit() : 1)) + 40);
 }
 
 /* Glissement : la poignée (et l'en-tête) déplacent la feuille en direct,

@@ -9,6 +9,7 @@
   <!-- Applique le thème mémorisé AVANT le premier rendu (évite le flash) -->
   <script>
     (function () {
+      document.documentElement.style.setProperty("--vit", localStorage.getItem("gymcoach.animDouces") === "0" ? "1" : "1.45");
       var t = localStorage.getItem("gymcoach.theme");
       if (t !== "epure" && t !== "figma" && t !== "mono" && t !== "opale") t = "gamifie";
       document.documentElement.className = t === "figma" ? "theme-figma theme-epure"
@@ -732,6 +733,7 @@
   <script src="js/programs.js"></script>
   <script src="js/push.js"></script>
   <script src="js/shell.js"></script>
+  <script src="js/haptique.js"></script>
   <script src="js/transitions.js"></script>
   <script src="js/opale.js"></script>
 </body>

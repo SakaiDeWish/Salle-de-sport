@@ -4216,7 +4216,7 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 }
 
 /* 1. Cascade d'apparition : les blocs d'une vue arrivent l'un après l'autre, du flou au net. */
-.theme-opale .view.active > :not(.hidden):not(section),
+.theme-opale .view.active > :not(.hidden):not(section):not(#home-content), .theme-opale .view.active #home-content > *,
 .theme-opale #seance-setup:not(.hidden) > *, .theme-opale #seance-live:not(.hidden) > *, .theme-opale #seance-summary:not(.hidden) > * {
   animation: opale-cascade 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   animation-delay: calc(var(--i, 0) * 60ms);
@@ -4620,3 +4620,70 @@ body.intro-on .view.active { opacity: 0; }
 .theme-opale #view-ajouter, .theme-opale #view-bibliotheque { --glow-vue: rgba(200, 140, 255, 0.08); }
 .opale-jalon { background: radial-gradient(900px 520px at 50% 16%, rgba(120, 220, 200, 0.09), transparent 62%), radial-gradient(600px 420px at 105% 70%, rgba(150, 130, 255, 0.06), transparent 60%), #060808; }
 .theme-opale #intro { background: radial-gradient(800px 520px at 50% 34%, rgba(120, 220, 200, 0.1), transparent 62%), var(--bg); }
+
+/* =========================================================
+   MOUVEMENT DOUX — tout l'app respire un peu plus lentement
+   `--vit` vaut 1,45 (animations douces) ou 1 : c'est un multiplicateur de
+   durée, réglé dans Réglages. Les courbes passent de « vives » à « amorties » :
+   départ franc, arrivée longue et sans heurt, comme un objet qui a du poids.
+   ========================================================= */
+:root { --amorti: cubic-bezier(0.22, 1, 0.36, 1); --ressort-doux: cubic-bezier(0.3, 1.35, 0.5, 1); }
+
+/* Changements d'écran */
+.view.active { animation-duration: calc(0.62s * var(--vit, 1.45)); animation-timing-function: var(--amorti); }
+.view.partant { animation-duration: calc(0.28s * var(--vit, 1.45)); }
+
+/* Cascade d'entrée pour tous les thèmes (Opale garde la sienne, avec le flou). */
+.view.active > :not(.hidden):not(section):not(#home-content), .view.active #home-content > * {
+  animation: cascade-douce calc(0.7s * var(--vit, 1.45)) var(--amorti) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms * var(--vit, 1.45));
+}
+.view.active > :nth-child(1), #home-content > :nth-child(1) { --i: 0; } .view.active > :nth-child(2), #home-content > :nth-child(2) { --i: 1; }
+.view.active > :nth-child(3), #home-content > :nth-child(3) { --i: 2; } .view.active > :nth-child(4), #home-content > :nth-child(4) { --i: 3; }
+.view.active > :nth-child(5), #home-content > :nth-child(5) { --i: 4; } .view.active > :nth-child(6), #home-content > :nth-child(6) { --i: 5; }
+.view.active > :nth-child(7), #home-content > :nth-child(7) { --i: 6; } .view.active > :nth-child(n+8), #home-content > :nth-child(n+8) { --i: 7; }
+@keyframes cascade-douce { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
+.theme-opale .view.active > :not(.hidden):not(section):not(#home-content), .theme-opale .view.active #home-content > *,
+.theme-opale #seance-setup:not(.hidden) > *, .theme-opale #seance-live:not(.hidden) > *, .theme-opale #seance-summary:not(.hidden) > * {
+  animation-duration: calc(0.85s * var(--vit, 1.45)); animation-delay: calc(var(--i, 0) * 70ms * var(--vit, 1.45));
+}
+
+/* Appuis : on s'enfonce vite, on remonte lentement, avec un léger dépassement. */
+.btn, .step-btn, .step-pas, .pave-k, .pave-disque, .pave-chip, .chip, .tab, .cb, .settings-fab {
+  transition: transform calc(0.55s * var(--vit, 1.45)) var(--ressort-doux), border-color 0.25s ease, color 0.25s ease,
+    background 0.25s ease, opacity 0.25s ease;
+}
+.btn:active, .step-btn:active, .step-pas:active, .pave-k:active, .pave-disque:active, .pave-chip:active,
+.chip:active, .settings-fab:active, .cb:active:not(.off) { transition-duration: 0.12s, 0.25s, 0.25s, 0.25s, 0.25s; }
+/* Les grandes surfaces cliquables cèdent légèrement sous le doigt. */
+.ex-card, .badge-tile, .home-cta, .access-card, .cb-row, .live-ex-head { transition: transform calc(0.5s * var(--vit, 1.45)) var(--ressort-doux), border-color 0.25s ease, background 0.25s ease, box-shadow 0.3s ease; }
+.ex-card:active, .badge-tile:active, .home-cta:active, .access-card:active { transform: scale(0.985); transition-duration: 0.12s, 0.25s, 0.25s, 0.3s; }
+
+/* Accordéons, feuilles et fenêtres */
+.live-ex-body { transition: grid-template-rows calc(0.5s * var(--vit, 1.45)) var(--amorti), opacity calc(0.35s * var(--vit, 1.45)) ease; }
+.live-ex-open .live-ex-body { transition-delay: 0s, 0.08s; }
+.disc-chev { transition: transform calc(0.4s * var(--vit, 1.45)) var(--amorti); }
+.sheet-box { transition: transform calc(0.42s * var(--vit, 1.45)) var(--amorti), height calc(0.36s * var(--vit, 1.45)) var(--amorti); }
+.modal:not(.hidden) .modal-box { animation-duration: calc(0.62s * var(--vit, 1.45)); }
+.modal:not(.hidden) .modal-backdrop, .pave:not(.hidden) .pave-fond { animation-duration: calc(0.4s * var(--vit, 1.45)); }
+.pave:not(.hidden) .pave-feuille { animation-duration: calc(0.6s * var(--vit, 1.45)); }
+.rest-overlay:not(.hidden) { animation-duration: calc(0.4s * var(--vit, 1.45)); }
+.rest-overlay:not(.hidden) > * { animation-duration: calc(0.7s * var(--vit, 1.45)); }
+#reorder-bar:not(.hidden), #live-minibar:not(.hidden) { animation-duration: calc(0.6s * var(--vit, 1.45)); }
+.settings-fab { animation-duration: calc(0.6s * var(--vit, 1.45)); }
+.opale-jalon { animation-duration: calc(0.45s * var(--vit, 1.45)); }
+.sortie { animation-duration: calc(0.28s * var(--vit, 1.45)) !important; }
+.tab.active .icon, .tab.active svg { animation-duration: calc(0.7s * var(--vit, 1.45)); }
+.reordering > .live-ex, .reordering > .ss-group { transition-duration: calc(0.38s * var(--vit, 1.45)), 0.25s, 0.25s, 0.25s; }
+
+/* Opale */
+@media (max-width: 760px) {
+  .theme-opale .nav-pill { transition: transform calc(0.7s * var(--vit, 1.45)) var(--ressort-doux), width calc(0.75s * var(--vit, 1.45)) var(--ressort-doux), height 0.3s ease; }
+  .theme-opale .opale-menu { animation-duration: calc(0.55s * var(--vit, 1.45)); }
+}
+.theme-opale .oj-fill { transition-duration: calc(0.9s * var(--vit, 1.45)); }
+.theme-opale input[type="checkbox"] { transition-duration: 0.3s, 0.3s, calc(0.5s * var(--vit, 1.45)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .view.active > * { animation: none !important; }
+}

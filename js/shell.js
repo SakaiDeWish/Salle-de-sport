@@ -68,7 +68,8 @@ function closeViewPanel(immediat) {
     if (host) host.innerHTML = "";
   };
   if (immediat) rendre();
-  else setTimeout(() => { if (!el.classList.contains("sheet-in")) rendre(); }, 240);
+  else setTimeout(() => { if (!el.classList.contains("sheet-in")) rendre(); },
+    Math.round(240 * (typeof vit === "function" ? vit() : 1)) + 40);
 }
 
 /* Panneau à contenu généré (réglages) : même feuille, sans déplacement */
@@ -169,7 +170,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v88";
+const APP_VERSION = "v89";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -199,6 +200,17 @@ function settingsHtml() {
           <button class="segm ${t === "opale" ? "active" : ""}" data-theme="opale">${icon("gem")} Opale</button>
         </div>
       </div>
+      <label class="set-row set-check">
+        <span class="set-lab">Animations douces
+          <span class="set-sub">Mouvements plus lents et plus fluides dans toute l'app. Décoche pour revenir à la vitesse normale.</span></span>
+        <input type="checkbox" id="set-douces" ${localStorage.getItem("gymcoach.animDouces") !== "0" ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Retours tactiles
+          <span class="set-sub">Petites vibrations sur les boutons, les cases et les déplacements. Sur iPhone, un léger tic quand
+            l'appareil le permet.</span></span>
+        <input type="checkbox" id="set-haptique" ${localStorage.getItem("gymcoach.haptique") !== "0" ? "checked" : ""}>
+      </label>
       <label class="set-row set-check">
         <span class="set-lab">Reflets selon l'inclinaison
           <span class="set-sub" id="set-tilt-sub">Thème Opale : les liserés irisés des cartes suivent l'inclinaison du téléphone
@@ -317,6 +329,16 @@ function openSettings() {
   vol.addEventListener("change", () => {
     localStorage.setItem(STORAGE_KEYS.restVolume, vol.value);
     if (typeof beep === "function") beep(true, +vol.value);
+  });
+  const douces = document.getElementById("set-douces");
+  if (douces) douces.addEventListener("change", () => {
+    localStorage.setItem("gymcoach.animDouces", douces.checked ? "1" : "0");
+    if (typeof appliqueVit === "function") appliqueVit();
+  });
+  const hap = document.getElementById("set-haptique");
+  if (hap) hap.addEventListener("change", () => {
+    localStorage.setItem("gymcoach.haptique", hap.checked ? "1" : "0");
+    if (hap.checked && typeof haptique === "function") haptique("succes");     // un tic pour essayer
   });
   const tilt = document.getElementById("set-tilt");
   if (tilt) tilt.addEventListener("change", async () => {

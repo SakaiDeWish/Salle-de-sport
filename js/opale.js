@@ -47,7 +47,7 @@ const opaleThemeActif = () => document.documentElement.classList.contains("theme
 
 /* ---------- 3. Chiffres qui comptent ---------- */
 function opaleCompte(racine) {
-  if (!opaleOn() || !racine) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !racine) return;
   const cibles = racine.querySelectorAll(".chrono-value, .streak-num, .goal-big, .stat-tile .chrono-value");
   cibles.forEach(el => {
     if (el.__compte || el.childNodes.length !== 1 || el.firstChild.nodeType !== 3) return;
@@ -59,7 +59,7 @@ function opaleCompte(racine) {
     const cible = parseFloat(brut);
     if (!Number.isFinite(cible) || cible === 0) return;
     const dec = (brut.split(".")[1] || "").length;
-    const debut = performance.now(), duree = 900;
+    const debut = performance.now(), duree = 900 * (typeof vit === "function" ? vit() : 1);
     el.__compte = true;
     const fin = () => { el.textContent = texte; el.__compte = false; };
     const pas = t => {
