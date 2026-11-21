@@ -3859,3 +3859,121 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 .theme-figma .step-btn:hover, .theme-figma .cb-nb-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-2); }
 .theme-figma .pave-feuille { box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.16); }
 .theme-figma .reorder-rail button { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); }
+
+
+/* =========================================================
+   THÈME « MONO » — noir et blanc, aucune couleur d'accent
+   D'après la maquette Figma (« Figura ») : 
+   RÈGLE D'ÉTAT — plein contour. Sans accent, plus rien ne peut dire
+     « actif » par la teinte. Une seule règle, partout :
+     blanc plein = fait / actif / sélectionné ;
+     contour visible = en attente ; pointillé = hors période.
+   GRAISSE — un cran au-dessus : corps en 500, valeurs en 600, sans toucher
+     aux tailles ni au tracking (l'app se lit à bout de bras, en mouvement).
+   RAYONS — 32 pour les cartes qui portent, 16 pour listes, tuiles et
+     vignettes, 8 pour champs et cellules, boutons en gélule (56 de haut).
+   L'ÉCRAN DE REPOS S'INVERSE — seul moment où l'app doit se lire à trois
+     mètres : fond blanc, texte noir, anneau noir, chiffres à 72 px.
+   Posé SUR « Gamifié » (classes `theme-mono theme-gamifie`).
+   ========================================================= */
+.theme-mono {
+  --bg: #0b0b0b;
+  --bg-soft: #141414;
+  --card: #161616;
+  --card-hover: #1d1d1d;
+  --border: #2b2b2b;
+  --text: #f5f5f5;
+  --text-soft: #9b9b9b;
+  --accent: #ffffff;
+  --accent-2: #ffffff;
+  --accent-grad: linear-gradient(#ffffff, #ffffff);
+  --accent-soft: rgba(255, 255, 255, 0.08);
+  --accent-contrast: #0b0b0b;
+  --glow: rgba(255, 255, 255, 0);
+  --green: #ffffff;          /* « fait » = blanc plein, comme tout le reste */
+  --yellow: #c9c9c9;
+  --red: #ff5d5d;            /* seule couleur : une erreur ou un dépassement doit se voir */
+  --radius: 32px;
+  --radius-sm: 16px;
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+  --shadow: none;
+  --t-push: #ffffff;  --t-push-ink: #0b0b0b;
+  --t-pull: #e0e0e0;  --t-pull-ink: #0b0b0b;
+  --t-jambes: #bdbdbd; --t-jambes-ink: #0b0b0b;
+  --t-haut: #8f8f8f;  --t-haut-ink: #0b0b0b;
+  --t-bas: #6b6b6b;   --t-bas-ink: #ffffff;
+  --t-full: #484848;  --t-full-ink: #ffffff;
+  --t-libre: #2c2c2c; --t-libre-ink: #ffffff;
+}
+.theme-mono body { background: var(--bg); font-weight: 500; }
+.theme-mono body::after { display: none; }                         /* plus de grain : à plat */
+.theme-mono input, .theme-mono select, .theme-mono textarea { border-radius: 8px; font-weight: 600; }
+.theme-mono .set-input, .theme-mono .cb-sum, .theme-mono strong, .theme-mono .chrono-value { font-weight: 600; }
+
+/* Titres : Inter 600, serrés, pas de capitales d'affiche. */
+.theme-mono .display, .theme-mono .display-sm, .theme-mono .prog-name, .theme-mono .panel-title,
+.theme-mono .program-header h2, .theme-mono .summary-card h2, .theme-mono .day-head h3,
+.theme-mono .modal-header h2, .theme-mono .history-head h3, .theme-mono .ex-card h3 {
+  font-family: var(--font-display); text-transform: none; font-weight: 600; letter-spacing: -0.035em;
+}
+.theme-mono .display .accent, .theme-mono .kicker { color: var(--text-soft); }
+.theme-mono .display { line-height: 1.02; }
+
+/* Boutons : gélules de 56. Le primaire est le « blanc plein ». */
+.theme-mono .btn, .theme-mono .chip, .theme-mono .seg { border-radius: 999px; }
+.theme-mono .btn-primary { min-height: 56px; background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); font-weight: 600; }
+.theme-mono .btn-sm { min-height: 40px; }
+.theme-mono .btn-ghost { border: 1px solid var(--border); }
+
+/* Cartes, tuiles et vignettes. */
+.theme-mono .card { border-radius: 32px; box-shadow: none; }
+.theme-mono .live-ex .cb-row, .theme-mono .ex-card, .theme-mono .set-card, .theme-mono .stat, .theme-mono .tile { border-radius: 16px; }
+.theme-mono .ex-card, .theme-mono .grad-pectoraux, .theme-mono .grad-dos, .theme-mono .grad-epaules,
+.theme-mono .grad-biceps, .theme-mono .grad-triceps, .theme-mono .grad-quadriceps,
+.theme-mono .grad-ischios-fessiers, .theme-mono .grad-mollets, .theme-mono .grad-abdos, .theme-mono .grad-lombaires {
+  background: var(--card); border: 1px solid var(--border);
+}
+.theme-mono .ex-card::after { display: none; }
+.theme-mono .ex-card:hover { border-color: var(--text); }
+
+/* Règle d'état : plein / contour / pointillé. */
+.theme-mono .tab.active, .theme-mono .bottom-nav .tab.active { color: #ffffff; }
+.theme-mono .cb.on { background: #ffffff; border-color: #ffffff; color: #0b0b0b; }
+.theme-mono .cb .icon { stroke: #0b0b0b; }
+.theme-mono .cb-row.next { border: 1.5px solid #ffffff; background: transparent; }
+.theme-mono .cb-row.todo { border: 1px dashed var(--border); opacity: 1; }
+.theme-mono .cb.off { border-style: dashed; }
+.theme-mono .segm.active, .theme-mono .seg.active, .theme-mono .chip.active { background: #ffffff; color: #0b0b0b; border-color: #ffffff; }
+.theme-mono .cal-day { border-style: dashed; }
+.theme-mono .cal-day.cal-has { border-style: solid; border-color: #ffffff; }
+.theme-mono .live-ex-current { border-color: #ffffff; }
+
+/* Pas d'animation « gamifiée » : l'état se lit sur la forme, pas sur un clignotement. */
+.theme-mono .i-flame, .theme-mono .home-cta-go .icon, .theme-mono .hdr-pill-dot,
+.theme-mono .badge-ok .badge-ico .icon { animation: none; }
+.theme-mono .icon { stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.theme-mono .home-cta { --cta-halo: rgba(255, 255, 255, 0.08); }
+.theme-mono .home-cta:active { --cta-halo: rgba(255, 255, 255, 0.16); }
+@media (hover: hover) { .theme-mono .home-cta:hover { --cta-halo: rgba(255, 255, 255, 0.14); } }
+.theme-mono .topbar { background: rgba(11, 11, 11, 0.9); }
+.theme-mono .bottom-nav { background: rgba(11, 11, 11, 0.94); border-top: 1px solid var(--border); }
+.theme-mono .modal-backdrop { background: rgba(0, 0, 0, 0.7); }
+.theme-mono .pave-feuille, .theme-mono .sheet-box { box-shadow: none; }
+.theme-mono .mo-muscle { fill: #ffffff; }
+.theme-mono .mo-arr { stroke: #ffffff; }
+
+/* ÉCRAN DE REPOS : il s'inverse. On redéfinit les variables DANS l'overlay :
+   tout ce qu'il contient (boutons, anneau, libellés) bascule d'un coup. */
+.theme-mono .rest-overlay {
+  --bg: #ffffff; --bg-soft: #e6e6e6; --card: #f2f2f2; --card-hover: #e9e9e9; --border: #cfcfcf;
+  --text: #0b0b0b; --text-soft: #555555;
+  --accent: #0b0b0b; --accent-2: #0b0b0b; --accent-contrast: #ffffff; --accent-soft: rgba(0, 0, 0, 0.08);
+  --green: #0b0b0b; --red: #c4221a;
+  background: #ffffff; color: #0b0b0b;
+}
+.theme-mono .rest-label { color: #0b0b0b; font-family: var(--font-body); letter-spacing: 0.24em; font-weight: 600; }
+.theme-mono .rest-countdown { font-family: var(--font-body); font-weight: 600; letter-spacing: -0.04em; font-size: clamp(4.5rem, 20vw, 5.4rem); }
+.theme-mono .ring-bg { stroke: #e0e0e0; stroke-width: 6; }
+.theme-mono .ring-fg { stroke: #0b0b0b; stroke-width: 6; }
+.theme-mono .ring-fg.ring-over { stroke: #c4221a; }
+.theme-mono .rest-overlay .btn-ghost { border-color: #bdbdbd; color: #0b0b0b; }
