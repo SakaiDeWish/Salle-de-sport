@@ -122,12 +122,14 @@ function restVibrateOn() { return localStorage.getItem(STORAGE_KEYS.restVibrate)
    violet, coins arrondis) se construit SUR « Épuré » : il en garde toute la
    structure et n'en redéfinit que couleurs, police et ombres. D'où ses deux
    classes sur <html>. */
-const THEMES = ["gamifie", "epure", "figma", "mono"];
-const THEME_NOMS = { gamifie: "Gamifié", epure: "Épuré", figma: "Studio", mono: "Mono" };
-const THEME_COULEURS = { gamifie: "#0a0a0b", epure: "#f6f1e7", figma: "#f5f5f5", mono: "#0b0b0b" };
+const THEMES = ["gamifie", "epure", "figma", "mono", "opale"];
+const THEME_NOMS = { gamifie: "Gamifié", epure: "Épuré", figma: "Studio", mono: "Mono", opale: "Opale" };
+const THEME_COULEURS = { gamifie: "#0a0a0b", epure: "#f6f1e7", figma: "#f5f5f5", mono: "#0b0b0b", opale: "#070909" };
 /* « Mono » (noir, blanc, aucun accent coloré) se pose, lui, sur « Gamifié ». */
 function themeClasses(theme) {
-  return theme === "figma" ? "theme-figma theme-epure" : theme === "mono" ? "theme-mono theme-gamifie" : "theme-" + theme;
+  return theme === "figma" ? "theme-figma theme-epure"
+    : theme === "mono" ? "theme-mono theme-gamifie"
+    : theme === "opale" ? "theme-opale theme-gamifie" : "theme-" + theme;
 }
 function themeSuivant(theme) { return THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]; }
 function currentTheme() {
@@ -167,7 +169,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v79";
+const APP_VERSION = "v80";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -194,6 +196,7 @@ function settingsHtml() {
           <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">${icon("sun")} Clair</button>
           <button class="segm ${t === "figma" ? "active" : ""}" data-theme="figma">${icon("pencil")} Studio</button>
           <button class="segm ${t === "mono" ? "active" : ""}" data-theme="mono">${icon("star")} Mono</button>
+          <button class="segm ${t === "opale" ? "active" : ""}" data-theme="opale">${icon("gem")} Opale</button>
         </div>
       </div>
     </div>
