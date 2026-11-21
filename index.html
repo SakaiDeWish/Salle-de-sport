@@ -10,9 +10,10 @@
   <script>
     (function () {
       var t = localStorage.getItem("gymcoach.theme");
-      if (t !== "epure" && t !== "figma" && t !== "mono") t = "gamifie";
+      if (t !== "epure" && t !== "figma" && t !== "mono" && t !== "opale") t = "gamifie";
       document.documentElement.className = t === "figma" ? "theme-figma theme-epure"
-        : t === "mono" ? "theme-mono theme-gamifie" : "theme-" + t;
+        : t === "mono" ? "theme-mono theme-gamifie"
+        : t === "opale" ? "theme-opale theme-gamifie" : "theme-" + t;
     })();
   </script>
   <!-- Typographies : Anton (display condensé) + Inter (corps) -->

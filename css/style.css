@@ -3977,3 +3977,118 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 .theme-mono .ring-fg { stroke: #0b0b0b; stroke-width: 6; }
 .theme-mono .ring-fg.ring-over { stroke: #c4221a; }
 .theme-mono .rest-overlay .btn-ghost { border-color: #bdbdbd; color: #0b0b0b; }
+
+
+/* =========================================================
+   THÈME « OPALE » — nuit profonde, verre teinté, menthe et lavande
+   Inspiré d'une app de focus : fond quasi noir à lueur verte, cartes
+   en verre sombre à reflet vert, très arrondies, chiffres en menthe,
+   barre d'onglets flottante en gélule, ambre pour la flamme.
+   Contrairement à « Mono », la couleur est partout : c'est elle qui dit
+   l'état (menthe = actif / fait, lavande = secondaire, ambre = série).
+   Posé SUR « Gamifié » (classes `theme-opale theme-gamifie`).
+   ========================================================= */
+.theme-opale {
+  --bg: #070909;
+  --bg-soft: #131a19;
+  --card: #111817;
+  --card-hover: #16201e;
+  --border: #243230;
+  --text: #f1f6f5;
+  --text-soft: #8da09c;
+  --accent: #a8f0dc;
+  --accent-2: #8fe6cf;
+  --accent-grad: linear-gradient(100deg, #a8f0dc, #b9a8ff);
+  --accent-soft: rgba(168, 240, 220, 0.12);
+  --accent-contrast: #052019;
+  --glow: rgba(120, 220, 200, 0.10);
+  --green: #7be0b4;
+  --yellow: #f5b04c;
+  --red: #ff6b6b;
+  --radius: 32px;
+  --radius-sm: 18px;
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  --t-push: #86bfff;  --t-push-ink: #07121f;
+  --t-pull: #ffb27f;  --t-pull-ink: #24120a;
+  --t-jambes: #7be0b4; --t-jambes-ink: #052019;
+  --t-haut: #f5d37a;  --t-haut-ink: #2a2005;
+  --t-bas: #f59ac0;   --t-bas-ink: #2b0b19;
+  --t-full: #8fe6cf;  --t-full-ink: #052019;
+  --t-libre: #b9a8ff; --t-libre-ink: #140c33;
+}
+/* Fond : lueur menthe en haut, trace de lavande à droite, poussière d'étoiles. */
+.theme-opale body {
+  background:
+    radial-gradient(1000px 520px at 50% -12%, rgba(120, 220, 200, 0.14), transparent 62%),
+    radial-gradient(620px 420px at 105% 28%, rgba(150, 130, 255, 0.07), transparent 60%),
+    var(--bg);
+}
+.theme-opale body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.55;
+  background-image:
+    radial-gradient(1px 1px at 12% 8%, #fff, transparent), radial-gradient(1px 1px at 34% 3%, #cfe, transparent),
+    radial-gradient(1.5px 1.5px at 58% 11%, #fff, transparent), radial-gradient(1px 1px at 81% 6%, #dfe, transparent),
+    radial-gradient(1px 1px at 92% 17%, #fff, transparent), radial-gradient(1px 1px at 22% 21%, #cfe, transparent),
+    radial-gradient(1.5px 1.5px at 70% 24%, #fff, transparent), radial-gradient(1px 1px at 47% 29%, #dfe, transparent);
+  mask-image: linear-gradient(to bottom, #000 0, #000 28%, transparent 62%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 28%, transparent 62%);
+}
+.theme-opale body { font-weight: 500; }
+.theme-opale .display, .theme-opale .display-sm, .theme-opale .prog-name, .theme-opale .panel-title,
+.theme-opale .program-header h2, .theme-opale .summary-card h2, .theme-opale .day-head h3,
+.theme-opale .modal-header h2, .theme-opale .history-head h3, .theme-opale .ex-card h3 {
+  font-family: var(--font-display); text-transform: none; font-weight: 700; letter-spacing: -0.03em;
+}
+.theme-opale .display .accent { color: var(--accent); }
+.theme-opale .kicker, .theme-opale .ex-card-group { color: var(--accent-2); }
+
+/* Cartes : verre sombre teinté de vert, reflet en haut. */
+.theme-opale .card {
+  background: linear-gradient(165deg, rgba(168, 240, 220, 0.06), rgba(168, 240, 220, 0.012) 55%), var(--card);
+  border: 1px solid rgba(168, 240, 220, 0.09);
+  border-radius: 32px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.theme-opale .ex-card, .theme-opale .grad-pectoraux, .theme-opale .grad-dos, .theme-opale .grad-epaules,
+.theme-opale .grad-biceps, .theme-opale .grad-triceps, .theme-opale .grad-quadriceps,
+.theme-opale .grad-ischios-fessiers, .theme-opale .grad-mollets, .theme-opale .grad-abdos, .theme-opale .grad-lombaires {
+  background: linear-gradient(165deg, rgba(168, 240, 220, 0.07), rgba(168, 240, 220, 0.01) 60%), var(--card);
+  border: 1px solid rgba(168, 240, 220, 0.1);
+}
+.theme-opale .ex-card::after { display: none; }
+.theme-opale .btn, .theme-opale .chip, .theme-opale .seg { border-radius: 999px; }
+.theme-opale .btn-primary { min-height: 52px; font-weight: 700; }
+.theme-opale .btn-ghost { border: 1px solid rgba(168, 240, 220, 0.16); background: rgba(168, 240, 220, 0.04); }
+.theme-opale input, .theme-opale select, .theme-opale textarea { border-radius: 14px; }
+.theme-opale .live-ex-current { border-color: rgba(168, 240, 220, 0.55); }
+.theme-opale .cb-row.next { border-color: rgba(168, 240, 220, 0.6); background: rgba(168, 240, 220, 0.07); }
+.theme-opale .cb-row.todo { border-style: dashed; opacity: 1; }
+.theme-opale .segm.active, .theme-opale .seg.active, .theme-opale .chip.active {
+  background: var(--accent-grad); color: var(--accent-contrast); border-color: transparent;
+}
+.theme-opale .i-flame { color: #ffb04a; }
+.theme-opale .home-cta { --cta-halo: rgba(168, 240, 220, 0.12); }
+.theme-opale .icon { stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.theme-opale .mo-muscle { fill: var(--accent); }
+.theme-opale .mo-arr { stroke: var(--accent); }
+.theme-opale .topbar { background: rgba(7, 9, 9, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.theme-opale .pave-feuille, .theme-opale .sheet-box { background: linear-gradient(165deg, rgba(168, 240, 220, 0.06), transparent 60%), var(--card); }
+.theme-opale .rest-overlay { background: rgba(5, 8, 8, 0.97); }
+.theme-opale .ring-fg { stroke: var(--accent); }
+
+/* Barre d'onglets flottante en gélule ; l'onglet actif est une pastille claire. */
+@media (max-width: 760px) {
+  .theme-opale .bottom-nav {
+    left: 50%; right: auto; width: min(92vw, 380px); translate: -50% 0;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    padding: 6px; border-radius: 999px;
+    border: 1px solid rgba(168, 240, 220, 0.14);
+    background: rgba(14, 20, 19, 0.82);
+    backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+  }
+  .theme-opale .bottom-nav .tab { min-height: 50px; border-radius: 999px; }
+  .theme-opale .bottom-nav .tab.active { color: var(--text); background: rgba(255, 255, 255, 0.11); }
+  .theme-opale body { padding-bottom: 96px; }
+}
