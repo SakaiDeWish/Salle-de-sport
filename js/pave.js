@@ -118,9 +118,10 @@ function construirePave() {
       ecrireMap(BARRE_CLE, pave.exId, suiv); return majPave();
     }
     if (a === "clavier") {
-      const id = pave.id; fermerPave(); clavierNatif = id;
+      const id = pave.id, mode = pave.kind === "poids" ? "decimal" : "numeric";
+      fermerPave(); clavierNatif = id;          // fermerPave() remet `pave` à null : on a pris ce qu'il fallait avant
       const c = document.getElementById(id);
-      if (c) { c.setAttribute("inputmode", pave.kind === "poids" ? "decimal" : "numeric"); c.focus(); }
+      if (c) { c.readOnly = false; c.setAttribute("inputmode", mode); c.focus(); }
     }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && pave) fermerPave(); });
@@ -193,14 +194,27 @@ function fermerPave() {
   if (c) c.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
-/* Un champ de la séance qui prend le focus ouvre le pavé, sauf si
-   l'utilisateur a demandé le clavier du téléphone pour CE champ. */
-document.addEventListener("focusin", e => {
+/* Les champs de la séance sont en LECTURE SEULE : le toucher ouvre le pavé,
+   mais le champ ne prend jamais le focus. C'est voulu : donner le focus à
+   un <input> puis le lui retirer (blur) laissait iOS décaler la fenêtre de
+   la page — la barre du bas flottait au milieu de l'écran, du vide dessous.
+   Tant qu'il n'y a pas de focus, iOS ne bouge rien. */
+document.addEventListener("click", e => {
   const c = e.target;
-  if (!(c instanceof HTMLInputElement) || c.type !== "number") return;
+  if (!(c instanceof HTMLInputElement) || c.type !== "number" || !c.readOnly) return;
   if (!c.closest("#live-exercises")) return;
-  if (clavierNatif === c.id) return;
-  c.blur();
   ouvrirPave(c);
 });
-document.addEventListener("focusout", e => { if (e.target && e.target.id === clavierNatif) clavierNatif = null; });
+/* Focus demandé par le code (champ manquant à la validation) : même chose. */
+function focusChamp(c) {
+  if (!c) return;
+  if (c.readOnly) ouvrirPave(c); else c.focus();
+}
+/* Retour au clavier du téléphone : à la sortie du champ, il redevient
+   un champ à pavé. */
+document.addEventListener("focusout", e => {
+  const c = e.target;
+  if (c && c.id === clavierNatif) {
+    clavierNatif = null; c.readOnly = true; c.setAttribute("inputmode", "none");
+  }
+});

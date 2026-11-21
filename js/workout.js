@@ -1346,7 +1346,7 @@ function cocherSerie(i) {
     openNext = i; editingSet = null;
     renderLiveExercises();
     const c = document.getElementById((statique ? "temps-" : "reps-") + i);
-    if (c) c.focus();
+    if (c) focusChamp(c);
     return;
   }
   validateSet(i);
@@ -1380,33 +1380,33 @@ function formulaireProchaine(ex, i, statique, pre) {
         ${statique ? `
         <div class="stepper" data-step="5" data-min="1">
           <button type="button" class="step-btn" data-target="temps-${i}" data-delta="-1" aria-label="Cinq secondes de moins">−</button>
-          <input type="number" inputmode="none" min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
+          <input type="number" inputmode="none" readonly min="1" step="1" placeholder="Temps (s)" id="temps-${i}" class="set-input" aria-label="Temps de maintien en secondes"
             value="${pre.secondes ?? ""}">
           <button type="button" class="step-btn" data-target="temps-${i}" data-delta="1" aria-label="Cinq secondes de plus">+</button>
         </div>
         <div class="stepper" data-step="${pasPoids(ex.exId)}" data-min="0">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer du lest">−</button>
-          <input type="number" inputmode="none" min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
+          <input type="number" inputmode="none" readonly min="0" step="0.5" placeholder="Lest (kg)" id="poids-${i}" class="set-input" aria-label="Lest en kilogrammes"
             value="${pre.poids ?? ""}">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter du lest">+</button>
           <button type="button" class="step-pas" data-exid="${ex.exId}" aria-label="Changer le pas du poids">±${fmtNb(pasPoids(ex.exId))}</button>
         </div>` : `
         <div class="stepper" data-step="${pasPoids(ex.exId)}" data-min="0">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="-1" aria-label="Retirer du poids">−</button>
-          <input type="number" inputmode="none" min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
+          <input type="number" inputmode="none" readonly min="0" step="0.5" placeholder="Poids (kg)" id="poids-${i}" class="set-input" aria-label="Poids en kilogrammes"
             value="${pre.poids ?? ""}">
           <button type="button" class="step-btn" data-target="poids-${i}" data-delta="1" aria-label="Ajouter du poids">+</button>
           <button type="button" class="step-pas" data-exid="${ex.exId}" aria-label="Changer le pas du poids">±${fmtNb(pasPoids(ex.exId))}</button>
         </div>
         <div class="stepper" data-step="1" data-min="1">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="-1" aria-label="Une répétition de moins">−</button>
-          <input type="number" inputmode="none" min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
+          <input type="number" inputmode="none" readonly min="1" step="1" placeholder="Reps" id="reps-${i}" class="set-input" aria-label="Répétitions"
             value="${pre.reps ?? ""}">
           <button type="button" class="step-btn" data-target="reps-${i}" data-delta="1" aria-label="Une répétition de plus">+</button>
         </div>
         <div class="stepper" data-step="1" data-min="0" title="Répétitions en réserve : combien tu aurais pu en faire de plus">
           <button type="button" class="step-btn" data-target="rir-${i}" data-delta="-1" aria-label="Une répétition en réserve de moins">−</button>
-          <input type="number" inputmode="none" min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
+          <input type="number" inputmode="none" readonly min="0" step="1" placeholder="RIR${ex.rir ? " " + ex.rir : ""}" id="rir-${i}" class="set-input" aria-label="Répétitions en réserve"
             value="${pre.rir ?? ""}">
           <button type="button" class="step-btn" data-target="rir-${i}" data-delta="1" aria-label="Une répétition en réserve de plus">+</button>
         </div>`}
@@ -1420,11 +1420,11 @@ function editionSerie(ex, i, j, statique) {
   return `
                   <div class="set-edit-row">
                     <span class="set-edit-n">Série ${j + 1}</span>
-                    <input type="number" inputmode="none" min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
+                    <input type="number" inputmode="none" readonly min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
                     ${statique
-                      ? `<input type="number" inputmode="none" min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
-                      : `<input type="number" inputmode="none" min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
-                         <input type="number" inputmode="none" min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
+                      ? `<input type="number" inputmode="none" readonly min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
+                      : `<input type="number" inputmode="none" readonly min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                         <input type="number" inputmode="none" readonly min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
                     <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
                     <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
                     <button class="btn btn-danger-ghost btn-sm set-unvalidate" data-i="${i}" data-j="${j}">Dé-valider</button>
@@ -1744,11 +1744,11 @@ function saveSetEdit(i, j) {
   const rirRaw = (document.getElementById("ed-rir") || {}).value;
   if (statique) {
     const sec = parseInt(document.getElementById("ed-temps").value, 10);
-    if (!sec || sec < 1) { document.getElementById("ed-temps").focus(); return; }
+    if (!sec || sec < 1) { focusChamp(document.getElementById("ed-temps")); return; }
     set.secondes = sec;
   } else {
     const reps = parseInt(document.getElementById("ed-reps").value, 10);
-    if (!reps || reps < 1) { document.getElementById("ed-reps").focus(); return; }
+    if (!reps || reps < 1) { focusChamp(document.getElementById("ed-reps")); return; }
     set.reps = reps;
     set.rir = rirRaw == null || rirRaw === "" ? null : Math.max(0, parseInt(rirRaw, 10));
   }
@@ -2106,10 +2106,10 @@ function validateSet(i) {
     } else {
       secondes = parseInt(document.getElementById("temps-" + i).value, 10);
     }
-    if (!secondes || secondes < 1) { document.getElementById("temps-" + i).focus(); return; }
+    if (!secondes || secondes < 1) { focusChamp(document.getElementById("temps-" + i)); return; }
   } else {
     reps = parseInt(document.getElementById("reps-" + i).value, 10);
-    if (!reps || reps < 1) { document.getElementById("reps-" + i).focus(); return; }
+    if (!reps || reps < 1) { focusChamp(document.getElementById("reps-" + i)); return; }
   }
   const now = Date.now();
 
