@@ -118,19 +118,32 @@ function volPct() {
   return typeof restVolume === "function" ? restVolume() : 70;
 }
 function restVibrateOn() { return localStorage.getItem(STORAGE_KEYS.restVibrate) !== "0"; }
-function currentTheme() { return localStorage.getItem("gymcoach.theme") || "gamifie"; }
+/* Trois thèmes. « Studio » (style éditeur de design : gris doux, bleu et
+   violet, coins arrondis) se construit SUR « Épuré » : il en garde toute la
+   structure et n'en redéfinit que couleurs, police et ombres. D'où ses deux
+   classes sur <html>. */
+const THEMES = ["gamifie", "epure", "figma"];
+const THEME_NOMS = { gamifie: "Gamifié", epure: "Épuré", figma: "Studio" };
+const THEME_COULEURS = { gamifie: "#0a0a0b", epure: "#f6f1e7", figma: "#f5f5f5" };
+function themeClasses(theme) { return theme === "figma" ? "theme-figma theme-epure" : "theme-" + theme; }
+function themeSuivant(theme) { return THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length]; }
+function currentTheme() {
+  const t = localStorage.getItem("gymcoach.theme");
+  return THEMES.includes(t) ? t : "gamifie";
+}
 
 function applyTheme(theme) {
-  document.documentElement.className = "theme-" + theme;
+  if (!THEMES.includes(theme)) theme = "gamifie";
+  document.documentElement.className = themeClasses(theme);
   localStorage.setItem("gymcoach.theme", theme);
   const lab = document.getElementById("theme-toggle-label");
-  if (lab) lab.textContent = theme === "gamifie" ? "Épuré" : "Gamifié";
+  if (lab) lab.textContent = THEME_NOMS[themeSuivant(theme)];     // le bouton propose le thème d'APRÈS
   /* Le bouton des réglages ne change plus de glyphe avec le thème : il
      portait ☾ ou ☀ et se lisait donc comme une bascule jour/nuit, alors
      qu'il ouvre tous les réglages — et que sur téléphone c'est le seul
      accès. Il porte un engrenage fixe. */
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", theme === "gamifie" ? "#0a0a0b" : "#f6f1e7");
+  if (meta) meta.setAttribute("content", THEME_COULEURS[theme]);
 }
 
 /* ==================== NUMÉRO DE VERSION ====================
@@ -151,7 +164,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v77";
+const APP_VERSION = "v78";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -176,6 +189,7 @@ function settingsHtml() {
         <div class="seg-mini" role="group" aria-label="Choix du thème">
           <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">${icon("moon")} Sombre</button>
           <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">${icon("sun")} Clair</button>
+          <button class="segm ${t === "figma" ? "active" : ""}" data-theme="figma">${icon("pencil")} Studio</button>
         </div>
       </div>
     </div>
@@ -354,7 +368,7 @@ document.getElementById("settings-fab").addEventListener("click", openSettings);
   const clone = vieux.cloneNode(true);      // retire l'écouteur d'origine
   vieux.parentNode.replaceChild(clone, vieux);
   clone.addEventListener("click", () =>
-    applyTheme(currentTheme() === "gamifie" ? "epure" : "gamifie"));
+    applyTheme(themeSuivant(currentTheme())));
 })();
 
 applyTheme(currentTheme());

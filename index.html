@@ -8,8 +8,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <!-- Applique le thème mémorisé AVANT le premier rendu (évite le flash) -->
   <script>
-    document.documentElement.className =
-      "theme-" + (localStorage.getItem("gymcoach.theme") || "gamifie");
+    (function () {
+      var t = localStorage.getItem("gymcoach.theme");
+      if (t !== "epure" && t !== "figma") t = "gamifie";
+      document.documentElement.className = t === "figma" ? "theme-figma theme-epure" : "theme-" + t;
+    })();
   </script>
   <!-- Typographies : Anton (display condensé) + Inter (corps) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
