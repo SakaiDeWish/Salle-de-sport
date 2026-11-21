@@ -342,6 +342,18 @@ function renderHome() {
         <span class="streak-cap">${icon("flame")} semaine${gs.streak > 1 ? "s" : ""}<br>d'affilée</span>
       </div>` : ""}
     </section>
+    <!-- Hero du thème Opale : joyau + trois colonnes. Invisible dans les autres thèmes. -->
+    <section class="op-hero" aria-label="Résumé de ton entraînement">
+      <div class="op-gem op-gem-hero" aria-hidden="true"></div>
+      <div class="op-stats">
+        <div class="op-stat"><span class="op-k">Série</span>
+          <span class="op-v"><span class="chrono-value">${gs.streak}</span></span><span class="op-d">semaine${gs.streak > 1 ? "s" : ""}</span></div>
+        <div class="op-stat"><span class="op-k">Séances</span>
+          <span class="op-v"><span class="chrono-value">${thisMonth.length}</span>${thisMonth.length > lastMonth.length ? '<i class="op-up">▲</i>' : thisMonth.length < lastMonth.length ? '<i class="op-down">▼</i>' : ""}</span><span class="op-d">ce mois</span></div>
+        <div class="op-stat"><span class="op-k">Volume</span>
+          <span class="op-v"><span class="chrono-value">${Math.round(moisVolume).toLocaleString("fr-FR")}</span>${moisVolume > precVolume ? '<i class="op-up">▲</i>' : moisVolume < precVolume ? '<i class="op-down">▼</i>' : ""}</span><span class="op-d">kg ce mois</span></div>
+      </div>
+    </section>
     ${rendered.join("")}
     <div class="home-maj">
       <span class="home-maj-ver">${icon("refresh")} Version <strong>${esc(typeof APP_VERSION !== "undefined" ? APP_VERSION : "")}</strong>

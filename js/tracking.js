@@ -325,8 +325,8 @@ function renderDashboard() {
             <span class="badge-next-n">${esc(badgeAvance(p))}</span></p>` : "";
         })()}
         <div class="badge-grid">
-          ${badges.map(b => `
-            <div class="badge-tile ${b.ok ? "badge-ok" : ""}">
+          ${badges.map((b, bi) => `
+            <div class="badge-tile ${b.ok ? "badge-ok" : ""}" data-badge="${bi}">
               <span class="badge-ico">${icon(b.ico)}</span>
               <span class="badge-nom">${esc(b.nom)}</span>
               <span class="badge-desc">${esc(b.desc)}</span>
