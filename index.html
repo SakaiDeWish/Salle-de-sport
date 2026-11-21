@@ -24,6 +24,42 @@
 </head>
 <body>
 
+  <!-- ==================== ANIMATION D'ENTRÉE ====================
+       Une fois par ouverture de l'app (pas à chaque rechargement d'onglet), jamais
+       quand une séance est en cours, jamais si l'appareil demande de réduire les
+       animations. Un toucher la saute. Les vues attendent sa sortie pour jouer
+       leur propre entrée : l'app « arrive » derrière elle. -->
+  <div id="intro" aria-hidden="true">
+    <div class="op-gem op-gem-intro"></div>
+    <div class="intro-logo"><span style="--i:0">G</span><span style="--i:1">Y</span><span style="--i:2">M</span><b><span style="--i:3">C</span><span style="--i:4">O</span><span style="--i:5">A</span><span style="--i:6">C</span><span style="--i:7">H</span></b></div>
+    <div class="intro-ligne"></div>
+  </div>
+  <script>
+    (function () {
+      var el = document.getElementById("intro");
+      if (!el) return;
+      var saute = false;
+      try {
+        saute = window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+          sessionStorage.getItem("gymcoach.intro") === "1" ||
+          !!localStorage.getItem("gymcoach.liveSession");
+        sessionStorage.setItem("gymcoach.intro", "1");
+      } catch (e) { /* stockage indisponible : on joue l'intro */ }
+      if (saute) { el.parentNode.removeChild(el); return; }
+      document.body.classList.add("intro-on");
+      var fini = false;
+      function sortir() {
+        if (fini) return;
+        fini = true;
+        el.classList.add("part");
+        document.body.classList.remove("intro-on");
+        setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 800);
+      }
+      el.addEventListener("click", sortir);
+      setTimeout(sortir, document.documentElement.classList.contains("theme-opale") ? 2300 : 1600);
+    })();
+  </script>
+
   <!-- ==================== NAVIGATION ==================== -->
   <header class="topbar">
     <div class="logo">GYM<span>COACH</span></div>
