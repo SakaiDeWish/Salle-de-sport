@@ -20,6 +20,7 @@ function rebond(el, depart = 0.82, pic = 1.12, ms = 380) {
 function rebondCase(cb) {
   rebond(cb, 0.5, 1.22, 420);
   rebond(cb.querySelector(".icon"), 0.2, 1.3, 460);
+  if (typeof opaleValidation === "function") opaleValidation(cb);        // onde de lumière (thème Opale)
 }
 
 /* ---------- 1. FLIP sur la liste de séance ---------- */

@@ -4195,3 +4195,125 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
   .theme-opale .btn-primary, .theme-opale .rest-overlay .btn-primary, .theme-opale .pave-ok,
   .theme-opale #view-accueil::before { animation: none; }
 }
+
+
+/* =========================================================
+   OPALE — animations (voir js/opale.js)
+   ========================================================= */
+@property --lueur { syntax: "<number>"; inherits: false; initial-value: 0; }
+
+/* Squelette scintillant — disponible dans tous les thèmes. */
+.squelette {
+  display: inline-block; vertical-align: middle; border-radius: 6px; min-width: 24px; min-height: 0.8em;
+  background: linear-gradient(100deg, rgba(128, 128, 128, 0.16) 30%, rgba(255, 255, 255, 0.34) 50%, rgba(128, 128, 128, 0.16) 70%);
+  background-size: 250% 100%;
+  animation: squelette 1.3s linear infinite;
+}
+@keyframes squelette { from { background-position: 150% 0; } to { background-position: -100% 0; } }
+.theme-opale .squelette {
+  background-image: linear-gradient(100deg, rgba(168, 240, 220, 0.08) 30%, rgba(185, 168, 255, 0.34) 50%, rgba(168, 240, 220, 0.08) 70%);
+  background-size: 250% 100%;
+}
+
+/* 1. Cascade d'apparition : les blocs d'une vue arrivent l'un après l'autre, du flou au net. */
+.theme-opale .view.active > :not(.hidden):not(section),
+.theme-opale #seance-setup:not(.hidden) > *, .theme-opale #seance-live:not(.hidden) > *, .theme-opale #seance-summary:not(.hidden) > * {
+  animation: opale-cascade 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+.theme-opale .view.active > :nth-child(1), .theme-opale #seance-live > :nth-child(1), .theme-opale #seance-setup > :nth-child(1) { --i: 0; }
+.theme-opale .view.active > :nth-child(2), .theme-opale #seance-live > :nth-child(2), .theme-opale #seance-setup > :nth-child(2) { --i: 1; }
+.theme-opale .view.active > :nth-child(3), .theme-opale #seance-live > :nth-child(3), .theme-opale #seance-setup > :nth-child(3) { --i: 2; }
+.theme-opale .view.active > :nth-child(4), .theme-opale #seance-live > :nth-child(4), .theme-opale #seance-setup > :nth-child(4) { --i: 3; }
+.theme-opale .view.active > :nth-child(5), .theme-opale #seance-live > :nth-child(5), .theme-opale #seance-setup > :nth-child(5) { --i: 4; }
+.theme-opale .view.active > :nth-child(6), .theme-opale #seance-live > :nth-child(6), .theme-opale #seance-setup > :nth-child(6) { --i: 5; }
+.theme-opale .view.active > :nth-child(7), .theme-opale #seance-live > :nth-child(7), .theme-opale #seance-setup > :nth-child(7) { --i: 6; }
+.theme-opale .view.active > :nth-child(n+8), .theme-opale #seance-live > :nth-child(n+8), .theme-opale #seance-setup > :nth-child(n+8) { --i: 7; }
+@keyframes opale-cascade {
+  from { opacity: 0; translate: 0 22px; filter: blur(8px); }
+  to   { opacity: 1; translate: 0 0;    filter: blur(0); }
+}
+/* `both` retenait un translate:0 0 qui fait de l'élément le repère de ses enfants fixes. */
+.theme-opale #seance-setup:not(.hidden), .theme-opale #seance-live:not(.hidden), .theme-opale #seance-summary:not(.hidden) { animation-fill-mode: backwards; }
+
+/* 2. Pastille d'onglet qui glisse (une seule pastille, déplacée par le JS). */
+.nav-pill { display: none; }
+@media (max-width: 760px) {
+  .theme-opale .nav-pill {
+    display: block; position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none;
+    width: var(--w, 0); height: var(--h, 0);
+    transform: translate(var(--x, 0), var(--y, 0));
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 22px -8px rgba(168, 240, 220, 0.5);
+    transition: transform 0.55s var(--ressort, ease), width 0.6s var(--ressort, ease), height 0.3s ease;
+  }
+  .theme-opale .nav-pill.sans-transition { transition: none; }
+  .theme-opale .bottom-nav .tab { position: relative; z-index: 1; }
+  .theme-opale .bottom-nav .tab.active { background: transparent; }
+}
+
+/* 3. Parallaxe : l'opale et les étoiles avancent plus lentement que la page. */
+.theme-opale #view-accueil::before { transform: translateY(calc(var(--py, 0) * 0.38px)) scale(calc(1 - var(--py, 0) * 0.00035)); }
+.theme-opale body::after { transform: translateY(calc(var(--py, 0) * -0.06px)); }
+
+/* 4. Chiffres du chrono : chacun défile. */
+.dg { display: inline-block; font-variant-numeric: tabular-nums; }
+
+/* 5. Onde et étincelles à la validation, balayage irisé quand on progresse. */
+.onde {
+  position: absolute; z-index: 3; width: 28px; height: 28px; border-radius: 50%; pointer-events: none;
+  border: 2px solid rgba(168, 240, 220, 0.9);
+  box-shadow: 0 0 20px rgba(168, 240, 220, 0.6), inset 0 0 14px rgba(168, 240, 220, 0.4);
+}
+.etincelle {
+  position: absolute; z-index: 3; width: 5px; height: 5px; border-radius: 50%; pointer-events: none;
+  background: #d9fff5; box-shadow: 0 0 8px 1px rgba(168, 240, 220, 0.95);
+}
+.theme-opale .live-ex { position: relative; }
+.balayage { position: absolute; inset: 0; border-radius: inherit; overflow: hidden; pointer-events: none; z-index: 4; }
+.balayage::before {
+  content: ""; position: absolute; top: -30%; bottom: -30%; left: -55%; width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(168, 240, 220, 0.18) 25%, rgba(185, 168, 255, 0.42) 50%, rgba(255, 196, 120, 0.3) 75%, transparent);
+  transform: skewX(-18deg);
+  animation: opale-balaie 1s cubic-bezier(0.3, 0.6, 0.2, 1) forwards;
+}
+@keyframes opale-balaie { to { left: 125%; } }
+
+/* 6. Repos qui respire : l'anneau gonfle à peine, sa lueur monte sur les 3 dernières secondes. */
+.theme-opale .ring-wrap { animation: opale-respire 5s ease-in-out infinite; }
+@keyframes opale-respire { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.018); } }
+.theme-opale .ring-fg { transition: stroke-dashoffset 0.25s linear, stroke 0.3s ease, filter 0.4s ease; }
+.theme-opale .ring-wrap:has(.rest-countdown.preavis) .ring-fg { filter: drop-shadow(0 0 18px rgba(168, 240, 220, 0.95)); }
+.theme-opale .ring-wrap:has(.rest-countdown.preavis) { animation: opale-respire-vite 1s ease-in-out infinite; }
+@keyframes opale-respire-vite { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.04); } }
+
+/* 7. Lueur qui suit le doigt, et reflet qui suit l'inclinaison. */
+.theme-opale { --iris: linear-gradient(calc(135deg + var(--tx, 0) * 55deg), rgba(168, 240, 220, 0.55), rgba(185, 168, 255, 0.28) calc(48% + var(--ty, 0) * 14%), rgba(255, 176, 74, 0.22)); }
+.theme-opale .card, .theme-opale .ex-card {
+  background:
+    radial-gradient(240px circle at var(--mx, 50%) var(--my, -50%), rgba(168, 240, 220, calc(var(--lueur) * 0.22)), transparent 70%) padding-box,
+    linear-gradient(165deg, #17221f 0%, #0f1615 58%, #0c1211 100%) padding-box,
+    var(--iris) border-box;
+  transition: --lueur 0.35s ease;
+}
+.theme-opale .card.lueur, .theme-opale .ex-card.lueur, .theme-opale .btn-ghost.lueur, .theme-opale .chip.lueur { --lueur: 1; }
+.theme-opale .btn-ghost, .theme-opale .chip {
+  background:
+    radial-gradient(120px circle at var(--mx, 50%) var(--my, -50%), rgba(168, 240, 220, calc(var(--lueur) * 0.28)), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  transition: --lueur 0.35s ease, transform 0.38s var(--ressort, ease), border-color 0.16s ease;
+}
+.theme-opale .live-ex-current, .theme-opale .card.live-ex-current {
+  animation: opale-halo 4.5s ease-in-out infinite;
+}
+@keyframes opale-halo {
+  0%, 100% { box-shadow: 0 0 30px -12px rgba(168, 240, 220, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.09); }
+  50%      { box-shadow: 0 0 46px -8px rgba(168, 240, 220, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-opale .view.active > *, .theme-opale #seance-setup > *, .theme-opale #seance-live > *, .theme-opale #seance-summary > *,
+  .theme-opale .ring-wrap, .theme-opale .live-ex-current, .squelette, .balayage::before { animation: none !important; }
+  .theme-opale .nav-pill { transition: none; }
+}

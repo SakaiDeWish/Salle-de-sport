@@ -2161,7 +2161,14 @@ function validateSet(i) {
   document.getElementById("rest-exercise-name").textContent = ex.ss
     ? "Super set bouclé — repos " + cible + " s"
     : ex.nom + " — série " + ex.sets.length + " terminée";
-  elRestOverlay.classList.remove("hidden");
+  /* Thème Opale : on laisse l'onde de validation se jouer à l'écran avant que
+     le repos ne le recouvre (0,55 s). Ailleurs, le repos s'affiche aussitôt. */
+  const delaiRepos = typeof opaleOn === "function" && opaleOn() ? 550 : 0;
+  if (!delaiRepos) elRestOverlay.classList.remove("hidden");
+  else {
+    const ref = rest;
+    setTimeout(() => { if (rest === ref && !restMinimized) elRestOverlay.classList.remove("hidden"); }, delaiRepos);
+  }
   /* Après un super set, la manche suivante repart sur le PREMIER membre. */
   if (membres.length > 1) { live.currentIndex = membres[0]; expandedIndex = membres[0]; renderLiveExercises(); }
   tick();

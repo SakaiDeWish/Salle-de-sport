@@ -354,12 +354,16 @@ function renderHome() {
   if (majBtn) majBtn.addEventListener("click", () => rechargerApp(majBtn));
   /* Dit si la page tourne sur l'ancien code : le service worker actif
      annonce sa version, la page annonce la sienne. */
+  const etatMaj = document.getElementById("home-maj-etat");
+  if (etatMaj && typeof versionDuServiceWorker === "function")
+    etatMaj.innerHTML = '<span class="squelette" style="width:56px;height:.8em"></span>';   // pendant la vérification
   if (typeof versionDuServiceWorker === "function") versionDuServiceWorker().then(v => {
     const etat = document.getElementById("home-maj-etat");
-    if (!etat || !v) return;
+    if (!etat) return;
+    if (!v) { etat.textContent = ""; return; }
     if (v === APP_VERSION) etat.textContent = "· à jour";
     else { etat.textContent = "· " + v + " disponible"; majBtn && majBtn.classList.replace("btn-ghost", "btn-primary"); }
-  });
+  }).catch(() => { const e = document.getElementById("home-maj-etat"); if (e) e.textContent = ""; });
 
   const start = document.getElementById("home-start");
   if (start) start.addEventListener("click", () => {
