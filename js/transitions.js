@@ -15,11 +15,12 @@ const RESSORT = "cubic-bezier(0.34, 1.56, 0.64, 1)";
 function rebond(el, depart = 0.82, pic = 1.12, ms = 380) {
   if (!el || reduitMouvement() || !el.animate) return;
   el.animate([{ transform: `scale(${depart})` }, { transform: `scale(${pic})`, offset: 0.55 }, { transform: "scale(1)" }],
-    { duration: ms, easing: "ease-out" });
+    { duration: ms * (typeof vit === "function" ? vit() : 1), easing: "ease-out" });
 }
 function rebondCase(cb) {
   rebond(cb, 0.5, 1.22, 420);
   rebond(cb.querySelector(".icon"), 0.2, 1.3, 460);
+  if (typeof haptique === "function") haptique("succes");                 // la case se pose : un tic en phase
   if (typeof opaleValidation === "function") opaleValidation(cb);        // onde de lumière (thème Opale)
 }
 
@@ -28,7 +29,7 @@ function rebondCase(cb) {
   if (typeof renderLiveExercises !== "function") return;
   const original = renderLiveExercises;
   const nbSeries = new WeakMap();
-  const DUREE = 300, COURBE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+  const DUREE_BASE = 300, COURBE = "cubic-bezier(0.2, 0.8, 0.2, 1)";
   renderLiveExercises = function () {
     const liste = document.getElementById("live-exercises");
     if (!liste || reduitMouvement() || !liste.offsetParent) return original.apply(this, arguments);
@@ -61,7 +62,7 @@ function rebondCase(cb) {
       c.animate(
         [{ transform: `translateY(${dy}px)`, height: a.h + "px", overflow: "hidden" },
          { transform: "none", height: r.height + "px", overflow: "hidden" }],
-        { duration: deplacement ? 420 : DUREE, easing: deplacement ? RESSORT : COURBE });
+        { duration: (deplacement ? 520 : DUREE_BASE) * vit(), easing: deplacement ? RESSORT : COURBE });
     });
     return sortie;
   };

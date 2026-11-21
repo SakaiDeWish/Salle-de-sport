@@ -88,7 +88,8 @@ function activateView(view) {
     ancienne.style.cssText = `position:fixed;top:${-window.scrollY}px;left:0;right:0;margin:0 auto;pointer-events:none;`;
     ancienne.classList.add("partant");
     ancienne.style.setProperty("--vx", (-sens * 28) + "px");
-    setTimeout(() => { ancienne.classList.remove("partant"); ancienne.style.cssText = ""; }, 200);
+    setTimeout(() => { ancienne.classList.remove("partant"); ancienne.style.cssText = ""; },
+      Math.round(280 * (typeof vit === "function" ? vit() : 1)) + 20);
   }
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   nouvelle.style.setProperty("--vx", (sens * 28) + "px");
