@@ -3799,3 +3799,63 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 .reordering.en-glisse > .live-ex:not(.glisse), .reordering.en-glisse > .ss-group:not(.glisse) {
   animation: none; rotate: 0deg; transition: translate 0.18s ease-out;
 }
+
+
+/* =========================================================
+   THÈME « STUDIO » — l'allure d'un éditeur de design
+   Gris très clair, cartes blanches à fine bordure, bleu de sélection et
+   touche de violet, Inter partout, coins arrondis, ombres douces.
+   Posé SUR « Épuré » (classes `theme-figma theme-epure`) : il hérite de
+   sa structure et ne redéfinit ici que ce qui change.
+   ========================================================= */
+.theme-figma {
+  --bg: #f5f5f5;
+  --bg-soft: #ececec;
+  --card: #ffffff;
+  --card-hover: #fafafa;
+  --border: #e4e4e4;
+  --text: #1e1e1e;
+  --text-soft: #6a6a6a;
+  --accent: #0c8ce9;
+  --accent-2: #0a6dc2;
+  --accent-grad: linear-gradient(100deg, #0c8ce9, #7b61ff);
+  --accent-soft: rgba(12, 140, 233, 0.10);
+  --accent-contrast: #ffffff;
+  --glow: rgba(123, 97, 255, 0.05);
+  --green: #12a05c;
+  --yellow: #a86a00;
+  --red: #e03a1b;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 28px rgba(0, 0, 0, 0.08);
+  --t-libre: #7b61ff;
+}
+.theme-figma .display, .theme-figma .display-sm, .theme-figma .prog-name, .theme-figma .panel-title,
+.theme-figma .program-header h2, .theme-figma .summary-card h2, .theme-figma .day-head h3,
+.theme-figma .modal-header h2, .theme-figma .history-head h3, .theme-figma .ex-card h3 {
+  font-family: var(--font-display); font-weight: 700; letter-spacing: -0.025em;
+}
+.theme-figma .display { font-weight: 800; letter-spacing: -0.035em; }
+.theme-figma .topbar { background: rgba(255, 255, 255, 0.85); backdrop-filter: saturate(1.4) blur(14px); }
+.theme-figma .bottom-nav { background: rgba(255, 255, 255, 0.92); backdrop-filter: saturate(1.4) blur(14px); border-top: 1px solid var(--border); }
+.theme-figma .rest-overlay { background: rgba(245, 245, 245, 0.97); }
+.theme-figma .modal-backdrop { background: rgba(0, 0, 0, 0.35); }
+.theme-figma .card, .theme-figma .ex-card { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04); }
+.theme-figma .ex-card:hover, .theme-figma .ex-card:focus-visible { box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10); }
+.theme-figma .live-header { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07); }
+.theme-figma .sheet-box { box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.14); }
+.theme-figma .chip, .theme-figma .btn, .theme-figma .seg { border-radius: 8px; }
+.theme-figma .search-wrap input, .theme-figma .sessions-controls input[type="search"],
+.theme-figma .sessions-controls select { border-radius: 8px; }
+.theme-figma .icon { stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.theme-figma .cb .icon { stroke-width: 2.6; }
+.theme-figma .badge-debutant { background: #e3f6ec; color: #0b6b3a; }
+.theme-figma .badge-intermediaire { background: #fff2d6; color: #7a4f00; }
+.theme-figma .badge-avance { background: #ffe6df; color: #a8280d; }
+.theme-figma .home-cta { --cta-halo: rgba(12, 140, 233, 0.10); }
+.theme-figma .home-cta:active { --cta-halo: rgba(12, 140, 233, 0.20); }
+@media (hover: hover) { .theme-figma .home-cta:hover { --cta-halo: rgba(12, 140, 233, 0.18); } }
+.theme-figma .step-btn:hover, .theme-figma .cb-nb-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-2); }
+.theme-figma .pave-feuille { box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.16); }
+.theme-figma .reorder-rail button { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); }
