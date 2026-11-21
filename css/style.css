@@ -4317,3 +4317,196 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
   .theme-opale .ring-wrap, .theme-opale .live-ex-current, .squelette, .balayage::before { animation: none !important; }
   .theme-opale .nav-pill { transition: none; }
 }
+
+/* =========================================================
+   OPALE — interface : hero, barre à 3 onglets + « + », grands titres,
+   chrono en afficheur, pilules de saisie, jalons, fin de séance
+   ========================================================= */
+
+/* Le joyau : une sphère irisée, utilisée en hero, en jalon et en récompense. */
+.op-gem, .op-hero, .opale-plus, .opale-menu { display: none; }
+.theme-opale .op-hero { display: block; }
+.theme-opale .op-gem {
+  display: block; position: relative; border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.8), transparent 20%),
+    radial-gradient(ellipse at 64% 36%, rgba(47, 196, 164, 0.95), transparent 56%),
+    radial-gradient(ellipse at 26% 68%, rgba(42, 111, 208, 0.95), transparent 60%),
+    radial-gradient(ellipse at 76% 82%, rgba(233, 166, 76, 0.9), transparent 46%),
+    radial-gradient(circle at 50% 50%, #14403c, #0a2330);
+  box-shadow:
+    inset -22px -26px 46px rgba(0, 0, 0, 0.55),
+    inset 10px 12px 26px rgba(255, 255, 255, 0.2),
+    0 30px 70px -22px rgba(47, 196, 164, 0.55);
+  animation: opale-flotte 9s ease-in-out infinite, opale-teinte 14s ease-in-out infinite alternate;
+}
+.theme-opale .op-gem::after {                      /* le socle : une ombre elliptique sous la sphère */
+  content: ""; position: absolute; left: 10%; right: 10%; bottom: -34px; height: 26px; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.7), transparent 70%); filter: blur(2px); z-index: -1;
+}
+/* L'ancien joyau décoratif de l'accueil cède la place au hero : ne reste que la lueur du fond. */
+.theme-opale #view-accueil::before {
+  top: -120px; left: -10%; right: -10%; width: auto; height: 420px; border-radius: 0; background:
+    radial-gradient(60% 70% at 50% 0%, rgba(120, 220, 200, 0.18), transparent 70%);
+  box-shadow: none; opacity: 1; animation: none; transform: none; mask-image: none; -webkit-mask-image: none; filter: none;
+}
+
+/* Hero de l'accueil : le joyau, puis trois colonnes. */
+.theme-opale .op-hero { text-align: center; margin: 2px 0 30px; }
+.theme-opale .op-gem-hero { width: 188px; height: 188px; margin: 8px auto 42px; transform: translateY(calc(var(--py, 0) * 0.3px)); }
+.op-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; align-items: start; }
+.op-k { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
+.op-v {
+  display: flex; align-items: baseline; justify-content: center; gap: 5px; margin-top: 8px;
+  font-size: clamp(1.8rem, 9vw, 2.5rem); font-weight: 300; letter-spacing: -0.03em; line-height: 1.05;
+  color: var(--accent); font-variant-numeric: tabular-nums; text-shadow: 0 0 24px rgba(168, 240, 220, 0.3);
+}
+.op-v .chrono-value { font: inherit; color: inherit; letter-spacing: inherit; }
+.op-up, .op-down { font-style: normal; font-size: 0.8rem; }
+.op-up { color: var(--accent); }
+.op-down { color: var(--yellow); }
+.op-d { display: block; margin-top: 4px; font-size: 0.78rem; color: var(--text-soft); }
+.theme-opale .streak-hero, .theme-opale #home-content .stat-tiles:not(.nutri-tiles) { display: none; }
+
+/* Grands titres de page, et une lueur propre à chaque écran. */
+.theme-opale .view { position: relative; isolation: isolate; }
+.theme-opale .view::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none; left: -10%; right: -10%; top: -120px; height: 420px;
+  background: radial-gradient(60% 70% at 50% 0%, var(--glow-vue, rgba(120, 220, 200, 0.16)), transparent 70%);
+}
+.theme-opale #view-suivi { --glow-vue: rgba(110, 140, 255, 0.20); }
+.theme-opale #view-programme { --glow-vue: rgba(120, 230, 190, 0.18); }
+.theme-opale #view-seance { --glow-vue: rgba(255, 170, 80, 0.14); }
+.theme-opale #view-ajouter, .theme-opale #view-bibliotheque { --glow-vue: rgba(200, 140, 255, 0.16); }
+.theme-opale .hero .display { font-size: clamp(2.6rem, 13vw, 3.7rem); line-height: 0.98; letter-spacing: -0.045em; }
+
+/* Barre à trois onglets ; le reste s'ouvre par le bouton « + ». */
+@media (max-width: 760px) {
+  .theme-opale .bottom-nav .tab[data-view="programme"], .theme-opale .bottom-nav .tab[data-view="ajouter"] { display: none; }
+  .theme-opale .bottom-nav { width: min(78vw, 300px); }
+  .theme-opale .opale-plus {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; z-index: 60; top: calc(env(safe-area-inset-top, 0px) + 14px); right: 16px;
+    width: 46px; height: 46px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+    background: var(--accent-grad); color: var(--accent-contrast);
+    box-shadow: 0 10px 26px -8px rgba(168, 240, 220, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    transition: transform 0.5s var(--ressort, ease);
+  }
+  .theme-opale .opale-plus .icon { width: 1.3rem; height: 1.3rem; stroke-width: 2.6; }
+  .theme-opale .opale-plus.ouvert { transform: rotate(135deg); }
+  .theme-opale .opale-plus:active { transform: scale(0.88); }
+  .theme-opale .opale-menu {
+    display: flex; flex-direction: column; gap: 2px; position: fixed; z-index: 61;
+    top: calc(env(safe-area-inset-top, 0px) + 68px); right: 16px; width: min(72vw, 270px); padding: 8px;
+    border-radius: 26px; border: 1px solid rgba(168, 240, 220, 0.2);
+    background: linear-gradient(165deg, rgba(26, 38, 35, 0.94), rgba(12, 18, 17, 0.96));
+    backdrop-filter: blur(22px) saturate(1.3); -webkit-backdrop-filter: blur(22px) saturate(1.3);
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.75), 0 0 30px -14px rgba(168, 240, 220, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform-origin: top right; animation: opale-menu-in 0.4s var(--ressort, ease) both;
+  }
+  .theme-opale .opale-menu.hidden { display: none; }
+  .theme-opale .opale-menu button {
+    display: flex; align-items: center; gap: 12px; width: 100%; padding: 13px 14px; border: 0; border-radius: 18px;
+    background: transparent; color: var(--text); font: 600 0.98rem var(--font-body); text-align: left; cursor: pointer;
+  }
+  .theme-opale .opale-menu button .icon { width: 1.25rem; height: 1.25rem; color: var(--accent); }
+  .theme-opale .opale-menu button:active { background: rgba(168, 240, 220, 0.12); }
+  .theme-opale .hero, .theme-opale .home-hero { padding-right: 58px; }
+  body:has(.rest-overlay:not(.hidden)) .opale-plus, body:has(#opale-jalon:not(.hidden)) .opale-plus,
+  body:has(#view-seance.active) .opale-plus { display: none; }   /* sur la séance, il recouvrirait Pause */
+}
+@keyframes opale-menu-in { from { opacity: 0; transform: scale(0.55); } to { opacity: 1; transform: scale(1); } }
+
+/* Chrono de séance en afficheur : écran clair cerclé de noir, chiffres sombres. */
+.theme-opale .live-chronos { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px 14px; }
+.theme-opale .chrono-main {
+  grid-column: 1 / -1; align-items: center; text-align: center; padding: 14px 16px 12px; border-radius: 26px;
+  background: linear-gradient(160deg, #d2dbd9, #94a3a1 62%, #7e8d8b);
+  box-shadow:
+    inset 0 2px 5px rgba(255, 255, 255, 0.55), inset 0 -12px 26px rgba(0, 0, 0, 0.28),
+    0 0 0 5px #070b0a, 0 0 0 6px rgba(168, 240, 220, 0.28), 0 22px 44px -18px rgba(0, 0, 0, 0.8), 0 0 40px -18px rgba(168, 240, 220, 0.5);
+}
+.theme-opale .chrono-main .chrono-label { color: #17211f; opacity: 0.65; }
+.theme-opale .chrono-main .chrono-value, .theme-opale #chrono-session {
+  font-family: var(--font-mono); font-weight: 700; font-size: clamp(3rem, 17vw, 4.4rem); letter-spacing: 0.02em;
+  color: #0e1917; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4); line-height: 1.05;
+}
+
+/* Saisie en pilules : un grand nombre au centre, deux pastilles rondes de part et d'autre. */
+.theme-opale .stepper { gap: 12px; align-items: center; }
+.theme-opale .step-btn {
+  width: 54px; min-height: 54px; height: 54px; border-radius: 50%; font-size: 1.6rem; color: var(--accent);
+  border: 1px solid rgba(168, 240, 220, 0.24);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.025));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.theme-opale .stepper .set-input {
+  min-height: 54px; border-radius: 999px; font-size: 1.6rem; font-weight: 600; padding: 8px 10px;
+  border: 1px solid rgba(168, 240, 220, 0.2);
+  background: radial-gradient(120% 140% at 50% 0%, rgba(168, 240, 220, 0.1), transparent 70%), rgba(255, 255, 255, 0.03);
+}
+.theme-opale .stepper .set-input::placeholder { font-size: 0.9rem; font-weight: 500; }
+.theme-opale .step-pas { border-radius: 999px; border-color: rgba(168, 240, 220, 0.3); color: var(--accent-2); }
+
+/* Jalons en plein écran. */
+.opale-jalon {
+  position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) 24px calc(22px + env(safe-area-inset-bottom, 0px)); overflow-y: auto;
+  background:
+    radial-gradient(900px 520px at 50% 16%, rgba(120, 220, 200, 0.18), transparent 62%),
+    radial-gradient(600px 420px at 105% 70%, rgba(150, 130, 255, 0.12), transparent 60%), #060808;
+  animation: fond-entre 0.32s ease both;
+}
+.opale-jalon.hidden { display: none; }
+.oj-close {
+  align-self: flex-start; width: 46px; height: 46px; border-radius: 50%; padding: 0; cursor: pointer; color: var(--text);
+  display: flex; align-items: center; justify-content: center; border: 1px solid rgba(168, 240, 220, 0.2);
+  background: rgba(16, 24, 22, 0.8); backdrop-filter: blur(14px);
+}
+.oj-scene { margin: 5vh 0 46px; touch-action: pan-y; }
+.op-gem-jalon { width: 210px; height: 210px; }
+.theme-opale .op-gem-jalon:not(.allume) { filter: grayscale(0.9) brightness(0.5); animation: opale-flotte 9s ease-in-out infinite; }
+.op-gem-ico { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; }
+.op-gem-ico .icon { width: 72px; height: 72px; stroke-width: 1.5; filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.5)); }
+.oj-titre { font-size: 2.3rem; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; }
+.oj-pill {
+  margin-top: 12px; padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; color: var(--text-soft);
+  border: 1px solid rgba(168, 240, 220, 0.18); background: rgba(16, 24, 22, 0.7);
+}
+.oj-pill.ok { color: var(--accent); border-color: rgba(168, 240, 220, 0.45); box-shadow: 0 0 22px -8px rgba(168, 240, 220, 0.6); }
+.oj-desc { margin: 22px 0 auto; max-width: 30ch; color: var(--text-soft); font-size: 1.05rem; line-height: 1.5; }
+.oj-barre {
+  position: relative; width: 100%; max-width: 420px; height: 54px; margin: 26px 0 16px; border-radius: 999px; overflow: hidden;
+  border: 1px solid rgba(168, 240, 220, 0.18); background: rgba(16, 24, 22, 0.85);
+}
+.oj-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(100deg, rgba(168, 240, 220, 0.4), rgba(185, 168, 255, 0.35)); transition: width 0.7s var(--ressort, ease); }
+.oj-val { position: relative; display: flex; align-items: center; justify-content: center; height: 100%; font-weight: 600; font-size: 1.05rem; }
+.oj-nav { display: flex; align-items: center; gap: 18px; }
+.oj-compte { min-width: 64px; color: var(--text-soft); font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+.oj-fleche {
+  width: 46px; height: 46px; border-radius: 50%; padding: 0; cursor: pointer; color: var(--text); display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(168, 240, 220, 0.2); background: rgba(16, 24, 22, 0.8);
+  transition: transform 0.38s var(--ressort, ease);
+}
+.oj-fleche:active { transform: scale(0.86); transition-duration: 0.08s; }
+.theme-opale .badge-tile[data-badge] { cursor: pointer; }
+
+/* Fin de séance en récompense : le joyau s'illumine, les chiffres comptent. */
+.theme-opale .summary-card { text-align: center; }
+.theme-opale .op-gem-recompense {
+  width: 148px; height: 148px; margin: 6px auto 40px;
+  animation: opale-allume 1.8s ease-out both, opale-flotte 9s ease-in-out 1.8s infinite, opale-teinte 14s ease-in-out infinite alternate;
+}
+@keyframes opale-allume {
+  from { filter: brightness(0.25) saturate(0.3); scale: 0.78; }
+  55%  { filter: brightness(1.55) saturate(1.3); scale: 1.06; }
+  to   { filter: brightness(1) saturate(1); scale: 1; }
+}
+.theme-opale .summary-stats .chrono-value { font-weight: 300; color: var(--accent); font-size: clamp(1.7rem, 8vw, 2.2rem); text-shadow: 0 0 22px rgba(168, 240, 220, 0.3); }
+.theme-opale .summary-stats .chrono-block { align-items: center; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-opale .op-gem, .theme-opale .op-gem-recompense, .theme-opale .opale-menu, .opale-jalon { animation: none; }
+  .theme-opale .op-gem-jalon:not(.allume) { animation: none; }
+}
+.theme-opale .summary-stats { grid-template-columns: repeat(2, 1fr); gap: 18px 10px; }

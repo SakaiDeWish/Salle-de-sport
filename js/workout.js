@@ -2968,6 +2968,7 @@ function showSummary(r) {
   elSummary.classList.remove("hidden");
   elSummary.innerHTML = `
     <div class="card summary-card">
+      <div class="op-gem op-gem-recompense" aria-hidden="true"></div>
       <p class="kicker">Séance terminée</p>
       <h2>Bien joué ${icon("party")}</h2>
       <p class="program-meta">${esc(r.nom)} · ${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>

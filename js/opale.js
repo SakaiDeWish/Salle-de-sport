@@ -202,3 +202,126 @@ async function opaleTiltActive(on) {
   return true;
 }
 if (localStorage.getItem(OPALE_TILT_CLE) === "1" && !(typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function")) opaleTiltActive(true);
+
+/* =========================================================
+   INTERFACE OPALE — menu « + », jalons en plein écran, fin de séance
+   ========================================================= */
+
+/* ---------- Bouton « + » : Programme, Ajouter, Bibliothèque, Nutrition ----------
+   La barre du bas se réduit à Accueil / Suivi / Séance ; ce qui sert moins
+   souvent s'ouvre ici, en haut à droite de chaque écran. */
+(function () {
+  const bouton = document.createElement("button");
+  bouton.id = "opale-plus";
+  bouton.type = "button";
+  bouton.className = "opale-plus";
+  bouton.setAttribute("aria-label", "Plus d'écrans");
+  bouton.setAttribute("aria-haspopup", "menu");
+  bouton.setAttribute("aria-expanded", "false");
+  bouton.innerHTML = icon("plus");
+  const menu = document.createElement("div");
+  menu.id = "opale-menu";
+  menu.className = "opale-menu hidden";
+  menu.setAttribute("role", "menu");
+  const ITEMS = [["programme", "target", "Programme"], ["ajouter", "plus", "Ajouter un exercice"],
+                 ["bibliotheque", "book", "Bibliothèque"], ["nutrition", "apple", "Nutrition"]];
+  menu.innerHTML = ITEMS.map(([v, ic, lab]) =>
+    `<button type="button" role="menuitem" data-go-opale="${v}">${icon(ic)}<span>${lab}</span></button>`).join("");
+  document.body.append(bouton, menu);
+  const ferme = () => { menu.classList.add("hidden"); bouton.setAttribute("aria-expanded", "false"); bouton.classList.remove("ouvert"); };
+  bouton.addEventListener("click", e => {
+    e.stopPropagation();
+    const ouvre = menu.classList.contains("hidden");
+    menu.classList.toggle("hidden", !ouvre);
+    bouton.setAttribute("aria-expanded", String(ouvre));
+    bouton.classList.toggle("ouvert", ouvre);
+  });
+  menu.addEventListener("click", e => {
+    const b = e.target.closest("[data-go-opale]");
+    if (!b) return;
+    ferme();
+    activateView(b.dataset.goOpale);
+  });
+  document.addEventListener("click", e => { if (!menu.contains(e.target) && e.target !== bouton) ferme(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") ferme(); });
+})();
+
+/* ---------- Jalons : un badge, un écran ---------- */
+(function () {
+  let jalon = null, indice = 0, balayage = null;
+  const construit = () => {
+    jalon = document.createElement("div");
+    jalon.id = "opale-jalon";
+    jalon.className = "opale-jalon hidden";
+    jalon.setAttribute("role", "dialog");
+    jalon.setAttribute("aria-modal", "true");
+    jalon.innerHTML = `
+      <button type="button" class="oj-close" aria-label="Fermer">${icon("x")}</button>
+      <div class="oj-scene" id="oj-scene"><div class="op-gem op-gem-jalon" id="oj-gem"><span class="op-gem-ico" id="oj-ico"></span></div></div>
+      <h2 class="oj-titre" id="oj-titre"></h2>
+      <span class="oj-pill" id="oj-pill"></span>
+      <p class="oj-desc" id="oj-desc"></p>
+      <div class="oj-barre" id="oj-barre"><span class="oj-fill" id="oj-fill"></span><span class="oj-val" id="oj-val"></span></div>
+      <div class="oj-nav">
+        <button type="button" class="oj-fleche" data-oj="-1" aria-label="Jalon précédent">${icon("chevron-left")}</button>
+        <span class="oj-compte" id="oj-compte"></span>
+        <button type="button" class="oj-fleche" data-oj="1" aria-label="Jalon suivant">${icon("chevron-right")}</button>
+      </div>`;
+    document.body.appendChild(jalon);
+    jalon.querySelector(".oj-close").addEventListener("click", ferme);
+    jalon.querySelectorAll("[data-oj]").forEach(b => b.addEventListener("click", () => va(+b.dataset.oj)));
+    const scene = jalon.querySelector("#oj-scene");
+    scene.addEventListener("pointerdown", e => { balayage = { x: e.clientX }; });
+    window.addEventListener("pointerup", e => {
+      if (!balayage || jalon.classList.contains("hidden")) { balayage = null; return; }
+      const dx = e.clientX - balayage.x; balayage = null;
+      if (Math.abs(dx) > 50) va(dx < 0 ? 1 : -1);
+    });
+    document.addEventListener("keydown", e => {
+      if (jalon.classList.contains("hidden")) return;
+      if (e.key === "Escape") ferme(); else if (e.key === "ArrowRight") va(1); else if (e.key === "ArrowLeft") va(-1);
+    });
+  };
+  const rend = (sens) => {
+    const B = computeBadges(), b = B[indice];
+    if (!b) return;
+    const gem = jalon.querySelector("#oj-gem");
+    gem.classList.toggle("allume", b.ok);
+    jalon.querySelector("#oj-ico").innerHTML = icon(b.ico);
+    jalon.querySelector("#oj-titre").textContent = b.nom;
+    const pill = jalon.querySelector("#oj-pill");
+    pill.textContent = b.ok ? "Obtenu" : "À débloquer";
+    pill.classList.toggle("ok", b.ok);
+    jalon.querySelector("#oj-desc").textContent = b.desc;
+    const part = b.ok ? 1 : (b.binaire ? 0 : Math.max(0, Math.min(1, b.val / b.cible)));
+    jalon.querySelector("#oj-barre").classList.toggle("sans", !b.ok && b.binaire);
+    jalon.querySelector("#oj-fill").style.width = Math.round(part * 100) + "%";
+    jalon.querySelector("#oj-val").textContent = b.ok ? "Accompli" : (b.binaire ? "Pas encore" : badgeAvance(b));
+    jalon.querySelector("#oj-compte").textContent = (indice + 1) + " / " + B.length;
+    if (sens && !window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      gem.animate([{ transform: `translateX(${sens * 90}px) scale(0.85)`, opacity: 0 }, { transform: "none", opacity: 1 }],
+        { duration: 460, easing: "cubic-bezier(0.34, 1.4, 0.64, 1)" });
+  };
+  const va = d => { const n = computeBadges().length; indice = (indice + d + n) % n; rend(d); };
+  const ferme = () => { if (jalon) jalon.classList.add("hidden"); };
+  document.addEventListener("click", e => {
+    if (!opaleThemeActif()) return;
+    const t = e.target.closest(".badge-tile[data-badge]");
+    if (!t) return;
+    if (!jalon) construit();
+    indice = +t.dataset.badge;
+    rend(0);
+    jalon.classList.remove("hidden");
+    jalon.querySelector(".oj-close").focus({ preventScroll: true });
+  });
+})();
+
+/* ---------- Fin de séance : le joyau s'illumine et les chiffres comptent ---------- */
+(function () {
+  const resume = document.getElementById("seance-summary");
+  if (!resume) return;
+  new MutationObserver(() => {
+    if (!opaleOn() || !resume.querySelector(".summary-card")) return;
+    setTimeout(() => opaleCompte(resume), 450);
+  }).observe(resume, { childList: true });
+})();

@@ -69,7 +69,7 @@ function rebondCase(cb) {
 
 /* ---------- 2. Sorties : un fantôme joue la disparition ---------- */
 (function () {
-  const CIBLES = "#rest-overlay, #picker, #onboarding, #builder, #session-modal, #pave, #reorder-bar, #live-minibar";
+  const CIBLES = "#rest-overlay, #picker, #onboarding, #builder, #session-modal, #pave, #reorder-bar, #live-minibar, #opale-jalon, #opale-menu";
   new MutationObserver(lot => {
     if (reduitMouvement()) return;
     for (const m of lot) {
