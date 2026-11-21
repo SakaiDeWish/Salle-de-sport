@@ -325,3 +325,37 @@ if (localStorage.getItem(OPALE_TILT_CLE) === "1" && !(typeof DeviceOrientationEv
     setTimeout(() => opaleCompte(resume), 450);
   }).observe(resume, { childList: true });
 })();
+
+/* ---------- Chronomètre de séance : cadran en relief ----------
+   Le chrono principal devient un petit chronomètre : lunette métallique,
+   couronne, graduations, et un point ambré qui avance d'un cran par seconde.
+   Le relief reste discret : une inclinaison de quelques degrés, qui flotte
+   doucement, ou suit l'inclinaison du téléphone si on l'a activée. */
+(function () {
+  const bloc = document.querySelector(".chrono-main");
+  const val = document.getElementById("chrono-session");
+  if (!bloc || !val) return;
+  const aig = document.createElement("i");
+  aig.className = "mon-aiguille"; aig.setAttribute("aria-hidden", "true");
+  const cou = document.createElement("i");
+  cou.className = "mon-couronne"; cou.setAttribute("aria-hidden", "true");
+  bloc.append(aig, cou);
+  let dernier = -1, premier = true;
+  const maj = () => {
+    const t = val.textContent.trim();
+    const parts = t.split(":").map(Number);
+    if (parts.some(Number.isNaN)) return;
+    const s = parts.reduce((a, x) => a * 60 + x, 0);
+    bloc.classList.toggle("long", t.length > 5);
+    if (s === dernier) return;
+    dernier = s;
+    if (premier) {                                  // reprise d'une séance : on se place sans faire tourner l'aiguille
+      aig.style.transition = "none";
+      bloc.style.setProperty("--a", s * 6 + "deg");
+      requestAnimationFrame(() => requestAnimationFrame(() => { aig.style.transition = ""; }));
+      premier = false;
+    } else bloc.style.setProperty("--a", s * 6 + "deg");
+  };
+  new MutationObserver(maj).observe(val, { childList: true, characterData: true, subtree: true });
+  maj();
+})();
