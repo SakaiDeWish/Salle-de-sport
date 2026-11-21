@@ -4510,3 +4510,50 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
   .theme-opale .op-gem-jalon:not(.allume) { animation: none; }
 }
 .theme-opale .summary-stats { grid-template-columns: repeat(2, 1fr); gap: 18px 10px; }
+
+
+/* =========================================================
+   ANIMATION D'ENTRÉE (voir le bloc #intro de index.html)
+   ========================================================= */
+#intro {
+  position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 30px; background: var(--bg); cursor: pointer; --d0: 0.12s;
+}
+.theme-opale #intro {
+  --d0: 0.6s;
+  background: radial-gradient(800px 520px at 50% 34%, rgba(120, 220, 200, 0.2), transparent 62%),
+    radial-gradient(520px 380px at 90% 80%, rgba(150, 130, 255, 0.1), transparent 60%), var(--bg);
+}
+.intro-logo {
+  font-family: var(--font-display); font-weight: 800; font-size: clamp(2.3rem, 12vw, 3.2rem); letter-spacing: 0.14em;
+  color: var(--text); white-space: nowrap; display: flex;
+}
+.intro-logo b { color: var(--accent); font-weight: inherit; display: flex; }
+.intro-logo span {
+  display: inline-block; animation: intro-lettre 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--d0) + var(--i) * 55ms);
+}
+@keyframes intro-lettre { from { opacity: 0; transform: translateY(22px) scale(0.9); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+.intro-ligne {
+  width: 76px; height: 3px; border-radius: 3px; background: var(--accent-grad, var(--accent)); transform-origin: left center;
+  animation: intro-ligne 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--d0) + 0.45s);
+}
+@keyframes intro-ligne { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+/* Le joyau (thème Opale seulement) : il s'allume, une onde en part. */
+.op-gem-intro { display: none; }
+.theme-opale .op-gem-intro {
+  display: block; width: 150px; height: 150px; margin-bottom: 14px;
+  animation: opale-allume 1.5s ease-out both, opale-flotte 6s ease-in-out 1.5s infinite;
+}
+.theme-opale .op-gem-intro::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(168, 240, 220, 0.8);
+  animation: intro-onde 1.3s cubic-bezier(0.2, 0.7, 0.3, 1) 0.75s both; pointer-events: none;
+}
+@keyframes intro-onde { from { transform: scale(0.95); opacity: 0.9; } to { transform: scale(2.6); opacity: 0; } }
+/* Sortie : l'écran se dilate et se dissout, l'app apparaît derrière. */
+#intro.part { animation: intro-sortie 0.65s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+@keyframes intro-sortie { to { opacity: 0; transform: scale(1.1); filter: blur(10px); visibility: hidden; } }
+/* Les vues attendent la sortie de l'intro pour jouer leur propre entrée. */
+body.intro-on .view.active, body.intro-on .view.active > *, body.intro-on .bottom-nav, body.intro-on .topbar { animation-play-state: paused !important; }
+body.intro-on .view.active { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { #intro { display: none; } }
