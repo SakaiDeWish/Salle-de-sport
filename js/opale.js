@@ -81,34 +81,6 @@ function opaleCompte(racine) {
   window.addEventListener("load", () => setTimeout(() => opaleCompte(document.querySelector(".view.active")), 350));
 })();
 
-/* ---------- 4. Chiffres du chrono qui défilent ---------- */
-(function () {
-  const cibles = ["rest-countdown", "chrono-session", "chrono-rest-total", "chrono-warmup", "mb-chrono"];
-  cibles.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let avant = el.textContent, occupe = false;
-    const mo = new MutationObserver(() => {
-      if (occupe) return;
-      const apres = el.textContent;
-      if (apres === avant) return;
-      const memeLongueur = apres.length === avant.length;
-      const vieux = avant; avant = apres;
-      if (!memeLongueur || !opaleOn() || el.offsetParent === null && getComputedStyle(el).position !== "fixed") return;
-      occupe = true;
-      el.innerHTML = [...apres].map(c => `<span class="dg">${c}</span>`).join("");
-      mo.takeRecords(); occupe = false;
-      [...el.children].forEach((s, i) => {
-        if (apres[i] === vieux[i]) return;
-        s.animate([{ transform: "translateY(60%)", opacity: 0, filter: "blur(3px)" },
-                   { transform: "translateY(0)", opacity: 1, filter: "blur(0)" }],
-                  { duration: 360, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
-      });
-    });
-    mo.observe(el, { childList: true, characterData: true, subtree: true });
-  });
-})();
-
 /* ---------- 5. Onde à la validation + balayage quand on progresse ---------- */
 function opaleValidation(cb) {
   if (!opaleOn() || !cb) return;

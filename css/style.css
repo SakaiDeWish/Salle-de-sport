@@ -4257,9 +4257,6 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 .theme-opale #view-accueil::before { transform: translateY(calc(var(--py, 0) * 0.38px)) scale(calc(1 - var(--py, 0) * 0.00035)); }
 .theme-opale body::after { transform: translateY(calc(var(--py, 0) * -0.06px)); }
 
-/* 4. Chiffres du chrono : chacun défile. */
-.dg { display: inline-block; font-variant-numeric: tabular-nums; }
-
 /* 5. Onde et étincelles à la validation, balayage irisé quand on progresse. */
 .onde {
   position: absolute; z-index: 3; width: 28px; height: 28px; border-radius: 50%; pointer-events: none;
@@ -4353,7 +4350,7 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 
 /* Hero de l'accueil : le joyau, puis trois colonnes. */
 .theme-opale .op-hero { text-align: center; margin: 2px 0 30px; }
-.theme-opale .op-gem-hero { width: 188px; height: 188px; margin: 8px auto 42px; transform: translateY(calc(var(--py, 0) * 0.3px)); }
+.theme-opale .op-gem-hero { width: 188px; height: 188px; margin: 8px auto 42px; transform: translateY(calc(var(--py, 0) * -0.12px)); }   /* remonte un peu plus vite que la page : jamais sur les chiffres dessous */
 .op-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; align-items: start; }
 .op-k { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
 .op-v {
@@ -4542,3 +4539,37 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 body.intro-on .view.active, body.intro-on .view.active > *, body.intro-on .bottom-nav, body.intro-on .topbar { animation-play-state: paused !important; }
 body.intro-on .view.active { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { #intro { display: none; } }
+
+
+/* =========================================================
+   OPALE — corrections d'affichage
+   ========================================================= */
+/* Chronos : des chiffres normaux, sans empilement ni défilement. */
+.theme-opale .hdr-pill-chrono, .theme-opale .mb-chrono, .theme-opale .chrono-value {
+  font-family: var(--font-body); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.theme-opale .hdr-pill-chrono { font-weight: 600; letter-spacing: 0; }
+.theme-opale .mb-chrono { font-weight: 600; }
+.theme-opale .live-minibar { white-space: nowrap; max-width: calc(100vw - 24px); }
+.theme-opale .mb-status { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Réglages : les cinq thèmes passent à la ligne au lieu de déborder de la feuille. */
+.seg-mini { flex-wrap: wrap; }
+.set-card .set-row:has(.seg-mini) { flex-direction: column; align-items: stretch; gap: 8px; }
+.set-card .set-row:has(.seg-mini) .seg-mini { justify-content: flex-start; }
+
+/* Cases à cocher d'Opale : fond sombre au repos, menthe cochée (plus de carré blanc). */
+.theme-opale input[type="checkbox"] {
+  -webkit-appearance: none; appearance: none; flex: none; width: 26px; height: 26px; min-width: 26px; min-height: 26px;
+  max-width: 26px; padding: 0; border-radius: 9px; margin: 0;
+  border: 1.5px solid rgba(168, 240, 220, 0.4); background: rgba(255, 255, 255, 0.04);
+  display: inline-grid; place-content: center; cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.38s var(--ressort, ease);
+}
+.theme-opale input[type="checkbox"]:checked { background: var(--accent-grad); border-color: transparent; }
+.theme-opale input[type="checkbox"]:checked::after {
+  content: ""; width: 12px; height: 7px; border-left: 2.6px solid #052019; border-bottom: 2.6px solid #052019;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+.theme-opale input[type="checkbox"]:active { transform: scale(0.88); }
+.theme-opale .set-check input { width: 26px; height: 26px; min-height: 26px; }
