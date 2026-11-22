@@ -304,6 +304,77 @@ function newEmptyProgram() {
   };
 }
 
+/* Glisser-déposer au POINTEUR (souris, doigt, stylet) dans une liste d'éléments frères.
+   `grip` est la poignée ; pendant le glisser l'élément suit le doigt, les autres s'écartent,
+   et le conteneur défile tout seul près de ses bords. Au lâcher : onDrop(depuis, vers). */
+function dragPointeur(racine, itemSel, gripSel, parentDe, onDrop, replier = null) {
+  racine.querySelectorAll(gripSel).forEach(grip => {
+    if (grip.__dp) return;
+    grip.__dp = true;
+    grip.style.touchAction = "none";
+    grip.addEventListener("pointerdown", e => {
+      if (e.button > 0) return;
+      const item = grip.closest(itemSel); if (!item) return;
+      e.preventDefault(); e.stopPropagation();
+      const parent = parentDe(item);
+      const items = [...parent.children].filter(n => n.matches(itemSel));
+      const from = items.indexOf(item);
+      if (items.length < 2 || from < 0) return;
+      const defil = item.closest(".modal-box") || document.scrollingElement;
+      /* Les séances sont longues : pour en faire glisser une sur trois autres il faut les replier,
+         sinon on défile sur des milliers de pixels. La poignée reste sous le doigt. */
+      if (replier) {
+        const avant = grip.getBoundingClientRect().top;
+        replier.ajoute();
+        defil.scrollTop += grip.getBoundingClientRect().top - avant;
+      }
+      const rects = items.map(i => i.getBoundingClientRect());
+      const mids = rects.map(r => r.top + r.height / 2);
+      const espace = rects.length > 1 ? Math.max(0, from < rects.length - 1 ? rects[from + 1].top - rects[from].bottom : rects[from].top - rects[from - 1].bottom) : 8;
+      const H = rects[from].height + espace;
+      const y0 = e.clientY, s0 = defil.scrollTop;
+      let yNow = y0, to = from, raf = 0;
+      items.forEach(i => { i.style.transition = "transform 0.2s ease"; });
+      item.style.transition = "none"; item.classList.add("b-glisse");
+      try { grip.setPointerCapture(e.pointerId); } catch { /* sans capture */ }
+      const place = () => {
+        const d = (yNow - y0) + (defil.scrollTop - s0);
+        item.style.transform = `translateY(${d}px)`;
+        const centre = mids[from] + d;
+        let t = 0; mids.forEach((m, k) => { if (k !== from && m < centre) t++; });
+        to = t;
+        items.forEach((it, k) => {
+          if (k === from) return;
+          const m = k < from ? k : k - 1;
+          it.style.transform = k < from && m >= t ? `translateY(${H}px)` : k > from && m < t ? `translateY(${-H}px)` : "";
+        });
+      };
+      const boucle = () => {
+        const r = defil === document.scrollingElement ? { top: 0, bottom: window.innerHeight } : defil.getBoundingClientRect();
+        if (yNow < r.top + 60) defil.scrollTop -= Math.ceil((r.top + 60 - yNow) / 5);
+        else if (yNow > r.bottom - 60) defil.scrollTop += Math.ceil((yNow - (r.bottom - 60)) / 5);
+        place(); raf = requestAnimationFrame(boucle);
+      };
+      raf = requestAnimationFrame(boucle);
+      const bouge = ev => { if (ev.pointerId === e.pointerId) yNow = ev.clientY; };
+      const fin = ev => {
+        if (ev.pointerId !== e.pointerId) return;
+        cancelAnimationFrame(raf);
+        window.removeEventListener("pointermove", bouge);
+        window.removeEventListener("pointerup", fin);
+        window.removeEventListener("pointercancel", fin);
+        items.forEach(i => { i.style.transition = ""; i.style.transform = ""; });
+        item.classList.remove("b-glisse");
+        if (replier) replier.retire();
+        if (ev.type !== "pointercancel" && to !== from) onDrop(from, to);
+      };
+      window.addEventListener("pointermove", bouge);
+      window.addEventListener("pointerup", fin);
+      window.addEventListener("pointercancel", fin);
+    });
+  });
+}
+
 function openBuilder(programId, prefill = null) {
   builderState = prefill
     ? prefill
@@ -366,14 +437,18 @@ function renderBuilder() {
     ${b.days.map((day, d) => `
       <div class="card b-day" data-d="${d}">
         <div class="b-day-head">
+          ${b.days.length > 1 ? `<span class="b-day-grip" title="Glisser pour réordonner les séances" aria-label="Poignée : glisser pour réordonner">⠿</span>` : ""}
           <span class="day-num">${String(d + 1).padStart(2, "0")}</span>
           <input type="text" class="b-day-titre" data-d="${d}" value="${esc(day.titre)}" aria-label="Nom de la séance">
+          ${b.days.length > 1 ? `<span class="b-day-mv">
+            <button class="btn-ic b-day-up" data-d="${d}" title="Monter la séance" aria-label="Monter la séance" ${d === 0 ? "disabled" : ""}>▲</button>
+            <button class="btn-ic b-day-down" data-d="${d}" title="Descendre la séance" aria-label="Descendre la séance" ${d === b.days.length - 1 ? "disabled" : ""}>▼</button></span>` : ""}
           ${b.days.length > 1 ? `<button class="btn btn-danger-ghost btn-sm b-day-del" data-d="${d}" title="Supprimer la séance">${icon("trash")}</button>` : ""}
         </div>
 
         ${day.exercices.length === 0 ? `<p class="video-hint">Séance vide — ajoute des exercices.</p>` : ""}
         ${day.exercices.map((l, i) => `
-          <div class="b-row ${l.superset ? "b-superset" : ""}" draggable="true" data-d="${d}" data-i="${i}">
+          <div class="b-row ${l.superset ? "b-superset" : ""}" data-d="${d}" data-i="${i}">
             <span class="b-grip" title="Glisser pour réordonner">⠿</span>
             <div class="b-row-main">
               <div class="b-row-name">
@@ -478,19 +553,25 @@ function renderBuilder() {
     rerender();
   });
 
-  /* Glisser-déposer (desktop) — les flèches couvrent le mobile */
-  box.querySelectorAll(".b-row").forEach(row => {
-    row.addEventListener("dragstart", () => { dragFrom = { d: +row.dataset.d, i: +row.dataset.i }; row.classList.add("dragging"); });
-    row.addEventListener("dragend", () => { dragFrom = null; row.classList.remove("dragging"); });
-    row.addEventListener("dragover", e => e.preventDefault());
-    row.addEventListener("drop", e => {
-      e.preventDefault();
-      if (!dragFrom) return;
-      const to = { d: +row.dataset.d, i: +row.dataset.i };
-      const [moved] = b.days[dragFrom.d].exercices.splice(dragFrom.i, 1);
-      b.days[to.d].exercices.splice(to.i, 0, moved);
-      dragFrom = null;
-      rerender();
+  /* Réordonner les SÉANCES : flèches, ou poignée au doigt / à la souris. */
+  const deplaceSeance = (de, vers) => {
+    if (vers < 0 || vers >= b.days.length || de === vers) return;
+    const [m] = b.days.splice(de, 1);
+    b.days.splice(vers, 0, m);
+    b.days.forEach((day, i) => { day.numero = i + 1; });
+    rerender();
+  };
+  box.querySelectorAll(".b-day-up").forEach(btn => btn.addEventListener("click", () => deplaceSeance(+btn.dataset.d, +btn.dataset.d - 1)));
+  box.querySelectorAll(".b-day-down").forEach(btn => btn.addEventListener("click", () => deplaceSeance(+btn.dataset.d, +btn.dataset.d + 1)));
+  dragPointeur(box, ".b-day", ".b-day-grip", () => box, deplaceSeance,
+    { ajoute: () => box.classList.add("b-jours-replies"), retire: () => box.classList.remove("b-jours-replies") });
+  /* Réordonner les EXERCICES d'une séance : même poignée (marche au doigt, ce que le glisser HTML5 ne faisait pas). */
+  box.querySelectorAll(".b-day").forEach(jour => {
+    const d = +jour.dataset.d;
+    dragPointeur(jour, ".b-row", ".b-grip", () => jour, (de, vers) => {
+      const arr = b.days[d].exercices;
+      if (vers < 0 || vers >= arr.length || de === vers) return;
+      const [m] = arr.splice(de, 1); arr.splice(vers, 0, m); rerender();
     });
   });
 
@@ -503,7 +584,7 @@ function renderBuilder() {
     });
     if (b.days.every(d => d.exercices.length === 0)) { alert("Ajoute au moins un exercice avant d'enregistrer."); return; }
     upsertProgram(b);
-    if (activate) { setActiveProgram(b); renderProgram(b); }
+    if (activate || b.id === getActiveId()) { setActiveProgram(b); renderProgram(b); }
     closeBuilder();
     renderProgramsPanel();
   };

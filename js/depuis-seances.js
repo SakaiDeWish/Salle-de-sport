@@ -143,7 +143,11 @@ function validerSeancesVersProgramme() {
     activateView("programme");
     const seg = document.querySelector('[data-ppanel="programmes"]'); if (seg) seg.click();
   });
+  const reorg = document.createElement("button");
+  reorg.type = "button"; reorg.className = "btn btn-ghost"; reorg.textContent = "Réorganiser les séances";
+  reorg.addEventListener("click", () => { fermerSeancesVersProgramme(); activateView("programme"); openBuilder(prog.id); });
   ok.replaceWith(voir);
+  voir.after(reorg);
   spModal.querySelector("#sp-annule").textContent = "Fermer";
 }
 
