@@ -230,38 +230,61 @@ function constellationSemaine() {
   setTimeout(maj, 300);
 })();
 
-/* ---------- 3. Étoile filante à attraper ---------- */
+/* ---------- 3. Étoile filante ----------
+   Une vraie météore : rapide (un peu plus d'une seconde), une tête vive et une
+   longue traîne qui s'effile. Elle est dessinée DANS le ciel (canvas), donc
+   derrière l'interface : elle ne gêne rien, on la voit dans les creux entre les
+   cartes. On l'attrape en touchant le fond près de sa trajectoire — un toucher
+   sur un bouton, une carte ou un champ ne compte jamais. */
+window.__meteores = [];
 (function () {
   let suivant = null;
+  const INTERACTIF = "button, a, input, select, textarea, label, [role='button'], .ex-card, .badge-tile, .home-cta, .cb-row, .live-ex-head, .card.stat-tile, .defi";
   const plan = (ms) => { clearTimeout(suivant); suivant = setTimeout(lance, ms); };
   function lance() {
     plan((18000 + Math.random() * 30000) / (window.__cielFilantes || 1));      // plus fréquentes la nuit
     if (!vivantOk() || vivantReduit() || document.hidden) return;
     const vue = document.querySelector(".view.active");
     if (!vue || vue.id !== "view-accueil") return;
-    if (document.querySelector(".rest-overlay:not(.hidden), #opale-jalon:not(.hidden), .modal:not(.hidden)")) return;
-    const e = document.createElement("button");
-    e.type = "button"; e.className = "etoile-filante"; e.setAttribute("aria-label", "Étoile filante : attrape-la");
-    const W = window.innerWidth;
-    e.style.top = (70 + Math.random() * 170) + "px"; e.style.left = "-30px";
-    document.body.appendChild(e);
-    const dx = W + 80, dy = 110 + Math.random() * 90;
-    const a = e.animate([{ transform: "translate(0,0)", opacity: 0 }, { opacity: 1, offset: 0.1 },
-                         { transform: `translate(${dx}px, ${dy}px)`, opacity: 0.9, offset: 0.92 }, { transform: `translate(${dx}px, ${dy}px)`, opacity: 0 }],
-      { duration: 3200 * vitV(), easing: "ease-in" });
-    a.onfinish = () => e.remove();
-    e.addEventListener("click", ev => {
-      ev.stopPropagation();
-      const r = e.getBoundingClientRect();
-      a.cancel(); e.remove();
-      jaillit(document.body, r.left + r.width / 2, r.top + r.height / 2, 18, 70, true);
+    if (document.querySelector(".rest-overlay:not(.hidden), #opale-jalon:not(.hidden), #opale-atelier:not(.hidden), .modal:not(.hidden)")) return;
+    const W = window.innerWidth, H = window.innerHeight;
+    const dir = Math.random() < 0.5 ? 1 : -1;                                  // de gauche à droite ou l'inverse
+    const ang = (16 + Math.random() * 22) * Math.PI / 180;
+    const x0 = dir > 0 ? W * (0.02 + Math.random() * 0.4) : W * (0.98 - Math.random() * 0.4);
+    const y0 = H * (0.03 + Math.random() * 0.32);
+    const longueur = 260 + Math.random() * 240;
+    window.__meteores.push({
+      x0, y0, x1: x0 + dir * Math.cos(ang) * longueur, y1: y0 + Math.sin(ang) * longueur, dir,
+      t0: performance.now(), dur: (1050 + Math.random() * 500) * (vitV() > 1 ? 1.15 : 1), queue: 120 + Math.random() * 70
+    });
+  }
+  /* Position de la tête à l'instant t (0..1), avec une légère accélération. */
+  const tete = (m, p) => { const q = Math.pow(p, 1.25); return { x: m.x0 + (m.x1 - m.x0) * q, y: m.y0 + (m.y1 - m.y0) * q }; };
+  document.addEventListener("pointerdown", e => {
+    if (!window.__meteores.length || !vivantOk()) return;
+    if (e.target.closest && e.target.closest(INTERACTIF)) return;
+    const now = performance.now();
+    for (let i = 0; i < window.__meteores.length; i++) {
+      const m = window.__meteores[i], p = (now - m.t0) / m.dur;
+      if (p < 0.04 || p > 0.96) continue;
+      const h = tete(m, p);
+      const ux = -m.dir * Math.cos(Math.atan2(m.y1 - m.y0, Math.abs(m.x1 - m.x0))), uy = -Math.sin(Math.atan2(m.y1 - m.y0, Math.abs(m.x1 - m.x0)));
+      const tx = h.x + ux * m.queue * Math.min(1, p * 3), ty = h.y + uy * m.queue * Math.min(1, p * 3);
+      /* distance du doigt au segment queue-tête */
+      const vx = h.x - tx, vy = h.y - ty, l2 = vx * vx + vy * vy || 1;
+      const k = Math.max(0, Math.min(1, ((e.clientX - tx) * vx + (e.clientY - ty) * vy) / l2));
+      if (Math.hypot(e.clientX - (tx + vx * k), e.clientY - (ty + vy * k)) > 58) continue;
+      window.__meteores.splice(i, 1);
+      jaillit(document.body, h.x, h.y, 18, 70, true);
       gagneEtoiles(1, "filante");
       const n = nbEtoiles();
       if (typeof sonDoux === "function") sonDoux("etoile");
       haptique("succes");
       opaleToast(n === 1 ? "Première étoile attrapée ★" : `Étoile attrapée ★ ${n}`);
-    });
-  }
+      return;
+    }
+  }, { capture: true, passive: true });
+  window.__meteoreTete = tete;
   plan(7000);
 })();
 
@@ -304,6 +327,27 @@ function constellationSemaine() {
       const a = (0.35 + 0.65 * (0.5 + 0.5 * Math.sin((t / 1000) * s.v + s.ph))) * (0.3 + 0.7 * s.z);
       ctx.globalAlpha = a * (window.__cielFacteur == null ? 1 : window.__cielFacteur); ctx.fillStyle = s.c;
       ctx.beginPath(); ctx.arc(px, py, s.r, 0, 6.283); ctx.fill();
+    }
+    /* Étoiles filantes : traîne effilée en dégradé, tête lumineuse. */
+    const maint = performance.now();
+    for (let i = window.__meteores.length - 1; i >= 0; i--) {
+      const m = window.__meteores[i], p = (maint - m.t0) / m.dur;
+      if (p >= 1) { window.__meteores.splice(i, 1); continue; }
+      if (p < 0) continue;
+      const h = window.__meteoreTete(m, p);
+      const alpha = Math.min(1, p / 0.1) * Math.min(1, (1 - p) / 0.28);
+      const ang = Math.atan2(m.y1 - m.y0, Math.abs(m.x1 - m.x0));
+      const L = m.queue * Math.min(1, p * 3.5);
+      const tx = h.x - m.dir * Math.cos(ang) * L, ty = h.y - Math.sin(ang) * L;
+      const g = ctx.createLinearGradient(tx, ty, h.x, h.y);
+      g.addColorStop(0, "rgba(170, 215, 255, 0)"); g.addColorStop(0.65, "rgba(200, 235, 255, 0.35)"); g.addColorStop(1, "rgba(255, 255, 255, 0.95)");
+      const nx = -Math.sin(ang) * (m.dir > 0 ? 1 : -1), ny = Math.cos(ang) * (m.dir > 0 ? 1 : -1);
+      const w = 1.7;                                          // demi-largeur à la tête, 0 au bout de la traîne
+      ctx.globalAlpha = alpha; ctx.fillStyle = g;
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(h.x + nx * w, h.y + ny * w); ctx.lineTo(h.x - nx * w, h.y - ny * w); ctx.closePath(); ctx.fill();
+      const halo = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, 9);
+      halo.addColorStop(0, "rgba(255, 255, 255, 0.95)"); halo.addColorStop(0.35, "rgba(220, 240, 255, 0.45)"); halo.addColorStop(1, "rgba(220, 240, 255, 0)");
+      ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(h.x, h.y, 9, 0, 6.283); ctx.fill();
     }
     for (let i = poussieres.length - 1; i >= 0; i--) {
       const p = poussieres[i];

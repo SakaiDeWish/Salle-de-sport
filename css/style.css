@@ -4785,18 +4785,6 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .cj.auj text { fill: var(--accent); }
 .cj:focus-visible .cj-pt { stroke: #fff; stroke-width: 1.5; }
 
-/* Étoile filante */
-.etoile-filante {
-  position: fixed; z-index: 55; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: #fff;
-  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.85); -webkit-tap-highlight-color: transparent;
-}
-.etoile-filante::before {                                        /* la traîne */
-  content: ""; position: absolute; right: 50%; top: 50%; width: 120px; height: 2px; margin-top: -1px; transform-origin: right center;
-  transform: rotate(-18deg); background: linear-gradient(to left, rgba(255, 255, 255, 0.9), rgba(168, 240, 220, 0.4) 40%, transparent);
-  border-radius: 2px; pointer-events: none;
-}
-.etoile-filante::after { content: ""; position: absolute; inset: -14px; }   /* cible de toucher plus généreuse */
-
 /* « Salut. » fait la vague */
 .vague-l { display: inline-block; white-space: pre; }
 
