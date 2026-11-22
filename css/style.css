@@ -4326,7 +4326,7 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 .theme-opale .op-gem {
   display: block; position: relative; border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.8), transparent 20%),
+    radial-gradient(circle at var(--gx, 30%) var(--gy, 24%), rgba(255, 255, 255, 0.8), transparent 20%),
     radial-gradient(ellipse at 64% 36%, rgba(47, 196, 164, 0.95), transparent 56%),
     radial-gradient(ellipse at 26% 68%, rgba(42, 111, 208, 0.95), transparent 60%),
     radial-gradient(ellipse at 76% 82%, rgba(233, 166, 76, 0.9), transparent 46%),
@@ -4350,7 +4350,12 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 
 /* Hero de l'accueil : le joyau, puis trois colonnes. */
 .theme-opale .op-hero { text-align: center; margin: 2px 0 30px; }
-.theme-opale .op-gem-hero { width: 188px; height: 188px; margin: 8px auto 42px; transform: translateY(calc(var(--py, 0) * -0.12px)); }   /* remonte un peu plus vite que la page : jamais sur les chiffres dessous */
+.theme-opale .op-gem-hero {
+  width: 188px; height: 188px; margin: 8px auto 42px; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none;
+  transform: translateY(calc(var(--py, 0) * -0.12px)) perspective(700px) rotateX(var(--rx, 0deg)) rotateY(calc(var(--ry, 0deg) + var(--tx, 0) * 8deg));
+  transition: transform 0.9s var(--ressort-doux, ease);
+}
+.theme-opale .op-gem-hero.touche { transition: transform 0.12s linear; cursor: grabbing; }   /* remonte un peu plus vite que la page : jamais sur les chiffres dessous */
 .op-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; align-items: start; }
 .op-k { display: block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
 .op-v {
@@ -4605,6 +4610,11 @@ body.intro-on .view.active { opacity: 0; }
 }
 .theme-opale .btn-primary:active { box-shadow: inset 0 -6px 12px -10px rgba(168, 240, 220, 0.5), 0 3px 10px -8px rgba(0, 0, 0, 0.6); }
 .theme-opale .op-gem { box-shadow: inset -22px -26px 46px rgba(0, 0, 0, 0.55), inset 10px 12px 26px rgba(255, 255, 255, 0.2), 0 24px 50px -28px rgba(47, 196, 164, 0.25); }
+/* L'opale hero s'allume avec l'objectif de la semaine : un voile sombre se retire à mesure. */
+.theme-opale .op-gem-hero {
+  box-shadow: inset -22px -26px 46px rgba(0, 0, 0, 0.55), inset 10px 12px 26px rgba(255, 255, 255, 0.2),
+    inset 0 0 0 200px rgba(0, 0, 0, calc((1 - var(--charge, 0.5)) * 0.42)), 0 24px 50px -28px rgba(47, 196, 164, 0.25);
+}
 /* Lueurs de fond : deux fois plus discrètes. */
 .theme-opale body {
   background:
@@ -4698,3 +4708,103 @@ body.intro-on .view.active { opacity: 0; }
 html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 @supports not (overflow: clip) { html, body { overflow-x: hidden; } }
 .theme-opale .view::before, .theme-opale #view-accueil::before { left: 0; right: 0; }
+
+
+/* =========================================================
+   OPALE VIVANTE (voir js/vivant.js)
+   ========================================================= */
+/* Le ciel : sous tout le contenu, au-dessus du fond. */
+#opale-ciel { position: fixed; inset: 0; z-index: -1; pointer-events: none; display: none; }
+.ciel-on body::after { display: none; }                 /* les anciennes étoiles figées s'effacent devant le ciel vivant */
+
+/* Bulles de message */
+.op-toast {
+  position: fixed; left: 50%; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); z-index: 120; max-width: min(86vw, 360px);
+  padding: 12px 18px; border-radius: 999px; text-align: center; font-weight: 600; font-size: 0.92rem; color: var(--text);
+  background: linear-gradient(165deg, rgba(26, 38, 35, 0.95), rgba(12, 18, 17, 0.96)); border: 1px solid rgba(168, 240, 220, 0.22);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); pointer-events: none;
+  opacity: 0; translate: -50% 14px; transition: opacity 0.35s ease, translate calc(0.5s * var(--vit, 1.45)) var(--ressort-doux, ease);
+}
+.op-toast.on { opacity: 1; translate: -50% 0; }
+
+/* L'opale de l'accueil : anneau d'objectif, charge, onde, orbite. */
+.theme-opale .op-hero { position: relative; }
+.theme-opale .op-gem-hero::before {                   /* anneau de progression de la semaine */
+  content: ""; position: absolute; inset: -14px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(var(--accent) calc(var(--charge, 0) * 360deg), rgba(255, 255, 255, 0.08) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  opacity: 0.85;
+}
+.theme-opale .op-gem-hero .gem-onde, .gem-onde {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none; border: 2px solid rgba(168, 240, 220, 0.8);
+}
+@property --cg { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.gem-charge {
+  position: absolute; inset: -26px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(#ffffff var(--cg), transparent 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3.5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3.5px));
+  animation: gem-charge calc(1.1s * var(--vit, 1.45)) linear forwards;
+}
+@keyframes gem-charge { to { --cg: 360deg; } }
+.theme-opale .op-gem-hero.pret { filter: brightness(1.25); }
+.gem-orbite {
+  position: absolute; inset: -22px; border-radius: 50%; pointer-events: none; animation: gem-orbite calc(7s * var(--vit, 1.45)) linear infinite;
+}
+.gem-orbite::after {
+  content: "✦"; position: absolute; top: -6px; left: 50%; margin-left: -8px; font-size: 16px; line-height: 1; color: #fff;
+  text-shadow: 0 0 8px rgba(168, 240, 220, 0.9);
+}
+@keyframes gem-orbite { to { transform: rotate(360deg); } }
+.op-bulle {
+  position: absolute; left: 50%; top: 4px; translate: -50% 0; z-index: 5; display: flex; flex-direction: column; gap: 2px; text-align: center;
+  padding: 10px 18px; border-radius: 22px; pointer-events: none; font-size: 0.88rem; font-weight: 600; width: max-content; max-width: 86%;
+  background: linear-gradient(165deg, rgba(26, 38, 35, 0.95), rgba(12, 18, 17, 0.96)); border: 1px solid rgba(168, 240, 220, 0.25);
+  opacity: 0; transform: translateY(10px) scale(0.92); transition: opacity 0.35s ease, transform calc(0.5s * var(--vit, 1.45)) var(--ressort-doux, ease);
+}
+.op-bulle span:last-child { color: var(--text-soft); font-weight: 500; }
+.op-bulle.on { opacity: 1; transform: none; }
+.etincelle.fixe { position: fixed; }
+
+/* Constellation de la semaine */
+.op-const { margin-top: 26px; text-align: left; }
+.op-const-tete { display: flex; justify-content: space-between; align-items: baseline; padding: 0 4px; }
+.op-etoiles { font-size: 0.85rem; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+.op-const svg { display: block; width: 100%; height: auto; overflow: visible; }
+.cj-lignes line { stroke: rgba(168, 240, 220, 0.4); stroke-width: 1; stroke-dasharray: 3 3; }
+.cj { cursor: pointer; outline: none; }
+.cj-zone { fill: transparent; }
+.cj-pt { fill: rgba(255, 255, 255, 0.16); transform-box: fill-box; transform-origin: center; transition: fill 0.4s ease; }
+.cj.on .cj-pt { fill: var(--accent); }
+.cj.on .cj-pt { animation: cj-scintille calc(3.4s * var(--vit, 1.45)) ease-in-out infinite; }
+.cj:nth-child(odd).on .cj-pt { animation-delay: -1.3s; }
+@keyframes cj-scintille { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+.cj-auj { fill: none; stroke: rgba(168, 240, 220, 0.5); stroke-width: 1.2; stroke-dasharray: 2 3; transform-box: fill-box; transform-origin: center; animation: gem-orbite calc(14s * var(--vit, 1.45)) linear infinite; }
+.cj text { fill: var(--text-soft); font-size: 9px; font-weight: 600; letter-spacing: 0.06em; }
+.cj.auj text { fill: var(--accent); }
+.cj:focus-visible .cj-pt { stroke: #fff; stroke-width: 1.5; }
+
+/* Étoile filante */
+.etoile-filante {
+  position: fixed; z-index: 55; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; cursor: pointer; background: #fff;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.85); -webkit-tap-highlight-color: transparent;
+}
+.etoile-filante::before {                                        /* la traîne */
+  content: ""; position: absolute; right: 50%; top: 50%; width: 120px; height: 2px; margin-top: -1px; transform-origin: right center;
+  transform: rotate(-18deg); background: linear-gradient(to left, rgba(255, 255, 255, 0.9), rgba(168, 240, 220, 0.4) 40%, transparent);
+  border-radius: 2px; pointer-events: none;
+}
+.etoile-filante::after { content: ""; position: absolute; inset: -14px; }   /* cible de toucher plus généreuse */
+
+/* « Salut. » fait la vague */
+.vague-l { display: inline-block; white-space: pre; }
+
+/* Barres de progression : elles se remplissent à l'apparition (tous thèmes). */
+.progress-bar { transform-origin: left center; animation: barre-pousse calc(1s * var(--vit, 1.45)) var(--amorti, ease) backwards; }
+@keyframes barre-pousse { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  #opale-ciel { display: none !important; }
+  .progress-bar, .cj.on .cj-pt, .cj-auj, .gem-orbite { animation: none; }
+}
