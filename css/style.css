@@ -4920,3 +4920,13 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .sp-radio input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); }
 .sp-select, .sp-champ { width: 100%; }
 .sp-act { font-weight: 500; font-size: 0.88rem; color: var(--text-soft); }
+
+
+/* Créateur de programme : réordonner les séances et les exercices */
+.b-day-grip { cursor: grab; color: var(--text-soft); padding: 6px 4px; user-select: none; -webkit-user-select: none; font-size: 1.15rem; touch-action: none; }
+.b-day-mv { display: inline-flex; gap: 4px; }
+.b-grip { touch-action: none; padding: 10px 6px; }
+.b-glisse { position: relative; z-index: 20; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45); opacity: 0.97; }
+.b-glisse .b-day-grip, .b-glisse .b-grip { cursor: grabbing; }
+.b-jours-replies .b-day > :not(.b-day-head) { display: none; }
+.b-jours-replies .b-day { margin-bottom: 8px; }
