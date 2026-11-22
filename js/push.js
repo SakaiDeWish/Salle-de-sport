@@ -29,8 +29,15 @@ async function pushAppel(chemin, corps) {
   return r.ok;
 }
 
+/* Les appels au serveur passent UN PAR UN, dans l'ordre : « annuler » puis « programmer »
+   envoyés à une seconde d'écart ne peuvent plus se croiser en route. */
+let pushFile = Promise.resolve();
+const pushEnFile = tache => (pushFile = pushFile.then(tache, tache));
+
 /* Programme la notification pour dans `delaiSec` secondes. */
-async function pushProgrammer(delaiSec, exName) {
+function pushProgrammer(delaiSec, exName) { return pushEnFile(() => pushProgrammerBrut(delaiSec, exName)); }
+function pushAnnuler() { return pushEnFile(pushAnnulerBrut); }
+async function pushProgrammerBrut(delaiSec, exName) {
   try {
     if (localStorage.getItem("gymcoach.restNotif") !== "1") return false;
     const sub = await pushAbonnement(false);
@@ -40,7 +47,7 @@ async function pushProgrammer(delaiSec, exName) {
   } catch { return false; }
 }
 
-async function pushAnnuler() {
+async function pushAnnulerBrut() {
   try {
     const sub = await pushAbonnement(false);
     if (sub) await pushAppel("/annuler", { subscription: sub.toJSON() });

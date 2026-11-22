@@ -12,6 +12,16 @@ const cors = {
 const json = (o, status = 200) =>
   new Response(JSON.stringify(o), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
+/* Le Worker n'envoie qu'aux services push des navigateurs : sans cette liste, il servirait
+   de relais pour POSTer vers n'importe quel site. */
+const HOTES_PUSH = [/^fcm\.googleapis\.com$/, /^updates\.push\.services\.mozilla\.com$/, /\.push\.apple\.com$/,
+                    /\.notify\.windows\.com$/, /^android\.googleapis\.com$/];
+function hoteAutorise(endpoint) {
+  try {
+    const u = new URL(endpoint);
+    return u.protocol === "https:" && !u.port && HOTES_PUSH.some(re => re.test(u.hostname));
+  } catch { return false; }
+}
 async function cleDe(endpoint) {
   const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(endpoint));
   return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2, "0")).join("");
@@ -26,7 +36,7 @@ export default {
     let corps;
     try { corps = await req.json(); } catch { return json({ erreur: "JSON invalide" }, 400); }
     const sub = corps.subscription;
-    if (!sub || typeof sub.endpoint !== "string" || !sub.endpoint.startsWith("https://"))
+    if (!sub || typeof sub.endpoint !== "string" || !hoteAutorise(sub.endpoint))
       return json({ erreur: "abonnement invalide" }, 400);
     const stub = env.REPOS.get(env.REPOS.idFromName(await cleDe(sub.endpoint)));
     if (url.pathname === "/programmer") {

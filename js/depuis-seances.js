@@ -26,7 +26,7 @@ function seanceDeProgrammeDepuis(r, numero) {
       } else if (secs.length) {
         line.reps = Math.round(secs.reduce((a, b) => a + b, 0) / secs.length) + " s";
       }
-      const poids = [...new Set(sets.map(s => s.poids).filter(v => v != null))];
+      const poids = [...new Set(sets.map(s => s.poids).filter(v => v != null && v > 0))];
       if (poids.length) line.note = "Dernières charges : " + poids.slice(0, 4).join(" / ") + " kg";
       return line;
     })
@@ -34,7 +34,9 @@ function seanceDeProgrammeDepuis(r, numero) {
 }
 
 function ouvrirSeancesVersProgramme(preselection = []) {
-  const histo = getHistory().slice().sort((a, b) => b.date - a.date).slice(0, 80);
+  const toutes = getHistory().slice().sort((a, b) => b.date - a.date);
+  /* 80 séances récentes, PLUS celles qu'on a présélectionnées (même très anciennes). */
+  const histo = toutes.filter((r, i) => i < 80 || preselection.includes(r.id));
   if (!histo.length) { alert("Aucune séance réalisée pour l'instant : fais une séance, puis reviens ici."); return; }
   const programmes = (typeof getPrograms === "function") ? getPrograms() : [];
   const actifId = typeof getActiveId === "function" ? getActiveId() : null;
@@ -60,7 +62,7 @@ function ouvrirSeancesVersProgramme(preselection = []) {
           <input type="checkbox" class="sp-case" value="${esc(r.id)}" ${spOrdre.includes(r.id) ? "checked" : ""}>
           <span class="sp-txt"><strong>${esc(r.nom)}</strong>
             <span class="sp-sous">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}
-              · ${(r.exercises || []).length} exercice${(r.exercises || []).length > 1 ? "s" : ""} · ${nbS(r)} séries</span></span>
+              · ${(r.exercises || []).length} exercice${(r.exercises || []).length > 1 ? "s" : ""} · ${nbS(r)} série${nbS(r) > 1 ? "s" : ""}</span></span>
         </label>`).join("")}
     </div>
     <div class="sp-dest">

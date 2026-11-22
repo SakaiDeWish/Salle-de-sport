@@ -287,7 +287,6 @@ function renderProjection(p) {
 /* ==================== ÉDITEUR DE PROGRAMME ==================== */
 const builderModal = document.getElementById("builder");
 let builderState = null; // copie de travail du programme
-let dragFrom = null;     // { d, i } pendant un glisser-déposer
 
 function newEmptyProgram() {
   const profil = loadJSON(STORAGE_KEYS.profil, null) || {};
@@ -365,8 +364,14 @@ function dragPointeur(racine, itemSel, gripSel, parentDe, onDrop, replier = null
         window.removeEventListener("pointercancel", fin);
         items.forEach(i => { i.style.transition = ""; i.style.transform = ""; });
         item.classList.remove("b-glisse");
+        const topAvant = item.getBoundingClientRect().top;
         if (replier) replier.retire();
-        if (ev.type !== "pointercancel" && to !== from) onDrop(from, to);
+        const ordre = ev.type !== "pointercancel" && to !== from;
+        if (ordre) onDrop(from, to);
+        if (replier) {                                       // la séance déposée reste là où le doigt l'a lâchée
+          const apres = [...parent.children].filter(n => n.matches(itemSel))[ordre ? to : from];
+          if (apres) defil.scrollTop += apres.getBoundingClientRect().top - topAvant;
+        }
       };
       window.addEventListener("pointermove", bouge);
       window.addEventListener("pointerup", fin);
@@ -465,6 +470,8 @@ function renderBuilder() {
             <div class="b-row-actions">
               <button class="btn-ic b-up" data-d="${d}" data-i="${i}" title="Monter" ${i === 0 ? "disabled" : ""}>▲</button>
               <button class="btn-ic b-down" data-d="${d}" data-i="${i}" title="Descendre" ${i === day.exercices.length - 1 ? "disabled" : ""}>▼</button>
+              ${b.days.length > 1 ? `<select class="b-mv-day" data-d="${d}" data-i="${i}" title="Déplacer vers une autre séance" aria-label="Déplacer vers une autre séance">
+                <option value="">⇄</option>${b.days.map((x, k) => k === d ? "" : `<option value="${k}">→ ${k + 1}</option>`).join("")}</select>` : ""}
               <button class="btn-ic b-ss" data-d="${d}" data-i="${i}" title="Superset avec le suivant">${icon("link")}</button>
               <button class="btn-ic b-swap" data-d="${d}" data-i="${i}" title="Remplacer par une alternative">${icon("swap")}</button>
               <button class="btn-ic b-del" data-d="${d}" data-i="${i}" title="Retirer">${icon("trash")}</button>
@@ -518,6 +525,16 @@ function renderBuilder() {
     btn.addEventListener("click", () => {
       const arr = b.days[+btn.dataset.d].exercices, i = +btn.dataset.i;
       [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]]; rerender();
+    }));
+  /* Déplacer un exercice vers une autre séance (ce que le glisser HTML5 permettait à la souris). */
+  box.querySelectorAll(".b-mv-day").forEach(sel =>
+    sel.addEventListener("change", () => {
+      if (sel.value === "") return;
+      const de = b.days[+sel.dataset.d].exercices;
+      const [m] = de.splice(+sel.dataset.i, 1);
+      m.superset = false;
+      b.days[+sel.value].exercices.push(m);
+      rerender();
     }));
   box.querySelectorAll(".b-ss").forEach(btn =>
     btn.addEventListener("click", () => {
