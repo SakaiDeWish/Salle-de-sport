@@ -170,7 +170,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v91";
+const APP_VERSION = "v93";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -204,6 +204,11 @@ function settingsHtml() {
         <span class="set-lab">Animations douces
           <span class="set-sub">Mouvements plus lents et plus fluides dans toute l'app. Décoche pour revenir à la vitesse normale.</span></span>
         <input type="checkbox" id="set-douces" ${localStorage.getItem("gymcoach.animDouces") !== "0" ? "checked" : ""}>
+      </label>
+      <label class="set-row set-check">
+        <span class="set-lab">Sons doux
+          <span class="set-sub">Petits carillons très discrets : étoile attrapée, défi relevé, record, atelier. Ils suivent le volume du bip.</span></span>
+        <input type="checkbox" id="set-sons" ${localStorage.getItem("gymcoach.sonsDoux") !== "0" ? "checked" : ""}>
       </label>
       <label class="set-row set-check">
         <span class="set-lab">Retours tactiles
@@ -334,6 +339,11 @@ function openSettings() {
   if (douces) douces.addEventListener("change", () => {
     localStorage.setItem("gymcoach.animDouces", douces.checked ? "1" : "0");
     if (typeof appliqueVit === "function") appliqueVit();
+  });
+  const sons = document.getElementById("set-sons");
+  if (sons) sons.addEventListener("change", () => {
+    localStorage.setItem("gymcoach.sonsDoux", sons.checked ? "1" : "0");
+    if (sons.checked && typeof sonDoux === "function") sonDoux("etoile");
   });
   const hap = document.getElementById("set-haptique");
   if (hap) hap.addEventListener("change", () => {
