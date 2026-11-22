@@ -4687,3 +4687,14 @@ body.intro-on .view.active { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .view.active > * { animation: none !important; }
 }
+
+/* =========================================================
+   PAS DE DÉCALAGE LATÉRAL
+   La page ne défile qu'en hauteur. `overflow-x: clip` (et non `hidden`) coupe
+   ce qui dépasse SANS faire de <body> un conteneur de défilement : les
+   en-têtes collants (séance, barre d'ordre) continuent de coller à l'écran.
+   `overscroll-behavior-x: none` supprime aussi le rebond latéral d'iOS.
+   ========================================================= */
+html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
+@supports not (overflow: clip) { html, body { overflow-x: hidden; } }
+.theme-opale .view::before, .theme-opale #view-accueil::before { left: 0; right: 0; }
