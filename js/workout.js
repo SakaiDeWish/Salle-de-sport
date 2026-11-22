@@ -518,6 +518,7 @@ function clearLive() {
   for (const k in saisie) delete saisie[k];
   localStorage.removeItem(STORAGE_KEYS.live);
   live = null;
+  if (rest && typeof pushAnnuler === "function") pushAnnuler();     // plus de repos : plus de notification de reprise
   rest = null;
   restMinimized = false;
   if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
@@ -1337,11 +1338,26 @@ function validerExercice(i) {
 
 /* Cocher : on valide avec ce que la case annonce. Si un champ obligatoire
    est vide (rien à proposer), on montre le détail et on y met le curseur. */
+const sansChargeOk = new WeakSet();          // exercices pour lesquels on a déjà demandé le poids une fois
 function cocherSerie(i) {
   const ex = live.exercises[i];
   const statique = estStatique(ex);
   const champ = document.getElementById((statique ? "temps-" : "reps-") + i);
   const chronoEnCours = statique && holdEnCours(i);
+  /* Un exercice avec charge (barre, haltères, machine, poulie) dont le poids est vide : on le demande
+     d'abord. Sinon un débutant valide « au poids du corps » sans le savoir et sa progression ne
+     s'enregistre jamais. S'il referme le pavé sans rien saisir, le tap suivant valide tel quel. */
+  const poidsChamp = document.getElementById("poids-" + i);
+  const defExo = allExercisesForUI().find(e => e.id === ex.exId);
+  const chargee = !!defExo && ["barre", "halteres", "machine", "poulie"].includes(defExo.materiel) && !statique;
+  if (chargee && poidsChamp && poidsChamp.value === "" && !sansChargeOk.has(ex)) {
+    sansChargeOk.add(ex);
+    openNext = i; editingSet = null;
+    renderLiveExercises();
+    const c = document.getElementById("poids-" + i);
+    if (c) focusChamp(c);
+    return;
+  }
   if (!chronoEnCours && !(champ && parseInt(champ.value, 10) > 0)) {
     openNext = i; editingSet = null;
     renderLiveExercises();
@@ -1772,6 +1788,7 @@ function unvalidateSet(i, j) {
   // le repos en cours pointait peut-être sur cette série
   if (rest && rest.setRef.exIndex === i && rest.setRef.setIndex >= j) {
     rest = null;
+    if (typeof pushAnnuler === "function") pushAnnuler();
     restMinimized = false;
     elRestOverlay.classList.add("hidden");
   }
@@ -2196,7 +2213,12 @@ document.getElementById("rest-minimize").addEventListener("click", () => {
   tick();
 });
 document.getElementById("rest-plus").addEventListener("click", () => { if (rest) { rest.targetSec += 15; rest.beeped = false; if (typeof pushProgrammer === "function") pushProgrammer(Math.max(1, Math.ceil(rest.targetSec - (nowRef() - rest.startAt) / 1000)), rest.exName); tick(); } });
-document.getElementById("rest-minus").addEventListener("click", () => { if (rest) { rest.targetSec = Math.max(5, rest.targetSec - 15); tick(); } });
+document.getElementById("rest-minus").addEventListener("click", () => {
+  if (!rest) return;
+  rest.targetSec = Math.max(5, rest.targetSec - 15);
+  if (typeof pushProgrammer === "function") pushProgrammer(Math.max(1, Math.ceil(rest.targetSec - (nowRef() - rest.startAt) / 1000)), rest.exName);
+  tick();
+});
 
 /* ---------- Sélecteur d'exercice ---------- */
 let pickerCallback = null; // si défini, le picker renvoie l'exercice choisi
@@ -2804,7 +2826,10 @@ document.getElementById("live-compact-toggle").addEventListener("click", () => {
 document.getElementById("live-hdr-toggle").addEventListener("click", () => toggleHeaderManual(true));
 document.getElementById("hdr-pill-open").addEventListener("click", () => toggleHeaderManual(false));
 document.getElementById("hdr-pill-finish").addEventListener("click", () => finishSession());
-document.getElementById("live-finish").addEventListener("click", finishSession);
+/* Une fonction fléchée, pas `finishSession` directement : l'écouteur recevrait l'événement du clic
+   comme premier argument, donc `auto` serait « vrai » et chaque séance terminée à la main serait
+   enregistrée comme clôturée automatiquement (et daterait sa fin de la dernière activité). */
+document.getElementById("live-finish").addEventListener("click", () => finishSession());
 document.getElementById("live-abort").addEventListener("click", () => {
   if (!confirm("Abandonner la séance ? Rien ne sera enregistré.")) return;
   clearLive();              // repos, minuteur, surcouche et mini-barre compris
@@ -3149,7 +3174,7 @@ function renderHistory() {
           <div>
             <h3>${esc(r.nom)}</h3>
             <p class="day-focus">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-              · ${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg de volume · repos ${fmtClock(r.reposMs)}</p>
+              · ${fmtClock(r.dureeMs)} · ${r.nbSeries} série${r.nbSeries > 1 ? "s" : ""} · ${Math.round(r.volume)} kg de volume · repos ${fmtClock(r.reposMs)}</p>
           </div>
           <div class="history-actions">
             <button class="btn btn-ghost btn-sm toggle-detail">Détails</button>

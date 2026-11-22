@@ -262,6 +262,8 @@ window.__meteores = [];
   const tete = (m, p) => { const q = Math.pow(p, 1.25); return { x: m.x0 + (m.x1 - m.x0) * q, y: m.y0 + (m.y1 - m.y0) * q }; };
   document.addEventListener("pointerdown", e => {
     if (!window.__meteores.length || !vivantOk()) return;
+    const vueActive = document.querySelector(".view.active");
+    if (!vueActive || vueActive.id !== "view-accueil" || document.querySelector(".modal:not(.hidden), .rest-overlay:not(.hidden), #opale-jalon:not(.hidden), #opale-atelier:not(.hidden)")) return;
     if (e.target.closest && e.target.closest(INTERACTIF)) return;
     const now = performance.now();
     for (let i = 0; i < window.__meteores.length; i++) {
@@ -269,7 +271,7 @@ window.__meteores = [];
       if (p < 0.04 || p > 0.96) continue;
       const h = tete(m, p);
       const ux = -m.dir * Math.cos(Math.atan2(m.y1 - m.y0, Math.abs(m.x1 - m.x0))), uy = -Math.sin(Math.atan2(m.y1 - m.y0, Math.abs(m.x1 - m.x0)));
-      const tx = h.x + ux * m.queue * Math.min(1, p * 3), ty = h.y + uy * m.queue * Math.min(1, p * 3);
+      const tx = h.x + ux * m.queue * Math.min(1, p * 3.5), ty = h.y + uy * m.queue * Math.min(1, p * 3.5);
       /* distance du doigt au segment queue-tête */
       const vx = h.x - tx, vy = h.y - ty, l2 = vx * vx + vy * vy || 1;
       const k = Math.max(0, Math.min(1, ((e.clientX - tx) * vx + (e.clientY - ty) * vy) / l2));

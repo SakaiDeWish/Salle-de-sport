@@ -537,7 +537,7 @@ function renderSessionsPanel() {
               <div>
                 <h3>${typeChip(sessionType(r))} ${esc(r.nom)}</h3>
                 <p class="day-focus">${new Date(r.date).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}
-                  · ${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg${r.rpe ? ` · RPE ${r.rpe}` : ""}</p>
+                  · ${fmtClock(r.dureeMs)} · ${r.nbSeries} série${r.nbSeries > 1 ? "s" : ""} · ${Math.round(r.volume)} kg${r.rpe ? ` · RPE ${r.rpe}` : ""}</p>
               </div>
             </div>
           </div>`).join("")}
@@ -853,7 +853,7 @@ function renderCalDayDetail(sessions) {
         <div class="history-head cal-session">
           <div>
             <strong>${typeChip(sessionType(r))} ${esc(r.nom)}</strong>
-            <p class="day-focus">${fmtClock(r.dureeMs)} · ${r.nbSeries} séries · ${Math.round(r.volume)} kg${r.rpe ? " · RPE " + r.rpe : ""}</p>
+            <p class="day-focus">${fmtClock(r.dureeMs)} · ${r.nbSeries} série${r.nbSeries > 1 ? "s" : ""} · ${Math.round(r.volume)} kg${r.rpe ? " · RPE " + r.rpe : ""}</p>
           </div>
           <button class="btn btn-ghost btn-sm session-open" data-id="${esc(r.id)}">Voir</button>
         </div>`).join("")}
