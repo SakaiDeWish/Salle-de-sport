@@ -12,6 +12,26 @@ const vivantOk = () => opaleThemeActif();
 const vivantReduit = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const ETOILES_CLE = "gymcoach.etoiles";
 const nbEtoiles = () => parseInt(localStorage.getItem(ETOILES_CLE), 10) || 0;
+/* Les étoiles sont une monnaie : on en gagne (étoile filante, défis, records), on les dépense (atelier). */
+const SEMAINE_ETOILES_CLE = "gymcoach.etoilesSemaine";            // { cle: de la semaine, n: filantes attrapées }
+function cleSemaine(d = new Date()) {
+  const l = new Date(d); l.setHours(0, 0, 0, 0); l.setDate(l.getDate() - ((l.getDay() + 6) % 7));
+  return l.getFullYear() + "-" + String(l.getMonth() + 1).padStart(2, "0") + "-" + String(l.getDate()).padStart(2, "0");
+}
+function filantesSemaine() {
+  try { const o = JSON.parse(localStorage.getItem(SEMAINE_ETOILES_CLE)); return o && o.cle === cleSemaine() ? o.n : 0; } catch { return 0; }
+}
+function majCompteursEtoiles() {
+  document.querySelectorAll(".op-etoiles-n, .at-solde-n").forEach(x => { x.textContent = nbEtoiles(); });
+}
+function gagneEtoiles(n, raison) {
+  try {
+    localStorage.setItem(ETOILES_CLE, String(Math.max(0, nbEtoiles() + n)));
+    if (raison === "filante") localStorage.setItem(SEMAINE_ETOILES_CLE, JSON.stringify({ cle: cleSemaine(), n: filantesSemaine() + 1 }));
+  } catch { /* stockage indisponible */ }
+  majCompteursEtoiles();
+  if (typeof majDefis === "function") majDefis();
+}
 const vitV = () => (typeof vit === "function" ? vit() : 1);
 
 /* ---------- Petites bulles de message ---------- */
@@ -92,6 +112,7 @@ function jaillit(conteneur, cx, cy, n = 10, dist = 40, fixe = false) {
   };
   const fusion = (gem, hero, r, h) => {                          // cinq tap : l'opale s'emballe
     haptique("succes");
+    if (typeof sonDoux === "function") sonDoux("fusion");
     gem.animate([{ filter: "hue-rotate(0deg) brightness(1)" }, { filter: "hue-rotate(360deg) brightness(1.35)", offset: 0.6 }, { filter: "hue-rotate(360deg) brightness(1)" }],
       { duration: 1500 * vitV(), easing: "ease-in-out" });
     gem.animate([{ scale: 1 }, { scale: 1.12 }, { scale: 1 }], { duration: 1500 * vitV(), easing: "cubic-bezier(0.34, 1.5, 0.64, 1)" });
@@ -185,7 +206,7 @@ function constellationSemaine() {
   const bloc = document.createElement("div");
   bloc.className = "op-const";
   bloc.innerHTML = `
-    <div class="op-const-tete"><span class="op-k">Ta semaine</span><span class="op-etoiles" title="Étoiles filantes attrapées">★ <b class="op-etoiles-n">${nbEtoiles()}</b></span></div>
+    <div class="op-const-tete"><span class="op-k">Ta semaine</span><span class="op-etoiles" title="Tes étoiles : on les gagne, on les dépense à l'atelier">★ <b class="op-etoiles-n">${nbEtoiles()}</b></span></div>
     <svg viewBox="0 0 300 74" role="group" aria-label="Constellation de la semaine"><g class="cj-lignes">${lignes}</g>${etoiles}</svg>`;
   hero.appendChild(bloc);
   bloc.addEventListener("click", e => {
@@ -214,7 +235,7 @@ function constellationSemaine() {
   let suivant = null;
   const plan = (ms) => { clearTimeout(suivant); suivant = setTimeout(lance, ms); };
   function lance() {
-    plan(18000 + Math.random() * 30000);
+    plan((18000 + Math.random() * 30000) / (window.__cielFilantes || 1));      // plus fréquentes la nuit
     if (!vivantOk() || vivantReduit() || document.hidden) return;
     const vue = document.querySelector(".view.active");
     if (!vue || vue.id !== "view-accueil") return;
@@ -234,9 +255,9 @@ function constellationSemaine() {
       const r = e.getBoundingClientRect();
       a.cancel(); e.remove();
       jaillit(document.body, r.left + r.width / 2, r.top + r.height / 2, 18, 70, true);
-      const n = nbEtoiles() + 1;
-      try { localStorage.setItem(ETOILES_CLE, String(n)); } catch { /* stockage indisponible */ }
-      document.querySelectorAll(".op-etoiles-n").forEach(x => { x.textContent = n; });
+      gagneEtoiles(1, "filante");
+      const n = nbEtoiles();
+      if (typeof sonDoux === "function") sonDoux("etoile");
       haptique("succes");
       opaleToast(n === 1 ? "Première étoile attrapée ★" : `Étoile attrapée ★ ${n}`);
     });
@@ -281,7 +302,7 @@ function constellationSemaine() {
       if (ptr.bas && d < 120 && d > 0.1) { const f = (120 - d) / 120; s.ox += (dx / d) * f * 2.4; s.oy += (dy / d) * f * 2.4; }
       s.ox *= 0.93; s.oy *= 0.93;
       const a = (0.35 + 0.65 * (0.5 + 0.5 * Math.sin((t / 1000) * s.v + s.ph))) * (0.3 + 0.7 * s.z);
-      ctx.globalAlpha = a; ctx.fillStyle = s.c;
+      ctx.globalAlpha = a * (window.__cielFacteur == null ? 1 : window.__cielFacteur); ctx.fillStyle = s.c;
       ctx.beginPath(); ctx.arc(px, py, s.r, 0, 6.283); ctx.fill();
     }
     for (let i = poussieres.length - 1; i >= 0; i--) {

@@ -48,6 +48,7 @@ function rebondCase(cb) {
       if (vu != null && nb > vu) {
         const cb = c.querySelector(`.cb.on[data-undo-j="${nb - 1}"]`);
         if (cb) rebondCase(cb);
+        if (typeof opaleRecordCheck === "function") opaleRecordCheck(c.__ex, c.__ex.sets[nb - 1]);
       }
       if (c.__ex) nbSeries.set(c.__ex, nb);
       const a = c.__ex && avant.get(c.__ex);
@@ -70,7 +71,7 @@ function rebondCase(cb) {
 
 /* ---------- 2. Sorties : un fantôme joue la disparition ---------- */
 (function () {
-  const CIBLES = "#rest-overlay, #picker, #onboarding, #builder, #session-modal, #pave, #reorder-bar, #live-minibar, #opale-jalon, #opale-menu";
+  const CIBLES = "#rest-overlay, #picker, #onboarding, #builder, #session-modal, #pave, #reorder-bar, #live-minibar, #opale-jalon, #opale-menu, #opale-atelier";
   new MutationObserver(lot => {
     if (reduitMouvement()) return;
     for (const m of lot) {

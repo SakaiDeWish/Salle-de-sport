@@ -4808,3 +4808,101 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
   #opale-ciel { display: none !important; }
   .progress-bar, .cj.on .cj-pt, .cj-auj, .gem-orbite { animation: none; }
 }
+
+/* =========================================================
+   OPALE — son monde (voir js/atelier.js)
+   ========================================================= */
+/* Le ciel suit l'heure : les lueurs de fond lisent --ciel-1 / --ciel-2. */
+.theme-opale body {
+  background:
+    radial-gradient(1000px 520px at 50% -12%, var(--ciel-1, rgba(120, 220, 200, 0.07)), transparent 62%),
+    radial-gradient(620px 420px at 105% 28%, var(--ciel-2, rgba(150, 130, 255, 0.04)), transparent 60%),
+    var(--bg);
+}
+.theme-opale .view::before { background: radial-gradient(60% 70% at 50% 0%, var(--glow-vue, var(--ciel-1, rgba(120, 220, 200, 0.08))), transparent 70%); }
+.theme-opale #view-accueil::before { background: radial-gradient(60% 70% at 50% 0%, var(--ciel-1, rgba(120, 220, 200, 0.09)), transparent 70%); }
+
+/* La teinte choisie à l'atelier s'ajoute au lent changement de reflet. */
+@keyframes opale-teinte {
+  from { filter: hue-rotate(calc(var(--gem-hue, 0deg) - 28deg)); }
+  to   { filter: hue-rotate(calc(var(--gem-hue, 0deg) + 34deg)); }
+}
+
+/* La lune du streak */
+.op-lune { display: inline-flex; margin-top: 8px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--text-soft); -webkit-tap-highlight-color: transparent; }
+.op-lune .lune-fond { fill: rgba(255, 255, 255, 0.1); stroke: rgba(168, 240, 220, 0.3); stroke-width: 0.8; }
+.op-lune .lune-clair { fill: #e6fff8; }
+.op-lune .lune-pleine { fill: #f4fffb; }
+.op-lune.pleine svg { filter: drop-shadow(0 0 3px rgba(230, 255, 248, 0.5)); }
+
+/* Défis de la semaine */
+.op-defis { margin-top: 26px; text-align: left; }
+.op-defis-liste { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.defi { padding: 12px 14px; border-radius: 18px; border: 1px solid rgba(168, 240, 220, 0.12); background: rgba(255, 255, 255, 0.025); }
+.defi-haut { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 30px; }
+.defi-nom { font-weight: 600; font-size: 0.92rem; }
+.defi-etat { font-size: 0.8rem; color: var(--text-soft); font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 4px; }
+.defi.pris .defi-etat { color: var(--accent); }
+.defi.pris .defi-nom { color: var(--text-soft); text-decoration: line-through; text-decoration-color: rgba(168, 240, 220, 0.4); }
+.defi-btn {
+  padding: 6px 12px; border-radius: 999px; border: 0; cursor: pointer; font: 700 0.8rem var(--font-body);
+  color: var(--accent-contrast); background: var(--accent-grad); transition: transform calc(0.5s * var(--vit, 1.45)) var(--ressort-doux, ease);
+}
+.defi-btn:active { transform: scale(0.92); }
+.defi.pret { border-color: rgba(168, 240, 220, 0.45); }
+.defi-barre { height: 5px; margin-top: 9px; border-radius: 99px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.defi-barre span { display: block; height: 100%; border-radius: inherit; background: var(--accent-grad); transition: width calc(0.8s * var(--vit, 1.45)) var(--amorti, ease); }
+.op-atelier-btn {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgba(168, 240, 220, 0.25); background: rgba(168, 240, 220, 0.06); color: var(--accent); font: 600 0.78rem var(--font-body);
+}
+.op-atelier-btn .icon { width: 0.95rem; height: 0.95rem; }
+
+/* Atelier */
+.opale-atelier {
+  position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; text-align: center; overflow-y: auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 18px) 22px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: radial-gradient(900px 520px at 50% 16%, var(--ciel-1, rgba(120, 220, 200, 0.1)), transparent 62%), #060808;
+  animation: fond-entre calc(0.45s * var(--vit, 1.45)) ease both;
+}
+.opale-atelier.hidden { display: none; }
+.at-close { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 18px); left: 22px; }
+.opale-atelier .oj-titre { margin-top: 4px; }
+.at-sous { margin-top: 8px; max-width: 34ch; color: var(--text-soft); font-size: 0.9rem; line-height: 1.45; }
+.at-scene { margin: 26px 0 34px; }
+.op-gem-atelier { width: 150px; height: 150px; --gem-hue: 0deg; }
+.at-solde { color: var(--text-soft); font-size: 0.9rem; }
+.at-solde b { color: var(--accent); font-weight: 700; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.at-nuancier { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 380px; margin: 18px 0 22px; }
+.at-sw {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 6px 10px; cursor: pointer; border-radius: 20px;
+  border: 1px solid rgba(168, 240, 220, 0.14); background: rgba(255, 255, 255, 0.025); color: var(--text);
+  transition: transform calc(0.5s * var(--vit, 1.45)) var(--ressort-doux, ease), border-color 0.3s ease, background 0.3s ease;
+}
+.at-sw:active { transform: scale(0.94); }
+.at-sw.sel { border-color: rgba(168, 240, 220, 0.65); background: rgba(168, 240, 220, 0.08); }
+.at-dot {
+  width: 42px; height: 42px; border-radius: 50%; filter: hue-rotate(var(--h, 0deg));
+  background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.75), transparent 24%),
+    radial-gradient(ellipse at 64% 36%, #2fc4a4, transparent 58%), radial-gradient(ellipse at 26% 68%, #2a6fd0, transparent 60%),
+    radial-gradient(ellipse at 76% 82%, #e9a64c, transparent 48%), #14403c;
+  box-shadow: inset -6px -8px 14px rgba(0, 0, 0, 0.5);
+}
+.at-sw.verrou .at-dot { opacity: 0.55; }
+.at-nom { font-weight: 600; font-size: 0.85rem; }
+.at-prix { font-size: 0.74rem; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+.at-sw.sel .at-prix { color: var(--accent); }
+.at-action { width: 100%; max-width: 380px; }
+
+/* Aurore (record battu) : trois rubans qui ondulent derrière le contenu, puis s'effacent. */
+.op-aurore { position: fixed; inset: 0; z-index: 250; pointer-events: none; overflow: hidden; animation: aurore-vie calc(6s * var(--vit, 1.45)) ease-in-out forwards; }
+.op-aurore i {
+  position: absolute; left: -20%; right: -20%; height: 46%; border-radius: 50%; filter: blur(46px); mix-blend-mode: screen; opacity: 0.7;
+}
+.op-aurore i:nth-child(1) { top: -8%; background: linear-gradient(90deg, transparent, rgba(80, 230, 170, 0.7), rgba(80, 200, 255, 0.55), transparent); animation: aurore-onde calc(7s * var(--vit, 1.45)) ease-in-out infinite alternate; }
+.op-aurore i:nth-child(2) { top: 6%; background: linear-gradient(90deg, transparent, rgba(160, 120, 255, 0.6), rgba(80, 230, 200, 0.5), transparent); animation: aurore-onde calc(9s * var(--vit, 1.45)) ease-in-out -2s infinite alternate-reverse; }
+.op-aurore i:nth-child(3) { top: 18%; height: 32%; background: linear-gradient(90deg, transparent, rgba(255, 190, 120, 0.4), rgba(255, 120, 190, 0.35), transparent); animation: aurore-onde calc(11s * var(--vit, 1.45)) ease-in-out -4s infinite alternate; }
+@keyframes aurore-vie { 0% { opacity: 0; } 18% { opacity: 1; } 72% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes aurore-onde { from { transform: translateX(-8%) skewX(-8deg) scaleY(0.9); } to { transform: translateX(8%) skewX(8deg) scaleY(1.15); } }
+
+@media (prefers-reduced-motion: reduce) { .op-aurore { display: none; } }

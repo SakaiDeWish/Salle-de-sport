@@ -196,7 +196,7 @@ if (localStorage.getItem(OPALE_TILT_CLE) === "1" && !(typeof DeviceOrientationEv
   menu.className = "opale-menu hidden";
   menu.setAttribute("role", "menu");
   const ITEMS = [["programme", "target", "Programme"], ["ajouter", "plus", "Ajouter un exercice"],
-                 ["bibliotheque", "book", "Bibliothèque"], ["nutrition", "apple", "Nutrition"]];
+                 ["bibliotheque", "book", "Bibliothèque"], ["nutrition", "apple", "Nutrition"], ["atelier", "gem", "Atelier de l'opale"]];
   menu.innerHTML = ITEMS.map(([v, ic, lab]) =>
     `<button type="button" role="menuitem" data-go-opale="${v}">${icon(ic)}<span>${lab}</span></button>`).join("");
   document.body.append(bouton, menu);
@@ -212,6 +212,7 @@ if (localStorage.getItem(OPALE_TILT_CLE) === "1" && !(typeof DeviceOrientationEv
     const b = e.target.closest("[data-go-opale]");
     if (!b) return;
     ferme();
+    if (b.dataset.goOpale === "atelier") { if (typeof ouvrirAtelier === "function") ouvrirAtelier(); return; }
     activateView(b.dataset.goOpale);
   });
   document.addEventListener("click", e => { if (!menu.contains(e.target) && e.target !== bouton) ferme(); });
