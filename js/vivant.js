@@ -182,7 +182,10 @@ function jaillit(conteneur, cx, cy, n = 10, dist = 40, fixe = false) {
 /* ---------- 2. Constellation de la semaine ---------- */
 function constellationSemaine() {
   const hero = document.querySelector(".op-hero");
-  if (!hero || hero.querySelector(".op-const")) return;
+  if (!hero) return;
+  /* Reconstruite à chaque affichage de l'accueil : l'historique a pu changer depuis (séance terminée). */
+  const ancienne = hero.querySelector(".op-const");
+  if (ancienne) ancienne.remove();
   let h = [];
   try { h = getHistory(); } catch { /* pas d'historique */ }
   const now = new Date();
@@ -227,6 +230,8 @@ function constellationSemaine() {
   const maj = () => { if (!vivantOk()) return; constellationSemaine(); if (window.__majCharge) window.__majCharge(); };
   new MutationObserver(maj).observe(cible, { childList: true });
   new MutationObserver(maj).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  const vue = document.getElementById("view-accueil");
+  if (vue) new MutationObserver(maj).observe(vue, { attributes: true, attributeFilter: ["class"] });   // retour sur l'accueil
   setTimeout(maj, 300);
 })();
 
@@ -297,7 +302,17 @@ window.__meteores = [];
   document.body.prepend(cv);
   const ctx = cv.getContext("2d");
   let W = 0, H = 0, etoiles = [], poussieres = [], ptr = { x: -999, y: -999, bas: false }, raf = 0, dernierEmis = 0;
-  const COULEURS = ["#ffffff", "#cffff0", "#d9ccff", "#bfe9ff"];
+  /* Les couleurs du ciel viennent du thème (--ciel-c1..4, --ciel-a, --meteore-rgb) : étoiles blanches
+     la nuit d'Opale, poussière citron pour Gamifié, poussière chaude pour Épuré, etc. */
+  let COULEURS = ["#ffffff", "#cffff0", "#d9ccff", "#bfe9ff"], FACTEUR_THEME = 1;
+  const litTheme = () => {
+    const cs = getComputedStyle(document.documentElement);
+    const c = [1, 2, 3, 4].map(i => cs.getPropertyValue("--ciel-c" + i).trim()).filter(Boolean);
+    if (c.length) COULEURS = c;
+    FACTEUR_THEME = parseFloat(cs.getPropertyValue("--ciel-a")) || 1;
+    window.__meteoreRgb = cs.getPropertyValue("--meteore-rgb").trim() || "190, 230, 255";
+    etoiles.forEach(s => { s.c = COULEURS[(Math.random() * COULEURS.length) | 0]; });
+  };
   const init = () => {
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     W = window.innerWidth; H = window.innerHeight;
@@ -327,7 +342,7 @@ window.__meteores = [];
       if (ptr.bas && d < 120 && d > 0.1) { const f = (120 - d) / 120; s.ox += (dx / d) * f * 2.4; s.oy += (dy / d) * f * 2.4; }
       s.ox *= 0.93; s.oy *= 0.93;
       const a = (0.35 + 0.65 * (0.5 + 0.5 * Math.sin((t / 1000) * s.v + s.ph))) * (0.3 + 0.7 * s.z);
-      ctx.globalAlpha = a * (window.__cielFacteur == null ? 1 : window.__cielFacteur); ctx.fillStyle = s.c;
+      ctx.globalAlpha = a * (window.__cielFacteur == null ? 1 : window.__cielFacteur) * FACTEUR_THEME; ctx.fillStyle = s.c;
       ctx.beginPath(); ctx.arc(px, py, s.r, 0, 6.283); ctx.fill();
     }
     /* Étoiles filantes : traîne effilée en dégradé, tête lumineuse. */
@@ -342,13 +357,14 @@ window.__meteores = [];
       const L = m.queue * Math.min(1, p * 3.5);
       const tx = h.x - m.dir * Math.cos(ang) * L, ty = h.y - Math.sin(ang) * L;
       const g = ctx.createLinearGradient(tx, ty, h.x, h.y);
-      g.addColorStop(0, "rgba(170, 215, 255, 0)"); g.addColorStop(0.65, "rgba(200, 235, 255, 0.35)"); g.addColorStop(1, "rgba(255, 255, 255, 0.95)");
+      const rgb = window.__meteoreRgb || "190, 230, 255";
+      g.addColorStop(0, `rgba(${rgb}, 0)`); g.addColorStop(0.65, `rgba(${rgb}, 0.35)`); g.addColorStop(1, `rgba(${rgb}, 0.95)`);
       const nx = -Math.sin(ang) * (m.dir > 0 ? 1 : -1), ny = Math.cos(ang) * (m.dir > 0 ? 1 : -1);
       const w = 1.7;                                          // demi-largeur à la tête, 0 au bout de la traîne
       ctx.globalAlpha = alpha; ctx.fillStyle = g;
       ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(h.x + nx * w, h.y + ny * w); ctx.lineTo(h.x - nx * w, h.y - ny * w); ctx.closePath(); ctx.fill();
       const halo = ctx.createRadialGradient(h.x, h.y, 0, h.x, h.y, 9);
-      halo.addColorStop(0, "rgba(255, 255, 255, 0.95)"); halo.addColorStop(0.35, "rgba(220, 240, 255, 0.45)"); halo.addColorStop(1, "rgba(220, 240, 255, 0)");
+      halo.addColorStop(0, `rgba(${rgb}, 0.95)`); halo.addColorStop(0.35, `rgba(${rgb}, 0.45)`); halo.addColorStop(1, `rgba(${rgb}, 0)`);
       ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(h.x, h.y, 9, 0, 6.283); ctx.fill();
     }
     for (let i = poussieres.length - 1; i >= 0; i--) {
@@ -364,6 +380,7 @@ window.__meteores = [];
     const actif = vivantOk() && !vivantReduit() && !document.hidden;
     cv.style.display = vivantOk() && !vivantReduit() ? "block" : "none";
     document.documentElement.classList.toggle("ciel-on", vivantOk() && !vivantReduit());
+    if (actif) litTheme();
     if (actif && !raf) { init(); raf = requestAnimationFrame(frame); }
     else if (!actif && raf) { cancelAnimationFrame(raf); raf = 0; }
   };

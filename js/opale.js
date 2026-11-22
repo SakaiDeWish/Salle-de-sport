@@ -3,10 +3,11 @@
    glisse d'un onglet à l'autre, elle suit le doigt, elle onde quand on valide,
    elle respire pendant le repos. Rien ne bouge sans raison, et tout s'éteint si
    le thème n'est pas Opale ou si l'appareil demande de réduire les animations. */
-const opaleOn = () =>
-  document.documentElement.classList.contains("theme-opale") &&
-  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const opaleThemeActif = () => document.documentElement.classList.contains("theme-opale");
+const opaleOn = () => !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Les fonctions nées avec Opale (opale interactive, ciel, défis, atelier, jalons, sons) sont
+   disponibles dans TOUS les thèmes : seul leur habillage change, via des variables CSS. */
+const opaleThemeActif = () => true;
+const estOpale = () => document.documentElement.classList.contains("theme-opale");
 
 /* ---------- 1. Pastille d'onglet qui glisse ---------- */
 (function () {
@@ -18,7 +19,7 @@ const opaleThemeActif = () => document.documentElement.classList.contains("theme
   nav.prepend(pastille);
   const place = () => {
     const act = nav.querySelector(".tab.active");
-    if (!act || !opaleThemeActif() || nav.offsetWidth === 0) return;
+    if (!act || !estOpale() || nav.offsetWidth === 0) return;
     pastille.style.setProperty("--x", act.offsetLeft + "px");
     pastille.style.setProperty("--y", act.offsetTop + "px");
     pastille.style.setProperty("--w", act.offsetWidth + "px");

@@ -69,7 +69,9 @@ function luneSvg(semaines) {
 }
 function monteLune() {
   const stat = document.querySelector(".op-stats .op-stat");
-  if (!stat || stat.querySelector(".op-lune")) return;
+  if (!stat) return;
+  const vieille = stat.querySelector(".op-lune");
+  if (vieille) vieille.remove();                                   // le streak a pu changer depuis
   let s = 0;
   try { s = goalStatus().streak; } catch { /* pas de données */ }
   const b = document.createElement("button");
@@ -86,7 +88,7 @@ function monteLune() {
 
 /* ---------- 4. Atelier : choisir la teinte de l'opale avec ses étoiles ---------- */
 const TEINTES = [
-  { id: "opale",    nom: "Opale",     hue: 0,    cout: 0 },
+  { id: "opale",    nom: "Classique", hue: 0,    cout: 0 },
   { id: "saphir",   nom: "Saphir",    hue: 65,   cout: 3 },
   { id: "amethyste",nom: "Améthyste", hue: 125,  cout: 4 },
   { id: "rubis",    nom: "Rubis",     hue: 190,  cout: 5 },
@@ -271,8 +273,10 @@ function monteDefis() {
 (function () {
   const cible = document.getElementById("home-content");
   if (!cible) return;
-  const maj = () => setTimeout(() => { if (!vivantOk()) return; monteLune(); monteDefis(); majCompteursEtoiles(); }, 0);
+  const maj = () => setTimeout(() => { if (!vivantOk()) return; monteLune(); monteDefis(); majDefis(); majCompteursEtoiles(); }, 0);
   new MutationObserver(maj).observe(cible, { childList: true });
+  const vue = document.getElementById("view-accueil");
+  if (vue) new MutationObserver(maj).observe(vue, { attributes: true, attributeFilter: ["class"] });
   new MutationObserver(maj).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
   setTimeout(maj, 450);
 })();
