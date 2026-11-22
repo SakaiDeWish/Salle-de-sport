@@ -123,6 +123,7 @@ function renderProgramsPanel() {
   panel.innerHTML = `
     <div class="program-actions">
       <button class="btn btn-primary" id="new-program">${icon("plus")} Nouveau programme</button>
+      <button class="btn btn-ghost" id="from-sessions">${icon("stack")} Depuis mes séances</button>
       <button class="btn btn-ghost" id="import-program">${icon("upload")} Importer</button>
     </div>
 

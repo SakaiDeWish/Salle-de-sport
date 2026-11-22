@@ -4906,3 +4906,17 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 @keyframes aurore-onde { from { transform: translateX(-8%) skewX(-8deg) scaleY(0.9); } to { transform: translateX(8%) skewX(8deg) scaleY(1.15); } }
 
 @media (prefers-reduced-motion: reduce) { .op-aurore { display: none; } }
+
+
+/* Programme depuis mes séances */
+.sp-liste { display: flex; flex-direction: column; gap: 6px; max-height: 34vh; overflow-y: auto; margin: 12px 0; padding-right: 4px; }
+.sp-ligne { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); cursor: pointer; }
+.sp-ligne:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.sp-ligne input { width: 22px; height: 22px; flex: none; accent-color: var(--accent); }
+.sp-txt { display: flex; flex-direction: column; min-width: 0; }
+.sp-sous { font-size: 0.8rem; color: var(--text-soft); }
+.sp-dest { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 6px; }
+.sp-radio { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; }
+.sp-radio input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); }
+.sp-select, .sp-champ { width: 100%; }
+.sp-act { font-weight: 500; font-size: 0.88rem; color: var(--text-soft); }

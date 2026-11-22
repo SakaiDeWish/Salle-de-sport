@@ -630,6 +630,7 @@ function openSessionModal(id, edit = false) {
         <button class="btn btn-ghost" id="sm-edit">Modifier</button>
         <button class="btn btn-primary" id="sm-dup">Dupliquer (rejouer)</button>
         <button class="btn btn-ghost" id="sm-to-program">Créer un programme</button>
+        <button class="btn btn-ghost" id="sm-add-prog">Ajouter à un programme</button>
         <button class="btn btn-danger-ghost" id="sm-del">Supprimer</button>
       </div>`;
     document.getElementById("sm-edit").addEventListener("click", () => openSessionModal(id, true));
@@ -639,6 +640,10 @@ function openSessionModal(id, edit = false) {
       activateView("programme");
       document.querySelector('[data-ppanel="programmes"]').click();
       createProgramFromRecord(r);
+    });
+    document.getElementById("sm-add-prog").addEventListener("click", () => {
+      closeSessionModal();
+      if (typeof ouvrirSeancesVersProgramme === "function") ouvrirSeancesVersProgramme([id]);
     });
     document.getElementById("sm-del").addEventListener("click", () => {
       if (!confirm("Supprimer définitivement cette séance ?")) return;
