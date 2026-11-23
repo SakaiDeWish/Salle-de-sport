@@ -2835,16 +2835,24 @@ document.getElementById("live-compact-toggle").addEventListener("click", () => {
 /* Bascule manuelle grand/compact — l'automatique au scroll reprend ensuite */
 document.getElementById("live-hdr-toggle").addEventListener("click", () => toggleHeaderManual(true));
 document.getElementById("hdr-pill-open").addEventListener("click", () => toggleHeaderManual(false));
-document.getElementById("hdr-pill-finish").addEventListener("click", () => finishSession());
+document.getElementById("hdr-pill-finish").addEventListener("click", () => demanderFin());
 /* Une fonction fléchée, pas `finishSession` directement : l'écouteur recevrait l'événement du clic
    comme premier argument, donc `auto` serait « vrai » et chaque séance terminée à la main serait
    enregistrée comme clôturée automatiquement (et daterait sa fin de la dernière activité). */
-document.getElementById("live-finish").addEventListener("click", () => finishSession());
+document.getElementById("live-finish").addEventListener("click", () => demanderFin());
 document.getElementById("live-abort").addEventListener("click", () => {
   if (!confirm("Abandonner la séance ? Rien ne sera enregistré.")) return;
   clearLive();              // repos, minuteur, surcouche et mini-barre compris
   showSetup();
 });
+
+/* Terminer à la main : on confirme, un toucher de trop ferme la séance. */
+function demanderFin() {
+  if (!live) return;
+  const n = live.exercises.reduce((t, e) => t + e.sets.length, 0);
+  if (!confirm(n ? `Terminer la séance ? ${n} série${n > 1 ? "s" : ""} validée${n > 1 ? "s" : ""}.` : "Terminer la séance ? Aucune série n'a été validée.")) return;
+  finishSession();
+}
 
 function finishSession(auto = false) {
   if (live && live.pausedAt) resumeSession(); // solde la pause avant de figer les temps
