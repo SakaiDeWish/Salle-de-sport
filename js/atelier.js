@@ -180,7 +180,7 @@ function aurore() {
   a.id = "opale-aurore"; a.className = "op-aurore"; a.setAttribute("aria-hidden", "true");
   a.innerHTML = "<i></i><i></i><i></i>";
   document.body.appendChild(a);
-  setTimeout(() => a.remove(), 6200 * vitV());
+  setTimeout(() => a.remove(), 2300);
 }
 function opaleRecordCheck(ex, set) {
   if (!vivantOk() || !ex || !set || !set.reps || set.poids == null) return;
