@@ -151,12 +151,9 @@
         <button type="button" class="disc-toggle" aria-expanded="false">
           <span class="disc-sum"><span class="disc-title">Matériel &amp; niveau</span>
             <span class="disc-meta" id="lib-filter-state">tout</span></span>
-          <span class="disc-more">Filtrer<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span></span>
+          <span class="disc-more"><span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span></span>
         </button>
         <div class="disc-body">
-          <p class="disc-what">Deux filtres pour coller à ta salle et à ton expérience :
-            le <strong>matériel</strong> ne garde que ce que tu as sous la main, le
-            <strong>niveau</strong> écarte les mouvements techniques qui demandent des bases.</p>
           <div class="chip-row" data-for="filter-materiel" role="group" aria-label="Matériel">
             <button class="chip active" data-value="">Tout matériel</button>
             <button class="chip" data-value="barre">Barre</button>
@@ -196,8 +193,8 @@
     <div class="lib-bar">
       <p id="result-count" class="result-count" role="status"></p>
       <div class="lib-bar-actions">
-        <button class="btn btn-ghost btn-sm" id="fav-filter" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg> Favoris</button>
-        <button class="btn btn-ghost btn-sm" id="goto-ajouter">+ Référencer</button>
+        <button class="btn btn-ghost btn-sm" id="fav-filter" aria-pressed="false" title="Favoris" aria-label="Favoris"><svg class="icon" aria-hidden="true"><use href="#ic-star"/></svg></button>
+        <button class="btn btn-ghost btn-sm" id="goto-ajouter" title="Référencer un exercice" aria-label="Référencer un exercice"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg></button>
       </div>
     </div>
     <section id="exercise-grid" class="grid"></section>
@@ -423,33 +420,33 @@
           <h2 id="live-title" class="display-sm">Séance en cours</h2>
           <div class="live-title-actions">
             <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-up"/></svg></button>
-            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></button>
-            <button class="btn btn-ghost btn-sm" id="live-pause" title="Mettre la séance en pause"><svg class="icon" aria-hidden="true"><use href="#ic-pause"/></svg> Pause</button>
-            <span class="live-dot">● EN DIRECT</span>
+            <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit"><svg class="icon" aria-hidden="true"><use href="#ic-stack"/></svg></button>
+            <button class="btn-ic" id="live-pause" title="Pause" aria-label="Mettre la séance en pause"><svg class="icon" aria-hidden="true"><use href="#ic-pause"/></svg></button>
+            <span class="live-dot" title="En direct" aria-label="En direct">●</span>
           </div>
         </div>
 
         <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
         <div id="pause-banner" class="pause-banner hidden">
-          <span>Séance en pause — navigue librement, rien n'est perdu.</span>
-          <button class="btn btn-primary btn-sm" id="pause-resume"><svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg> Reprendre</button>
+          <span>En pause</span>
+          <button class="btn btn-primary btn-sm" id="pause-resume" aria-label="Reprendre"><svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg></button>
         </div>
 
         <div class="live-chronos">
           <div class="chrono-block chrono-main">
-            <span class="chrono-label">Durée</span>
+            <span class="chrono-label" title="Durée" aria-label="Durée"><svg class="icon" aria-hidden="true"><use href="#ic-clock"/></svg></span>
             <span class="chrono-value" id="chrono-session">00:00</span>
           </div>
           <div class="chrono-block hidden" id="chrono-warmup-block">
-            <span class="chrono-label">dont échauff.</span>
+            <span class="chrono-label" title="Dont échauffement" aria-label="Dont échauffement"><svg class="icon" aria-hidden="true"><use href="#ic-flame"/></svg></span>
             <span class="chrono-value" id="chrono-warmup">00:00</span>
           </div>
           <div class="chrono-block">
-            <span class="chrono-label">Repos cumulé</span>
+            <span class="chrono-label" title="Repos cumulé" aria-label="Repos cumulé"><svg class="icon" aria-hidden="true"><use href="#ic-timer"/></svg></span>
             <span class="chrono-value" id="chrono-rest-total">00:00</span>
           </div>
           <div class="chrono-block">
-            <span class="chrono-label">Séries</span>
+            <span class="chrono-label" title="Séries" aria-label="Séries"><svg class="icon" aria-hidden="true"><use href="#ic-stack"/></svg></span>
             <span class="chrono-value" id="live-set-count">0</span>
           </div>
         </div>
@@ -476,24 +473,23 @@
       <div class="warmup-band hidden" id="warmup-band"></div>
 
       <div class="program-actions live-actions-flow">
-        <button class="btn btn-ghost" id="live-add-ex">+ Exercice</button>
-        <button class="btn btn-ghost" id="live-superset"><svg class="icon" aria-hidden="true"><use href="#ic-zap"/></svg> Super set</button>
-        <button class="btn btn-ghost" id="live-reorder"><svg class="icon" aria-hidden="true"><use href="#ic-arrows-v"/></svg> Ordre</button>
-        <button class="btn btn-primary" id="live-finish">Terminer</button>
-        <button class="btn btn-danger-ghost" id="live-abort">Abandonner</button>
+        <button class="hidden" id="live-reorder" aria-hidden="true" tabindex="-1"></button>
+        <button class="btn btn-ghost btn-ic-lg" id="live-add-ex" title="Ajouter un exercice" aria-label="Ajouter un exercice"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg></button>
+        <button class="btn btn-ghost btn-ic-lg" id="live-superset" title="Super set" aria-label="Super set"><svg class="icon" aria-hidden="true"><use href="#ic-zap"/></svg></button>
+        <button class="btn btn-primary btn-ic-lg" id="live-finish" title="Terminer" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true"><use href="#ic-tick"/></svg></button>
+        <button class="btn btn-danger-ghost btn-ic-lg" id="live-abort" title="Abandonner" aria-label="Abandonner la séance"><svg class="icon" aria-hidden="true"><use href="#ic-trash"/></svg></button>
       </div>
       <!-- Barre de sélection du super set : n'apparaît que pendant
            l'appairage, et se retire d'elle-même une fois la paire faite. -->
       <div id="ss-pick-bar" class="ss-pick-bar hidden">
         <span id="ss-pick-msg">Touche le <strong>premier</strong> exercice du super set.</span>
-        <button class="btn btn-ghost btn-sm" id="ss-pick-cancel">Annuler</button>
+        <button class="btn-ic" id="ss-pick-cancel" aria-label="Annuler"><svg class="icon" aria-hidden="true"><use href="#ic-x"/></svg></button>
       </div>
       <!-- Barre de réorganisation : même principe que celle du super set.
            Les cartes se replient toutes et chacune porte ses deux flèches. -->
       <div id="reorder-bar" class="ss-pick-bar hidden">
-        <span id="reorder-msg">Touche <strong>deux</strong> exercices pour les échanger, ou <strong>fais-les glisser</strong>.
-          Les flèches déplacent d'un cran. Un super set se déplace d'un bloc.</span>
-        <button class="btn btn-primary btn-sm" id="reorder-done">Terminé</button>
+        <span id="reorder-msg">Touche deux exercices pour les échanger, ou fais-les glisser.</span>
+        <button class="btn btn-primary btn-sm" id="reorder-done" aria-label="Terminé"><svg class="icon" aria-hidden="true"><use href="#ic-tick"/></svg></button>
       </div>
 
       <div id="live-exercises"></div>
@@ -518,9 +514,9 @@
       <div class="rest-controls">
         <button class="btn btn-ghost" id="rest-minus">−15 s</button>
         <button class="btn btn-ghost" id="rest-plus">+15 s</button>
-        <button class="btn btn-ghost" id="rest-minimize" title="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg> Réduire</button>
+        <button class="btn btn-ghost" id="rest-minimize" title="Réduire" aria-label="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></button>
       </div>
-      <button class="btn btn-primary btn-lg" id="rest-resume">Reprendre l'entraînement</button>
+      <button class="btn btn-primary btn-lg" id="rest-resume" aria-label="Reprendre l'entraînement"><svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg> Reprendre</button>
     </div>
   </div>
 

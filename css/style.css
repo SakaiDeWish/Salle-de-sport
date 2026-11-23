@@ -4272,7 +4272,7 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
   content: ""; position: absolute; top: -30%; bottom: -30%; left: -55%; width: 45%;
   background: linear-gradient(100deg, transparent, rgba(168, 240, 220, 0.18) 25%, rgba(185, 168, 255, 0.42) 50%, rgba(255, 196, 120, 0.3) 75%, transparent);
   transform: skewX(-18deg);
-  animation: opale-balaie 1s cubic-bezier(0.3, 0.6, 0.2, 1) forwards;
+  animation: opale-balaie .6s cubic-bezier(0.3, 0.6, 0.2, 1) forwards;
 }
 @keyframes opale-balaie { to { left: 125%; } }
 
@@ -4291,14 +4291,14 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
     radial-gradient(240px circle at var(--mx, 50%) var(--my, -50%), rgba(168, 240, 220, calc(var(--lueur) * 0.22)), transparent 70%) padding-box,
     linear-gradient(165deg, #17221f 0%, #0f1615 58%, #0c1211 100%) padding-box,
     var(--iris) border-box;
-  transition: --lueur 0.35s ease;
+  transition: --lueur 0.18s ease;
 }
 .theme-opale .card.lueur, .theme-opale .ex-card.lueur, .theme-opale .btn-ghost.lueur, .theme-opale .chip.lueur { --lueur: 1; }
 .theme-opale .btn-ghost, .theme-opale .chip {
   background:
     radial-gradient(120px circle at var(--mx, 50%) var(--my, -50%), rgba(168, 240, 220, calc(var(--lueur) * 0.28)), transparent 70%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
-  transition: --lueur 0.35s ease, transform 0.38s var(--ressort, ease), border-color 0.16s ease;
+  transition: --lueur 0.18s ease, transform 0.38s var(--ressort, ease), border-color 0.16s ease;
 }
 .theme-opale .live-ex-current, .theme-opale .card.live-ex-current {
   animation: opale-halo 4.5s ease-in-out infinite;
@@ -5140,3 +5140,13 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .home-maj { display: flex; align-items: center; justify-content: space-between; opacity: .7; }
 .home-maj-new { color: var(--accent); }
 .segmented .seg .icon { width: 20px; height: 20px; vertical-align: middle; }
+
+/* ===== Séance et Bibliothèque épurées ===== */
+.live-actions-flow { display: flex; flex-wrap: nowrap; gap: 10px; }
+.live-actions-flow .btn-ic-lg { flex: 1; min-height: 48px; padding: 0; display: flex; align-items: center; justify-content: center; }
+.live-actions-flow .btn-ic-lg .icon { width: 22px; height: 22px; }
+.chrono-label .icon { width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+.live-ex-tools .btn .icon, .live-list-head .btn .icon { width: 1.15em; height: 1.15em; }
+.live-apercu-toggle { display: flex; justify-content: space-between; align-items: center; }
+#result-count { font-variant-numeric: tabular-nums; opacity: .7; }
+.ex-card-group { text-transform: none; }
