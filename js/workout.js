@@ -1597,11 +1597,7 @@ function renderLiveExercises() {
      au-dessus de tout : une fois la page défilée jusqu'à l'exercice en
      cours, il n'est plus à l'écran, et on pouvait croire la fonction
      disparue. Ce bandeau, lui, est collé à la liste. */
-  const bandeau = live.exercises.length > 1 && !reordering
-    ? `<div class="live-list-head">
-         <span>${live.exercises.length}</span>
-         <button type="button" class="btn btn-ghost btn-sm ex-move" title="Ordre" aria-label="Changer l'ordre">${icon("arrows-v")}</button>
-       </div>` : "";
+  const bandeau = "";
   elLiveExercises.innerHTML = bandeau + ssAssemble(cartes);
 
   /* Accordéon : ouvrir un exercice replie les autres (point 3) */

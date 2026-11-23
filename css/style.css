@@ -5158,3 +5158,6 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 #live-header.en-pause .chrono-main .chrono-value, #live-header.en-pause .hdr-pill-chrono { opacity: .55; }
 #live-header.en-pause .hdr-pill-dot, #live-header.en-pause .live-dot { animation: pause-clignote 1.2s ease-in-out infinite; }
 @keyframes pause-clignote { 50% { opacity: .25; } }
+.live-actions-flow { gap: 8px; }
+.live-actions-flow .btn-ic-lg { min-height: 42px; min-width: 0; }
+.live-actions-flow .btn-ic-lg .icon { width: 18px; height: 18px; }
