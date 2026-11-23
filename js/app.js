@@ -137,7 +137,7 @@ function exerciseCardHTML(ex) {
         ${typeof favButton === "function" ? favButton(ex.id, "fav-card") : ""}
       </div>
       <div class="ex-card-info">
-        <p class="ex-card-group">${LABELS.groupes[ex.groupe]} · ${LABELS.materiel[ex.materiel]}</p>
+        <p class="ex-card-group">${LABELS.materiel[ex.materiel]}</p>
         <h3>${esc(ex.nom)}</h3>
       </div>
     </article>`;
@@ -176,7 +176,7 @@ function renderLibrary() {
   // les favoris passent devant (G1)
   if (typeof favoritesFirst === "function") list = favoritesFirst(list);
 
-  resultCount.textContent = list.length + " exercice" + (list.length > 1 ? "s" : "") + " trouvé" + (list.length > 1 ? "s" : "");
+  resultCount.textContent = String(list.length);
   grid.innerHTML = list.length
     ? list.map(exerciseCardHTML).join("")
     : `<p class="video-hint">Aucun exercice ne correspond${libState.favOnly ? " parmi tes favoris" : ""}.</p>`;

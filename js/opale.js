@@ -95,7 +95,7 @@ function opaleValidation(cb) {
     onde.style.cssText = `left:${cx}px;top:${cy}px`;
     ligne.appendChild(onde);
     onde.animate([{ transform: "translate(-50%,-50%) scale(0.3)", opacity: 0.9 }, { transform: "translate(-50%,-50%) scale(5.5)", opacity: 0 }],
-      { duration: 750, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }).onfinish = () => onde.remove();
+      { duration: 420, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }).onfinish = () => onde.remove();
     for (let k = 0; k < 8; k++) {                                  // étincelles
       const a = (k / 8) * Math.PI * 2 + Math.random() * 0.5, d = 26 + Math.random() * 26;
       const e = document.createElement("span");
@@ -104,7 +104,7 @@ function opaleValidation(cb) {
       ligne.appendChild(e);
       e.animate([{ transform: "translate(-50%,-50%) scale(1)", opacity: 1 },
                  { transform: `translate(calc(-50% + ${Math.cos(a) * d}px), calc(-50% + ${Math.sin(a) * d}px)) scale(0.2)`, opacity: 0 }],
-        { duration: 600 + Math.random() * 250, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" }).onfinish = () => e.remove();
+        { duration: 320 + Math.random() * 200, easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" }).onfinish = () => e.remove();
     }
     if (ligne.querySelector(".set-trend-up")) {                    // mieux que la dernière fois : reflet sur toute la carte
       const carte = cb.closest(".live-ex");
@@ -112,7 +112,7 @@ function opaleValidation(cb) {
         const b = document.createElement("span");
         b.className = "balayage";
         carte.appendChild(b);
-        setTimeout(() => b.remove(), 1300);
+        setTimeout(() => b.remove(), 700);
       }
     }
   }
@@ -133,7 +133,7 @@ function opaleValidation(cb) {
     el.classList.add("lueur");
     clearTimeout(minuteur);
   };
-  const eteint = () => { minuteur = setTimeout(() => { if (actif) { actif.classList.remove("lueur"); actif = null; } }, 260); };
+  const eteint = () => { minuteur = setTimeout(() => { if (actif) { actif.classList.remove("lueur"); actif = null; } }, 40); };
   document.addEventListener("pointerdown", pose, { passive: true });
   document.addEventListener("pointermove", e => { if (e.pressure > 0 || e.pointerType === "mouse") pose(e); }, { passive: true });
   document.addEventListener("pointerup", eteint, { passive: true });

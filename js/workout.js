@@ -1488,8 +1488,8 @@ function apercuHtml(ex) {
     fig = tmp.innerHTML;
   }
   return `<div class="live-apercu${on ? "" : " live-apercu-off"}">
-    <button type="button" class="live-apercu-toggle" aria-expanded="${on}">
-      <span>Aperçu du mouvement</span><span aria-hidden="true">${on ? "Masquer " + icon("chevron-up") : "Afficher " + icon("chevron-down")}</span>
+    <button type="button" class="live-apercu-toggle" aria-expanded="${on}" aria-label="Aperçu du mouvement" title="Aperçu du mouvement">
+      <span>${icon("clapper")}</span><span aria-hidden="true">${on ? icon("chevron-up") : icon("chevron-down")}</span>
     </button>
     ${on ? `<div class="live-apercu-fig">${fig}</div>` : ""}
   </div>`;
@@ -1537,15 +1537,15 @@ function renderLiveExercises() {
             ${LABELS.groupes[ex.groupe] || ""}
             ${ex.target ? " · " + esc(ex.target) : ""}
             ${ex.rir ? " · RIR " + esc(ex.rir) : ""}
-            · Repos ${ex.restSec} s${ex.restAuto !== false ? " (auto)" : ""}
+            · ${ex.restSec} s
           </p>
           ${ex.tempo ? `<p class="day-focus live-ex-tempo">Tempo : ${esc(ex.tempo)}</p>` : ""}
           <p class="day-focus live-ex-recap">${esc(recap)}</p>
         </div>
         <div class="live-ex-right">
-          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? icon("tick") + " Terminé" : esc(p.texte)}</span>
+          <span class="ex-sets ${p.fini ? "ex-sets-done" : ""}">${p.fini ? icon("tick") : esc(p.texte)}</span>
           <span class="ex-chrono" id="ex-chrono-${i}">${fmtClock(exerciseElapsed(ex))}</span>
-          ${isCurrent ? '<span class="tag tag-custom">En cours</span>' : ""}
+          
           <span class="live-ex-chev" aria-hidden="true">${icon("chevron-down")}</span>
         </div>
       </button>
@@ -1554,13 +1554,13 @@ function renderLiveExercises() {
       <div class="live-ex-body"><div class="live-ex-body-inner">
       ${open ? apercuHtml(ex) : ""}
       <div class="live-ex-tools">
-        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}">Fiche</button>
-        ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button">${icon("arrows-v")} Ordre</button>` : ""}
+        <button class="btn btn-ghost btn-sm ex-fiche" data-exid="${esc(ex.exId)}" title="Fiche" aria-label="Fiche de l'exercice">${icon("book")}</button>
+        ${live.exercises.length > 1 ? `<button class="btn btn-ghost btn-sm ex-move" type="button" title="Ordre" aria-label="Changer l'ordre">${icon("arrows-v")}</button>` : ""}
         <button class="btn btn-ghost btn-sm swap-ex" data-i="${i}" title="Remplacer par une alternative" aria-label="Remplacer par une alternative">${icon("swap")}</button>
         <button class="btn btn-danger-ghost btn-sm remove-ex" data-i="${i}" title="Retirer l'exercice" aria-label="Retirer l'exercice">${icon("trash")}</button>
-        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}">${icon("play")} Passer à cet exercice</button>`}
+        ${isCurrent ? "" : `<button class="btn btn-ghost btn-sm set-current" data-i="${i}" title="Passer à cet exercice" aria-label="Passer à cet exercice">${icon("play")}</button>`}
         ${isCurrent && p.fini && nextUnfinished(i) != null
-          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}">${icon("play")} Exercice suivant</button>` : ""}
+          ? `<button class="btn btn-primary btn-sm go-next" data-i="${nextUnfinished(i)}" title="Exercice suivant" aria-label="Exercice suivant">${icon("arrow-right")}</button>` : ""}
       </div>
 
       ${(() => { const h = progressionHint(ex); return h ? `<p class="progress-hint">${icon("trend")} ${esc(h)}</p>` : ""; })()}
@@ -1588,8 +1588,8 @@ function renderLiveExercises() {
      disparue. Ce bandeau, lui, est collé à la liste. */
   const bandeau = live.exercises.length > 1 && !reordering
     ? `<div class="live-list-head">
-         <span>Exercices · ${live.exercises.length}</span>
-         <button type="button" class="btn btn-ghost btn-sm ex-move">${icon("arrows-v")} Ordre</button>
+         <span>${live.exercises.length}</span>
+         <button type="button" class="btn btn-ghost btn-sm ex-move" title="Ordre" aria-label="Changer l'ordre">${icon("arrows-v")}</button>
        </div>` : "";
   elLiveExercises.innerHTML = bandeau + ssAssemble(cartes);
 
