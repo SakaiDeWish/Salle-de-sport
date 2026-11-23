@@ -187,6 +187,38 @@ function homeCustomizePanel() {
   });
 }
 
+/* Aperçu complet du programme : toutes les séances avec leurs exercices,
+   et la possibilité de commencer par n'importe laquelle. */
+function apercuProgramme() {
+  const nx = nextProgramDay();
+  if (!nx) return;
+  const { program } = nx;
+  const box = document.getElementById("modal-content");
+  if (!box) return;
+  box.innerHTML = `
+    <div class="modal-header"><div><h2>${esc(program.nom || "Mon programme")}</h2>
+    <p class="day-focus">${program.days.length} séances · touche « Commencer » sur celle de ton choix</p></div></div>
+    ${program.days.map((d, i) => `
+      <section class="apercu-day ${i === nx.index ? "apercu-next" : ""}">
+        <div class="apercu-head">
+          <div><h3>Séance ${d.numero} — ${esc(d.titre)}</h3>
+          <p class="day-focus">${esc(d.focus || "")} · ~${estimateDayMinutes(d)} min</p></div>
+          ${i === nx.index ? '<span class="apercu-tag">Suggérée</span>' : ""}
+        </div>
+        <ol class="apercu-list">${d.exercices.map(l =>
+          `<li><span>${esc(l.exercice.nom)}</span><span class="apercu-sr">${esc(String(l.series))} × ${esc(String(l.reps))}</span></li>`).join("")}</ol>
+        <button class="btn ${i === nx.index ? "btn-primary" : "btn-ghost"} btn-sm apercu-go" data-day="${i}">Commencer cette séance</button>
+      </section>`).join("")}`;
+  box.querySelectorAll(".apercu-go").forEach(b => b.addEventListener("click", () => {
+    const day = program.days[parseInt(b.dataset.day, 10)];
+    const exercises = day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo));
+    if (typeof closeSheet === "function") closeSheet();
+    startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
+    activateView("seance");
+  }));
+  openSheet();
+}
+
 function renderHome() {
   const profil = loadJSON(STORAGE_KEYS.profil, null);
   const gs = goalStatus();
@@ -234,7 +266,8 @@ function renderHome() {
           <p class="day-focus">${esc(next.day.focus)} · ~${estimateDayMinutes(next.day)} min · ${next.day.exercices.length} exercices</p>
         </div>
         <span class="home-cta-go">${icon("play")}</span>
-      </button>` : `
+      </button>
+      <button class="btn btn-ghost btn-sm home-apercu-btn" id="home-apercu">Aperçu du programme · choisir une autre séance</button>` : `
       <button class="card home-cta" id="home-create-program">
         <div>
           <p class="chrono-label">Première étape</p>
@@ -385,6 +418,8 @@ function renderHome() {
     startSession(`Séance ${next.day.numero} — ${next.day.titre}`, exercises);
     activateView("seance");
   });
+  const apercu = document.getElementById("home-apercu");
+  if (apercu) apercu.addEventListener("click", apercuProgramme);
   const create = document.getElementById("home-create-program");
   if (create) create.addEventListener("click", () => activateView("programme"));
   document.querySelectorAll("#home-content [data-go]").forEach(b =>
