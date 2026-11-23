@@ -164,8 +164,7 @@ function serieCardHtml(gs) {
 function homeCustomizePanel() {
   const cards = getHomeCards();
   return disclosure("home.custom", {
-    summary: `<span class="disc-title">Personnaliser l'accueil</span>
-      <span class="disc-meta">${cards.filter(c => c.on).length} bloc(s) affiché(s)</span>`,
+    summary: `<span class="disc-title">Personnaliser</span>`,
     label: "Modifier",
     what: `Choisis ce que tu veux voir en ouvrant l'app, et dans quel ordre. Décoche ce qui ne
       te sert pas : un accueil court se lit d'un coup d'œil entre deux séries. Ton choix est
@@ -261,18 +260,15 @@ function renderHome() {
     next: () => next ? `
       <button class="card home-cta" id="home-start">
         <div>
-          <p class="chrono-label">Prochaine séance</p>
           <h2 class="display-sm">Séance ${next.day.numero} — ${esc(next.day.titre)}</h2>
-          <p class="day-focus">${esc(next.day.focus)} · ~${estimateDayMinutes(next.day)} min · ${next.day.exercices.length} exercices</p>
+          <p class="day-focus">~${estimateDayMinutes(next.day)} min · ${next.day.exercices.length} ${icon("dumbbell")}</p>
         </div>
         <span class="home-cta-go">${icon("play")}</span>
       </button>
-      <button class="btn btn-ghost btn-sm home-apercu-btn" id="home-apercu">Aperçu du programme · choisir une autre séance</button>` : `
+      <button class="btn-ic home-apercu-btn" id="home-apercu" title="Voir le programme" aria-label="Voir le programme et choisir une autre séance">${icon("stack")}</button>` : `
       <button class="card home-cta" id="home-create-program">
         <div>
-          <p class="chrono-label">Première étape</p>
           <h2 class="display-sm">Crée ton programme</h2>
-          <p class="day-focus">2 min de questions, un plan adapté à ton objectif.</p>
         </div>
         <span class="home-cta-go">${icon("play")}</span>
       </button>`,
@@ -366,7 +362,6 @@ function renderHome() {
       <div class="home-hero-text">
         <p class="kicker">${now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</p>
         <h1 class="display">Salut${prenom}<span class="accent">.</span></h1>
-        <p class="hero-sub">${esc(quote)}</p>
       </div>
       ${on("streak") ? `
       <!-- pièce héros : le streak en numéral géant, décalé -->
@@ -389,9 +384,9 @@ function renderHome() {
     </section>
     ${rendered.join("")}
     <div class="home-maj">
-      <span class="home-maj-ver">${icon("refresh")} Version <strong>${esc(typeof APP_VERSION !== "undefined" ? APP_VERSION : "")}</strong>
+      <span class="home-maj-ver"><strong>${esc(typeof APP_VERSION !== "undefined" ? APP_VERSION : "")}</strong>
         <span id="home-maj-etat"></span></span>
-      <button class="btn btn-ghost btn-sm" id="home-maj" type="button">Mettre à jour</button>
+      <button class="btn-ic" id="home-maj" type="button" title="Mettre à jour" aria-label="Mettre à jour">${icon("refresh")}</button>
     </div>
     ${homeCustomizePanel()}
   `;
@@ -407,7 +402,7 @@ function renderHome() {
     if (!etat) return;
     if (!v) { etat.textContent = ""; return; }
     if (v === APP_VERSION) etat.textContent = "· à jour";
-    else { etat.textContent = "· " + v + " disponible"; majBtn && majBtn.classList.replace("btn-ghost", "btn-primary"); }
+    else { etat.textContent = "· " + v + " disponible"; majBtn && majBtn.classList.add("home-maj-new"); }
   }).catch(() => { const e = document.getElementById("home-maj-etat"); if (e) e.textContent = ""; });
 
   const start = document.getElementById("home-start");
