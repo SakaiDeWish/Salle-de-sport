@@ -2229,6 +2229,120 @@ const EXERCISES_COMBLE = [
       "Pas trop court, qui ne donne aucune amplitude aux adducteurs."
     ],
     videoQuery: "fentes latérales lateral lunge technique adducteurs"
+  },
+  {
+    id: "mollets-debout-machine-unilateral",
+    nom: "Extension mollets debout à la machine, une jambe",
+    groupe: "mollets", materiel: "machine", niveau: "intermediaire", type: "iso",
+    muscles: "Gastrocnémiens (unilatéral)",
+    description: "La même machine, un pied à la fois : le côté faible ne se cache plus derrière l'autre, et la charge reste raisonnable pour une amplitude complète.",
+    execution: [
+      "Épaules sous les coussins, un seul avant-pied sur la cale, l'autre jambe repliée derrière.",
+      "Descends le talon le plus bas possible.",
+      "Monte sur la pointe, marque un temps, redescends lentement.",
+      "Fais toutes les répétitions d'un côté, puis change."
+    ],
+    erreurs: [
+      "Poser l'autre pied pour s'aider.",
+      "Pencher le buste pour compenser.",
+      "Rebondir en bas."
+    ],
+    videoQuery: "extension mollets debout machine une jambe"
+  },
+  {
+    id: "mollets-smith",
+    nom: "Extension mollets debout à la Smith machine",
+    groupe: "mollets", materiel: "machine", niveau: "debutant", type: "iso",
+    muscles: "Gastrocnémiens (jumeaux)",
+    description: "La barre guidée de la Smith machine, avant-pieds sur une cale : équivalent de la machine à mollets quand elle est prise, avec une charge facile à régler.",
+    execution: [
+      "Barre sur les trapèzes, avant-pieds sur une cale, talons dans le vide, jambes tendues.",
+      "Descends les talons pour étirer le mollet.",
+      "Monte sur la pointe des pieds, marque un temps en haut.",
+      "Redescends lentement ; le buste reste droit."
+    ],
+    erreurs: [
+      "Placer les pieds trop loin sous la barre : le dos se cambre.",
+      "Plier les genoux.",
+      "Rebondir sans amplitude."
+    ],
+    videoQuery: "calf raise smith machine technique"
+  },
+  {
+    id: "mollets-debout-pointes-ecartees",
+    nom: "Extension mollets debout, pointes écartées",
+    groupe: "mollets", materiel: "machine", niveau: "intermediaire", type: "iso",
+    muscles: "Gastrocnémiens (chef interne surtout)",
+    description: "Même mouvement que la version de base, pieds tournés vers l'extérieur : le travail se déplace vers la partie interne du mollet.",
+    execution: [
+      "Épaules sous les coussins, avant-pieds sur la cale, pointes tournées vers l'extérieur (environ 45°).",
+      "Descends les talons le plus bas possible.",
+      "Monte sur la pointe, marque un temps en haut.",
+      "Garde les genoux dans l'axe des pieds."
+    ],
+    erreurs: [
+      "Genoux qui rentrent vers l'intérieur.",
+      "Rebondir.",
+      "Charge trop lourde qui écourte l'amplitude."
+    ],
+    videoQuery: "calf raise pointes écartées technique"
+  },
+  {
+    id: "mollets-debout-pointes-rentrees",
+    nom: "Extension mollets debout, pointes rentrées",
+    groupe: "mollets", materiel: "machine", niveau: "intermediaire", type: "iso",
+    muscles: "Gastrocnémiens (chef externe surtout)",
+    description: "Pieds tournés vers l'intérieur : le travail se déplace vers la partie externe du mollet. À alterner avec les pointes écartées pour un mollet complet.",
+    execution: [
+      "Épaules sous les coussins, avant-pieds sur la cale, pointes tournées vers l'intérieur (environ 15 à 20°).",
+      "Descends les talons le plus bas possible.",
+      "Monte sur la pointe, marque un temps en haut.",
+      "Garde les genoux dans l'axe des pieds."
+    ],
+    erreurs: [
+      "Forcer l'angle : douleur à la cheville ou au genou.",
+      "Rebondir.",
+      "Amplitude écourtée."
+    ],
+    videoQuery: "calf raise pointes rentrées technique"
+  },
+  {
+    id: "mollets-debout-halteres",
+    nom: "Extension mollets debout aux haltères",
+    groupe: "mollets", materiel: "halteres", niveau: "debutant", type: "iso",
+    muscles: "Gastrocnémiens (jumeaux)",
+    description: "Sans machine : un haltère dans chaque main, avant-pieds sur une marche. Idéal à la maison ou quand la machine est occupée.",
+    execution: [
+      "Un haltère dans chaque main, bras le long du corps, avant-pieds sur une marche, talons dans le vide.",
+      "Descends les talons le plus bas possible.",
+      "Monte sur la pointe des pieds, marque un temps en haut.",
+      "Redescends lentement ; une main peut s'appuyer au mur pour l'équilibre."
+    ],
+    erreurs: [
+      "Balancer le buste.",
+      "Plier les genoux.",
+      "Rebondir sans étirement."
+    ],
+    videoQuery: "calf raise haltères debout technique"
+  },
+  {
+    id: "mollets-debout-barre",
+    nom: "Extension mollets debout à la barre",
+    groupe: "mollets", materiel: "barre", niveau: "intermediaire", type: "iso",
+    muscles: "Gastrocnémiens (jumeaux)",
+    description: "Barre sur les trapèzes comme pour un squat, avant-pieds sur un disque ou une cale. Charge lourde possible, à faire dans un rack.",
+    execution: [
+      "Barre sur les trapèzes, avant-pieds sur une cale stable, jambes tendues.",
+      "Descends les talons le plus bas possible.",
+      "Monte sur la pointe, marque un temps en haut.",
+      "Garde le buste gainé et le regard devant."
+    ],
+    erreurs: [
+      "Cale instable.",
+      "Buste qui se penche.",
+      "Rebondir avec une charge trop lourde."
+    ],
+    videoQuery: "standing calf raise barre technique"
   }
 ];
 EXERCISES.push(...EXERCISES_COMBLE);
@@ -2379,7 +2493,13 @@ const EXERCISE_ALIASES = {
   "kettlebell-swing": ["russian swing", "swing"],
   "planche": ["plank", "gainage ventral"],
   "crunch": ["crunchs", "abdos au sol"],
-  "mollets-debout": ["standing calf raise", "calf raises", "calf raise debout"],
+  "mollets-debout": ["standing calf raise", "calf raises", "calf raise debout", "calf raise machine", "mollets machine", "mollets debout machine", "extension mollet debout", "extension mollets debout deux jambes", "standing calf raise machine"],
+  "mollets-debout-machine-unilateral": ["single leg standing calf raise machine", "mollet une jambe machine", "calf raise une jambe machine"],
+  "mollets-smith": ["smith calf raise", "calf raise smith", "mollets multipower", "mollets smith"],
+  "mollets-debout-pointes-ecartees": ["toes out calf raise", "calf raise pieds écartés", "mollets pointes dehors"],
+  "mollets-debout-pointes-rentrees": ["toes in calf raise", "calf raise pieds rentrés", "mollets pointes dedans"],
+  "mollets-debout-halteres": ["dumbbell calf raise", "calf raise haltères", "mollets haltères"],
+  "mollets-debout-barre": ["barbell calf raise", "calf raise barre", "mollets barre"],
   "hyperextension-inversee": ["reverse hyper"],
 
   /* Noms anglais manquants. Le défaut est toujours le même : l'exercice

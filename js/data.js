@@ -794,13 +794,13 @@ const EXERCISES = [
   /* ==================== MOLLETS ==================== */
   {
     id: "mollets-debout",
-    nom: "Extensions mollets debout",
+    nom: "Extension mollets debout à la machine (2 jambes)",
     groupe: "mollets",
     materiel: "machine",
     niveau: "debutant",
     type: "iso",
     muscles: "Gastrocnémiens (jumeaux)",
-    description: "Le mouvement de base pour les mollets, à la machine ou avec une marche.",
+    description: "Le mouvement de base pour les mollets : épaules sous les coussins, les deux jambes tendues, avant-pieds sur la cale de la machine.",
     execution: [
       "Debout, avant des pieds sur la cale, talons dans le vide.",
       "Descends les talons le plus bas possible pour étirer.",
