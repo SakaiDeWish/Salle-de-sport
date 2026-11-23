@@ -854,10 +854,16 @@ function resumeSession() {
 }
 
 function renderPauseState() {
-  const banner = document.getElementById("pause-banner");
-  const btn = document.getElementById("live-pause");
-  if (banner) banner.classList.toggle("hidden", !live || !live.pausedAt);
-  if (btn) btn.classList.toggle("hidden", !live || !!live.pausedAt);
+  /* Un seul bouton : pause quand ça tourne, lecture quand c'est en pause. */
+  const enPause = !!(live && live.pausedAt);
+  for (const btn of [document.getElementById("live-pause"), document.getElementById("hdr-pill-pause")]) {
+    if (!btn) continue;
+    btn.innerHTML = icon(enPause ? "play" : "pause");
+    btn.title = enPause ? "Reprendre la séance" : "Mettre la séance en pause";
+    btn.setAttribute("aria-label", btn.title);
+    btn.classList.toggle("btn-pause-on", enPause);
+  }
+  document.getElementById("live-header")?.classList.toggle("en-pause", enPause);
   tick();
 }
 
@@ -982,11 +988,6 @@ function headerMinimized() { return elLive.classList.contains("hdr-min"); }
 function applyHeaderMin(on) {
   localStorage.setItem(STORAGE_KEYS.liveHeaderMin, on ? "1" : "0");
   elLive.classList.toggle("hdr-min", on);
-  const btn = document.getElementById("live-hdr-toggle");
-  if (btn) {
-    btn.innerHTML = icon(on ? "chevron-down" : "chevron-up");
-    btn.title = on ? "Agrandir le chrono" : "Réduire le chrono";
-  }
   tick();
 }
 
@@ -2823,8 +2824,8 @@ elLiveExercises.addEventListener("input", e => {
 });
 
 /* ---------- Fin de séance ---------- */
-document.getElementById("live-pause").addEventListener("click", pauseSession);
-document.getElementById("pause-resume").addEventListener("click", resumeSession);
+for (const id of ["live-pause", "hdr-pill-pause"])
+  document.getElementById(id).addEventListener("click", () => (live && live.pausedAt) ? resumeSession() : pauseSession());
 /* Mode compact : chrono seul + cartes réduites à l'essentiel
    (série / reps / poids / repos). Mémorisé. */
 document.getElementById("live-compact-toggle").addEventListener("click", () => {
@@ -2833,7 +2834,12 @@ document.getElementById("live-compact-toggle").addEventListener("click", () => {
   localStorage.setItem("gymcoach.liveCompact", on ? "1" : "0");
 });
 /* Bascule manuelle grand/compact — l'automatique au scroll reprend ensuite */
-document.getElementById("live-hdr-toggle").addEventListener("click", () => toggleHeaderManual(true));
+/* Un toucher sur la bande (hors boutons) la réduit ; la pilule la rouvre. */
+document.getElementById("live-header").addEventListener("click", e => {
+  /* composedPath : le bouton pause remplace son icône pendant le clic, la cible n'a alors plus de parent */
+  if (e.composedPath().some(n => n.matches && n.matches("button, a, input, select"))) return;
+  if (!headerMinimized()) toggleHeaderManual(true);
+});
 document.getElementById("hdr-pill-open").addEventListener("click", () => toggleHeaderManual(false));
 document.getElementById("hdr-pill-finish").addEventListener("click", () => demanderFin());
 /* Une fonction fléchée, pas `finishSession` directement : l'écouteur recevrait l'événement du clic
