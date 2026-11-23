@@ -22123,3 +22123,7 @@ EXERCISE_MOTIONS["presse-cuisses-verticale"] = {
     { phase: "ecc", svg: `<path class="mo-arr" d="M146 62 L146 100 M141 92 L146 100 L151 92"/>` }
   ]
 };
+
+/* Variantes des mollets debout : même geste, même animation. */
+for (const id of ["mollets-debout-machine-unilateral", "mollets-smith", "mollets-debout-pointes-ecartees", "mollets-debout-pointes-rentrees", "mollets-debout-halteres", "mollets-debout-barre"])
+  EXERCISE_MOTIONS[id] = EXERCISE_MOTIONS["mollets-debout"];
