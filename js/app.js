@@ -564,7 +564,8 @@ programForm.addEventListener("submit", e => {
   if (typeof registerGeneratedProgram === "function") registerGeneratedProgram(program);
   else saveJSON(STORAGE_KEYS.program, program);
   renderProgram(program);
-  programOutput.scrollIntoView({ behavior: "smooth" });
+  document.querySelector('[data-ppanel="actuel"]').click();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 /* Le programme s'affiche en « collection » de séances-cartes,
@@ -596,18 +597,14 @@ function renderProgram(pr) {
 
   programOutput.innerHTML = `
     <div class="program-header card">
-      <p class="kicker">${objIcon(pr.objectif)} ${esc(pr.objectifLabel || "Programme personnalisé")}</p>
-      <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
-      <p class="program-meta">
-        ${LABELS.niveaux[pr.niveau]} · ${pr.jours} séances/semaine · ${pr.splitLabel ? pr.splitLabel + " · " : ""}${materielLabels[pr.materiel]}
-        ${pr.duree ? " · ~" + pr.duree + " min/séance" : ""}
-        ${pr.priorite ? " · Priorité : " + LABELS.groupes[pr.priorite] : ""}
-        · Généré le ${esc(pr.genereLe)}
-      </p>
-      <div class="program-actions">
-        <button class="btn btn-ghost" id="btn-regen">${icon("refresh")} Régénérer</button>
-        <button class="btn btn-ghost" id="btn-print">${icon("printer")} Imprimer / PDF</button>
+      <div class="ph-row">
+        <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
+        <span class="ph-actions">
+          <button class="btn-ic" id="btn-regen" title="Régénérer" aria-label="Régénérer">${icon("refresh")}</button>
+          <button class="btn-ic" id="btn-print" title="Imprimer / PDF" aria-label="Imprimer / PDF">${icon("printer")}</button>
+        </span>
       </div>
+      <p class="program-meta">${pr.jours} séances/sem. · ${LABELS.niveaux[pr.niveau]}${pr.duree ? " · ~" + pr.duree + " min" : ""}</p>
     </div>
 
     <div class="program-days">
@@ -617,18 +614,11 @@ function renderProgram(pr) {
             <span class="day-num">${String(day.numero).padStart(2, "0")}</span>
             <div>
               <h3>${esc(day.titre)}</h3>
-              <p class="day-focus">${esc(day.focus)}</p>
+              <p class="day-focus">~${estimateDayMinutes(day)} min · ${day.exercices.length} exercices</p>
             </div>
-          </div>
-          <div class="day-meta">
-            <span>⏱ <strong>~${estimateDayMinutes(day)} min</strong></span>
-            <span>${icon("dumbbell")} <strong>${day.exercices.length}</strong> exercices</span>
           </div>
           <!-- 3 colonnes : tout tient à l'écran, aucun défilement latéral -->
           <table class="day-table">
-            <thead>
-              <tr><th>Exercice</th><th>Séries × reps</th><th>Repos</th></tr>
-            </thead>
             <tbody>
               ${day.exercices.map(l => `
                 <tr class="${l.prioritaire ? "row-priority" : ""}">
@@ -652,14 +642,10 @@ function renderProgram(pr) {
       return `
       <div class="card volume-card">
         ${typeof disclosure === "function" ? disclosure("prog.volume", {
-          summary: `<span class="disc-title">Volume hebdomadaire par muscle</span><span class="disc-meta">cible ~${cible} séries</span>`,
-          what: `C'est le nombre de séries par semaine et par muscle qui pilote la prise de muscle.
-            Une série qui sollicite un muscle en second (triceps sur un développé) compte pour une demie.
-            Le programme vise ~${cible} séries par muscle (plus pour le dos et les jambes, moins pour
-            les bras, mollets, abdos et lombaires) ; le repère vertical marque la cible de chaque muscle.`,
+          summary: `<span class="disc-title">Volume hebdomadaire par muscle</span>`,
           detail: renderVolumeTable(vol)
         }) : renderVolumeTable(vol)}
-        ${sous.length ? `<p class="volume-warn">Encore sous la cible : ${sous.join(", ")}. Ajoute 1 à 2 séries sur ces muscles dans l'éditeur.</p>` : ""}
+        ${sous.length ? `<p class="volume-warn">Sous la cible : ${sous.join(", ")}</p>` : ""}
         ${auto.length ? `<div class="volume-auto"><p class="volume-auto-title">D'après tes dernières séances</p><ul>${
           auto.map(h => `<li class="auto-${h.sens}">${icon(h.sens === "plus" ? "arrow-up" : "arrow-down")} <strong>${LABELS.groupes[h.groupe]}</strong> — ${esc(h.raison)}</li>`).join("")
         }</ul></div>` : ""}
@@ -668,11 +654,8 @@ function renderProgram(pr) {
 
     <div class="card conseils-card">
       ${typeof disclosure === "function" ? disclosure("prog.conseils", {
-        summary: `<span class="disc-title">Conseils — ${esc(pr.objectifLabel)}</span><span class="disc-meta">${pr.conseils.length} repères</span>`,
-        what: `Le programme dit quoi faire ; ces repères disent comment le rendre efficace —
-          alimentation, récupération et surcharge progressive comptent autant que les séries.`,
-        detail: `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>
-          <p class="disclaimer">${icon("alert")} Échauffe-toi 5-10 min avant chaque séance. Touche un exercice pour ouvrir sa fiche.</p>`
+        summary: `<span class="disc-title">Conseils</span>`,
+        detail: `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>`
       }) : `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>`}
     </div>
   `;

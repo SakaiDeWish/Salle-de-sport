@@ -640,7 +640,7 @@ function renderImportApercu(res) {
     if (typeof renderProgram === "function") renderProgram(prog);
     if (typeof renderHome === "function") renderHome();
     toast(`Programme importé : ${prog.days.length} jour${prog.days.length > 1 ? "s" : ""}, ${nbOk} exercice${nbOk > 1 ? "s" : ""}.`);
-    document.querySelector('[data-ppanel="generer"]')?.click();
+    document.querySelector('[data-ppanel="actuel"]')?.click();
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }

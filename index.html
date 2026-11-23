@@ -206,16 +206,23 @@
   <!-- ==================== VUE PROGRAMME ==================== -->
   <main id="view-programme" class="view">
     <section class="hero">
-      <p class="kicker">Coaching personnalisé</p>
       <h1 class="display">Ton<br>programme<span class="accent">.</span></h1>
-      <p class="hero-sub">Quelques questions, et ton plan s'adapte à ton objectif et ton matériel.</p>
     </section>
 
-    <div class="segmented" role="tablist" aria-label="Mode programme">
-      <button class="seg active" data-ppanel="generer" role="tab">Générer</button>
-      <button class="seg" data-ppanel="importer" role="tab">Importer</button>
-      <button class="seg" data-ppanel="programmes" role="tab">Mes programmes</button>
+    <div class="pp-bar">
+      <div class="segmented" role="tablist" aria-label="Programme">
+        <button class="seg active" data-ppanel="actuel" role="tab">Ton programme</button>
+        <button class="seg hidden" id="pp-autre" role="tab" aria-selected="true"></button>
+      </div>
+      <button class="pp-plus" id="pp-plus" aria-label="Générer, importer, mes programmes" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg></button>
+      <div class="pp-menu hidden" id="pp-menu">
+        <button data-ppanel="generer">Générer</button>
+        <button data-ppanel="importer">Importer</button>
+        <button data-ppanel="programmes">Mes programmes</button>
+      </div>
     </div>
+
+    <section id="panel-actuel"><section id="program-output"></section></section>
 
     <section id="panel-programmes" class="suivi-panel hidden"><!-- rendu par js/programs.js --></section>
 
@@ -250,7 +257,7 @@
       <div id="imp-apercu"></div>
     </section>
 
-    <section id="panel-generer">
+    <section id="panel-generer" class="hidden">
     <form id="program-form" class="program-form card">
       <div class="form-grid">
         <label>
@@ -346,7 +353,6 @@
       <button type="submit" class="btn btn-primary btn-lg">Générer mon programme</button>
     </form>
 
-    <section id="program-output"></section>
     </section><!-- /panel-generer -->
   </main>
 
