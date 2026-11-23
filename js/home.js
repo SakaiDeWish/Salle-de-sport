@@ -388,7 +388,6 @@ function renderHome() {
         <span id="home-maj-etat"></span></span>
       <button class="btn-ic" id="home-maj" type="button" title="Mettre à jour" aria-label="Mettre à jour">${icon("refresh")}</button>
     </div>
-    ${homeCustomizePanel()}
   `;
   const majBtn = document.getElementById("home-maj");
   if (majBtn) majBtn.addEventListener("click", () => rechargerApp(majBtn));
@@ -419,15 +418,22 @@ function renderHome() {
   if (create) create.addEventListener("click", () => activateView("programme"));
   document.querySelectorAll("#home-content [data-go]").forEach(b =>
     b.addEventListener("click", () => activateView(b.dataset.go)));
+}
 
-  /* Personnalisation : visibilité + ordre, puis re-rendu */
+/* Personnalisation de l'accueil : branchée depuis les Réglages (une seule page de configuration). */
+function homeCustomizeBind() {
+  const refresh = () => {
+    renderHome();
+    const m = document.getElementById("hc-mount");
+    if (m) { m.innerHTML = homeCustomizePanel(); homeCustomizeBind(); }
+  };
   document.querySelectorAll(".hc-on").forEach(box =>
     box.addEventListener("change", () => {
       const list = getHomeCards();
       const c = list.find(x => x.key === box.dataset.key);
       if (c) c.on = box.checked;
       saveHomeCards(list);
-      renderHome();
+      refresh();
     }));
   const move = (key, dir) => {
     const list = getHomeCards();
@@ -436,7 +442,7 @@ function renderHome() {
     if (i < 0 || j < 0 || j >= list.length) return;
     [list[i], list[j]] = [list[j], list[i]];
     saveHomeCards(list);
-    renderHome();
+    refresh();
   };
   document.querySelectorAll(".hc-up").forEach(b =>
     b.addEventListener("click", () => move(b.dataset.key, -1)));
@@ -445,7 +451,7 @@ function renderHome() {
   const reset = document.getElementById("hc-reset");
   if (reset) reset.addEventListener("click", () => {
     localStorage.removeItem(STORAGE_KEYS.homeCards);
-    renderHome();
+    refresh();
   });
 }
 

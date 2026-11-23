@@ -170,7 +170,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v109";
+const APP_VERSION = "v110";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -188,6 +188,31 @@ async function rechargerApp(btn) {
 function settingsHtml() {
   const t = currentTheme();
   return `
+    <div class="card set-card">
+      <h3 class="set-h">Entraînement</h3>
+      <label class="set-row">
+        <span class="set-lab">Objectif<span class="set-sub">séances par semaine</span></span>
+        <input type="number" id="set-goal" class="set-num" min="1" max="14" value="${goalStatus().goal}" inputmode="numeric">
+      </label>
+      <label class="set-row">
+        <span class="set-lab">Repos par défaut<span class="set-sub">secondes, séances libres</span></span>
+        <input type="number" id="set-rest" class="set-num" min="5" max="600" step="5" value="${getDefaultRest()}" inputmode="numeric">
+      </label>
+    </div>
+
+    <div class="card set-card">
+      <h3 class="set-h">Accueil</h3>
+      <div id="hc-mount">${homeCustomizePanel()}</div>
+    </div>
+
+    <div class="card set-card">
+      <h3 class="set-h">Sauvegarde</h3>
+      <div class="program-actions">
+        <button class="btn btn-primary" id="set-export" title="Exporter" aria-label="Exporter une sauvegarde">${icon("download")} Exporter</button>
+        <button class="btn btn-ghost" id="set-import" title="Importer" aria-label="Importer une sauvegarde">${icon("upload")} Importer</button>
+      </div>
+    </div>
+
     <div class="card set-card">
       <h3 class="set-h">Apparence</h3>
       <div class="set-row">
@@ -306,6 +331,18 @@ function openSettings() {
       host.querySelectorAll("[data-theme]").forEach(x =>
         x.classList.toggle("active", x.dataset.theme === b.dataset.theme));
     }));
+  const goal = document.getElementById("set-goal");
+  goal.addEventListener("change", () => {
+    saveJSON(STORAGE_KEYS.weeklyGoal, Math.max(1, Math.min(14, parseInt(goal.value, 10) || 3)));
+    if (typeof renderHome === "function") renderHome();
+    if (typeof renderDashboard === "function") renderDashboard();
+  });
+  const reposDef = document.getElementById("set-rest");
+  reposDef.addEventListener("change", () =>
+    saveJSON(STORAGE_KEYS.restDefault, Math.max(5, Math.min(600, parseInt(reposDef.value, 10) || 90))));
+  if (typeof homeCustomizeBind === "function") homeCustomizeBind();
+  document.getElementById("set-export").addEventListener("click", exportData);
+  document.getElementById("set-import").addEventListener("click", () => document.getElementById("import-file").click());
   const s = document.getElementById("set-sound");
   const v = document.getElementById("set-vibrate");
   const vol = document.getElementById("set-vol");

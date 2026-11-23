@@ -5161,3 +5161,7 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .live-actions-flow { gap: 8px; }
 .live-actions-flow .btn-ic-lg { min-height: 42px; min-width: 0; }
 .live-actions-flow .btn-ic-lg .icon { width: 18px; height: 18px; }
+
+/* Réglages : champs numériques compacts, résumé d'objectif sans dépliant */
+.set-num { width: 76px; text-align: center; min-height: 44px; }
+.goal-sum { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }

@@ -494,7 +494,6 @@ const elSummary = document.getElementById("seance-summary");
 const elLiveExercises = document.getElementById("live-exercises");
 const elRestOverlay = document.getElementById("rest-overlay");
 const elPicker = document.getElementById("picker");
-const defaultRestInput = document.getElementById("default-rest");
 
 /* ---------- Persistance de la séance en cours ---------- */
 function saveLive() {
@@ -758,7 +757,6 @@ function liveElapsed() {
 }
 
 document.getElementById("start-free").addEventListener("click", () => {
-  saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
   startSession("Séance libre", []);
   openPicker();
 });
@@ -786,8 +784,7 @@ function renderProgramDayButtons() {
   }).join("");
   container.querySelectorAll(".start-day").forEach(btn => {
     btn.addEventListener("click", () => {
-      saveJSON(STORAGE_KEYS.restDefault, parseInt(defaultRestInput.value, 10) || 90);
-      const day = program.days[parseInt(btn.dataset.day, 10)];
+          const day = program.days[parseInt(btn.dataset.day, 10)];
       const exercises = day.exercices.map(l =>
         newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo) // repos auto (smartRest)
       );
@@ -3230,7 +3227,6 @@ function showSetup() {
   elLive.classList.add("hidden");
   elSummary.classList.add("hidden");
   elSetup.classList.remove("hidden");
-  defaultRestInput.value = getDefaultRest();
   renderProgramDayButtons();
   renderHistory();
 }
