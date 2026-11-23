@@ -5113,3 +5113,19 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .apercu-list li:first-child { border-top: 0; }
 .apercu-sr { opacity: .7; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .apercu-go { width: 100%; }
+
+/* ===== Onglet unique « Ton programme » + « + » ===== */
+.pp-bar { position: relative; display: flex; align-items: center; gap: 10px; margin: 6px 0 16px; }
+.pp-bar .segmented { flex: 1; margin: 0; width: auto; flex-wrap: nowrap; }
+.pp-bar .seg { flex: 1; white-space: nowrap; }
+.pp-plus { width: 44px; height: 44px; flex: none; border-radius: 50%; border: 1px solid var(--line, rgba(128,128,128,.3)); background: var(--surface, transparent); color: inherit; display: grid; place-items: center; cursor: pointer; transition: transform .35s var(--amorti, ease), background .2s; }
+.pp-plus .icon { width: 20px; height: 20px; }
+.pp-plus.on { transform: rotate(45deg); background: var(--accent-grad, var(--accent)); color: var(--accent-contrast, #000); }
+.pp-menu { position: absolute; top: 52px; right: 0; z-index: 20; min-width: 190px; display: flex; flex-direction: column; padding: 6px; border-radius: 16px; background: var(--surface-2, var(--surface, #1c1c1c)); border: 1px solid var(--line, rgba(128,128,128,.3)); box-shadow: 0 14px 40px rgba(0,0,0,.35); }
+.pp-menu button { text-align: left; padding: 12px 14px; border: 0; background: none; color: inherit; font: inherit; border-radius: 10px; min-height: 44px; cursor: pointer; }
+.pp-menu button:hover, .pp-menu button:active { background: rgba(128,128,128,.16); }
+.pp-menu.hidden, .pp-bar .seg.hidden { display: none; }
+.ph-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ph-row h2 { margin: 0; }
+.ph-actions { display: flex; gap: 4px; flex: none; }
+.program-header .program-meta { margin: 6px 0 0; }

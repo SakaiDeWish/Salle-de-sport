@@ -79,15 +79,36 @@ function registerGeneratedProgram(program) {
 }
 
 /* ---------- Panneaux Générer / Mes programmes ---------- */
+const PP_NOMS = { generer: "Générer", importer: "Importer", programmes: "Mes programmes" };
+function ppMenu(ouvert) {
+  const m = document.getElementById("pp-menu"), pl = document.getElementById("pp-plus");
+  if (!m || !pl) return;
+  m.classList.toggle("hidden", !ouvert);
+  pl.setAttribute("aria-expanded", String(ouvert));
+  pl.classList.toggle("on", ouvert);
+}
+document.getElementById("pp-plus")?.addEventListener("click", e => {
+  e.stopPropagation();
+  ppMenu(document.getElementById("pp-menu").classList.contains("hidden"));
+});
+document.addEventListener("click", e => { if (!e.target.closest(".pp-bar")) ppMenu(false); });
 document.querySelectorAll("[data-ppanel]").forEach(seg =>
   seg.addEventListener("click", () => {
-    document.querySelectorAll("[data-ppanel]").forEach(s => s.classList.remove("active"));
-    seg.classList.add("active");
-    document.getElementById("panel-generer").classList.toggle("hidden", seg.dataset.ppanel !== "generer");
-    document.getElementById("panel-programmes").classList.toggle("hidden", seg.dataset.ppanel !== "programmes");
-    document.getElementById("panel-importer").classList.toggle("hidden", seg.dataset.ppanel !== "importer");
-    if (seg.dataset.ppanel === "programmes") renderProgramsPanel();
+    const k = seg.dataset.ppanel;
+    ["actuel", "generer", "programmes", "importer"].forEach(n =>
+      document.getElementById("panel-" + n).classList.toggle("hidden", n !== k));
+    const autre = document.getElementById("pp-autre");
+    const actuel = document.querySelector('.seg[data-ppanel="actuel"]');
+    actuel.classList.toggle("active", k === "actuel");
+    autre.classList.toggle("hidden", k === "actuel");
+    autre.classList.toggle("active", k !== "actuel");
+    autre.textContent = PP_NOMS[k] || "";
+    ppMenu(false);
+    if (k === "programmes") renderProgramsPanel();
   }));
+
+/* Sans programme, on arrive directement sur « Générer » */
+if (!loadJSON(STORAGE_KEYS.program, null)) document.querySelector('#pp-menu [data-ppanel="generer"]')?.click();
 
 /* ---------- Modèles prêts à l'emploi ---------- */
 const PROGRAM_TEMPLATES = [
