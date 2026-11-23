@@ -2889,6 +2889,9 @@ function finishSession(auto = false) {
     programId: program ? (program.id || null) : null,
     programNom: program ? (program.nom || program.objectifLabel || null) : null,
     libre: !/^Séance \d+/.test(live.nom),
+    /* Les exercices de la séance, dans l'ordre, y compris ceux sans série :
+       sert à proposer de mettre le programme à jour (js/maj-programme.js). */
+    structure: live.exercises.map(e => e.exId),
     objectifLabel: program ? program.objectifLabel : null,
     rpe: null,   // renseigné depuis l'écran de résumé
     notes: "",
@@ -3034,6 +3037,8 @@ function showSummary(r) {
         <p class="feedback" id="add-to-program-feedback"></p>
       </div>` : ""}
 
+      ${typeof majProgrammeCarte === "function" ? majProgrammeCarte(r) : ""}
+
       ${recapHtml(r, true)}
 
       <!-- Bilan : difficulté -> proposition d'ajustement du programme -->
@@ -3058,6 +3063,7 @@ function showSummary(r) {
     </div>`;
 
   renderWarmupFix(r);
+  if (typeof majProgrammeLier === "function") majProgrammeLier(r);
 
   /* Séance libre -> séance récurrente du programme actif (D2) */
   const addBtn = document.getElementById("add-to-program");

@@ -7,7 +7,7 @@
    ensemble n'est pas qu'une discipline d'écriture : leur ÉCART est ce
    qui permet à l'app de détecter qu'une page tourne encore sur l'ancien
    code pendant qu'un service worker plus récent a déjà pris la main. */
-const CACHE = "gymcoach-v112";
+const CACHE = "gymcoach-v113";
 const ASSETS = [
   "./",
   "index.html",
@@ -36,6 +36,7 @@ const ASSETS = [
   "js/import-programme.js",
   "js/programs.js",
   "js/depuis-seances.js",
+  "js/maj-programme.js",
   "manifest.webmanifest",
   "icon.svg"
 ];
