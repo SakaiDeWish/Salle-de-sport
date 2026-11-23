@@ -497,7 +497,13 @@ const elPicker = document.getElementById("picker");
 const defaultRestInput = document.getElementById("default-rest");
 
 /* ---------- Persistance de la séance en cours ---------- */
-function saveLive() { saveJSON(STORAGE_KEYS.live, live); }
+function saveLive() {
+  /* Le repos en cours est rangé avec la séance : une mise à jour de l'app
+     (ou un rechargement) ne doit pas faire disparaître le chrono. */
+  if (live) live.restSauve = rest ? { ...rest, min: restMinimized } : null;
+  saveJSON(STORAGE_KEYS.live, live);
+}
+let restSigSauve = "";
 /* Fin de séance : DÉMONTAGE COMPLET, en un seul endroit.
 
    Le bug corrigé ici : clearLive() ne faisait que `live = null`, et
@@ -1047,6 +1053,10 @@ function toggleHeaderManual(on) {
 
 let autoStopCheck = 0;
 function tick() {
+  if (live) {
+    const sig = rest ? [rest.startAt, rest.targetSec, rest.beeped, restMinimized].join() : "";
+    if (sig !== restSigSauve) { restSigSauve = sig; saveLive(); }
+  }
   if (!live) return;
   /* Surveillance de l'oubli. tick() bat toutes les 250 ms ; inutile de
      recalculer aussi souvent, un passage toutes les 10 s suffit. */
@@ -3241,6 +3251,16 @@ document.querySelectorAll('.tab[data-view="seance"]').forEach(tab =>
       autoStopSession();
       toast(`Séance close automatiquement : plus rien de validé depuis ${min} min. La durée s'arrête à ta dernière série.`);
       return;
+    }
+    // reprendre le repos en cours, s'il y en avait un (mise à jour, rechargement)
+    const rs = saved.restSauve;
+    if (rs && rs.setRef && rs.startAt && Date.now() - rs.startAt < (rs.targetSec + 600) * 1000) {
+      const { min, ...r } = rs;
+      rest = r; restMinimized = !!min;
+      const ex = live.exercises[r.setRef.exIndex];
+      restSigSauve = [rest.startAt, rest.targetSec, rest.beeped, restMinimized].join();
+      document.getElementById("rest-exercise-name").textContent = ex ? ex.nom + " — série " + (r.setRef.setIndex + 1) + " terminée" : "";
+      if (!restMinimized && elRestOverlay) elRestOverlay.classList.remove("hidden");
     }
     // reprendre la séance interrompue (rafraîchissement de page)
     activateView("seance");
