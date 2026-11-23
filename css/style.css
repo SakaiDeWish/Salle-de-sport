@@ -4301,7 +4301,8 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
   transition: --lueur 0.18s ease, transform 0.38s var(--ressort, ease), border-color 0.16s ease;
 }
 .theme-opale .live-ex-current, .theme-opale .card.live-ex-current {
-  animation: opale-halo 4.5s ease-in-out infinite;
+  animation: none;
+  box-shadow: 0 0 30px -14px rgba(168, 240, 220, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.09);
 }
 @keyframes opale-halo {
   0%, 100% { box-shadow: 0 0 30px -12px rgba(168, 240, 220, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.09); }
@@ -4882,14 +4883,14 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .at-action { width: 100%; max-width: 380px; }
 
 /* Aurore (record battu) : trois rubans qui ondulent derrière le contenu, puis s'effacent. */
-.op-aurore { position: fixed; inset: 0; z-index: 250; pointer-events: none; overflow: hidden; animation: aurore-vie calc(6s * var(--vit, 1.45)) ease-in-out forwards; }
+.op-aurore { position: fixed; inset: 0; z-index: 250; pointer-events: none; overflow: hidden; animation: aurore-vie 2.2s ease-in-out forwards; }
 .op-aurore i {
   position: absolute; left: -20%; right: -20%; height: 46%; border-radius: 50%; filter: blur(46px); mix-blend-mode: screen; opacity: 0.7;
 }
 .op-aurore i:nth-child(1) { top: -8%; background: linear-gradient(90deg, transparent, rgba(80, 230, 170, 0.7), rgba(80, 200, 255, 0.55), transparent); animation: aurore-onde calc(7s * var(--vit, 1.45)) ease-in-out infinite alternate; }
 .op-aurore i:nth-child(2) { top: 6%; background: linear-gradient(90deg, transparent, rgba(160, 120, 255, 0.6), rgba(80, 230, 200, 0.5), transparent); animation: aurore-onde calc(9s * var(--vit, 1.45)) ease-in-out -2s infinite alternate-reverse; }
 .op-aurore i:nth-child(3) { top: 18%; height: 32%; background: linear-gradient(90deg, transparent, rgba(255, 190, 120, 0.4), rgba(255, 120, 190, 0.35), transparent); animation: aurore-onde calc(11s * var(--vit, 1.45)) ease-in-out -4s infinite alternate; }
-@keyframes aurore-vie { 0% { opacity: 0; } 18% { opacity: 1; } 72% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes aurore-vie { 0% { opacity: 0; } 20% { opacity: .85; } 50% { opacity: .6; } 100% { opacity: 0; } }
 @keyframes aurore-onde { from { transform: translateX(-8%) skewX(-8deg) scaleY(0.9); } to { transform: translateX(8%) skewX(8deg) scaleY(1.15); } }
 
 @media (prefers-reduced-motion: reduce) { .op-aurore { display: none; } }
