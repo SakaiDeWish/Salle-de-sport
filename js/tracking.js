@@ -294,18 +294,61 @@ function renderDashboard() {
   document.getElementById("panel-dashboard").innerHTML = `
     <!-- Objectif de la semaine + streak : le seul bloc ouvert d'office -->
     <div class="card goal-card">
-      ${disclosure("dash.goal", {
-        summary: `<span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
+      <div class="goal-sum"><span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
           <span class="disc-meta">cette semaine · streak ${gs.streak} sem.${statInfo("streak")}
-          ${gs.achievedThisWeek ? `<span class="goal-ok">${icon("tick")} atteint</span>` : ""}</span>`,
-        label: "Régler",
-        detail: `<label class="goal-adjust">Séances / semaine
-            <input type="number" id="weekly-goal-input" min="1" max="14" value="${gs.goal}">
-          </label>
-          <p class="video-hint">Par défaut c'est le nombre de séances de ton programme actif.</p>`
-      })}
+          ${gs.achievedThisWeek ? `<span class="goal-ok">${icon("tick")} atteint</span>` : ""}</span></div>
       <div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, gs.doneThisWeek / gs.goal * 100)}%"></div></div>
     </div>
+
+    <!-- Statistiques : 4 chiffres, toujours visibles (c'est déjà l'essentiel) -->
+    <div class="stat-tiles">
+      ${[["seances", stats.total, "Séances"],
+         ["temps", fmtClock(stats.tempsMs), "Temps total"],
+         ["volume", Math.round(stats.volume).toLocaleString("fr-FR") + " kg", "Volume"],
+         ["regularite", stats.regularite, "Séances / sem."],
+         ["reps", stats.reps.toLocaleString("fr-FR"), "Répétitions"],
+         ["series", stats.series.toLocaleString("fr-FR"), "Séries"]
+        ].map(([k, v, lab]) => `
+        <div class="card stat-tile">
+          <span class="chrono-value">${v}</span>
+          <span class="chrono-label">${lab}${statInfo(k)}</span>
+          ${statLigne(k)}
+        </div>`).join("")}
+    </div>
+
+    ${prs.length ? `
+    <div class="card">
+      ${disclosure("dash.prs", {
+        summary: `<span class="disc-title">Records personnels${statInfo("pr")}</span>
+          <span class="disc-meta">${prs.length} exercice${prs.length > 1 ? "s" : ""} · top ${prs[0].best.poids} kg</span>`,
+        detail: `<div class="pr-list">
+          ${prs.slice(0, 10).map(p => `
+            <div class="pr-row">
+              <div class="pr-info">
+                <strong>${esc(p.nom)}</strong>
+                <span class="pr-best">${p.best.poids} kg × ${p.best.reps} · ${new Date(p.best.date).toLocaleDateString("fr-FR")}</span>
+              </div>
+              ${sparkline(p.points)}
+            </div>`).join("")}
+        </div>`
+      })}
+    </div>` : ""}
+
+    ${Object.keys(stats.parGroupe).length ? `
+    <div class="card">
+      ${disclosure("dash.muscles", {
+        summary: `<span class="disc-title">Répartition par muscle${statInfo("muscles")}</span>
+          <span class="disc-meta">${Object.keys(stats.parGroupe).length} groupes travaillés</span>`,
+        detail: `<div class="muscle-bars">
+          ${Object.entries(stats.parGroupe).sort((a, b) => b[1] - a[1]).map(([g, n]) => `
+            <div class="muscle-bar-row">
+              <span class="muscle-bar-label">${LABELS.groupes[g] || g}</span>
+              <div class="muscle-bar-track"><div class="muscle-bar" style="width:${Math.round(n / maxGroupe * 100)}%"></div></div>
+              <span class="muscle-bar-n">${n}</span>
+            </div>`).join("")}
+        </div>`
+      })}
+    </div>` : ""}
 
     <!-- Niveau / XP -->
     <div class="card xp-card">
@@ -342,56 +385,6 @@ function renderDashboard() {
       <div class="progress-track"><div class="progress-bar" style="width:${Math.round(level.into / level.need * 100)}%"></div></div>
     </div>
 
-    <!-- Statistiques : 4 chiffres, toujours visibles (c'est déjà l'essentiel) -->
-    <div class="stat-tiles">
-      ${[["seances", stats.total, "Séances"],
-         ["temps", fmtClock(stats.tempsMs), "Temps total"],
-         ["volume", Math.round(stats.volume).toLocaleString("fr-FR") + " kg", "Volume"],
-         ["regularite", stats.regularite, "Séances / sem."],
-         ["reps", stats.reps.toLocaleString("fr-FR"), "Répétitions"],
-         ["series", stats.series.toLocaleString("fr-FR"), "Séries"]
-        ].map(([k, v, lab]) => `
-        <div class="card stat-tile">
-          <span class="chrono-value">${v}</span>
-          <span class="chrono-label">${lab}${statInfo(k)}</span>
-          ${statLigne(k)}
-        </div>`).join("")}
-    </div>
-
-    ${Object.keys(stats.parGroupe).length ? `
-    <div class="card">
-      ${disclosure("dash.muscles", {
-        summary: `<span class="disc-title">Répartition par muscle${statInfo("muscles")}</span>
-          <span class="disc-meta">${Object.keys(stats.parGroupe).length} groupes travaillés</span>`,
-        detail: `<div class="muscle-bars">
-          ${Object.entries(stats.parGroupe).sort((a, b) => b[1] - a[1]).map(([g, n]) => `
-            <div class="muscle-bar-row">
-              <span class="muscle-bar-label">${LABELS.groupes[g] || g}</span>
-              <div class="muscle-bar-track"><div class="muscle-bar" style="width:${Math.round(n / maxGroupe * 100)}%"></div></div>
-              <span class="muscle-bar-n">${n}</span>
-            </div>`).join("")}
-        </div>`
-      })}
-    </div>` : ""}
-
-    ${prs.length ? `
-    <div class="card">
-      ${disclosure("dash.prs", {
-        summary: `<span class="disc-title">Records personnels${statInfo("pr")}</span>
-          <span class="disc-meta">${prs.length} exercice${prs.length > 1 ? "s" : ""} · top ${prs[0].best.poids} kg</span>`,
-        detail: `<div class="pr-list">
-          ${prs.slice(0, 10).map(p => `
-            <div class="pr-row">
-              <div class="pr-info">
-                <strong>${esc(p.nom)}</strong>
-                <span class="pr-best">${p.best.poids} kg × ${p.best.reps} · ${new Date(p.best.date).toLocaleDateString("fr-FR")}</span>
-              </div>
-              ${sparkline(p.points)}
-            </div>`).join("")}
-        </div>`
-      })}
-    </div>` : ""}
-
     <!-- Poids de corps -->
     <div class="card">
       ${disclosure("dash.weight", {
@@ -407,28 +400,7 @@ function renderDashboard() {
       })}
     </div>
 
-    <!-- Sauvegarde -->
-    <div class="card">
-      ${disclosure("dash.backup", {
-        summary: `<span class="disc-title">Sauvegarde</span>
-          <span class="disc-meta">export / import JSON</span>`,
-        what: `Tes données vivent <strong>uniquement dans ce navigateur</strong> : vider le cache
-          ou changer de téléphone les efface. L'export produit un fichier unique qui contient tout
-          (séances, programmes, favoris, réglages) et que l'import restaure à l'identique.`,
-        detail: `<div class="program-actions">
-          <button class="btn btn-primary" id="export-data">Exporter (JSON)</button>
-          <button class="btn btn-ghost" id="import-data">Importer une sauvegarde</button>
-        </div>`
-      })}
-    </div>
   `;
-
-  // objectif hebdo ajustable
-  document.getElementById("weekly-goal-input").addEventListener("change", e => {
-    const v = Math.max(1, Math.min(14, parseInt(e.target.value, 10) || 3));
-    saveJSON(STORAGE_KEYS.weeklyGoal, v);
-    renderDashboard();
-  });
 
   // poids de corps
   document.getElementById("weight-add").addEventListener("click", () => {
@@ -440,11 +412,6 @@ function renderDashboard() {
     saveJSON(STORAGE_KEYS.weights, weights);
     renderDashboard();
   });
-
-  // export / import
-  document.getElementById("export-data").addEventListener("click", exportData);
-  document.getElementById("import-data").addEventListener("click", () =>
-    document.getElementById("import-file").click());
 }
 
 /* ---------- Export / import JSON ---------- */
