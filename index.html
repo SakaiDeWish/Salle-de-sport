@@ -411,6 +411,7 @@
             <span class="hdr-pill-left" id="hdr-pill-left"></span>
             <span class="hdr-pill-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span>
           </button>
+          <button type="button" class="btn-ic hdr-pill-pause" id="hdr-pill-pause" title="Pause" aria-label="Mettre la séance en pause"><svg class="icon" aria-hidden="true"><use href="#ic-pause"/></svg></button>
           <button type="button" class="btn-ic hdr-pill-finish" id="hdr-pill-finish" title="Terminer la séance" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true"><use href="#ic-tick"/></svg></button>
         </div>
 
@@ -419,17 +420,10 @@
         <div class="live-title-row">
           <h2 id="live-title" class="display-sm">Séance en cours</h2>
           <div class="live-title-actions">
-            <button class="btn-ic" id="live-hdr-toggle" title="Réduire le chrono" aria-label="Réduire le widget de temps de séance"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-up"/></svg></button>
             <button class="btn-ic" id="live-compact-toggle" title="Affichage réduit des exercices" aria-label="Basculer l'affichage réduit"><svg class="icon" aria-hidden="true"><use href="#ic-stack"/></svg></button>
             <button class="btn-ic" id="live-pause" title="Pause" aria-label="Mettre la séance en pause"><svg class="icon" aria-hidden="true"><use href="#ic-pause"/></svg></button>
             <span class="live-dot" title="En direct" aria-label="En direct">●</span>
           </div>
-        </div>
-
-        <!-- Bannière de pause : la séance est en suspens, l'app reste navigable -->
-        <div id="pause-banner" class="pause-banner hidden">
-          <span>En pause</span>
-          <button class="btn btn-primary btn-sm" id="pause-resume" aria-label="Reprendre"><svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg></button>
         </div>
 
         <div class="live-chronos">

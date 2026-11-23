@@ -5150,3 +5150,11 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .live-apercu-toggle { display: flex; justify-content: space-between; align-items: center; }
 #result-count { font-variant-numeric: tabular-nums; opacity: .7; }
 .ex-card-group { text-transform: none; }
+
+/* Pause sur le même bouton : la bande se met en veille, sans bannière en plus */
+#live-header { cursor: pointer; }
+#live-header .btn-ic, #live-header button { cursor: pointer; }
+.btn-pause-on { background: var(--accent-grad, var(--accent)); color: var(--accent-contrast, #000); border-color: transparent; }
+#live-header.en-pause .chrono-main .chrono-value, #live-header.en-pause .hdr-pill-chrono { opacity: .55; }
+#live-header.en-pause .hdr-pill-dot, #live-header.en-pause .live-dot { animation: pause-clignote 1.2s ease-in-out infinite; }
+@keyframes pause-clignote { 50% { opacity: .25; } }
