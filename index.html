@@ -619,15 +619,13 @@
   <!-- ==================== VUE SUIVI ==================== -->
   <main id="view-suivi" class="view">
     <section class="hero">
-      <p class="kicker">Progression</p>
       <h1 class="display">Ton<br>suivi<span class="accent">.</span></h1>
-      <p class="hero-sub">Statistiques, records, calendrier et objectif hebdomadaire.</p>
     </section>
 
     <div class="segmented" role="tablist" aria-label="Vues du suivi">
-      <button class="seg active" data-panel="dashboard" role="tab">Tableau de bord</button>
-      <button class="seg" data-panel="seances" role="tab">Mes séances</button>
-      <button class="seg" data-panel="calendrier" role="tab">Calendrier</button>
+      <button class="seg active" data-panel="dashboard" role="tab" aria-label="Tableau de bord" title="Tableau de bord"><svg class="icon" aria-hidden="true"><use href="#ic-chart"/></svg></button>
+      <button class="seg" data-panel="seances" role="tab" aria-label="Mes séances" title="Mes séances"><svg class="icon" aria-hidden="true"><use href="#ic-stack"/></svg></button>
+      <button class="seg" data-panel="calendrier" role="tab" aria-label="Calendrier" title="Calendrier"><svg class="icon" aria-hidden="true"><use href="#ic-calendar"/></svg></button>
     </div>
 
     <!-- Contenus rendus par js/tracking.js -->

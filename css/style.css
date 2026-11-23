@@ -5129,3 +5129,14 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .ph-row h2 { margin: 0; }
 .ph-actions { display: flex; gap: 4px; flex: none; }
 .program-header .program-meta { margin: 6px 0 0; }
+
+/* ===== Interface épurée : moins de texte, des icônes ===== */
+.hero > .hero-sub, .hero > .kicker { display: none; }
+.home-hero .hero-sub { display: none; }
+.home-cta { position: relative; }
+.home-cta .day-focus { display: flex; align-items: center; gap: 6px; }
+.home-cta .day-focus .icon { width: 1em; height: 1em; }
+.home-apercu-btn { width: 44px; height: 44px; margin: 8px 0 0 auto; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--line, rgba(128,128,128,.3)); background: none; color: inherit; }
+.home-maj { display: flex; align-items: center; justify-content: space-between; opacity: .7; }
+.home-maj-new { color: var(--accent); }
+.segmented .seg .icon { width: 20px; height: 20px; vertical-align: middle; }

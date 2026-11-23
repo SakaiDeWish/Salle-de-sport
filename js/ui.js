@@ -457,14 +457,14 @@ function typeLegend() {
 /* Ordre ET visibilité choisis par l'utilisateur, mémorisés. */
 const HOME_CARDS_DEFAULT = [
   { key: "next", on: true },
-  { key: "acces", on: true },
-  { key: "objectif", on: true },
-  { key: "pr", on: true },
-  { key: "mois", on: true },
-  { key: "streak", on: true },
-  { key: "serieCard", on: true },
+  { key: "acces", on: false },
+  { key: "objectif", on: false },
+  { key: "pr", on: false },
+  { key: "mois", on: false },
+  { key: "streak", on: false },
+  { key: "serieCard", on: false },
   { key: "poids", on: false },
-  { key: "liens", on: true }
+  { key: "liens", on: false }
 ];
 
 const HOME_CARD_LABELS = {
@@ -480,6 +480,11 @@ const HOME_CARD_LABELS = {
 };
 
 function getHomeCards() {
+  /* Accueil épuré (v104) : les blocs doublons de l'onglet Suivi sont
+     masqués une fois pour tous ; ils restent réactivables ensuite. */
+  if (!localStorage.getItem("gymcoach.homeEpure")) {
+    try { localStorage.removeItem(STORAGE_KEYS.homeCards); localStorage.setItem("gymcoach.homeEpure", "1"); } catch (e) {}
+  }
   const saved = loadJSON(STORAGE_KEYS.homeCards, null);
   if (!Array.isArray(saved)) return HOME_CARDS_DEFAULT.slice();
   // fusion : les cartes ajoutées par une mise à jour apparaissent à la fin
