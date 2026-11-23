@@ -5177,3 +5177,15 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .mj-row input { width: 22px; height: 22px; flex: none; }
 .mj-nom { flex: 1; }
 .mj-etat { opacity: .75; font-size: .85rem; white-space: nowrap; }
+
+/* Programme : liste de lignes qui ne dépasse jamais de l'écran */
+.day-lines { list-style: none; margin: 10px 0 0; padding: 0; }
+.day-lines li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line, rgba(128,128,128,.2)); min-width: 0; }
+.day-lines li:first-child { border-top: 0; }
+.day-lines .ex-link { text-align: left; min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.dl-sr { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; flex: none; }
+.dl-sr .cell-sub { white-space: nowrap; }
+#panel-actuel, #program-output, .program-days, .day-card { min-width: 0; max-width: 100%; }
+.pp-bar { max-width: 100%; }
+.pp-bar .segmented { min-width: 0; }
+.ph-row h2 { min-width: 0; overflow-wrap: anywhere; }

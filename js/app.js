@@ -600,6 +600,7 @@ function renderProgram(pr) {
       <div class="ph-row">
         <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
         <span class="ph-actions">
+          <button class="btn-ic" id="btn-edit" title="Modifier le programme" aria-label="Modifier le programme">${icon("pencil")}</button>
           <button class="btn-ic" id="btn-regen" title="Régénérer" aria-label="Régénérer">${icon("refresh")}</button>
           <button class="btn-ic" id="btn-print" title="Imprimer / PDF" aria-label="Imprimer / PDF">${icon("printer")}</button>
         </span>
@@ -617,20 +618,13 @@ function renderProgram(pr) {
               <p class="day-focus">~${estimateDayMinutes(day)} min · ${day.exercices.length} exercices</p>
             </div>
           </div>
-          <!-- 3 colonnes : tout tient à l'écran, aucun défilement latéral -->
-          <table class="day-table">
-            <tbody>
-              ${day.exercices.map(l => `
-                <tr class="${l.prioritaire ? "row-priority" : ""}">
-                  <td>
-                    <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
-                    ${l.prioritaire ? '<span class="tag tag-custom">Priorité</span>' : ""}
-                  </td>
-                  <td class="num">${l.series} × ${esc(l.reps)}${l.rir ? `<span class="cell-sub">RIR ${esc(l.rir)}</span>` : ""}${l.tempo ? `<span class="cell-sub">${esc(l.tempo)}</span>` : ""}</td>
-                  <td class="num">${esc(l.repos)}</td>
-                </tr>`).join("")}
-            </tbody>
-          </table>
+          <ul class="day-lines">
+            ${day.exercices.map(l => `
+              <li class="${l.prioritaire ? "row-priority" : ""}">
+                <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
+                <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? "RIR " + esc(l.rir) + " · " : ""}${esc(l.repos)}</span></span>
+              </li>`).join("")}
+          </ul>
         </div>`).join("")}
     </div>
 
@@ -672,6 +666,10 @@ function renderProgram(pr) {
     renderProgram(program);
   });
   document.getElementById("btn-print").addEventListener("click", () => window.print());
+  document.getElementById("btn-edit").addEventListener("click", () => {
+    if (typeof syncActive === "function") syncActive();          // rattache un programme importé à la liste
+    if (typeof openBuilder === "function") openBuilder(typeof getActiveId === "function" ? getActiveId() : pr.id);
+  });
 }
 
 /* ---------- Initialisation ---------- */
