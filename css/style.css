@@ -5250,3 +5250,9 @@ details[open] > summary > .day-chev { transform: rotate(180deg); }
 .day-fold .day-lines { margin: 0; padding: 0 14px 8px; }
 .prog-autres { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin: 22px 4px 10px; }
 .prog-suppr { color: #e5736a; }
+
+/* Éditeur : le nom de la séance prend toute la largeur, sur sa propre ligne */
+.b-day-head { flex-wrap: wrap; row-gap: 10px; }
+.b-day-titre { order: 10; flex: 1 1 100%; min-width: 0; min-height: 48px; font-size: 1.05rem; }
+.b-day-head .b-day-mv { margin-left: auto; display: flex; gap: 6px; }
+.b-row input[data-f="repos"] { min-width: 11ch; }

@@ -501,7 +501,7 @@ function renderBuilder() {
               <div class="b-row-fields">
                 <label>Séries <input type="number" min="1" max="10" value="${l.series}" data-f="series" data-d="${d}" data-i="${i}"></label>
                 <label>Reps <input type="text" value="${esc(l.reps)}" data-f="reps" data-d="${d}" data-i="${i}" size="6"></label>
-                <label>Repos <input type="text" value="${esc(l.repos)}" data-f="repos" data-d="${d}" data-i="${i}" size="6"></label>
+                <label>Repos <input type="text" value="${esc(l.repos)}" data-f="repos" data-d="${d}" data-i="${i}" size="9"></label>
                 <label class="b-note-label">Note <input type="text" value="${esc(l.note || "")}" placeholder="cue, tempo…" data-f="note" data-d="${d}" data-i="${i}"></label>
               </div>
             </div>
