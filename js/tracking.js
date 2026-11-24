@@ -118,7 +118,7 @@ function globalStats() {
     parGroupe: {}
   };
   for (const r of h)
-    for (const ex of r.exercises) {
+    for (const ex of (r.exercises || [])) {
       stats.parGroupe[ex.groupe] = (stats.parGroupe[ex.groupe] || 0) + ex.sets.length;
       /* Répétitions totales : elles n'étaient pas comptées. Le volume seul
          ne les donne pas — 10 000 kg peuvent venir de 100 reps à 100 kg
@@ -142,7 +142,7 @@ function computePRs() {
   const byEx = new Map(); // exId -> { nom, points:[{date, poids}], best }
   const h = getHistory().slice().sort((a, b) => a.date - b.date);
   for (const r of h) {
-    for (const ex of r.exercises) {
+    for (const ex of (r.exercises || [])) {
       let max = null;
       for (const s of ex.sets)
         /* Un maintien lesté a bien un poids, mais pas de répétitions :
@@ -285,6 +285,16 @@ function renderDashboard() {
   const prs = computePRs();
   const weights = loadJSON(STORAGE_KEYS.weights, []);
   const maxGroupe = Math.max(1, ...Object.values(stats.parGroupe));
+  if (!stats.total) {                       // premier lancement : rien à analyser, on renvoie vers l'action
+    document.getElementById("panel-dashboard").innerHTML = `
+      <div class="card empty-suivi">
+        <p class="chrono-label">Aucune séance pour l'instant</p>
+        <p>Tes statistiques, records et badges apparaîtront ici dès ta première séance.</p>
+        <button class="btn btn-primary" id="suivi-go" aria-label="Commencer une séance">${icon("play")} Commencer</button>
+      </div>`;
+    document.getElementById("suivi-go").addEventListener("click", () => activateView("seance"));
+    return;
+  }
 
   const badgesOK = badges.filter(b => b.ok).length;
   const lastW = weights.length ? weights[weights.length - 1] : null;
@@ -295,7 +305,7 @@ function renderDashboard() {
     <!-- Objectif de la semaine + streak : le seul bloc ouvert d'office -->
     <div class="card goal-card">
       <div class="goal-sum"><span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
-          <span class="disc-meta">cette semaine · streak ${gs.streak} sem.${statInfo("streak")}
+          <span class="disc-meta">cette semaine · ${gs.streak} sem. d'affilée${statInfo("streak")}
           ${gs.achievedThisWeek ? `<span class="goal-ok">${icon("tick")} atteint</span>` : ""}</span></div>
       <div class="progress-track"><div class="progress-bar" style="width:${Math.min(100, gs.doneThisWeek / gs.goal * 100)}%"></div></div>
     </div>
@@ -305,7 +315,7 @@ function renderDashboard() {
       ${[["seances", stats.total, "Séances"],
          ["temps", fmtClock(stats.tempsMs), "Temps total"],
          ["volume", Math.round(stats.volume).toLocaleString("fr-FR") + " kg", "Volume"],
-         ["regularite", stats.regularite, "Séances / sem."],
+         ["regularite", stats.regularite, "Moyenne / sem."],
          ["reps", stats.reps.toLocaleString("fr-FR"), "Répétitions"],
          ["series", stats.series.toLocaleString("fr-FR"), "Séries"]
         ].map(([k, v, lab]) => `
@@ -440,6 +450,7 @@ document.getElementById("import-file").addEventListener("change", e => {
       if (!keys.length) { alert("Fichier invalide : aucune donnée GymCoach trouvée."); return; }
       if (!confirm(`Restaurer ${keys.length} clé(s) de données ? Les données actuelles seront remplacées.`)) return;
       keys.forEach(k => localStorage.setItem(k, data[k]));
+      try { localStorage.setItem("gymcoach.homeEpure", "1"); } catch (e) { /* stockage plein */ }   // ne pas effacer l'accueil restauré
       location.reload();
     } catch { alert("Fichier illisible : ce n'est pas un JSON valide."); }
   };
@@ -457,7 +468,7 @@ function filteredSessions() {
   return getHistory().filter(r => {
     if (sessionsState.period !== "all" && now - r.date > periods[sessionsState.period]) return false;
     if (q) {
-      const hay = normalize(r.nom + " " + r.exercises.map(e => e.nom).join(" "));
+      const hay = normalize(r.nom + " " + (r.exercises || []).map(e => e.nom).join(" "));
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -528,7 +539,7 @@ function renderSessionsPanel() {
                 <td>${new Date(r.date).toLocaleDateString("fr-FR")}</td>
                 <td>${typeChip(sessionType(r))} <span class="sess-nom">${esc(r.nom)}</span></td>
                 <td class="num col-lo">${fmtClock(r.dureeMs)}</td>
-                <td class="num col-lo">${r.exercises.length} / ${r.nbSeries}</td>
+                <td class="num col-lo">${(r.exercises || []).length} / ${r.nbSeries}</td>
                 <td class="num">${Math.round(r.volume)} kg</td>
                 <td class="num col-lo">${r.rpe ? r.rpe + "/10" : "—"}</td>
               </tr>`).join("")}

@@ -170,7 +170,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v114";
+const APP_VERSION = "v115";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -333,13 +333,15 @@ function openSettings() {
     }));
   const goal = document.getElementById("set-goal");
   goal.addEventListener("change", () => {
-    saveJSON(STORAGE_KEYS.weeklyGoal, Math.max(1, Math.min(14, parseInt(goal.value, 10) || 3)));
+    const g = Math.max(1, Math.min(14, parseInt(goal.value, 10) || 3));
+    goal.value = g;
+    saveJSON(STORAGE_KEYS.weeklyGoal, g);
     if (typeof renderHome === "function") renderHome();
     if (typeof renderDashboard === "function") renderDashboard();
   });
   const reposDef = document.getElementById("set-rest");
   reposDef.addEventListener("change", () =>
-    saveJSON(STORAGE_KEYS.restDefault, Math.max(5, Math.min(600, parseInt(reposDef.value, 10) || 90))));
+  { const v = Math.max(5, Math.min(600, parseInt(reposDef.value, 10) || 90)); reposDef.value = v; saveJSON(STORAGE_KEYS.restDefault, v); });
   if (typeof homeCustomizeBind === "function") homeCustomizeBind();
   document.getElementById("set-export").addEventListener("click", exportData);
   document.getElementById("set-import").addEventListener("click", () => document.getElementById("import-file").click());

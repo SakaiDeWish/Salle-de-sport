@@ -12,7 +12,7 @@ function majJourDe(r) {
   const act = loadJSON(STORAGE_KEYS.program, null);
   let prog = null;
   if (r.programId) prog = (act && act.id === r.programId) ? act : lib.find(p => p.id === r.programId) || null;
-  if (!prog) prog = act;
+  if (!prog && !r.programId) prog = act;        // programme d'origine supprimé : on ne touche pas à un autre
   if (!prog) return null;
   const day = prog.days.find(d => d.numero === parseInt(m[1], 10));
   return day ? { prog, day } : null;
@@ -38,9 +38,11 @@ function majDiff(r) {
   const ajoutes = r.structure.filter(id => !prevus.includes(id) && faits.has(id));
   const retires = prevus.filter(id => !r.structure.includes(id));
   const modifies = [];
+  const nb = (liste, id) => liste.filter(x => x === id).length;
   for (const l of day.exercices) {
     const f = faits.get(l.exercice.id);
     if (!f) continue;
+    if (nb(prevus, l.exercice.id) > 1 || nb(r.structure, l.exercice.id) > 1) continue;   // même exercice deux fois : comparaison ambiguë, on ne propose rien
     const to = { series: f.sets.length, reps: majRepsDe(f.sets) || String(l.reps) };
     /* Des répétitions qui restent dans la fourchette prévue ne sont pas une modification. */
     const num = t => { const m = /(\d+)(?:\s*-\s*(\d+))?/.exec(String(t)); return m ? [+m[1], +(m[2] || m[1])] : null; };

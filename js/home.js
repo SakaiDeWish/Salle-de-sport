@@ -223,6 +223,7 @@ function renderHome() {
   const gs = goalStatus();
   const next = nextProgramDay();
   const h = getHistory();
+  document.body.classList.toggle("home-nouveau", h.length === 0);
   const now = new Date();
   const thisMonth = h.filter(r => {
     const d = new Date(r.date);
@@ -261,7 +262,7 @@ function renderHome() {
       <button class="card home-cta" id="home-start">
         <div>
           <h2 class="display-sm">Séance ${next.day.numero} — ${esc(next.day.titre)}</h2>
-          <p class="day-focus">~${estimateDayMinutes(next.day)} min · ${next.day.exercices.length} ${icon("dumbbell")}</p>
+          <p class="day-focus">~${estimateDayMinutes(next.day)} min · ${next.day.exercices.length} exercices</p>
         </div>
         <span class="home-cta-go">${icon("play")}</span>
       </button>
@@ -374,8 +375,8 @@ function renderHome() {
     <section class="op-hero" aria-label="Résumé de ton entraînement">
       <div class="op-gem op-gem-hero" aria-hidden="true"></div>
       <div class="op-stats">
-        <div class="op-stat"><span class="op-k">Série</span>
-          <span class="op-v"><span class="chrono-value">${gs.streak}</span></span><span class="op-d">semaine${gs.streak > 1 ? "s" : ""}</span></div>
+        <div class="op-stat"><span class="op-k">Semaines</span>
+          <span class="op-v"><span class="chrono-value">${gs.streak}</span></span><span class="op-d">d'affilée</span></div>
         <div class="op-stat"><span class="op-k">Séances</span>
           <span class="op-v"><span class="chrono-value">${thisMonth.length}</span>${thisMonth.length > lastMonth.length ? '<i class="op-up">▲</i>' : thisMonth.length < lastMonth.length ? '<i class="op-down">▼</i>' : ""}</span><span class="op-d">ce mois</span></div>
         <div class="op-stat"><span class="op-k">Volume</span>
@@ -718,7 +719,7 @@ function renderTools() {
         <div class="tool">
           <p class="chrono-label">Disques par côté (barre olympique 20 kg)</p>
           <div class="weight-row">
-            <input type="number" id="plate-target" placeholder="Poids total visé (kg)" min="20" step="0.5">
+            <input type="number" id="plate-target" placeholder="Total (kg)" min="20" step="0.5">
           </div>
           <p class="tool-result" id="plate-result">—</p>
         </div>

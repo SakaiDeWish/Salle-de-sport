@@ -1363,6 +1363,7 @@ function cocherSerie(i) {
     openNext = i; editingSet = null;
     renderLiveExercises();
     const c = document.getElementById("poids-" + i);
+    window.__validerApresPave = i;
     if (c) focusChamp(c);
     return;
   }
@@ -1370,9 +1371,11 @@ function cocherSerie(i) {
     openNext = i; editingSet = null;
     renderLiveExercises();
     const c = document.getElementById((statique ? "temps-" : "reps-") + i);
+    window.__validerApresPave = i;
     if (c) focusChamp(c);
     return;
   }
+  window.__validerApresPave = null;
   validateSet(i);
 }
 
@@ -1590,12 +1593,7 @@ function renderLiveExercises() {
       </div></div><!-- /live-ex-body -->
     </div>`;
   });
-  /* Bandeau de liste. Le bouton « ↕ Ordre » de l'en-tête de séance est
-     au-dessus de tout : une fois la page défilée jusqu'à l'exercice en
-     cours, il n'est plus à l'écran, et on pouvait croire la fonction
-     disparue. Ce bandeau, lui, est collé à la liste. */
-  const bandeau = "";
-  elLiveExercises.innerHTML = bandeau + ssAssemble(cartes);
+  elLiveExercises.innerHTML = ssAssemble(cartes);
 
   /* Accordéon : ouvrir un exercice replie les autres (point 3) */
   elLiveExercises.querySelectorAll(".live-ex-head").forEach(head =>
@@ -2184,7 +2182,7 @@ function validateSet(i) {
     : ex.nom + " — série " + ex.sets.length + " terminée";
   /* Thème Opale : on laisse l'onde de validation se jouer à l'écran avant que
      le repos ne le recouvre (0,55 s). Ailleurs, le repos s'affiche aussitôt. */
-  const delaiRepos = typeof opaleOn === "function" && opaleOn() ? 550 : 0;
+  const delaiRepos = typeof estOpale === "function" && estOpale() && typeof opaleOn === "function" && opaleOn() ? 550 : 0;
   if (!delaiRepos) elRestOverlay.classList.remove("hidden");
   else {
     const ref = rest;
@@ -2849,7 +2847,7 @@ document.getElementById("live-abort").addEventListener("click", () => {
 function demanderFin() {
   if (!live) return;
   const n = live.exercises.reduce((t, e) => t + e.sets.length, 0);
-  if (!confirm(n ? `Terminer la séance ? ${n} série${n > 1 ? "s" : ""} validée${n > 1 ? "s" : ""}.` : "Terminer la séance ? Aucune série n'a été validée.")) return;
+  if (n && !confirm(`Terminer la séance ? ${n} série${n > 1 ? "s" : ""} validée${n > 1 ? "s" : ""}.`)) return;   // sans série, finishSession pose sa propre question
   finishSession();
 }
 
@@ -2990,8 +2988,7 @@ function renderWarmupFix(r) {
       <button class="btn btn-ghost btn-sm" data-wf="1" ${ech >= total ? "disabled" : ""}>+ 1 min</button>
       <button class="btn btn-ghost btn-sm" data-wf="5" ${ech >= total ? "disabled" : ""}>+ 5 min</button>
     </div>
-    <p class="wf-sub">Corrige le partage si tu as coupé l'échauffement trop tôt ou trop tard.
-      La durée totale (${fmtClock(total)}) ne bouge pas : l'échauffement en est une portion.</p>`;
+    <p class="wf-sub">Durée totale inchangée : ${fmtClock(total)}.</p>`;
   el.querySelectorAll("[data-wf]").forEach(b => b.addEventListener("click", () => {
     /* CE QUI A CHANGÉ : l'échauffement ne s'AJOUTE plus à la durée, il
        la DÉCOUPE. Corriger le partage ne peut donc pas allonger la
@@ -3027,7 +3024,7 @@ function showSummary(r) {
            ceux qui y pensent, ce bloc à ceux qui n'y ont pas pensé. Sans
            lui, oublier de lancer le chrono rendait la correction
            impossible et la durée définitivement fausse. -->
-      <div class="warmup-fix" id="warmup-fix"></div>
+      <details class="wf-det"><summary>Échauffement</summary><div class="warmup-fix" id="warmup-fix"></div></details>
 
       ${r.libre && r.programNom ? `
       <div class="adjust-card">
@@ -3171,7 +3168,7 @@ function renderSessionDetail(r) {
       <table class="sets-table">
         <thead><tr><th>Série</th>${stat
           ? `<th>Temps</th><th>Lest</th>`
-          : `<th>Poids</th><th>Reps</th><th>RIR</th>`}<th>Repos pris</th></tr></thead>
+          : `<th>Poids</th><th>Reps</th><th>Réserve</th>`}<th>Repos</th></tr></thead>
         <tbody>${ex.sets.map((s, j) => `
           <tr class="${s.note ? "set-noted" : ""}"><td>${j + 1}</td>${stat
             ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td>`
@@ -3273,6 +3270,11 @@ document.querySelectorAll('.tab[data-view="seance"]').forEach(tab =>
       restSigSauve = [rest.startAt, rest.targetSec, rest.beeped, restMinimized].join();
       document.getElementById("rest-exercise-name").textContent = ex ? ex.nom + " — série " + (r.setRef.setIndex + 1) + " terminée" : "";
       if (!restMinimized && elRestOverlay) elRestOverlay.classList.remove("hidden");
+      /* Réarme ce que startRest avait programmé : notification push et bip d'arrière-plan. */
+      const reste = Math.max(0, rest.targetSec - (nowRef() - rest.startAt) / 1000);
+      if (reste > 0 && typeof pushProgrammer === "function") pushProgrammer(Math.max(1, Math.ceil(reste)), rest.exName);
+      const ref = rest;
+      setTimeout(() => { if (rest === ref && !ref.beeped) { ref.beeped = true; beep(); notifierReprise(ref.exName); } }, reste * 1000 + 100);
     }
     // reprendre la séance interrompue (rafraîchissement de page)
     activateView("seance");

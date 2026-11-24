@@ -222,7 +222,7 @@ function defisDeLaSemaine() {
     { id: "seances", nom: `${gs.goal || 3} séances`, val: sem.length, cible: gs.goal || 3 },
     { id: "series", nom: `${cibleSeries} séries`, val: series, cible: cibleSeries },
     { id: "volume", nom: `${cibleVol.toLocaleString("fr-FR")} kg soulevés`, val: Math.round(vol), cible: cibleVol },
-    { id: "filantes", nom: "2 étoiles filantes", val: filantesSemaine(), cible: 2 }
+    { id: "filantes", nom: "Attraper 2 étoiles filantes (touche-les à l'accueil)", val: filantesSemaine(), cible: 2 }
   ];
 }
 function defisReclames() {

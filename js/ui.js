@@ -482,9 +482,11 @@ const HOME_CARD_LABELS = {
 function getHomeCards() {
   /* Accueil épuré (v104) : les blocs doublons de l'onglet Suivi sont
      masqués une fois pour tous ; ils restent réactivables ensuite. */
-  if (!localStorage.getItem("gymcoach.homeEpure")) {
-    try { localStorage.removeItem(STORAGE_KEYS.homeCards); localStorage.setItem("gymcoach.homeEpure", "1"); } catch (e) {}
-  }
+  try {
+    if (!localStorage.getItem("gymcoach.homeEpure")) {
+      localStorage.removeItem(STORAGE_KEYS.homeCards); localStorage.setItem("gymcoach.homeEpure", "1");
+    }
+  } catch (e) { /* stockage indisponible */ }
   const saved = loadJSON(STORAGE_KEYS.homeCards, null);
   if (!Array.isArray(saved)) return HOME_CARDS_DEFAULT.slice();
   // fusion : les cartes ajoutées par une mise à jour apparaissent à la fin
@@ -502,3 +504,28 @@ function homeCardOn(key) {
 /* Repaint initial : app.js a rendu la bibliothèque avant que les
    favoris ne soient disponibles. */
 if (typeof renderLibrary === "function") renderLibrary();
+
+/* ---------- Info-bulle à l'appui long sur les boutons en icône seule ----------
+   Pas de survol sur téléphone : maintenir le doigt 0,45 s affiche le nom du bouton. */
+(function () {
+  let minuteur = null, tip = null, jusqua = 0;
+  const cache = () => { clearTimeout(minuteur); if (tip) { tip.remove(); tip = null; } };
+  document.addEventListener("pointerdown", e => {
+    if (e.pointerType === "mouse") return;
+    const b = e.target.closest && e.target.closest("button[aria-label], [role=button][aria-label]");
+    if (!b || (b.textContent || "").replace(/\s+/g, "").length > 2) return;      // seulement les boutons sans texte
+    cache();
+    minuteur = setTimeout(() => {
+      const r = b.getBoundingClientRect();
+      tip = document.createElement("div");
+      tip.className = "tip-nom"; tip.textContent = b.getAttribute("aria-label");
+      tip.style.left = Math.min(innerWidth - 80, Math.max(80, r.left + r.width / 2)) + "px";
+      tip.style.top = Math.max(40, r.top - 8) + "px";
+      document.body.appendChild(tip);
+      jusqua = Date.now() + 500;
+      setTimeout(cache, 1800);
+    }, 450);
+  }, { passive: true });
+  ["pointerup", "pointercancel", "pointermove", "scroll"].forEach(t => document.addEventListener(t, () => clearTimeout(minuteur), { passive: true, capture: true }));
+  document.addEventListener("click", e => { if (Date.now() < jusqua) { e.stopPropagation(); e.preventDefault(); } }, true);
+})();
