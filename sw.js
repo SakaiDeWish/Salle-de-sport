@@ -7,7 +7,7 @@
    ensemble n'est pas qu'une discipline d'écriture : leur ÉCART est ce
    qui permet à l'app de détecter qu'une page tourne encore sur l'ancien
    code pendant qu'un service worker plus récent a déjà pris la main. */
-const CACHE = "gymcoach-v115";
+const CACHE = "gymcoach-v116";
 const ASSETS = [
   "./",
   "index.html",
@@ -38,7 +38,11 @@ const ASSETS = [
   "js/depuis-seances.js",
   "js/maj-programme.js",
   "manifest.webmanifest",
-  "icon.svg"
+  "icon.svg",
+  "icon-192.png",
+  "icon-512.png",
+  "icon-maskable-512.png",
+  "apple-touch-icon.png"
 ];
 
 self.addEventListener("install", e => {
@@ -48,7 +52,7 @@ self.addEventListener("install", e => {
 self.addEventListener("activate", e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== CACHE && k !== "gymcoach-polices").map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
@@ -66,7 +70,13 @@ self.addEventListener("message", e => {
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
   const url = new URL(e.request.url);
-  if (url.origin !== location.origin) return; // YouTube, fonts : réseau direct
+  /* Polices Google : mises en cache à la première visite pour que l'app garde son look hors ligne. */
+  if (url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com") {
+    e.respondWith(caches.open("gymcoach-polices").then(c => c.match(e.request).then(hit =>
+      hit || fetch(e.request).then(res => { if (res.ok || res.type === "opaque") c.put(e.request, res.clone()); return res; }))));
+    return;
+  }
+  if (url.origin !== location.origin) return; // YouTube, etc. : réseau direct
   e.respondWith(
     fetch(e.request)
       .then(res => {
@@ -86,7 +96,7 @@ self.addEventListener("push", e => {
   try { d = e.data ? e.data.json() : {}; } catch { /* charge illisible : message par défaut */ }
   e.waitUntil(self.registration.showNotification(d.titre || "Repos terminé — on reprend", {
     body: d.texte || "", tag: "gymcoach-reprise", renotify: true,
-    icon: "icon.svg", vibrate: [200, 100, 200] }));
+    icon: "icon-192.png", vibrate: [200, 100, 200] }));
 });
 self.addEventListener("notificationclick", e => {
   e.notification.close();

@@ -3,7 +3,7 @@ main = "src.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-VAPID_SUBJECT = "mailto:ungethan@gmail.com"
+VAPID_SUBJECT = "https://sakaidewish.github.io/Salle-de-sport/"
 
 [[durable_objects.bindings]]
 name = "REPOS"

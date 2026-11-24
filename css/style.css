@@ -5219,3 +5219,10 @@ body.home-nouveau .home-hero .streak-hero { display: none; }
 .set-card .set-check { cursor: pointer; }
 .empty-suivi { text-align: center; padding: 28px 18px; }
 .empty-suivi .btn { margin-top: 12px; }
+
+/* Carte d'exercice : un vrai bouton plein format, l'étoile favori reste cliquable au-dessus */
+.ex-card-open { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; padding: 0; border: 0; background: none; border-radius: inherit; cursor: pointer; }
+.ex-card-top { position: relative; pointer-events: none; }
+.ex-card-top .fav-btn, .ex-card-top .fav-card { pointer-events: auto; position: relative; z-index: 2; }
+.ex-card:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ex-card-open:focus-visible { outline: none; }

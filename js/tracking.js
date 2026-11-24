@@ -896,7 +896,10 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
      sert du neuf, pendant que cette page-ci exécute encore l'ancien
      code. Rien ne le signalait. La comparaison des deux numéros le
      révèle — c'est à ça que sert leur duplication. */
-  navigator.serviceWorker.addEventListener("controllerchange", annonceMaj);
+  /* Premier lancement : le worker prend la main pour la première fois (controllerchange) — ce n'est
+     pas une mise à jour. On n'annonce que si la page était déjà pilotée par un worker. */
+  const dejaPilotee = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if (dejaPilotee) annonceMaj(); });
   window.addEventListener("load", () => setTimeout(() =>
     versionDuServiceWorker().then(v => {
       if (v && typeof APP_VERSION !== "undefined" && v !== APP_VERSION) annonceMaj();

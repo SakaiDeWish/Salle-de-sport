@@ -130,8 +130,8 @@ const resultCount = document.getElementById("result-count");
    badge de niveau en overlay, titre display en bas */
 function exerciseCardHTML(ex) {
   return `
-    <article class="ex-card grad-${esc(ex.groupe)}" data-id="${esc(ex.id)}" tabindex="0"
-             role="button" aria-label="${esc(ex.nom)}">
+    <article class="ex-card grad-${esc(ex.groupe)}" data-id="${esc(ex.id)}">
+      <button type="button" class="ex-card-open" aria-label="${esc(ex.nom)}"></button>
       <span class="ex-card-bg" aria-hidden="true">${GROUP_ICONS[ex.groupe] || icon("dumbbell")}</span>
       <div class="ex-card-top">
         <span class="badge badge-${esc(ex.niveau)}">${LABELS.niveaux[ex.niveau]}</span>
@@ -151,9 +151,6 @@ function bindCardClicks(container) {
     card.addEventListener("click", e => {
       if (e.target.closest(".fav-btn")) return;
       openExercise(card.dataset.id);
-    });
-    card.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openExercise(card.dataset.id); }
     });
   });
 }
