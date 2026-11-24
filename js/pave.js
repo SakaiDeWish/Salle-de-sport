@@ -106,7 +106,16 @@ function construirePave() {
     if (t.dataset.k != null) return frappe(t.dataset.k);
     if (t.dataset.disque != null) return ajouteDisque(+t.dataset.disque);
     const a = t.dataset.pave;
-    if (a === "ok" || a === "fermer") return fermerPave();
+    if (a === "ok") {
+      /* Pavé ouvert par le tap sur la case d'une série : « OK » poursuit la validation. */
+      const id = pave.id, suite = window.__validerApresPave;
+      fermerPave();
+      window.__validerApresPave = null;
+      const m = /^(?:poids|reps|temps)-(\d+)$/.exec(id || "");
+      if (m && suite != null && +m[1] === suite && typeof cocherSerie === "function") setTimeout(() => cocherSerie(suite), 80);
+      return;
+    }
+    if (a === "fermer") { window.__validerApresPave = null; return fermerPave(); }
     if (a === "eff") { pave.frais = false; pave.texte = pave.texte.slice(0, -1); return majPave(); }
     if (a === "moins" || a === "plus") {
       const base = parseFloat((pave.texte || "0").replace(",", ".")) || 0;

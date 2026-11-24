@@ -4384,8 +4384,8 @@ body.zone-haut::before, body.zone-bas::after { opacity: 1; }
 
 /* Barre à trois onglets ; le reste s'ouvre par le bouton « + ». */
 @media (max-width: 760px) {
-  .theme-opale .bottom-nav .tab[data-view="programme"], .theme-opale .bottom-nav .tab[data-view="ajouter"] { display: none; }
-  .theme-opale .bottom-nav { width: min(78vw, 300px); }
+  .theme-opale .bottom-nav .tab[data-view="ajouter"] { display: none; }
+  .theme-opale .bottom-nav { width: min(92vw, 360px); }
   .theme-opale .opale-plus {
     display: flex; align-items: center; justify-content: center;
     position: fixed; z-index: 60; top: calc(env(safe-area-inset-top, 0px) + 14px); right: 16px;
@@ -5060,7 +5060,7 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 
 /* — Menu « + » et barre à trois onglets (mobile) — */
 @media (max-width: 760px) {
-  :root:not(.theme-opale) .bottom-nav .tab[data-view="programme"], :root:not(.theme-opale) .bottom-nav .tab[data-view="ajouter"] { display: none; }
+  :root:not(.theme-opale) .bottom-nav .tab[data-view="ajouter"] { display: none; }
   :root:not(.theme-opale) .opale-plus {
     display: flex; align-items: center; justify-content: center; position: fixed; z-index: 60;
     top: calc(env(safe-area-inset-top, 0px) + 14px); right: 16px; width: 46px; height: 46px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
@@ -5189,3 +5189,33 @@ html, body { overflow-x: clip; overscroll-behavior-x: none; max-width: 100%; }
 .pp-bar { max-width: 100%; }
 .pp-bar .segmented { min-width: 0; }
 .ph-row h2 { min-width: 0; overflow-wrap: anywhere; }
+
+/* Accueil d'un nouvel utilisateur : seule l'action utile est montrée. */
+body.home-nouveau .op-hero, body.home-nouveau .op-const, body.home-nouveau .op-defis, body.home-nouveau .op-lune { display: none !important; }
+body.home-nouveau .home-cta { margin-top: 18px; }
+body.home-nouveau .home-hero .streak-hero { display: none; }
+.day-head { align-items: center; }
+.day-start { margin-left: auto; width: 46px; height: 46px; padding: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; }
+.day-start .icon { width: 20px; height: 20px; }
+
+/* Détail de séance : tableau qui tient à 390 px */
+.sets-table { table-layout: fixed; }
+.sets-table th { letter-spacing: 0; white-space: nowrap; font-size: .7rem; padding: 6px 4px; text-align: left; }
+.sets-table td { padding: 8px 4px; white-space: nowrap; }
+.sets-table th:first-child, .sets-table td:first-child { width: 14%; }
+.wf-det { margin: 12px 0; }
+.wf-det > summary { cursor: pointer; padding: 10px 0; opacity: .75; min-height: 44px; display: flex; align-items: center; }
+
+/* Légendes sous les icônes d'action de la séance, et info-bulle à l'appui long */
+.live-actions-flow .btn-ic-lg { flex-direction: column; gap: 2px; min-height: 54px; }
+.live-actions-flow .cap { font-size: .62rem; font-weight: 700; letter-spacing: .02em; line-height: 1; opacity: .85; }
+.tip-nom { position: fixed; z-index: 400; transform: translate(-50%, -100%); padding: 7px 12px; border-radius: 10px; background: rgba(20,20,20,.94); color: #fff; font-size: .8rem; font-weight: 600; pointer-events: none; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+
+/* Réglages flottant : une pastille, plus discrète */
+.settings-fab { min-width: 44px; padding: 0; opacity: .85; }
+.settings-fab .sf-lab { display: none; }
+/* Les lignes des réglages ne sont pas des lignes de série validée (pas de surbrillance au toucher) */
+.set-card .set-row, .set-card .set-row:hover, .set-card .set-row:focus-visible { background: none; cursor: default; }
+.set-card .set-check { cursor: pointer; }
+.empty-suivi { text-align: center; padding: 28px 18px; }
+.empty-suivi .btn { margin-top: 12px; }

@@ -98,6 +98,8 @@ function activateView(view) {
      il masquait du contenu et doublait la pastille de séance. */
   document.body.classList.toggle("hors-accueil", view !== "accueil");
   window.scrollTo({ top: 0 });
+  /* Le suivi se dessine à chaque arrivée, quel que soit le chemin (onglet, lien, jalon). */
+  if (view === "suivi" && typeof renderSuivi === "function") renderSuivi();
 }
 
 document.querySelectorAll(".tab").forEach(tab => {
@@ -617,12 +619,13 @@ function renderProgram(pr) {
               <h3>${esc(day.titre)}</h3>
               <p class="day-focus">~${estimateDayMinutes(day)} min · ${day.exercices.length} exercices</p>
             </div>
+            <button class="btn btn-primary btn-ic-lg day-start" data-day="${pr.days.indexOf(day)}" title="Commencer cette séance" aria-label="Commencer la séance ${day.numero}">${icon("play")}</button>
           </div>
           <ul class="day-lines">
             ${day.exercices.map(l => `
               <li class="${l.prioritaire ? "row-priority" : ""}">
                 <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
-                <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? "RIR " + esc(l.rir) + " · " : ""}${esc(l.repos)}</span></span>
+                <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? esc(l.rir) + " en réserve · " : ""}${esc(l.repos)}</span></span>
               </li>`).join("")}
           </ul>
         </div>`).join("")}
@@ -665,6 +668,13 @@ function renderProgram(pr) {
     else saveJSON(STORAGE_KEYS.program, program);
     renderProgram(program);
   });
+  programOutput.querySelectorAll(".day-start").forEach(btn => btn.addEventListener("click", () => {
+    const day = pr.days[+btn.dataset.day];
+    if (!day) return;
+    startSession(`Séance ${day.numero} — ${day.titre}`,
+      day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo)));
+    activateView("seance");
+  }));
   document.getElementById("btn-print").addEventListener("click", () => window.print());
   document.getElementById("btn-edit").addEventListener("click", () => {
     if (typeof syncActive === "function") syncActive();          // rattache un programme importé à la liste

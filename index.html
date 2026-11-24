@@ -89,7 +89,7 @@
        desktop, donc inatteignable au téléphone). -->
   <nav class="bottom-nav" aria-label="Navigation principale">
     <button class="tab" data-view="suivi"><svg class="icon bn-icon"><use href="#ic-chart"/></svg><span class="bn-label">Suivi</span></button>
-    <button class="tab" data-view="programme"><svg class="icon bn-icon"><use href="#ic-target"/></svg><span class="bn-label">Prog.</span></button>
+    <button class="tab" data-view="programme"><svg class="icon bn-icon"><use href="#ic-target"/></svg><span class="bn-label">Programme</span></button>
     <button class="tab bn-center active" data-view="accueil"><svg class="icon bn-icon"><use href="#ic-home"/></svg><span class="bn-label">Accueil</span></button>
     <button class="tab" data-view="seance"><svg class="icon bn-icon"><use href="#ic-timer"/></svg><span class="bn-label">Séance</span></button>
     <button class="tab" data-view="ajouter"><svg class="icon bn-icon"><use href="#ic-plus"/></svg><span class="bn-label">Ajouter</span></button>
@@ -209,7 +209,7 @@
     <div class="pp-bar">
       <div class="segmented" role="tablist" aria-label="Programme">
         <button class="seg active" data-ppanel="actuel" role="tab">Ton programme</button>
-        <button class="seg hidden" id="pp-autre" role="tab" aria-selected="true"></button>
+        <span class="seg hidden" id="pp-autre" aria-live="polite"></span>
       </div>
       <button class="pp-plus" id="pp-plus" aria-label="Générer, importer, mes programmes" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg></button>
       <div class="pp-menu hidden" id="pp-menu">
@@ -259,7 +259,7 @@
       <div class="form-grid">
         <label>
           Ton prénom
-          <input type="text" id="p-prenom" placeholder="Ex : Ethan" required>
+          <input type="text" id="p-prenom" placeholder="Ex : Ethan (facultatif)">
         </label>
         <label>
           Ton objectif
@@ -365,20 +365,6 @@
       </section>
 
       <div class="card setup-card">
-        <div class="disc disc-inline" data-disc="seance.repos">
-          <button type="button" class="disc-toggle" aria-expanded="false">
-            <span class="disc-sum"><span class="disc-title">Repos calculé automatiquement</span>
-              <span class="disc-meta">par exercice, selon ton objectif</span></span>
-            <span class="disc-more">Détails<span class="disc-chev" aria-hidden="true"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></span></span>
-          </button>
-          <div class="disc-body">
-            <p class="disc-what">Le temps de repos n'est pas un réglage unique : il change à chaque exercice
-              parce qu'un squat lourd et une élévation latérale ne demandent pas la même récupération.</p>
-            <p class="video-hint">Mouvements lourds / polyarticulaires ≈ <strong>2-3 min</strong>,
-              isolation ≈ <strong>45-90 s</strong>, ajusté à ton objectif (force = plus long, sèche = plus court).
-              Modifiable à tout moment avec ±15 s pendant le repos.</p>
-          </div>
-        </div>
         <div class="start-buttons">
           <button class="btn btn-primary btn-lg" id="start-free">Démarrer une séance libre</button>
         </div>
@@ -460,11 +446,11 @@
       <div class="warmup-band hidden" id="warmup-band"></div>
 
       <div class="program-actions live-actions-flow">
-        <button class="btn btn-ghost btn-ic-lg" id="live-add-ex" title="Ajouter un exercice" aria-label="Ajouter un exercice"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg></button>
-        <button class="btn btn-ghost btn-ic-lg" id="live-superset" title="Super set" aria-label="Super set"><svg class="icon" aria-hidden="true"><use href="#ic-zap"/></svg></button>
-        <button class="btn btn-ghost btn-ic-lg" id="live-reorder" title="Ordre" aria-label="Changer l'ordre des exercices"><svg class="icon" aria-hidden="true"><use href="#ic-arrows-v"/></svg></button>
-        <button class="btn btn-primary btn-ic-lg" id="live-finish" title="Terminer" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true"><use href="#ic-tick"/></svg></button>
-        <button class="btn btn-danger-ghost btn-ic-lg" id="live-abort" title="Abandonner" aria-label="Abandonner la séance"><svg class="icon" aria-hidden="true"><use href="#ic-trash"/></svg></button>
+        <button class="btn btn-ghost btn-ic-lg" id="live-add-ex" title="Ajouter un exercice" aria-label="Ajouter un exercice"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg><span class="cap">Ajouter</span></button>
+        <button class="btn btn-ghost btn-ic-lg" id="live-superset" title="Super set" aria-label="Super set"><svg class="icon" aria-hidden="true"><use href="#ic-zap"/></svg><span class="cap">Super set</span></button>
+        <button class="btn btn-ghost btn-ic-lg" id="live-reorder" title="Ordre" aria-label="Changer l'ordre des exercices"><svg class="icon" aria-hidden="true"><use href="#ic-arrows-v"/></svg><span class="cap">Ordre</span></button>
+        <button class="btn btn-primary btn-ic-lg" id="live-finish" title="Terminer" aria-label="Terminer la séance"><svg class="icon" aria-hidden="true"><use href="#ic-tick"/></svg><span class="cap">Terminer</span></button>
+        <button class="btn btn-danger-ghost btn-ic-lg" id="live-abort" title="Abandonner" aria-label="Abandonner la séance"><svg class="icon" aria-hidden="true"><use href="#ic-trash"/></svg><span class="cap">Abandon</span></button>
       </div>
       <!-- Barre de sélection du super set : n'apparaît que pendant
            l'appairage, et se retire d'elle-même une fois la paire faite. -->
@@ -501,7 +487,7 @@
       <div class="rest-controls">
         <button class="btn btn-ghost" id="rest-minus">−15 s</button>
         <button class="btn btn-ghost" id="rest-plus">+15 s</button>
-        <button class="btn btn-ghost" id="rest-minimize" title="Réduire" aria-label="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg></button>
+        <button class="btn btn-ghost" id="rest-minimize" title="Réduire" aria-label="Réduire : le repos continue dans la mini-barre"><svg class="icon" aria-hidden="true"><use href="#ic-chevron-down"/></svg> Voir la séance</button>
       </div>
       <button class="btn btn-primary btn-lg" id="rest-resume" aria-label="Reprendre l'entraînement"><svg class="icon" aria-hidden="true"><use href="#ic-play"/></svg> Reprendre</button>
     </div>
