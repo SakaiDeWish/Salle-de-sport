@@ -594,39 +594,62 @@ function renderProgram(pr) {
     corps: "Poids du corps"
   };
 
-  programOutput.innerHTML = `
-    <div class="program-header card">
-      <div class="ph-row">
-        <h2>${esc(pr.nom || ("Programme de " + pr.prenom))}</h2>
-        <span class="ph-actions">
-          <button class="btn-ic" id="btn-edit" title="Modifier le programme" aria-label="Modifier le programme">${icon("pencil")}</button>
-          <button class="btn-ic" id="btn-regen" title="Régénérer" aria-label="Régénérer">${icon("refresh")}</button>
-          <button class="btn-ic" id="btn-print" title="Imprimer / PDF" aria-label="Imprimer / PDF">${icon("printer")}</button>
-        </span>
-      </div>
-      <p class="program-meta">${pr.jours} séances/sem. · ${LABELS.niveaux[pr.niveau]}${pr.duree ? " · ~" + pr.duree + " min" : ""}</p>
-    </div>
+  /* Les programmes sont rangés en dossiers : l'actif ouvert, les autres fermés. Chaque séance
+     s'ouvre et se ferme à part. L'état (ouvert / fermé) est mémorisé. */
+  const ETAT_CLE = "gymcoach.dossiers";
+  const etat = () => loadJSON(ETAT_CLE, {});
+  const ouvert = (cle, dflt) => { const e = etat(); return cle in e ? !!e[cle] : dflt; };
+  const retient = (cle, on) => { const e = etat(); e[cle] = on; saveJSON(ETAT_CLE, e); };
+  const liste = (typeof getPrograms === "function" ? getPrograms() : []).filter(x => x.id !== pr.id);
+  const prochain = (typeof nextProgramDay === "function" ? (nextProgramDay() || {}).index : 0) || 0;
 
-    <div class="program-days">
-      ${pr.days.map(day => `
-        <div class="day-card card">
-          <div class="day-head">
-            <span class="day-num">${String(day.numero).padStart(2, "0")}</span>
-            <div>
-              <h3>${esc(day.titre)}</h3>
-              <p class="day-focus">~${estimateDayMinutes(day)} min · ${day.exercices.length} exercices</p>
-            </div>
-            <button class="btn btn-primary btn-ic-lg day-start" data-day="${pr.days.indexOf(day)}" title="Commencer cette séance" aria-label="Commencer la séance ${day.numero}">${icon("play")}</button>
-          </div>
-          <ul class="day-lines">
-            ${day.exercices.map(l => `
-              <li class="${l.prioritaire ? "row-priority" : ""}">
-                <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
-                <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? esc(l.rir) + " en réserve · " : ""}${esc(l.repos)}</span></span>
-              </li>`).join("")}
-          </ul>
-        </div>`).join("")}
-    </div>
+  const jourHtml = (prog, day, i, actif) => {
+    const cle = (prog.id || "actif") + "#" + day.numero;
+    const dflt = actif && i === prochain;
+    return `
+      <details class="day-fold" data-cle="${esc(cle)}" ${ouvert(cle, dflt) ? "open" : ""}>
+        <summary class="day-head">
+          <span class="day-num">${String(day.numero).padStart(2, "0")}</span>
+          <span class="day-titre"><strong>${esc(day.titre)}</strong>
+            <span class="day-focus">~${estimateDayMinutes(day)} min · ${day.exercices.length} exercices</span></span>
+          <button class="btn btn-primary btn-ic-lg day-start" data-prog="${esc(prog.id || "")}" data-day="${i}" title="Commencer cette séance" aria-label="Commencer la séance ${day.numero}">${icon("play")}</button>
+          <span class="day-chev" aria-hidden="true">${icon("chevron-down")}</span>
+        </summary>
+        <ul class="day-lines">
+          ${day.exercices.map(l => `
+            <li class="${l.prioritaire ? "row-priority" : ""}">
+              <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
+              <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? esc(l.rir) + " en réserve · " : ""}${esc(l.repos)}</span></span>
+            </li>`).join("")}
+        </ul>
+      </details>`;
+  };
+  const dossierHtml = (prog, actif) => {
+    const cle = (prog.id || "actif");
+    return `
+    <details class="prog-folder${actif ? " prog-actif" : ""}" data-cle="${esc(cle)}" ${ouvert(cle, actif) ? "open" : ""}>
+      <summary class="prog-sum">
+        <span class="prog-ico" aria-hidden="true">${icon("stack")}</span>
+        <span class="prog-titre"><strong>${esc(prog.nom || ("Programme de " + (prog.prenom || "")))}</strong>
+          <span class="program-meta">${prog.days.length} séance${prog.days.length > 1 ? "s" : ""}${prog.niveau ? " · " + LABELS.niveaux[prog.niveau] : ""}</span></span>
+        ${actif ? '<span class="prog-tag">Actif</span>' : ""}
+        <span class="day-chev" aria-hidden="true">${icon("chevron-down")}</span>
+      </summary>
+      <div class="prog-body">
+        <div class="prog-tools">
+          <button class="btn-ic prog-edit" data-prog="${esc(prog.id || "")}" title="Modifier" aria-label="Modifier le programme">${icon("pencil")}</button>
+          ${actif ? `
+          <button class="btn-ic" id="btn-regen" title="Régénérer" aria-label="Régénérer">${icon("refresh")}</button>
+          <button class="btn-ic" id="btn-print" title="Imprimer / PDF" aria-label="Imprimer / PDF">${icon("printer")}</button>`
+          : `<button class="btn btn-ghost btn-sm prog-activer" data-prog="${esc(prog.id || "")}" aria-label="Rendre ce programme actif">${icon("tick")} Activer</button>`}
+        </div>
+        <div class="program-days">${prog.days.map((d, i) => jourHtml(prog, d, i, actif)).join("")}</div>
+      </div>
+    </details>`;
+  };
+
+  programOutput.innerHTML = `
+    ${dossierHtml(pr, true)}
 
     ${typeof weeklyVolumeByMuscle === "function" ? (() => {
       const vol = weeklyVolumeByMuscle(pr);
@@ -649,15 +672,43 @@ function renderProgram(pr) {
     <div class="card conseils-card">
       ${typeof disclosure === "function" ? disclosure("prog.conseils", {
         summary: `<span class="disc-title">Conseils</span>`,
-        detail: `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>`
-      }) : `<ul class="conseils">${pr.conseils.map(c => `<li>${esc(c)}</li>`).join("")}</ul>`}
+        detail: `<ul class="conseils">${(pr.conseils || []).map(c => `<li>${esc(c)}</li>`).join("")}</ul>`
+      }) : `<ul class="conseils">${(pr.conseils || []).map(c => `<li>${esc(c)}</li>`).join("")}</ul>`}
     </div>
+
+    ${liste.length ? `<h2 class="prog-autres">Autres programmes</h2>${liste.map(x => dossierHtml(x, false)).join("")}` : ""}
   `;
 
+  programOutput.querySelectorAll("details[data-cle]").forEach(d =>
+    d.addEventListener("toggle", () => retient(d.dataset.cle, d.open)));
   programOutput.querySelectorAll(".ex-link").forEach(btn =>
-    btn.addEventListener("click", () => openExercise(btn.dataset.id))
-  );
-  document.getElementById("btn-regen").addEventListener("click", () => {
+    btn.addEventListener("click", () => openExercise(btn.dataset.id)));
+  const progDe = id => (id && id !== pr.id) ? liste.find(x => x.id === id) : pr;
+  programOutput.querySelectorAll(".day-start").forEach(btn => btn.addEventListener("click", e => {
+    e.preventDefault(); e.stopPropagation();                      // le bouton est dans le titre du <details> : il ne le plie pas
+    const prog = progDe(btn.dataset.prog);
+    const day = prog && prog.days[+btn.dataset.day];
+    if (!day) return;
+    if (prog !== pr && typeof setActiveProgram === "function") {    // lancer une séance d'un autre dossier l'active
+      setActiveProgram(prog);
+      if (typeof toast === "function") toast("« " + (prog.nom || "Programme") + " » est maintenant le programme actif.", 3500);
+    }
+    startSession(`Séance ${day.numero} — ${day.titre}`,
+      day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo)));
+    activateView("seance");
+  }));
+  programOutput.querySelectorAll(".prog-activer").forEach(btn => btn.addEventListener("click", () => {
+    const prog = progDe(btn.dataset.prog);
+    if (!prog) return;
+    setActiveProgram(prog);
+    if (typeof renderHome === "function") renderHome();
+    renderProgram(prog);
+  }));
+  programOutput.querySelectorAll(".prog-edit").forEach(btn => btn.addEventListener("click", () => {
+    if (typeof syncActive === "function") syncActive();          // rattache un programme importé à la liste
+    if (typeof openBuilder === "function") openBuilder(btn.dataset.prog || (typeof getActiveId === "function" ? getActiveId() : pr.id));
+  }));
+  document.getElementById("btn-regen")?.addEventListener("click", () => {
     const params = loadJSON(STORAGE_KEYS.profil, null);
     if (!params) return;
     const program = generateProgram(params);
@@ -665,18 +716,7 @@ function renderProgram(pr) {
     else saveJSON(STORAGE_KEYS.program, program);
     renderProgram(program);
   });
-  programOutput.querySelectorAll(".day-start").forEach(btn => btn.addEventListener("click", () => {
-    const day = pr.days[+btn.dataset.day];
-    if (!day) return;
-    startSession(`Séance ${day.numero} — ${day.titre}`,
-      day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo)));
-    activateView("seance");
-  }));
-  document.getElementById("btn-print").addEventListener("click", () => window.print());
-  document.getElementById("btn-edit").addEventListener("click", () => {
-    if (typeof syncActive === "function") syncActive();          // rattache un programme importé à la liste
-    if (typeof openBuilder === "function") openBuilder(typeof getActiveId === "function" ? getActiveId() : pr.id);
-  });
+  document.getElementById("btn-print")?.addEventListener("click", () => window.print());
 }
 
 /* ---------- Initialisation ---------- */

@@ -5226,3 +5226,26 @@ body.home-nouveau .home-hero .streak-hero { display: none; }
 .ex-card-top .fav-btn, .ex-card-top .fav-card { pointer-events: auto; position: relative; z-index: 2; }
 .ex-card:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ex-card-open:focus-visible { outline: none; }
+
+/* ===== Programmes rangés en dossiers ===== */
+.prog-folder { border: 1px solid var(--border, rgba(128,128,128,.25)); border-radius: var(--radius, 18px); margin: 0 0 14px; background: var(--bg-soft, rgba(255,255,255,.03)); }
+.prog-folder.prog-actif { border-color: var(--accent); }
+.prog-folder > summary, .day-fold > summary { list-style: none; cursor: pointer; }
+.prog-folder > summary::-webkit-details-marker, .day-fold > summary::-webkit-details-marker { display: none; }
+.prog-sum { display: flex; align-items: center; gap: 12px; padding: 16px; min-height: 64px; }
+.prog-ico { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: rgba(128,128,128,.14); flex: none; }
+.prog-ico .icon { width: 20px; height: 20px; }
+.prog-titre { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.prog-titre strong { overflow-wrap: anywhere; line-height: 1.2; }
+.prog-tag { font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); flex: none; }
+.day-chev { flex: none; transition: transform .35s var(--amorti, ease); opacity: .7; display: grid; place-items: center; }
+details[open] > summary > .day-chev { transform: rotate(180deg); }
+.prog-body { padding: 0 12px 12px; }
+.prog-tools { display: flex; gap: 6px; justify-content: flex-end; align-items: center; margin: 0 4px 8px; }
+.prog-folder .program-days { display: flex; flex-direction: column; gap: 8px; }
+.day-fold { border: 1px solid var(--border, rgba(128,128,128,.2)); border-radius: 14px; background: rgba(128,128,128,.06); }
+.day-fold > .day-head { display: flex; align-items: center; gap: 12px; padding: 12px; min-height: 60px; }
+.day-titre { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.day-titre .day-focus { font-size: .8rem; opacity: .7; }
+.day-fold .day-lines { margin: 0; padding: 0 14px 8px; }
+.prog-autres { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin: 22px 4px 10px; }
