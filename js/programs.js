@@ -135,6 +135,8 @@ function programStats(p) {
 
 function renderProgramsPanel() {
   syncActive();
+  /* Les dossiers de l'onglet « Ton programme » suivent la liste. */
+  setTimeout(() => { const a = loadJSON(STORAGE_KEYS.program, null); if (a && typeof renderProgram === "function") renderProgram(a); }, 0);
   const panel = document.getElementById("panel-programmes");
   if (!panel) return;
   const list = getPrograms();
@@ -648,3 +650,7 @@ function createProgramFromRecord(record) {
   });
   openBuilder(null, p);
 }
+
+/* Au chargement, app.js a dessiné le programme actif avant que la liste des programmes existe :
+   on redessine maintenant que les dossiers peuvent être construits. */
+(function () { const a = loadJSON(STORAGE_KEYS.program, null); if (a && typeof renderProgram === "function") renderProgram(a); })();
