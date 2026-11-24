@@ -38,11 +38,21 @@ Méthode : parcours complet à 390 × 844 depuis un état vierge (accueil → cr
 - [x] `index.html` : l'onglet `#pp-autre` est un `role="tab"` toujours « sélectionné », sans action au toucher.
 - [x] Code mort : variable `bandeau` vide et commentaire obsolète dans `renderLiveExercises`.
 
-## Non vérifié
+## Vérifié en v116 (sur ordinateur, sans téléphone)
 
-- Appareils réels : installation en application sur iPhone, mode hors ligne, retour du Web Push (le Worker Cloudflare n'est pas déployé), retour arrière Android.
-- Lecteur d'écran, mode paysage, tablette, grandes polices système.
-- Calendrier et « Mes séances » avec beaucoup de données ; sauvegarde puis restauration complète.
+- [x] Hors ligne : le service worker s'installe, les 34 fichiers sont en cache, l'app se recharge sans réseau (182 exercices affichés). Les polices Google sont maintenant mises en cache à la première visite.
+- [x] Accessibilité (axe-core, règles WCAG A et AA) sur les 7 écrans et les 5 thèmes : 3 problèmes trouvés puis corrigés (cartes d'exercice = bouton dans un bouton, onglets de la barre Programme, champs de fichier cachés focalisables). Il n'en reste aucun.
+- [x] Paysage, petit écran 320 px, tablette, bureau, police agrandie à 150 % : aucun débordement horizontal.
+- [x] 400 séances : rendu en moins de 30 ms par écran ; sauvegarde (550 Ko) → vidage → restauration identique.
+- [x] Premier lancement : le message « Nouvelle version disponible » apparaissait à tort (le worker prend la main pour la première fois) ; corrigé.
+- [x] Installation : icônes PNG 192/512, icône « maskable », apple-touch-icon et balises iOS ajoutées au manifeste et à la page.
+- [x] Worker Cloudflare : le paquet se construit (`wrangler deploy --dry-run`) ; en local, mauvaise origine refusée (403), hôte non autorisé et délai hors limites refusés (400), programmation acceptée, alarme déclenchée. Le sujet VAPID était une adresse e-mail personnelle dans un dépôt public : remplacé par l'adresse du site.
+
+## Reste à faire par toi (impossible depuis ici)
+
+- [ ] Déployer le Worker (`wrangler login`, secrets VAPID, `wrangler deploy`) puis renseigner `js/push.js`.
+- [ ] Tester sur ton iPhone : ajout à l'écran d'accueil, notification de fin de repos, retour de l'app après plusieurs minutes en arrière-plan, bouton retour Android.
+- [ ] Lecteur d'écran réel (VoiceOver / TalkBack) : seules les règles automatiques ont été passées.
 
 ## Ce qui a été fait (v115)
 

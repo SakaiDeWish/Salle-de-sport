@@ -6,6 +6,11 @@
   <meta name="theme-color" content="#0a0a0b">
   <title>GymCoach — Entraîne-toi comme un athlète</title>
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="GymCoach">
   <!-- Applique le thème mémorisé AVANT le premier rendu (évite le flash) -->
   <script>
     (function () {
@@ -173,17 +178,17 @@
 
       <!-- Selects cachés : la logique de filtrage existante lit toujours ces valeurs -->
       <div class="visually-hidden" aria-hidden="true">
-        <select id="filter-groupe">
+        <select tabindex="-1" id="filter-groupe">
           <option value=""></option><option value="pectoraux"></option><option value="dos"></option>
           <option value="epaules"></option><option value="biceps"></option><option value="triceps"></option>
           <option value="quadriceps"></option><option value="ischios-fessiers"></option>
           <option value="mollets"></option><option value="abdos"></option><option value="lombaires"></option>
         </select>
-        <select id="filter-materiel">
+        <select tabindex="-1" id="filter-materiel">
           <option value=""></option><option value="barre"></option><option value="halteres"></option>
           <option value="machine"></option><option value="poulie"></option><option value="poids-du-corps"></option>
         </select>
-        <select id="filter-niveau">
+        <select tabindex="-1" id="filter-niveau">
           <option value=""></option><option value="debutant"></option>
           <option value="intermediaire"></option><option value="avance"></option>
         </select>
@@ -207,8 +212,8 @@
     </section>
 
     <div class="pp-bar">
-      <div class="segmented" role="tablist" aria-label="Programme">
-        <button class="seg active" data-ppanel="actuel" role="tab">Ton programme</button>
+      <div class="segmented" role="group" aria-label="Programme">
+        <button class="seg active" data-ppanel="actuel">Ton programme</button>
         <span class="seg hidden" id="pp-autre" aria-live="polite"></span>
       </div>
       <button class="pp-plus" id="pp-plus" aria-label="Générer, importer, mes programmes" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#ic-plus"/></svg></button>
@@ -603,7 +608,7 @@
     <section id="panel-calendrier" class="suivi-panel hidden"></section>
 
     <!-- Import de sauvegarde JSON (déclenché par le bouton du tableau de bord) -->
-    <input type="file" id="import-file" accept="application/json" class="visually-hidden" aria-hidden="true">
+    <input type="file" id="import-file" accept="application/json" class="visually-hidden" aria-hidden="true" tabindex="-1">
   </main>
 
   <!-- Éditeur de programme personnalisé -->
@@ -614,7 +619,7 @@
       <div id="builder-content"></div>
     </div>
   </div>
-  <input type="file" id="import-program-file" accept="application/json" class="visually-hidden" aria-hidden="true">
+  <input type="file" id="import-program-file" accept="application/json" class="visually-hidden" aria-hidden="true" tabindex="-1">
 
   <!-- Modale détail / édition d'une séance enregistrée -->
   <div id="session-modal" class="modal hidden">
