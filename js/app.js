@@ -638,6 +638,7 @@ function renderProgram(pr) {
       <div class="prog-body">
         <div class="prog-tools">
           <button class="btn-ic prog-edit" data-prog="${esc(prog.id || "")}" title="Modifier" aria-label="Modifier le programme">${icon("pencil")}</button>
+          <button class="btn-ic prog-suppr" data-prog="${esc(prog.id || "")}" title="Supprimer" aria-label="Supprimer le programme">${icon("trash")}</button>
           ${actif ? `
           <button class="btn-ic" id="btn-regen" title="Régénérer" aria-label="Régénérer">${icon("refresh")}</button>
           <button class="btn-ic" id="btn-print" title="Imprimer / PDF" aria-label="Imprimer / PDF">${icon("printer")}</button>`
@@ -703,6 +704,11 @@ function renderProgram(pr) {
     setActiveProgram(prog);
     if (typeof renderHome === "function") renderHome();
     renderProgram(prog);
+  }));
+  programOutput.querySelectorAll(".prog-suppr").forEach(btn => btn.addEventListener("click", () => {
+    if (typeof syncActive === "function") syncActive();          // un programme importé sans identifiant reçoit le sien
+    const id = btn.dataset.prog || (typeof getActiveId === "function" ? getActiveId() : "");
+    if (typeof supprimerProgramme === "function") supprimerProgramme(id);
   }));
   programOutput.querySelectorAll(".prog-edit").forEach(btn => btn.addEventListener("click", () => {
     if (typeof syncActive === "function") syncActive();          // rattache un programme importé à la liste
