@@ -5249,3 +5249,4 @@ details[open] > summary > .day-chev { transform: rotate(180deg); }
 .day-titre .day-focus { font-size: .8rem; opacity: .7; }
 .day-fold .day-lines { margin: 0; padding: 0 14px 8px; }
 .prog-autres { font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin: 22px 4px 10px; }
+.prog-suppr { color: #e5736a; }

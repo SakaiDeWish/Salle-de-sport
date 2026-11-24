@@ -213,16 +213,31 @@ function renderProgramsPanel() {
       URL.revokeObjectURL(a.href);
     }));
   panel.querySelectorAll(".p-del").forEach(b =>
-    b.addEventListener("click", () => {
-      const p = getPrograms().find(x => x.id === b.dataset.id);
-      if (!confirm(`Supprimer le programme « ${p.nom} » ?`)) return;
-      savePrograms(getPrograms().filter(x => x.id !== b.dataset.id));
-      if (getActiveId() === b.dataset.id) {
-        localStorage.removeItem(STORAGE_KEYS.activeProgram);
-        localStorage.removeItem(STORAGE_KEYS.program);
-      }
-      renderProgramsPanel();
-    }));
+    b.addEventListener("click", () => supprimerProgramme(b.dataset.id)));
+}
+
+/* Supprime un programme (après confirmation). Si c'était l'actif, le suivant de la liste prend sa place ;
+   s'il n'en reste aucun, on revient au générateur. */
+function supprimerProgramme(id) {
+  syncActive();
+  const p = getPrograms().find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`Supprimer le programme « ${p.nom} » ? Tes séances déjà faites sont conservées.`)) return;
+  savePrograms(getPrograms().filter(x => x.id !== id));
+  if (getActiveId() === id) {
+    const reste = getPrograms();
+    if (reste.length) setActiveProgram(reste[0]);
+    else {
+      localStorage.removeItem(STORAGE_KEYS.activeProgram);
+      localStorage.removeItem(STORAGE_KEYS.program);
+      const out = document.getElementById("program-output");
+      if (out) out.innerHTML = "";
+      document.querySelector('#pp-menu [data-ppanel="generer"]')?.click();
+    }
+  }
+  renderProgramsPanel();
+  if (typeof renderHome === "function") renderHome();
+  if (typeof toast === "function") toast("Programme supprimé.", 2500);
 }
 
 /* Import d'un programme partagé */
