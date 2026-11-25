@@ -5274,3 +5274,25 @@ details[open] > summary > .day-chev { transform: rotate(180deg); }
 .mj-remp { flex-wrap: wrap; }
 .mj-mode { min-height: 40px; max-width: 100%; }
 .rem-item { display: flex; width: 100%; justify-content: space-between; gap: 8px; min-height: 48px; margin: 4px 0; }
+
+/* Comparatif « programme / séance » de fin de séance */
+.mj-item { border-top: 1px solid var(--line, rgba(128,128,128,.22)); padding: 14px 0 6px; }
+.mj-type { display: inline-block; font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.mj-retire .mj-type { color: #e5736a; }
+.mj-cmp { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: stretch; }
+.mj-col { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 12px; background: rgba(128,128,128,.1); min-width: 0; text-align: left; }
+.mj-col strong { overflow-wrap: anywhere; line-height: 1.25; font-size: .9rem; }
+.mj-col small { opacity: .75; font-size: .78rem; }
+.mj-col-lab { font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; opacity: .6; }
+.mj-prevu { border: 1px dashed rgba(128,128,128,.4); }
+.mj-fait { border: 1px solid var(--accent); }
+.mj-retire .mj-fait { border-color: rgba(229,115,106,.7); }
+.mj-vide strong { opacity: .6; font-weight: 600; font-style: italic; }
+.mj-fleche { align-self: center; opacity: .6; }
+.mj-seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
+.mj-opt { flex: 1 1 auto; cursor: pointer; }
+.mj-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.mj-opt span { display: flex; align-items: center; justify-content: center; text-align: center; min-height: 44px; padding: 6px 12px; border-radius: 12px; border: 1px solid var(--line, rgba(128,128,128,.35)); font-size: .82rem; font-weight: 600; line-height: 1.15; }
+.mj-opt input:checked + span { background: var(--accent-grad, var(--accent)); color: var(--accent-contrast, #000); border-color: transparent; }
+.mj-opt input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.maj-card .program-actions { margin-top: 12px; }

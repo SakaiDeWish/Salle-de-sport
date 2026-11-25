@@ -125,84 +125,104 @@ function majAppliquer(r, d, choix) {
   if (typeof renderHome === "function") renderHome();
 }
 
-function majToutChoisir(d) {
-  return { ajoutes: new Set(d.ajoutes), retires: new Set(d.retires), modifies: new Set(d.modifies.map(m => m.id)), ordre: d.ordre,
-           liens: new Set([...d.liensAjoutes, ...d.liensRetires]),
-           remp: new Map(d.remplacements.map(x => [x.de + ">" + x.a, "alt"])) };
+/* ---------- Écran de fin : comparatif « programme / séance » avec un choix par changement ----------
+   Chaque écart est une ligne : à gauche ce que prévoyait le programme, à droite ce qui a été fait,
+   dessous les choix possibles. Rien n'est appliqué tant qu'on n'a pas validé. */
+
+/* Les écarts sous forme de lignes : { k, type, prevu, fait, options:[[valeur, libellé]], defaut } */
+function majItems(r, d) {
+  const ligneDe = id => d.day.exercices.find(l => l.exercice.id === id);
+  const fait = id => (r.exercises || []).find(e => e.exId === id);
+  const prevuTxt = id => { const l = ligneDe(id); return l ? `${l.series} × ${l.reps}` : ""; };
+  const faitTxt = id => {
+    const f = fait(id); if (!f) return "";
+    const poids = f.sets.map(x => x.poids).filter(v => v > 0);
+    return `${f.sets.length} × ${majRepsDe(f.sets) || "?"}${poids.length ? " · " + Math.max(...poids) + " kg" : ""}`;
+  };
+  const items = [];
+  for (const { de, a } of d.remplacements) items.push({
+    k: "remp:" + de + ">" + a, type: "remp",
+    prevu: { nom: d.nomDe(de), det: prevuTxt(de), etat: "Prévu" },
+    fait: { nom: d.nomDe(a), det: faitTxt(a), etat: "Choisi à la place" },
+    options: [["remplacer", "Remplacer"], ["alt", "Ajouter comme alternative"], ["non", "Ne rien changer"]], defaut: "alt" });
+  for (const id of d.retires) items.push({
+    k: "retire:" + id, type: "retire",
+    prevu: { nom: d.nomDe(id), det: prevuTxt(id), etat: "Prévu" },
+    fait: { nom: "Retiré de la séance", det: "", etat: "Fait", vide: true },
+    options: [["retirer", "Retirer du programme"], ["garder", "Le garder"]], defaut: "retirer" });
+  for (const id of d.ajoutes) items.push({
+    k: "ajout:" + id, type: "ajout",
+    prevu: { nom: "Pas dans le programme", det: "", etat: "Prévu", vide: true },
+    fait: { nom: d.nomDe(id), det: faitTxt(id), etat: "Ajouté" },
+    options: [["ajouter", "Ajouter au programme"], ["ignorer", "Ignorer"]], defaut: "ajouter" });
+  for (const m of d.modifies) items.push({
+    k: "modif:" + m.id, type: "modif",
+    prevu: { nom: d.nomDe(m.id), det: `${m.from.series} × ${m.from.reps}`, etat: "Prévu" },
+    fait: { nom: d.nomDe(m.id), det: `${m.to.series} × ${m.to.reps}`, etat: "Fait" },
+    options: [["appliquer", "Mettre à jour"], ["garder", "Garder le prévu"]], defaut: "appliquer" });
+  for (const k of d.liensAjoutes) items.push({
+    k: "lien:" + k, type: "lien",
+    prevu: { nom: d.nomPaire(k), det: "enchaînés : non", etat: "Prévu" },
+    fait: { nom: d.nomPaire(k), det: "super set", etat: "Fait" },
+    options: [["appliquer", "Enregistrer le super set"], ["ignorer", "Ignorer"]], defaut: "appliquer" });
+  for (const k of d.liensRetires) items.push({
+    k: "lien:" + k, type: "lien",
+    prevu: { nom: d.nomPaire(k), det: "super set", etat: "Prévu" },
+    fait: { nom: d.nomPaire(k), det: "enchaînés : non", etat: "Fait" },
+    options: [["appliquer", "Retirer le super set"], ["ignorer", "Ignorer"]], defaut: "appliquer" });
+  if (d.ordre) items.push({
+    k: "ordre", type: "ordre",
+    prevu: { nom: "Ordre du programme", det: d.day.exercices.map(l => d.nomDe(l.exercice.id).split(" ")[0]).join(" › "), etat: "Prévu" },
+    fait: { nom: "Ordre de la séance", det: r.structure.map(id => d.nomDe(id).split(" ")[0]).join(" › "), etat: "Fait" },
+    options: [["appliquer", "Reprendre cet ordre"], ["garder", "Garder le prévu"]], defaut: "appliquer" });
+  return items;
 }
 
-/* Carte de l'écran de fin de séance. */
+const MAJ_ENTETES = { remp: "Remplacé", retire: "Retiré", ajout: "Ajouté", modif: "Séries / répétitions", lien: "Super set", ordre: "Ordre" };
+
 function majProgrammeCarte(r) {
   const d = majDiff(r);
   if (!d) return "";
-  const struct = d.ajoutes.length || d.retires.length || d.liensAjoutes.length || d.liensRetires.length || d.remplacements.length;
-  if (struct) {
-    const puces = [...d.ajoutes.map(id => `<li class="mj-plus">+ ${esc(d.nomDe(id))}</li>`), ...d.retires.map(id => `<li class="mj-moins">− ${esc(d.nomDe(id))}</li>`),
-      ...d.remplacements.map(x => `<li class="mj-plus">${icon("swap")} ${esc(d.nomDe(x.de))} → ${esc(d.nomDe(x.a))}</li>`),
-      ...d.liensAjoutes.map(k => `<li class="mj-plus">${icon("link")} ${esc(d.nomPaire(k))}</li>`),
-      ...d.liensRetires.map(k => `<li class="mj-moins">${icon("link")} − ${esc(d.nomPaire(k))}</li>`)].join("");
-    return `<div class="card maj-card" id="maj-card">
-      <p class="chrono-label">Séance ${d.day.numero} modifiée</p>
-      <ul class="mj-list">${puces}</ul>
-      <p class="maj-q">Mettre à jour le programme ?</p>
-      <div class="program-actions">
-        <button class="btn btn-primary btn-sm" id="maj-oui" aria-label="Mettre à jour le programme">${icon("tick")} Oui</button>
-        <button class="btn btn-ghost btn-sm" id="maj-edit" aria-label="Choisir ce qui change">${icon("pencil")} Choisir</button>
-        <button class="btn btn-ghost btn-sm" id="maj-non" aria-label="Ne pas modifier le programme">${icon("x")}</button>
-      </div></div>`;
-  }
+  if (d.vide) return `<div class="card maj-card" id="maj-card"><p class="maj-q">${icon("tick")} Séance identique au programme.</p></div>`;
+  const col = (c, cls) => `<div class="mj-col ${cls}${c.vide ? " mj-vide" : ""}"><span class="mj-col-lab">${esc(c.etat)}</span>
+      <strong>${esc(c.nom)}</strong>${c.det ? `<small>${esc(c.det)}</small>` : ""}</div>`;
+  const items = majItems(r, d);
   return `<div class="card maj-card" id="maj-card">
-      <button class="btn btn-ghost btn-sm" id="maj-edit" aria-label="Mode édition : modifier le programme d'après cette séance">${icon("pencil")} Modifier le programme d'après cette séance</button></div>`;
+    <p class="chrono-label">Programme · séance ${d.day.numero}</p>
+    <p class="maj-q">Qu'est-ce qu'on garde dans le programme ?</p>
+    ${items.map((it, n) => `
+      <div class="mj-item mj-${it.type}" data-k="${esc(it.k)}">
+        <span class="mj-type">${esc(MAJ_ENTETES[it.type])}</span>
+        <div class="mj-cmp">${col(it.prevu, "mj-prevu")}<span class="mj-fleche" aria-hidden="true">→</span>${col(it.fait, "mj-fait")}</div>
+        <div class="mj-seg" role="radiogroup" aria-label="${esc(MAJ_ENTETES[it.type])} : que faire ?">
+          ${it.options.map(([v, lab]) => `<label class="mj-opt"><input type="radio" name="mj-${n}" value="${esc(v)}" ${v === it.defaut ? "checked" : ""}><span>${esc(lab)}</span></label>`).join("")}
+        </div>
+      </div>`).join("")}
+    <div class="program-actions">
+      <button class="btn btn-primary" id="maj-go" aria-label="Mettre le programme à jour">${icon("tick")} Mettre à jour</button>
+      <button class="btn btn-ghost" id="maj-non" aria-label="Ne rien changer au programme">${icon("x")} Ne rien changer</button>
+    </div></div>`;
 }
 
 function majProgrammeLier(r) {
   const carte = document.getElementById("maj-card");
-  if (!carte) return;
   const d = majDiff(r);
-  const fin = txt => { carte.innerHTML = `<p class="maj-q">${esc(txt)}</p>`; };
-  document.getElementById("maj-oui")?.addEventListener("click", () => {
-    const c = majToutChoisir(d); c.modifies = new Set(); c.ordre = false;      // la question rapide ne touche qu'aux ajouts, retraits et super sets
-    majAppliquer(r, d, c); fin("Programme mis à jour.");
-  });
-  document.getElementById("maj-non")?.addEventListener("click", () => { carte.remove(); });
-  document.getElementById("maj-edit")?.addEventListener("click", () => majOuvrirEdition(r));
-}
-
-/* Mode édition : une ligne par changement, cochée par défaut. */
-function majOuvrirEdition(r) {
-  const d = majDiff(r);
-  const box = document.getElementById("modal-content");
-  if (!d || !box) return;
-  const ligne = (cle, id, texte, etat) => `<label class="mj-row"><input type="checkbox" data-k="${cle}" data-id="${esc(id)}" checked>
-      <span class="mj-nom">${esc(texte)}</span><span class="mj-etat">${etat}</span></label>`;
-  const lignes = [
-    ...d.ajoutes.map(id => ligne("ajoutes", id, d.nomDe(id), "ajouté")),
-    ...d.retires.map(id => ligne("retires", id, d.nomDe(id), "retiré")),
-    ...d.modifies.map(m => ligne("modifies", m.id, d.nomDe(m.id), `${m.from.series} × ${esc(m.from.reps)} → <strong>${m.to.series} × ${esc(m.to.reps)}</strong>`)),
-    ...d.remplacements.map(x => `<div class="mj-row mj-remp"><input type="checkbox" data-k="remp" data-id="${esc(x.de + ">" + x.a)}" checked>
-        <span class="mj-nom">${esc(d.nomDe(x.de))} → <strong>${esc(d.nomDe(x.a))}</strong></span>
-        <select class="mj-mode" data-for="${esc(x.de + ">" + x.a)}" aria-label="Que faire de ce remplacement">
-          <option value="alt">Garder comme alternative</option><option value="remplacer">Remplacer l'exercice</option></select></div>`),
-    ...d.liensAjoutes.map(k => ligne("liens", k, "Super set : " + d.nomPaire(k), "ajouté")),
-    ...d.liensRetires.map(k => ligne("liens", k, "Super set : " + d.nomPaire(k), "retiré")),
-    d.ordre ? ligne("ordre", "", "Nouvel ordre des exercices", "ordre") : ""
-  ].join("");
-  box.innerHTML = `
-    <div class="modal-header"><div><h2>Séance ${d.day.numero} — ${esc(d.day.titre)}</h2></div></div>
-    ${d.vide ? `<p class="video-hint">Identique au programme : rien à changer.</p>` : `<div class="mj-rows">${lignes}</div>
-    <button class="btn btn-primary btn-lg" id="mj-go" aria-label="Appliquer au programme">${icon("tick")} Appliquer</button>`}`;
-  document.getElementById("mj-go")?.addEventListener("click", () => {
+  if (!carte || !d || d.vide) return;
+  document.getElementById("maj-non")?.addEventListener("click", () => { carte.innerHTML = `<p class="maj-q">Programme inchangé.</p>`; });
+  document.getElementById("maj-go")?.addEventListener("click", () => {
     const c = { ajoutes: new Set(), retires: new Set(), modifies: new Set(), liens: new Set(), remp: new Map(), ordre: false };
-    box.querySelectorAll("input[data-k]:checked").forEach(i => {
-      if (i.dataset.k === "ordre") c.ordre = true;
-      else if (i.dataset.k === "remp") c.remp.set(i.dataset.id, (box.querySelector(`select[data-for="${CSS.escape(i.dataset.id)}"]`) || {}).value || "alt");
-      else c[i.dataset.k].add(i.dataset.id);
+    let n = 0;
+    carte.querySelectorAll(".mj-item").forEach(el => {
+      const k = el.dataset.k, v = (el.querySelector("input:checked") || {}).value;
+      const [type, ...reste] = k.split(":"), cle = reste.join(":");
+      if (type === "remp" && v !== "non") { c.remp.set(cle, v); n++; }
+      else if (type === "retire" && v === "retirer") { c.retires.add(cle); n++; }
+      else if (type === "ajout" && v === "ajouter") { c.ajoutes.add(cle); n++; }
+      else if (type === "modif" && v === "appliquer") { c.modifies.add(cle); n++; }
+      else if (type === "lien" && v === "appliquer") { c.liens.add(cle); n++; }
+      else if (type === "ordre" && v === "appliquer") { c.ordre = true; n++; }
     });
-    majAppliquer(r, d, c);
-    if (typeof closeSheet === "function") closeSheet();
-    const carte = document.getElementById("maj-card");
-    if (carte) carte.innerHTML = `<p class="maj-q">Programme mis à jour.</p>`;
-    if (typeof toast === "function") toast("Programme mis à jour d'après ta séance.");
+    if (n) majAppliquer(r, d, c);
+    carte.innerHTML = `<p class="maj-q">${n ? icon("tick") + " Programme mis à jour (" + n + " changement" + (n > 1 ? "s" : "") + ")." : "Programme inchangé."}</p>`;
   });
-  openSheet();
 }
