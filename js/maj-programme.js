@@ -35,8 +35,13 @@ function majDiff(r) {
   const faits = new Map((r.exercises || []).map(e => [e.exId, e]));
   const nomDe = id => (day.exercices.find(l => l.exercice.id === id) || {}).exercice?.nom
     || (r.exercises.find(e => e.exId === id) || {}).nom || id;
-  const ajoutes = r.structure.filter(id => !prevus.includes(id) && faits.has(id));
-  const retires = prevus.filter(id => !r.structure.includes(id));
+  /* Exercices choisis à la place d'un autre : ce n'est ni un ajout ni un retrait, c'est une alternative. */
+  const remp = (r.remplacements || []).filter(([de, a]) => prevus.includes(de) && a !== de && !prevus.includes(a));
+  const lignePar = id => day.exercices.find(l => l.exercice.id === id);
+  const remplacements = remp.filter(([de, a]) => !(lignePar(de).alternatives || []).some(x => x.id === a)).map(([de, a]) => ({ de, a }));
+  const rempA = new Set(remp.map(x => x[1])), rempDe = new Set(remp.map(x => x[0]));
+  const ajoutes = r.structure.filter(id => !prevus.includes(id) && faits.has(id) && !rempA.has(id));
+  const retires = prevus.filter(id => !r.structure.includes(id) && !rempDe.has(id));
   const modifies = [];
   const nb = (liste, id) => liste.filter(x => x === id).length;
   for (const l of day.exercices) {
@@ -60,8 +65,8 @@ function majDiff(r) {
   const liensAjoutes = dela.filter(k => presents(k) && !duProgramme.includes(k));
   const liensRetires = duProgramme.filter(k => presents(k) && !dela.includes(k));
   const nomPaire = k => k.split(">").map(nomDe).join(" + ");
-  return { ...ref, ajoutes, retires, modifies, ordre, nomDe, liensAjoutes, liensRetires, nomPaire,
-           vide: !ajoutes.length && !retires.length && !modifies.length && !ordre && !liensAjoutes.length && !liensRetires.length };
+  return { ...ref, ajoutes, retires, modifies, ordre, nomDe, liensAjoutes, liensRetires, nomPaire, remplacements,
+           vide: !ajoutes.length && !retires.length && !modifies.length && !ordre && !liensAjoutes.length && !liensRetires.length && !remplacements.length };
 }
 
 /* Applique les changements choisis au programme et le range. */
@@ -96,6 +101,22 @@ function majAppliquer(r, d, choix) {
     if (ib !== ia + 1) { const [lb] = lignes.splice(ib, 1); lignes.splice(lignes.findIndex(x => x.exercice.id === a) + 1, 0, lb); }
     lignes[lignes.findIndex(x => x.exercice.id === a)].superset = true;
   }
+  /* Alternatives choisies : enregistrées sur la ligne (ou, si on préfère, elles remplacent l'exercice). */
+  const refDe = id => {
+    const lib = allExercisesForUI().find(e => e.id === id) || (r.exercises.find(e => e.exId === id) && { id, nom: r.exercises.find(e => e.exId === id).nom, groupe: r.exercises.find(e => e.exId === id).groupe, materiel: "halteres", niveau: "intermediaire", type: "iso" });
+    return lib ? builderLine(lib).exercice : null;
+  };
+  for (const { de, a } of d.remplacements) {
+    const mode = choix.remp.get(de + ">" + a);
+    if (!mode) continue;
+    const l = lignes.find(x => x.exercice.id === de), nouveau = refDe(a);
+    if (!l || !nouveau) continue;
+    l.alternatives = [...(l.alternatives || []), nouveau];
+    if (mode === "remplacer") {
+      l.alternatives = l.alternatives.filter(x => x.id !== a).concat([l.exercice]);        // l'ancien devient l'alternative
+      l.exercice = nouveau;
+    }
+  }
   day.exercices = lignes;
   const act = loadJSON(STORAGE_KEYS.program, null);
   if (act && act.id === prog.id) setActiveProgram(prog); else upsertProgram(prog);
@@ -106,16 +127,18 @@ function majAppliquer(r, d, choix) {
 
 function majToutChoisir(d) {
   return { ajoutes: new Set(d.ajoutes), retires: new Set(d.retires), modifies: new Set(d.modifies.map(m => m.id)), ordre: d.ordre,
-           liens: new Set([...d.liensAjoutes, ...d.liensRetires]) };
+           liens: new Set([...d.liensAjoutes, ...d.liensRetires]),
+           remp: new Map(d.remplacements.map(x => [x.de + ">" + x.a, "alt"])) };
 }
 
 /* Carte de l'écran de fin de séance. */
 function majProgrammeCarte(r) {
   const d = majDiff(r);
   if (!d) return "";
-  const struct = d.ajoutes.length || d.retires.length || d.liensAjoutes.length || d.liensRetires.length;
+  const struct = d.ajoutes.length || d.retires.length || d.liensAjoutes.length || d.liensRetires.length || d.remplacements.length;
   if (struct) {
     const puces = [...d.ajoutes.map(id => `<li class="mj-plus">+ ${esc(d.nomDe(id))}</li>`), ...d.retires.map(id => `<li class="mj-moins">− ${esc(d.nomDe(id))}</li>`),
+      ...d.remplacements.map(x => `<li class="mj-plus">${icon("swap")} ${esc(d.nomDe(x.de))} → ${esc(d.nomDe(x.a))}</li>`),
       ...d.liensAjoutes.map(k => `<li class="mj-plus">${icon("link")} ${esc(d.nomPaire(k))}</li>`),
       ...d.liensRetires.map(k => `<li class="mj-moins">${icon("link")} − ${esc(d.nomPaire(k))}</li>`)].join("");
     return `<div class="card maj-card" id="maj-card">
@@ -156,6 +179,10 @@ function majOuvrirEdition(r) {
     ...d.ajoutes.map(id => ligne("ajoutes", id, d.nomDe(id), "ajouté")),
     ...d.retires.map(id => ligne("retires", id, d.nomDe(id), "retiré")),
     ...d.modifies.map(m => ligne("modifies", m.id, d.nomDe(m.id), `${m.from.series} × ${esc(m.from.reps)} → <strong>${m.to.series} × ${esc(m.to.reps)}</strong>`)),
+    ...d.remplacements.map(x => `<div class="mj-row mj-remp"><input type="checkbox" data-k="remp" data-id="${esc(x.de + ">" + x.a)}" checked>
+        <span class="mj-nom">${esc(d.nomDe(x.de))} → <strong>${esc(d.nomDe(x.a))}</strong></span>
+        <select class="mj-mode" data-for="${esc(x.de + ">" + x.a)}" aria-label="Que faire de ce remplacement">
+          <option value="alt">Garder comme alternative</option><option value="remplacer">Remplacer l'exercice</option></select></div>`),
     ...d.liensAjoutes.map(k => ligne("liens", k, "Super set : " + d.nomPaire(k), "ajouté")),
     ...d.liensRetires.map(k => ligne("liens", k, "Super set : " + d.nomPaire(k), "retiré")),
     d.ordre ? ligne("ordre", "", "Nouvel ordre des exercices", "ordre") : ""
@@ -165,9 +192,11 @@ function majOuvrirEdition(r) {
     ${d.vide ? `<p class="video-hint">Identique au programme : rien à changer.</p>` : `<div class="mj-rows">${lignes}</div>
     <button class="btn btn-primary btn-lg" id="mj-go" aria-label="Appliquer au programme">${icon("tick")} Appliquer</button>`}`;
   document.getElementById("mj-go")?.addEventListener("click", () => {
-    const c = { ajoutes: new Set(), retires: new Set(), modifies: new Set(), liens: new Set(), ordre: false };
+    const c = { ajoutes: new Set(), retires: new Set(), modifies: new Set(), liens: new Set(), remp: new Map(), ordre: false };
     box.querySelectorAll("input[data-k]:checked").forEach(i => {
-      if (i.dataset.k === "ordre") c.ordre = true; else c[i.dataset.k].add(i.dataset.id);
+      if (i.dataset.k === "ordre") c.ordre = true;
+      else if (i.dataset.k === "remp") c.remp.set(i.dataset.id, (box.querySelector(`select[data-for="${CSS.escape(i.dataset.id)}"]`) || {}).value || "alt");
+      else c[i.dataset.k].add(i.dataset.id);
     });
     majAppliquer(r, d, c);
     if (typeof closeSheet === "function") closeSheet();

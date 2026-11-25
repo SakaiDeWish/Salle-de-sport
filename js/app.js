@@ -618,7 +618,7 @@ function renderProgram(pr) {
         <ul class="day-lines">
           ${day.exercices.map((l, k) => `
             <li class="${l.prioritaire ? "row-priority" : ""}${l.superset ? " ss-debut" : ""}${k > 0 && day.exercices[k - 1].superset ? " ss-suite" : ""}">
-              <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
+              <span class="dl-nom"><button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>${(l.alternatives || []).length ? `<span class="cell-sub dl-alt">${icon("swap")} ${l.alternatives.map(a => esc(a.nom)).join(", ")}</span>` : ""}</span>
               <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? esc(l.rir) + " en réserve · " : ""}${esc(l.repos)}</span></span>
             </li>`).join("")}
         </ul>

@@ -504,6 +504,11 @@ function renderBuilder() {
                 <label>Repos <input type="text" value="${esc(l.repos)}" data-f="repos" data-d="${d}" data-i="${i}" size="9"></label>
                 <label class="b-note-label">Note <input type="text" value="${esc(l.note || "")}" placeholder="cue, tempo…" data-f="note" data-d="${d}" data-i="${i}"></label>
               </div>
+              <div class="b-alts">
+                <span class="b-alts-lab">${icon("swap")} Alternatives</span>
+                ${(l.alternatives || []).map((a, k) => `<span class="b-alt">${esc(a.nom)}<button type="button" class="b-alt-del" data-d="${d}" data-i="${i}" data-k="${k}" aria-label="Retirer l'alternative ${esc(a.nom)}">×</button></span>`).join("")}
+                <button type="button" class="btn btn-ghost btn-sm b-alt-add" data-d="${d}" data-i="${i}" aria-label="Ajouter une alternative">${icon("plus")}</button>
+              </div>
             </div>
             <div class="b-row-actions">
               <button class="btn-ic b-up" data-d="${d}" data-i="${i}" title="Monter" ${i === 0 ? "disabled" : ""}>▲</button>
@@ -579,15 +584,30 @@ function renderBuilder() {
       const l = b.days[+btn.dataset.d].exercices[+btn.dataset.i];
       l.superset = !l.superset; rerender();
     }));
+  /* Remplacer un exercice : on choisit soi-même dans la bibliothèque (plus de choix automatique). */
   box.querySelectorAll(".b-swap").forEach(btn =>
     btn.addEventListener("click", () => {
       const arr = b.days[+btn.dataset.d].exercices;
       const l = arr[+btn.dataset.i];
-      const ref = allExercisesForUI().find(e => e.id === l.exercice.id) || l.exercice;
-      const inDay = new Set(arr.map(x => x.exercice.id));
-      const alt = findAlternatives(ref, 5).find(a => !inDay.has(a.id));
-      if (!alt) { alert("Pas d'alternative disponible."); return; }
-      arr[+btn.dataset.i] = { ...l, exercice: builderLine(alt).exercice, repos: builderLine(alt).repos };
+      openPicker(alt => {
+        arr[+btn.dataset.i] = { ...l, exercice: builderLine(alt).exercice, repos: builderLine(alt).repos };
+        rerender();
+      });
+    }));
+  /* Alternatives choisies : l'exercice de secours quand le matériel n'est pas libre. */
+  box.querySelectorAll(".b-alt-add").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const l = b.days[+btn.dataset.d].exercices[+btn.dataset.i];
+      openPicker(alt => {
+        if (alt.id === l.exercice.id || (l.alternatives || []).some(a => a.id === alt.id)) return;
+        l.alternatives = [...(l.alternatives || []), builderLine(alt).exercice];
+        rerender();
+      });
+    }));
+  box.querySelectorAll(".b-alt-del").forEach(btn =>
+    btn.addEventListener("click", () => {
+      const l = b.days[+btn.dataset.d].exercices[+btn.dataset.i];
+      l.alternatives = (l.alternatives || []).filter((_, k) => k !== +btn.dataset.k);
       rerender();
     }));
   box.querySelectorAll(".b-add-ex").forEach(btn =>

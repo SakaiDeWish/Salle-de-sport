@@ -5260,3 +5260,17 @@ details[open] > summary > .day-chev { transform: rotate(180deg); }
 /* Super sets du programme : un trait d'accent relie les exercices enchaînés */
 .day-lines li.ss-debut, .day-lines li.ss-suite { border-left: 3px solid var(--accent); padding-left: 10px; }
 .day-lines li.ss-debut { border-top-left-radius: 6px; }
+
+/* Alternatives choisies */
+.b-alts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
+.b-alts-lab { font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; opacity: .7; display: inline-flex; gap: 4px; align-items: center; }
+.b-alts-lab .icon { width: 14px; height: 14px; }
+.b-alt { display: inline-flex; align-items: center; gap: 4px; padding: 4px 4px 4px 10px; border-radius: 999px; background: rgba(128,128,128,.16); font-size: .8rem; }
+.b-alt-del { width: 24px; height: 24px; border-radius: 50%; border: 0; background: rgba(128,128,128,.25); color: inherit; cursor: pointer; line-height: 1; }
+.b-alt-add { min-height: 32px; padding: 0 10px; }
+.dl-nom { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+.dl-alt { display: flex; gap: 4px; align-items: center; text-align: left; white-space: normal; }
+.dl-alt .icon { width: 12px; height: 12px; flex: none; }
+.mj-remp { flex-wrap: wrap; }
+.mj-mode { min-height: 40px; max-width: 100%; }
+.rem-item { display: flex; width: 100%; justify-content: space-between; gap: 8px; min-height: 48px; margin: 4px 0; }
