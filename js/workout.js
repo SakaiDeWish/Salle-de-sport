@@ -542,7 +542,11 @@ function clearLive() {
 /* Les exercices d'une séance du programme, super sets compris : une ligne marquée `superset` est
    enchaînée avec la suivante (et ainsi de suite tant que les lignes suivantes le sont aussi). */
 function exercicesDuJour(day) {
-  const ex = day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo));
+  const ex = day.exercices.map(l => {
+    const e = newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo);
+    if ((l.alternatives || []).length) e.alts = l.alternatives.map(a => a.id);     // alternatives choisies par l'utilisateur
+    return e;
+  });
   let gid = null;
   day.exercices.forEach((l, i) => {
     if (l.superset && i + 1 < ex.length) { gid = gid || ("ss" + Math.random().toString(36).slice(2, 8)); ex[i].ss = ex[i + 1].ss = gid; }
@@ -1842,16 +1846,51 @@ function removeExercise(i) {
   renderLiveExercises();
 }
 
-/* Remplacer un exercice par une alternative (même muscle, autre approche).
-   Si des séries sont déjà validées, l'alternative est ajoutée à la suite
-   pour ne pas fausser l'historique et les records. */
+/* Remplacer un exercice : on choisit parmi SES alternatives enregistrées, les suggestions de l'app,
+   ou n'importe quel exercice de la bibliothèque (banc pris → on cherche autre chose de similaire).
+   Si des séries sont déjà validées, le nouvel exercice est ajouté à la suite pour ne pas fausser
+   l'historique et les records. */
 function swapExercise(i) {
   const cur = live.exercises[i];
-  const ref = allExercisesForUI().find(e => e.id === cur.exId) || cur;
-  const inSession = new Set(live.exercises.map(e => e.exId));
-  const alt = findAlternatives(ref, 5).find(a => !inSession.has(a.id));
-  if (!alt) { alert("Pas d'alternative disponible pour cet exercice."); return; }
+  if (!cur) return;
+  const biblio = allExercisesForUI();
+  const ref = biblio.find(e => e.id === cur.exId) || cur;
+  const dans = new Set(live.exercises.map(e => e.exId));
+  const parId = id => biblio.find(e => e.id === id);
+  const miennes = [...new Set([...(cur.alts || []), ...(cur.remplace ? [cur.remplace.id] : [])])]
+    .map(parId).filter(e => e && !dans.has(e.id));
+  const dejaMiennes = new Set(miennes.map(e => e.id));
+  const suggerees = findAlternatives(ref, 6).filter(a => !dans.has(a.id) && !dejaMiennes.has(a.id)).slice(0, 4);
+  const box = document.getElementById("modal-content");
+  if (!box) return;
+  const bouton = (e, k) => `<button type="button" class="picker-item rem-item" data-rem="${k}">
+      <span>${esc(e.nom)}</span><span class="tag">${esc(LABELS.materiel[e.materiel] || "")}</span></button>`;
+  box.innerHTML = `
+    <div class="modal-header"><div><h2>Remplacer</h2><p class="day-focus">${esc(cur.nom)}</p></div></div>
+    ${miennes.length ? `<p class="chrono-label">Tes alternatives</p>${miennes.map((e, k) => bouton(e, "m" + k)).join("")}` : ""}
+    ${suggerees.length ? `<p class="chrono-label">Suggestions</p>${suggerees.map((e, k) => bouton(e, "s" + k)).join("")}` : ""}
+    <button type="button" class="btn btn-ghost btn-lg" id="rem-chercher" aria-label="Chercher un autre exercice dans la bibliothèque">${icon("search")} Chercher un autre exercice</button>`;
+  box.querySelectorAll("[data-rem]").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.rem, e = (k[0] === "m" ? miennes : suggerees)[+k.slice(1)];
+    if (typeof closeSheet === "function") closeSheet();
+    appliquerRemplacement(i, e);
+  }));
+  document.getElementById("rem-chercher").addEventListener("click", () => {
+    if (typeof closeSheet === "function") closeSheet();
+    openPicker(e => appliquerRemplacement(i, e));
+  });
+  openSheet();
+}
+
+function appliquerRemplacement(i, alt) {
+  const cur = live.exercises[i];
+  if (!cur || !alt) return;
+  if (live.exercises.some(e => e.exId === alt.id)) { alert("Cet exercice est déjà dans la séance."); return; }
   const fresh = newLiveExercise(alt, cur.target, null, cur.rir, cur.tempo);
+  /* On retient l'exercice d'origine : c'est lui qui, à la fin, permettra de proposer d'enregistrer
+     le remplaçant dans le programme. */
+  fresh.remplace = cur.remplace || { id: cur.exId, nom: cur.nom };
+  if (cur.alts) fresh.alts = cur.alts;
   if (cur.sets.length > 0) {
     if (!confirm(`Ajouter « ${alt.nom} » à la suite ? (les séries déjà validées de « ${cur.nom} » sont conservées)`)) return;
     live.exercises.splice(i + 1, 0, fresh);
@@ -2906,6 +2945,7 @@ function finishSession(auto = false) {
     /* Les exercices de la séance, dans l'ordre, y compris ceux sans série :
        sert à proposer de mettre le programme à jour (js/maj-programme.js). */
     structure: live.exercises.map(e => e.exId),
+    remplacements: live.exercises.filter(e => e.remplace && e.sets.length).map(e => [e.remplace.id, e.exId]),   // exercices choisis à la place d'un autre
     liens: liensDeLaSeance(),                 // super sets réalisés : [[idA, idB], …]
     objectifLabel: program ? program.objectifLabel : null,
     rpe: null,   // renseigné depuis l'écran de résumé
