@@ -410,7 +410,9 @@ function renderDashboard() {
       })}
     </div>
 
+    ${typeof analysesCarte === "function" ? analysesCarte() : ""}
   `;
+  if (typeof analysesLier === "function") analysesLier();
 
   // poids de corps
   document.getElementById("weight-add").addEventListener("click", () => {

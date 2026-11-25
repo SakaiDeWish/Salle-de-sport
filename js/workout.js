@@ -429,10 +429,12 @@ function annonce(n) {
    d'envoi (Web Push) le garantirait. */
 STORAGE_KEYS.restNotif = "gymcoach.restNotif";
 function notifOn() {
+  if (typeof Natif !== "undefined" && Natif.estNatif()) return localStorage.getItem(STORAGE_KEYS.restNotif) === "1";
   return localStorage.getItem(STORAGE_KEYS.restNotif) === "1" &&
     "Notification" in window && Notification.permission === "granted";
 }
 async function notifierReprise(exName) {
+  if (typeof Natif !== "undefined" && Natif.estNatif()) return;               // la notification locale est déjà programmée
   if (!notifOn() || !document.hidden) return;
   if (typeof pushConfigure === "function" && pushConfigure()) return;   // le serveur s'en charge
   try {

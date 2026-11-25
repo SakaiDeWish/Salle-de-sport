@@ -1,0 +1,11 @@
+{
+  "appId": "fr.gymcoach.app",
+  "appName": "GymCoach",
+  "webDir": "www",
+  "backgroundColor": "#0a0a0b",
+  "ios": { "contentInset": "always", "scrollEnabled": true },
+  "plugins": {
+    "SplashScreen": { "launchAutoHide": true, "backgroundColor": "#0a0a0b" },
+    "LocalNotifications": { "smallIcon": "ic_stat_icon", "iconColor": "#ceff00" }
+  }
+}

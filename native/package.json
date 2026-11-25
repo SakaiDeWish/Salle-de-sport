@@ -1,0 +1,27 @@
+{
+  "name": "gymcoach-native",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enveloppe native (iOS / Android) de GymCoach avec Capacitor",
+  "scripts": {
+    "web": "bash scripts/build-web.sh",
+    "init:ios": "npm run web && npx cap add ios && npx cap sync ios",
+    "init:android": "npm run web && npx cap add android && npx cap sync android",
+    "sync": "npm run web && npx cap sync",
+    "ios": "npm run sync && npx cap open ios",
+    "android": "npm run sync && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/haptics": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/local-notifications": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5"
+  }
+}

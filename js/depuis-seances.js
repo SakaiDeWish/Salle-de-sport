@@ -133,6 +133,7 @@ function validerSeancesVersProgramme() {
   const mode = (spModal.querySelector('[name="sp-mode"]:checked') || {}).value;
   let prog, nouveau = false;
   if (mode === "nouveau") {
+    if (typeof programmeAutorise === "function" && !programmeAutorise()) return;
     const nom = spModal.querySelector("#sp-nom").value.trim() || "Mon programme";
     prog = newEmptyProgram();
     prog.nom = nom; prog.source = "seance"; prog.days = [];

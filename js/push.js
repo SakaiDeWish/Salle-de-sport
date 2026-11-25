@@ -35,8 +35,15 @@ let pushFile = Promise.resolve();
 const pushEnFile = tache => (pushFile = pushFile.then(tache, tache));
 
 /* Programme la notification pour dans `delaiSec` secondes. */
-function pushProgrammer(delaiSec, exName) { return pushEnFile(() => pushProgrammerBrut(delaiSec, exName)); }
-function pushAnnuler() { return pushEnFile(pushAnnulerBrut); }
+function pushProgrammer(delaiSec, exName) {
+  /* Application native : notification locale, pas de serveur. */
+  if (typeof Natif !== "undefined" && Natif.estNatif()) return localStorage.getItem("gymcoach.restNotif") === "1" ? Natif.notifProgrammer(delaiSec, exName) : Promise.resolve(false);
+  return pushEnFile(() => pushProgrammerBrut(delaiSec, exName));
+}
+function pushAnnuler() {
+  if (typeof Natif !== "undefined" && Natif.estNatif()) return Natif.notifAnnuler();
+  return pushEnFile(pushAnnulerBrut);
+}
 async function pushProgrammerBrut(delaiSec, exName) {
   try {
     if (localStorage.getItem("gymcoach.restNotif") !== "1") return false;

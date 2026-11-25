@@ -32,6 +32,7 @@ function haptique(type = "selection") {
   const important = type === "succes" || type === "erreur" || type === "seuil";
   if (!important && t - derniereHap < 35) return;
   derniereHap = t;
+  if (typeof Natif !== "undefined" && Natif.haptique(type)) return;           // application native : plugin Haptics
   if (navigator.vibrate) { try { navigator.vibrate(MOTIFS_HAP[type] || 6); } catch { /* non supporté */ } return; }
   hapIOS();
 }

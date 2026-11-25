@@ -538,6 +538,7 @@ Object.values(REPART_FIELDS).forEach(id =>
 
 programForm.addEventListener("submit", e => {
   e.preventDefault();
+  if (typeof programmeAutorise === "function" && !programmeAutorise()) return;
   const splitPref = document.getElementById("p-split").value;
   const repartition = splitPref === "custom" ? readRepartition() : null;
   let jours = parseInt(document.getElementById("p-jours").value, 10);
@@ -717,6 +718,7 @@ function renderProgram(pr) {
   document.getElementById("btn-regen")?.addEventListener("click", () => {
     const params = loadJSON(STORAGE_KEYS.profil, null);
     if (!params) return;
+    if (typeof programmeAutorise === "function" && !programmeAutorise()) return;
     const program = generateProgram(params);
     if (typeof registerGeneratedProgram === "function") registerGeneratedProgram(program);
     else saveJSON(STORAGE_KEYS.program, program);
