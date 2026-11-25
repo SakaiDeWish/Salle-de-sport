@@ -181,11 +181,12 @@ function renderProgramsPanel() {
     ${activeId && list.some(p => p.id === activeId) ? renderProjection(list.find(p => p.id === activeId)) : ""}
   `;
 
-  document.getElementById("new-program").addEventListener("click", () => openBuilder(null));
-  document.getElementById("import-program").addEventListener("click", () =>
-    document.getElementById("import-program-file").click());
+  document.getElementById("new-program").addEventListener("click", () => { if (programmeAutorise()) openBuilder(null); });
+  document.getElementById("import-program").addEventListener("click", () => {
+    if (programmeAutorise()) document.getElementById("import-program-file").click();
+  });
   panel.querySelectorAll(".tpl-btn").forEach(b =>
-    b.addEventListener("click", () => instantiateTemplate(PROGRAM_TEMPLATES.find(t => t.key === b.dataset.tpl))));
+    b.addEventListener("click", () => { if (programmeAutorise()) instantiateTemplate(PROGRAM_TEMPLATES.find(t => t.key === b.dataset.tpl)); }));
   panel.querySelectorAll(".p-act").forEach(b =>
     b.addEventListener("click", () => {
       const p = getPrograms().find(x => x.id === b.dataset.id);

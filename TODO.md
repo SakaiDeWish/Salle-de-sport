@@ -57,3 +57,19 @@ Méthode : parcours complet à 390 × 844 depuis un état vierge (accueil → cr
 ## Ce qui a été fait (v115)
 
 Accueil vierge (action en premier, le reste caché jusqu'à la première séance) ; onglet Programme dans la barre du bas ; suivi dessiné à chaque arrivée + état vide ; bouton ▶ sur chaque séance du programme ; « OK » du pavé poursuit la validation de la série ; fin de séance (échauffement replié, tableau lisible) ; vocabulaire clarifié (semaines d'affilée, « en réserve », défi des étoiles filantes) ; légendes sous les icônes d'action et info-bulle à l'appui long sur les boutons en icône ; réglages (bande parasite, pastille discrète, champs recalés) ; prénom facultatif ; écran de repos « Voir la séance » ; les neuf points de la relecture de code.
+
+## Premium et App Store — préparé en v124
+
+Fait, sans serveur ni compte développeur :
+- [x] Interrupteur premium local (`js/premium.js`) avec essai de 7 jours ; adaptateur `Facturation` prêt à être remplacé par StoreKit / Google Play / RevenueCat.
+- [x] Réservé au premium : thèmes Studio, Mono, Opale ; plus de 2 programmes (ceux déjà créés sont conservés) ; export CSV ; analyses avancées (1RM estimé par exercice, volume sur 12 semaines, comparaison mensuelle, plateaux).
+- [x] Pont natif (`js/natif.js`) : retours tactiles et notifications de fin de repos locales sous Capacitor (testé avec un Capacitor simulé).
+- [x] Projet Capacitor dans `native/` (iOS et Android générés, icônes et écrans de démarrage, script de copie `npm run sync`).
+- [x] Polices embarquées (plus aucune requête externe), icônes PNG, page de politique de confidentialité, fiche App Store (`docs/app-store.md`), feuille de route (`docs/feuille-de-route.md`).
+
+À faire par toi :
+- [ ] Renseigner l'adresse de contact dans `confidentialite.html` (placeholder volontaire : ton adresse personnelle ne doit pas être publiée par erreur).
+- [ ] Compte Apple Developer, Mac + Xcode, signature, création de l'app dans App Store Connect, achats intégrés (`docs/app-store.md`).
+- [ ] Brancher le vrai paiement (`docs/feuille-de-route.md`, point 1) puis retirer l'essai gratuit local.
+- [ ] Décider de ce qui reste gratuit : les limites actuelles (2 programmes, 3 thèmes) sont des propositions.
+- [ ] Sauvegarde multi-appareils, Apple Santé, chrono sur écran verrouillé, Apple Watch, coach IA : voir la feuille de route ; ils demandent un serveur ou du code natif.

@@ -170,7 +170,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v122";
+const APP_VERSION = "v124";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -188,6 +188,14 @@ async function rechargerApp(btn) {
 function settingsHtml() {
   const t = currentTheme();
   return `
+    <div class="card set-card">
+      <h3 class="set-h">Premium</h3>
+      <div class="set-row">
+        <span class="set-lab">${estPremium() ? "Actif" : "Gratuit"}<span class="set-sub">${estPremium() ? "Merci ✦" : "Analyses, programmes illimités, thèmes, export CSV"}</span></span>
+        <button class="btn ${estPremium() ? "btn-ghost" : "btn-primary"} btn-sm" id="set-premium" aria-label="Premium">${icon("gem")}</button>
+      </div>
+    </div>
+
     <div class="card set-card">
       <h3 class="set-h">Entraînement</h3>
       <label class="set-row">
@@ -210,6 +218,7 @@ function settingsHtml() {
       <div class="program-actions">
         <button class="btn btn-primary" id="set-export" title="Exporter" aria-label="Exporter une sauvegarde">${icon("download")} Exporter</button>
         <button class="btn btn-ghost" id="set-import" title="Importer" aria-label="Importer une sauvegarde">${icon("upload")} Importer</button>
+        <button class="btn btn-ghost" id="set-csv" title="Export CSV (premium)" aria-label="Exporter en CSV, réservé au premium">${icon("download")} CSV</button>
       </div>
     </div>
 
@@ -220,9 +229,9 @@ function settingsHtml() {
         <div class="seg-mini" role="group" aria-label="Choix du thème">
           <button class="segm ${t === "gamifie" ? "active" : ""}" data-theme="gamifie">${icon("moon")} Sombre</button>
           <button class="segm ${t === "epure" ? "active" : ""}" data-theme="epure">${icon("sun")} Clair</button>
-          <button class="segm ${t === "figma" ? "active" : ""}" data-theme="figma">${icon("pencil")} Studio</button>
-          <button class="segm ${t === "mono" ? "active" : ""}" data-theme="mono">${icon("star")} Mono</button>
-          <button class="segm ${t === "opale" ? "active" : ""}" data-theme="opale">${icon("gem")} Opale</button>
+          <button class="segm ${t === "figma" ? "active" : ""}${estPremium() ? "" : " segm-premium"}" data-theme="figma">${icon("pencil")} Studio</button>
+          <button class="segm ${t === "mono" ? "active" : ""}${estPremium() ? "" : " segm-premium"}" data-theme="mono">${icon("star")} Mono</button>
+          <button class="segm ${t === "opale" ? "active" : ""}${estPremium() ? "" : " segm-premium"}" data-theme="opale">${icon("gem")} Opale</button>
         </div>
       </div>
       <label class="set-row set-check">
@@ -319,6 +328,7 @@ function settingsHtml() {
       </div>
       <p class="set-sub">GYMCOACH — Échauffe-toi avant chaque séance ; en cas de doute,
         consulte un professionnel de santé.</p>
+      <p class="set-sub"><a href="confidentialite.html" target="_blank" rel="noopener">Politique de confidentialité</a></p>
     </div>`;
 }
 
@@ -327,6 +337,7 @@ function openSettings() {
   const host = document.getElementById("panel-host");
   host.querySelectorAll("[data-theme]").forEach(b =>
     b.addEventListener("click", () => {
+      if (THEMES_PREMIUM.includes(b.dataset.theme) && !estPremium()) { ouvrirPremium("Les thèmes Studio, Mono et Opale sont réservés au premium."); return; }
       applyTheme(b.dataset.theme);
       host.querySelectorAll("[data-theme]").forEach(x =>
         x.classList.toggle("active", x.dataset.theme === b.dataset.theme));
@@ -343,6 +354,8 @@ function openSettings() {
   reposDef.addEventListener("change", () =>
   { const v = Math.max(5, Math.min(600, parseInt(reposDef.value, 10) || 90)); reposDef.value = v; saveJSON(STORAGE_KEYS.restDefault, v); });
   if (typeof homeCustomizeBind === "function") homeCustomizeBind();
+  document.getElementById("set-premium").addEventListener("click", () => ouvrirPremium());
+  document.getElementById("set-csv").addEventListener("click", () => exigePremium("L'export CSV est réservé au premium.", exporterCsv));
   document.getElementById("set-export").addEventListener("click", exportData);
   document.getElementById("set-import").addEventListener("click", () => document.getElementById("import-file").click());
   const s = document.getElementById("set-sound");
@@ -400,6 +413,12 @@ function openSettings() {
   const nt = document.getElementById("set-notif");
   nt.addEventListener("change", async () => {
     if (!nt.checked) { localStorage.setItem(STORAGE_KEYS.restNotif, "0"); return; }
+    if (typeof Natif !== "undefined" && Natif.estNatif()) {
+      const accord = await Natif.notifPermission();
+      nt.checked = accord; localStorage.setItem(STORAGE_KEYS.restNotif, accord ? "1" : "0");
+      if (!accord) document.getElementById("set-notif-sub").textContent = "Notifications refusées : autorise-les dans les réglages de l'iPhone.";
+      return;
+    }
     let ok = "Notification" in window;
     if (ok && Notification.permission === "default") ok = (await Notification.requestPermission()) === "granted";
     else if (ok) ok = Notification.permission === "granted";
