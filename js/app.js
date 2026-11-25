@@ -616,8 +616,8 @@ function renderProgram(pr) {
           <span class="day-chev" aria-hidden="true">${icon("chevron-down")}</span>
         </summary>
         <ul class="day-lines">
-          ${day.exercices.map(l => `
-            <li class="${l.prioritaire ? "row-priority" : ""}">
+          ${day.exercices.map((l, k) => `
+            <li class="${l.prioritaire ? "row-priority" : ""}${l.superset ? " ss-debut" : ""}${k > 0 && day.exercices[k - 1].superset ? " ss-suite" : ""}">
               <button class="linklike ex-link" data-id="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
               <span class="dl-sr">${l.series} × ${esc(l.reps)}<span class="cell-sub">${l.rir ? esc(l.rir) + " en réserve · " : ""}${esc(l.repos)}</span></span>
             </li>`).join("")}
@@ -695,7 +695,7 @@ function renderProgram(pr) {
       if (typeof toast === "function") toast("« " + (prog.nom || "Programme") + " » est maintenant le programme actif.", 3500);
     }
     startSession(`Séance ${day.numero} — ${day.titre}`,
-      day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo)));
+      exercicesDuJour(day));
     activateView("seance");
   }));
   programOutput.querySelectorAll(".prog-activer").forEach(btn => btn.addEventListener("click", () => {

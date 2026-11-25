@@ -5,10 +5,24 @@
    (on y AJOUTE les séances) ou un nouveau. */
 let spModal = null, spOrdre = [];
 
+/* Marque dans les lignes d'un programme les super sets réalisés. `liens` = groupes d'identifiants d'exercice.
+   Convention : la ligne portant `superset` est enchaînée avec la suivante ; les deux doivent donc se suivre. */
+function programmeAppliquerLiens(lignes, liens) {
+  for (const g of liens || []) {
+    const idx = g.map(id => lignes.findIndex(l => l.exercice.id === id)).filter(i => i >= 0);
+    if (idx.length < 2) continue;
+    const lignesG = idx.map(i => lignes[i]);
+    const debut = Math.min(...idx);
+    lignesG.forEach(l => lignes.splice(lignes.indexOf(l), 1));            // on les regroupe à la place de la première
+    lignes.splice(Math.min(debut, lignes.length), 0, ...lignesG);
+    lignesG.forEach((l, k) => { l.superset = k < lignesG.length - 1; });
+  }
+}
+
 /* Une séance réalisée -> une séance de programme */
 function seanceDeProgrammeDepuis(r, numero) {
   const groupes = [...new Set((r.exercises || []).map(e => (LABELS.groupes || {})[e.groupe]).filter(Boolean))].slice(0, 4);
-  return {
+  const jour = {
     numero,
     titre: String(r.nom || "Séance " + numero).replace(/ \(bis\)$/, ""),
     focus: groupes.join(" · "),
@@ -31,6 +45,8 @@ function seanceDeProgrammeDepuis(r, numero) {
       return line;
     })
   };
+  programmeAppliquerLiens(jour.exercices, r.liens);
+  return jour;
 }
 
 function ouvrirSeancesVersProgramme(preselection = []) {
