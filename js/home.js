@@ -210,7 +210,7 @@ function apercuProgramme() {
       </section>`).join("")}`;
   box.querySelectorAll(".apercu-go").forEach(b => b.addEventListener("click", () => {
     const day = program.days[parseInt(b.dataset.day, 10)];
-    const exercises = day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo));
+    const exercises = exercicesDuJour(day);
     if (typeof closeSheet === "function") closeSheet();
     startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
     activateView("seance");
@@ -408,8 +408,7 @@ function renderHome() {
   const start = document.getElementById("home-start");
   if (start) start.addEventListener("click", () => {
     // même logique que le lancement depuis l'écran Séance
-    const exercises = next.day.exercices.map(l =>
-      newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null));
+    const exercises = exercicesDuJour(next.day);
     startSession(`Séance ${next.day.numero} — ${next.day.titre}`, exercises);
     activateView("seance");
   });

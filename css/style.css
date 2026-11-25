@@ -5256,3 +5256,7 @@ details[open] > summary > .day-chev { transform: rotate(180deg); }
 .b-day-titre { order: 10; flex: 1 1 100%; min-width: 0; min-height: 48px; font-size: 1.05rem; }
 .b-day-head .b-day-mv { margin-left: auto; display: flex; gap: 6px; }
 .b-row input[data-f="repos"] { min-width: 11ch; }
+
+/* Super sets du programme : un trait d'accent relie les exercices enchaînés */
+.day-lines li.ss-debut, .day-lines li.ss-suite { border-left: 3px solid var(--accent); padding-left: 10px; }
+.day-lines li.ss-debut { border-top-left-radius: 6px; }

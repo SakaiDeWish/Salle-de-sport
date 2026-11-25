@@ -52,8 +52,16 @@ function majDiff(r) {
   }
   const communs = r.structure.filter(id => prevus.includes(id));
   const ordre = communs.some((id, i) => id !== prevus.filter(x => communs.includes(x))[i]);
-  return { ...ref, ajoutes, retires, modifies, ordre, nomDe,
-           vide: !ajoutes.length && !retires.length && !modifies.length && !ordre };
+  /* Super sets : paires « A>B » (A enchaîné avec B). On ne compare que les exercices présents des deux côtés. */
+  const paires = groupes => (groupes || []).flatMap(g => g.slice(0, -1).map((id, k) => id + ">" + g[k + 1]));
+  const duProgramme = day.exercices.flatMap((l, i) => l.superset && day.exercices[i + 1] ? [l.exercice.id + ">" + day.exercices[i + 1].exercice.id] : []);
+  const dela = paires(r.liens);
+  const presents = k => k.split(">").every(id => r.structure.includes(id));
+  const liensAjoutes = dela.filter(k => presents(k) && !duProgramme.includes(k));
+  const liensRetires = duProgramme.filter(k => presents(k) && !dela.includes(k));
+  const nomPaire = k => k.split(">").map(nomDe).join(" + ");
+  return { ...ref, ajoutes, retires, modifies, ordre, nomDe, liensAjoutes, liensRetires, nomPaire,
+           vide: !ajoutes.length && !retires.length && !modifies.length && !ordre && !liensAjoutes.length && !liensRetires.length };
 }
 
 /* Applique les changements choisis au programme et le range. */
@@ -74,6 +82,20 @@ function majAppliquer(r, d, choix) {
     const rang = id => { const i = r.structure.indexOf(id); return i < 0 ? 999 : i; };
     lignes = lignes.map((l, i) => ({ l, i })).sort((a, b) => rang(a.l.exercice.id) - rang(b.l.exercice.id) || a.i - b.i).map(x => x.l);
   }
+  /* Super sets : on rompt les liens retirés, puis on rapproche et on relie les paires ajoutées. */
+  for (const k of d.liensRetires) {
+    if (!choix.liens.has(k)) continue;
+    const l = lignes.find(x => x.exercice.id === k.split(">")[0]);
+    if (l) l.superset = false;
+  }
+  for (const k of d.liensAjoutes) {
+    if (!choix.liens.has(k)) continue;
+    const [a, b] = k.split(">");
+    const ia = lignes.findIndex(x => x.exercice.id === a), ib = lignes.findIndex(x => x.exercice.id === b);
+    if (ia < 0 || ib < 0) continue;
+    if (ib !== ia + 1) { const [lb] = lignes.splice(ib, 1); lignes.splice(lignes.findIndex(x => x.exercice.id === a) + 1, 0, lb); }
+    lignes[lignes.findIndex(x => x.exercice.id === a)].superset = true;
+  }
   day.exercices = lignes;
   const act = loadJSON(STORAGE_KEYS.program, null);
   if (act && act.id === prog.id) setActiveProgram(prog); else upsertProgram(prog);
@@ -83,16 +105,19 @@ function majAppliquer(r, d, choix) {
 }
 
 function majToutChoisir(d) {
-  return { ajoutes: new Set(d.ajoutes), retires: new Set(d.retires), modifies: new Set(d.modifies.map(m => m.id)), ordre: d.ordre };
+  return { ajoutes: new Set(d.ajoutes), retires: new Set(d.retires), modifies: new Set(d.modifies.map(m => m.id)), ordre: d.ordre,
+           liens: new Set([...d.liensAjoutes, ...d.liensRetires]) };
 }
 
 /* Carte de l'écran de fin de séance. */
 function majProgrammeCarte(r) {
   const d = majDiff(r);
   if (!d) return "";
-  const struct = d.ajoutes.length || d.retires.length;
+  const struct = d.ajoutes.length || d.retires.length || d.liensAjoutes.length || d.liensRetires.length;
   if (struct) {
-    const puces = [...d.ajoutes.map(id => `<li class="mj-plus">+ ${esc(d.nomDe(id))}</li>`), ...d.retires.map(id => `<li class="mj-moins">− ${esc(d.nomDe(id))}</li>`)].join("");
+    const puces = [...d.ajoutes.map(id => `<li class="mj-plus">+ ${esc(d.nomDe(id))}</li>`), ...d.retires.map(id => `<li class="mj-moins">− ${esc(d.nomDe(id))}</li>`),
+      ...d.liensAjoutes.map(k => `<li class="mj-plus">${icon("link")} ${esc(d.nomPaire(k))}</li>`),
+      ...d.liensRetires.map(k => `<li class="mj-moins">${icon("link")} − ${esc(d.nomPaire(k))}</li>`)].join("");
     return `<div class="card maj-card" id="maj-card">
       <p class="chrono-label">Séance ${d.day.numero} modifiée</p>
       <ul class="mj-list">${puces}</ul>
@@ -113,7 +138,7 @@ function majProgrammeLier(r) {
   const d = majDiff(r);
   const fin = txt => { carte.innerHTML = `<p class="maj-q">${esc(txt)}</p>`; };
   document.getElementById("maj-oui")?.addEventListener("click", () => {
-    const c = majToutChoisir(d); c.modifies = new Set(); c.ordre = false;      // la question rapide ne touche qu'aux ajouts / retraits
+    const c = majToutChoisir(d); c.modifies = new Set(); c.ordre = false;      // la question rapide ne touche qu'aux ajouts, retraits et super sets
     majAppliquer(r, d, c); fin("Programme mis à jour.");
   });
   document.getElementById("maj-non")?.addEventListener("click", () => { carte.remove(); });
@@ -131,6 +156,8 @@ function majOuvrirEdition(r) {
     ...d.ajoutes.map(id => ligne("ajoutes", id, d.nomDe(id), "ajouté")),
     ...d.retires.map(id => ligne("retires", id, d.nomDe(id), "retiré")),
     ...d.modifies.map(m => ligne("modifies", m.id, d.nomDe(m.id), `${m.from.series} × ${esc(m.from.reps)} → <strong>${m.to.series} × ${esc(m.to.reps)}</strong>`)),
+    ...d.liensAjoutes.map(k => ligne("liens", k, "Super set : " + d.nomPaire(k), "ajouté")),
+    ...d.liensRetires.map(k => ligne("liens", k, "Super set : " + d.nomPaire(k), "retiré")),
     d.ordre ? ligne("ordre", "", "Nouvel ordre des exercices", "ordre") : ""
   ].join("");
   box.innerHTML = `
@@ -138,7 +165,7 @@ function majOuvrirEdition(r) {
     ${d.vide ? `<p class="video-hint">Identique au programme : rien à changer.</p>` : `<div class="mj-rows">${lignes}</div>
     <button class="btn btn-primary btn-lg" id="mj-go" aria-label="Appliquer au programme">${icon("tick")} Appliquer</button>`}`;
   document.getElementById("mj-go")?.addEventListener("click", () => {
-    const c = { ajoutes: new Set(), retires: new Set(), modifies: new Set(), ordre: false };
+    const c = { ajoutes: new Set(), retires: new Set(), modifies: new Set(), liens: new Set(), ordre: false };
     box.querySelectorAll("input[data-k]:checked").forEach(i => {
       if (i.dataset.k === "ordre") c.ordre = true; else c[i.dataset.k].add(i.dataset.id);
     });

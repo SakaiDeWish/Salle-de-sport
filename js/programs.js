@@ -496,7 +496,7 @@ function renderBuilder() {
             <div class="b-row-main">
               <div class="b-row-name">
                 <button class="linklike b-fiche" data-exid="${esc(l.exercice.id)}">${esc(l.exercice.nom)}</button>
-                ${l.superset ? `<span class="tag tag-custom">${icon("link")} superset</span>` : ""}
+                ${l.superset ? `<span class="tag tag-custom">${icon("link")} superset avec la suivante</span>` : ""}
               </div>
               <div class="b-row-fields">
                 <label>Séries <input type="number" min="1" max="10" value="${l.series}" data-f="series" data-d="${d}" data-i="${i}"></label>

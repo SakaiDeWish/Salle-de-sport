@@ -539,6 +539,25 @@ function clearLive() {
 }
 
 /* ---------- Démarrage ---------- */
+/* Les exercices d'une séance du programme, super sets compris : une ligne marquée `superset` est
+   enchaînée avec la suivante (et ainsi de suite tant que les lignes suivantes le sont aussi). */
+function exercicesDuJour(day) {
+  const ex = day.exercices.map(l => newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo));
+  let gid = null;
+  day.exercices.forEach((l, i) => {
+    if (l.superset && i + 1 < ex.length) { gid = gid || ("ss" + Math.random().toString(36).slice(2, 8)); ex[i].ss = ex[i + 1].ss = gid; }
+    else gid = null;
+  });
+  return ex;
+}
+
+/* Les groupes de super set de la séance en cours, par identifiants d'exercice, dans l'ordre. */
+function liensDeLaSeance() {
+  const groupes = new Map();
+  live.exercises.forEach(e => { if (e.ss) { if (!groupes.has(e.ss)) groupes.set(e.ss, []); groupes.get(e.ss).push(e.exId); } });
+  return [...groupes.values()].filter(g => g.length > 1);
+}
+
 function newLiveExercise(ex, target, restSec, rir, tempo) {
   return {
     exId: ex.id,
@@ -785,10 +804,7 @@ function renderProgramDayButtons() {
   container.querySelectorAll(".start-day").forEach(btn => {
     btn.addEventListener("click", () => {
           const day = program.days[parseInt(btn.dataset.day, 10)];
-      const exercises = day.exercices.map(l =>
-        newLiveExercise(l.exercice, `${l.series} × ${l.reps}`, null, l.rir, l.tempo) // repos auto (smartRest)
-      );
-      startSession(`Séance ${day.numero} — ${day.titre}`, exercises);
+      startSession(`Séance ${day.numero} — ${day.titre}`, exercicesDuJour(day));       // repos auto (smartRest)
     });
   });
 }
@@ -2890,6 +2906,7 @@ function finishSession(auto = false) {
     /* Les exercices de la séance, dans l'ordre, y compris ceux sans série :
        sert à proposer de mettre le programme à jour (js/maj-programme.js). */
     structure: live.exercises.map(e => e.exId),
+    liens: liensDeLaSeance(),                 // super sets réalisés : [[idA, idB], …]
     objectifLabel: program ? program.objectifLabel : null,
     rpe: null,   // renseigné depuis l'écran de résumé
     notes: "",
@@ -3086,6 +3103,7 @@ function showSummary(r) {
         };
       })
     };
+    if (typeof programmeAppliquerLiens === "function") programmeAppliquerLiens(day.exercices, r.liens);
     pr.days.push(day);
     pr.jours = pr.days.length;
     if (typeof setActiveProgram === "function") setActiveProgram(pr);
