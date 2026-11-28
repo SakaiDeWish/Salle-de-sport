@@ -4,8 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 rm -rf native/www && mkdir -p native/www
-cp index.html manifest.webmanifest icon.svg native/www/
+cp index.html manifest.webmanifest icon.svg confidentialite.html native/www/
 cp -R css js native/www/
-[ -d fonts ] && cp -R fonts native/www/ || true
-cp icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png native/www/ 2>/dev/null || true
+cp -R fonts native/www/
+cp icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png native/www/
 echo "native/www prêt ($(find native/www -type f | wc -l) fichiers)"

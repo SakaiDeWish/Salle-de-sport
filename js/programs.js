@@ -427,10 +427,12 @@ function openBuilder(programId, prefill = null) {
       : newEmptyProgram();
   renderBuilder();
   builderModal.classList.remove("hidden");
+  focusEntre("builder", builderModal.querySelector(".modal-box"));
   document.body.style.overflow = "hidden";
 }
 
 function closeBuilder() {
+  focusRend("builder");
   builderModal.classList.add("hidden");
   document.body.style.overflow = "";
 }

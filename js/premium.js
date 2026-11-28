@@ -7,6 +7,10 @@
      Facturation.restaurer()           Promise<{ ok, jusqua? }>
    Le reste de l'app ne lit que estPremium() et exigePremium(). */
 
+/* Tant que l'app n'est pas publiée, rien n'est verrouillé : toutes les options sont ouvertes.
+   AU MOMENT DE PUBLIER : mettre `true` (ou brancher le vrai paiement). Pour tester les verrous sans modifier le code :
+   localStorage.setItem("gymcoach.verrou", "1") puis recharger. */
+const PREMIUM_VERROUILLE = (() => { try { return localStorage.getItem("gymcoach.verrou") === "1"; } catch { return false; } })();
 const PREMIUM_CLE = "gymcoach.premium";
 const LIMITE_PROGRAMMES_GRATUITS = 2;
 const THEMES_PREMIUM = ["figma", "mono", "opale"];
@@ -24,6 +28,7 @@ const PREMIUM_AVANTAGES = [
 
 function premiumEtat() { try { return JSON.parse(localStorage.getItem(PREMIUM_CLE)) || null; } catch { return null; } }
 function estPremium() {
+  if (!PREMIUM_VERROUILLE) return true;                  // version de test : tout est ouvert
   const e = premiumEtat();
   if (!e || !e.actif) return false;
   return !e.jusqua || e.jusqua > Date.now();            // abonnement échu : plus premium
@@ -35,10 +40,17 @@ function premiumSet(etat) {
 }
 
 /* Adaptateur de facturation : ici, l'essai local. À remplacer par le vrai paiement. */
+const ESSAI_CLE = "gymcoach.essai";
 window.Facturation = window.Facturation || {
   disponible: false,
-  async acheter() { return { ok: true, jusqua: Date.now() + 7 * 86400000, source: "essai" }; },
-  async restaurer() { const e = premiumEtat(); return { ok: !!(e && e.actif) }; }
+  /* Un seul essai par appareil : on retient qu'il a été pris. */
+  async acheter() {
+    if (localStorage.getItem(ESSAI_CLE)) return { ok: false, raison: "essai-utilise" };
+    try { localStorage.setItem(ESSAI_CLE, "1"); } catch { /* stockage indisponible */ }
+    return { ok: true, jusqua: Date.now() + 7 * 86400000, source: "essai" };
+  },
+  /* Restaurer ne rend jamais plus que ce qui est valide : un essai échu ne se « restaure » pas. */
+  async restaurer() { const e = premiumEtat(); return estPremium() ? { ok: true, jusqua: e.jusqua || null } : { ok: false }; }
 };
 
 function ouvrirPremium(raison) {
@@ -48,26 +60,29 @@ function ouvrirPremium(raison) {
   const actif = estPremium();
   box.innerHTML = `
     <div class="modal-header"><div><h2>Premium</h2>
-      <p class="day-focus">${actif ? "Actif" + (e.jusqua ? " jusqu'au " + new Date(e.jusqua).toLocaleDateString("fr-FR") : "") : (raison ? esc(raison) : "Va plus loin dans ton suivi")}</p></div></div>
+      <p class="day-focus">${!PREMIUM_VERROUILLE ? "Version de test : tout est débloqué" : actif ? "Actif" + (e.jusqua ? " jusqu'au " + new Date(e.jusqua).toLocaleDateString("fr-FR") : "") : (raison ? esc(raison) : "Va plus loin dans ton suivi")}</p></div></div>
     <ul class="prem-liste">
       ${PREMIUM_AVANTAGES.map(a => `<li class="${a.dispo ? "" : "prem-bientot"}">
         <span class="prem-ico">${icon(a.ico)}</span>
         <span><strong>${esc(a.titre)}</strong>${a.dispo ? "" : ' <em class="prem-tag">à venir</em>'}<small>${esc(a.txt)}</small></span></li>`).join("")}
     </ul>
     ${actif ? `<button class="btn btn-ghost btn-lg" id="prem-stop">Arrêter l'essai</button>`
-      : `<button class="btn btn-primary btn-lg" id="prem-go">${icon("play")} Essayer 7 jours</button>
-         <p class="video-hint">Le paiement n'est pas encore en place : l'essai est gratuit et sans engagement.</p>
+      : `${localStorage.getItem(ESSAI_CLE)
+          ? `<p class="video-hint">Ton essai gratuit est terminé. Le paiement n'est pas encore en place.</p>`
+          : `<button class="btn btn-primary btn-lg" id="prem-go">${icon("play")} Essayer 7 jours</button>
+             <p class="video-hint">Le paiement n'est pas encore en place : l'essai est gratuit et sans engagement.</p>`}
          <button class="btn btn-ghost btn-sm" id="prem-restaure">Restaurer mon achat</button>`}`;
   document.getElementById("prem-go")?.addEventListener("click", async () => {
     const r = await window.Facturation.acheter("mensuel");
     if (r && r.ok) { premiumSet({ actif: true, source: r.source || "store", jusqua: r.jusqua || null }); ouvrirPremium(); if (typeof toast === "function") toast("Premium activé ✦", 2500); }
+    else if (r && r.raison === "essai-utilise") ouvrirPremium("Ton essai gratuit a déjà été utilisé.");
   });
   document.getElementById("prem-restaure")?.addEventListener("click", async () => {
     const r = await window.Facturation.restaurer();
     if (r && r.ok) { premiumSet({ actif: true, source: "store", jusqua: r.jusqua || null }); ouvrirPremium(); }
     else if (typeof toast === "function") toast("Aucun achat à restaurer.", 2500);
   });
-  document.getElementById("prem-stop")?.addEventListener("click", () => { premiumSet(null); ouvrirPremium(); });
+  document.getElementById("prem-stop")?.addEventListener("click", () => { premiumSet(null); revenirAuThemeGratuit(); ouvrirPremium(); });
   openSheet();
 }
 
@@ -89,9 +104,30 @@ function programmeAutorise() {
 
 document.documentElement.classList.toggle("est-premium", estPremium());
 
+/* Sans premium valide (essai terminé, arrêté, sauvegarde importée), les thèmes réservés laissent place au thème Sombre. */
+function revenirAuThemeGratuit() {
+  if (estPremium() || typeof currentTheme !== "function") return;
+  if (THEMES_PREMIUM.includes(currentTheme()) && typeof applyTheme === "function") applyTheme("gamifie");
+}
+revenirAuThemeGratuit();
+
+/* Mode développeur : 7 touchers sur le numéro de version, dans Réglages. À retirer avant la publication,
+   quand le vrai paiement existe. */
+document.addEventListener("click", e => {
+  if (!e.target.closest || !e.target.closest("#set-version")) return;
+  window.__devTaps = (window.__devTaps || 0) + 1;
+  clearTimeout(window.__devT); window.__devT = setTimeout(() => { window.__devTaps = 0; }, 2500);
+  if (window.__devTaps >= 7) {
+    window.__devTaps = 0;
+    premiumSet({ actif: true, source: "dev", jusqua: null });
+    if (typeof toast === "function") toast("Mode développeur : premium actif.", 3000);
+  }
+});
+
 /* ---------- Export CSV (premium) ---------- */
 function exporterCsv() {
-  const echap = v => { const t = String(v ?? ""); return /[",;\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
+  /* Une cellule texte qui commence par = + - @ serait lue comme une formule : on la neutralise. */
+  const echap = v => { let t = String(v ?? ""); if (typeof v === "string" && /^[=+\-@\t\r]/.test(t)) t = "'" + t; return /[",;\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t; };
   const lignes = [["date", "séance", "exercice", "série", "poids_kg", "reps", "secondes", "rir", "repos_s", "note"]];
   for (const r of getHistory()) for (const ex of (r.exercises || [])) (ex.sets || []).forEach((s, i) =>
     lignes.push([new Date(r.date).toISOString().slice(0, 10), r.nom, ex.nom, i + 1, s.poids ?? "", s.reps ?? "", s.secondes ?? "", s.rir ?? "", s.restAfter ?? "", s.note ?? ""]));

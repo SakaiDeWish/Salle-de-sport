@@ -30,8 +30,9 @@ function analysesPlateaux(parEx) {
 
 function analysesVolume12(h) {
   const lundi = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.getTime(); };
-  const debut = lundi(Date.now());
-  const semaines = Array.from({ length: 12 }, (_, i) => ({ t: debut - (11 - i) * 7 * 86400000, v: 0 }));
+  const debut = new Date(lundi(Date.now()));
+  /* Chaque lundi est recalculé en date locale : 7 × 24 h faussent les semaines qui traversent un changement d'heure. */
+  const semaines = Array.from({ length: 12 }, (_, i) => { const d = new Date(debut); d.setDate(d.getDate() - (11 - i) * 7); d.setHours(0, 0, 0, 0); return { t: d.getTime(), v: 0 }; });
   for (const r of h) { const s = semaines.find(x => lundi(r.date) === x.t); if (s) s.v += r.volume || 0; }
   return semaines;
 }

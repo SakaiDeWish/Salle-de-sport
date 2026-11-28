@@ -150,10 +150,25 @@ function applySheetSnap(snap) {
   box.style.transform = "";
 }
 
+/* Focus des fenêtres : à l'ouverture il entre dans la fenêtre (le conteneur, pas un champ : un champ ferait
+   surgir le clavier sur téléphone), à la fermeture il revient à l'élément qui l'avait. */
+const focusRetour = {};
+function focusEntre(cle, racine) {
+  if (!racine) return;
+  if (!focusRetour[cle]) focusRetour[cle] = document.activeElement;
+  racine.setAttribute("tabindex", "-1");
+  try { racine.focus({ preventScroll: true }); } catch { /* sans effet */ }
+}
+function focusRend(cle) {
+  const e = focusRetour[cle]; delete focusRetour[cle];
+  if (e && e !== document.body && document.contains(e) && e.focus) { try { e.focus({ preventScroll: true }); } catch { /* sans effet */ } }
+}
+
 function openSheet() {
   const el = sheetEl();
   if (!el) return;
   el.classList.remove("hidden");
+  focusEntre("sheet", document.getElementById("sheet-box"));
   applySheetSnap("default");
   requestAnimationFrame(() => el.classList.add("sheet-in"));
   const scroll = el.querySelector(".sheet-scroll");
@@ -163,6 +178,7 @@ function openSheet() {
 function closeSheet() {
   const el = sheetEl();
   if (!el) return;
+  focusRend("sheet");
   el.classList.remove("sheet-in");
   const box = document.getElementById("sheet-box");
   if (box) { box.style.transition = ""; box.style.transform = ""; }
