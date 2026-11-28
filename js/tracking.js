@@ -659,7 +659,7 @@ function openSessionModal(id, edit = false) {
               <input type="number" step="0.5" min="0" value="${s.poids ?? ""}" placeholder="kg" data-e="${i}" data-s="${j}" data-f="poids">
               ${s.secondes != null
                 ? `<input type="number" step="5" min="1" value="${s.secondes}" placeholder="secondes" data-e="${i}" data-s="${j}" data-f="secondes">`
-                : `<input type="number" step="1" min="1" value="${s.reps}" placeholder="reps" data-e="${i}" data-s="${j}" data-f="reps">`}
+                : `<input type="number" step="1" min="1" value="${s.reps ?? ""}" placeholder="reps" data-e="${i}" data-s="${j}" data-f="reps">`}
             </div>`).join("")}
         </div>`).join("")}
       <div class="program-actions">

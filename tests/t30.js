@@ -1,0 +1,32 @@
+const { ouvrir } = require('./lib.js');
+(async () => { const { b, p, err } = await ouvrir();
+  await p.evaluate(() => applyTheme('opale')); await p.waitForTimeout(900);
+  await p.screenshot({ path: 'op-accueil.png' });
+  console.log('onglets visibles :', await p.evaluate(() => [...document.querySelectorAll('.bottom-nav .tab')].filter(t => getComputedStyle(t).display !== 'none').map(t => t.dataset.view).join(',')));
+  console.log('bouton + :', await p.evaluate(() => getComputedStyle(document.getElementById('opale-plus')).display));
+  await p.click('#opale-plus'); await p.waitForTimeout(500); await p.screenshot({ path: 'op-menu.png' });
+  console.log('menu ouvert :', await p.evaluate(() => !document.getElementById('opale-menu').classList.contains('hidden')));
+  await p.click('[data-go-opale="ajouter"]'); await p.waitForTimeout(700);
+  console.log('vue après menu :', await p.evaluate(() => document.querySelector('.view.active').id), '| menu fermé :', await p.evaluate(() => document.getElementById('opale-menu').classList.contains('hidden')));
+  await p.screenshot({ path: 'op-programme.png' });
+  await p.evaluate(() => { const e0 = allExercisesForUI()[0]; localStorage.setItem(STORAGE_KEYS.history, JSON.stringify([{ id: 's1', nom: 'Séance 1 — A', date: Date.now() - 86400000, dureeMs: 3000000, reposMs: 400000, nbSeries: 2, volume: 1200, exercises: [{ exId: e0.id, nom: e0.nom, groupe: e0.groupe, sets: [{ poids: 60, reps: 10 }, { poids: 60, reps: 10 }] }] }])); });
+  await p.click('.bottom-nav .tab[data-view="suivi"]'); await p.waitForTimeout(900);
+  await p.evaluate(() => { const bt = [...document.querySelectorAll('#view-suivi button')].find(x => /Badges/.test(x.textContent)); if (bt) bt.click(); }); await p.waitForTimeout(500);
+  await p.evaluate(() => document.querySelector('.badge-tile[data-badge]').scrollIntoView({ block: 'center' })); await p.waitForTimeout(300);
+  await p.evaluate(() => document.querySelector('.badge-tile[data-badge="1"]').click()); await p.waitForTimeout(700);
+  console.log('jalon :', await p.evaluate(() => document.getElementById('oj-titre').textContent + ' | ' + document.getElementById('oj-val').textContent + ' | ' + document.getElementById('oj-compte').textContent));
+  await p.screenshot({ path: 'op-jalon.png' });
+  await p.evaluate(() => document.querySelector('[data-oj="1"]').click()); await p.waitForTimeout(500);
+  console.log('jalon suivant :', await p.evaluate(() => document.getElementById('oj-titre').textContent));
+  await p.evaluate(() => document.querySelector('.oj-close').click()); await p.waitForTimeout(300);
+  console.log('jalon fermé :', await p.evaluate(() => document.getElementById('opale-jalon').classList.contains('hidden')));
+  // séance : afficheur + pilules
+  await p.evaluate(() => { const L = allExercisesForUI(); startSession("T", [newLiveExercise(L[0], '3 × 10', 60)]); activateView('seance'); expandedIndex = 0; openNext = 0; renderLiveExercises(); window.scrollTo(0, 0); });
+  await p.waitForTimeout(900); await p.screenshot({ path: 'op-seance-haut.png' });
+  await p.evaluate(() => document.querySelector('.stepper').scrollIntoView({ block: 'center' })); await p.waitForTimeout(400); await p.screenshot({ path: 'op-seance-saisie.png' });
+  // fin de séance
+  await p.evaluate(() => { document.getElementById('reps-0').value='10'; document.getElementById('poids-0').value='20'; validateSet(0); }); await p.waitForTimeout(900); await p.evaluate(() => endRest());
+  await p.evaluate(() => { window.confirm = () => true; window.alert = () => {}; try { finishSession(true); } catch (e) { window.__e = String(e); } });
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.waitForTimeout(1800); await p.screenshot({ path: 'op-resume.png' });
+  console.log('résumé :', await p.evaluate(() => window.__e || 'ok'));
+  console.log('erreurs :', err.length ? err.join(' | ') : 'aucune'); await b.close(); })();

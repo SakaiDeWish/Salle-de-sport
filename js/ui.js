@@ -399,7 +399,7 @@ function exerciseStatsBlock(ex) {
       <div class="exs-item"><span class="exs-val">${s.rm ? s.rm + " kg" : "—"}</span>
         <span class="exs-lab">1RM estimé</span>
         <span class="exs-help">La charge que tu lèverais une seule fois (formule d'Epley, à partir de ton meilleur set). C'est une <em>estimation</em> : ne la teste pas à froid.</span></div>
-      <div class="exs-item"><span class="exs-val">${s.reps}</span>
+      <div class="exs-item"><span class="exs-val">${s.reps ?? "—"}</span>
         <span class="exs-lab">Répétitions</span>
         <span class="exs-help">Total de reps accumulées sur cet exercice, en ${s.series} série${s.series > 1 ? "s" : ""} et ${s.seances} séance${s.seances > 1 ? "s" : ""}.</span></div>
       <div class="exs-item"><span class="exs-val">${Math.round(s.volume).toLocaleString("fr-FR")} kg</span>
