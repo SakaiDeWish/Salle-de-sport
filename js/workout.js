@@ -233,7 +233,7 @@ const RING_CIRC = 2 * Math.PI * 88;
 
 /* ---------- Utilitaires temps ---------- */
 function fmtClock(ms) {
-  const s = Math.max(0, Math.floor(ms / 1000));
+  const s = Math.max(0, Math.floor((Number.isFinite(ms) ? ms : 0) / 1000));
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
   const mm = String(m).padStart(2, "0"), ss = String(sec).padStart(2, "0");
   return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
@@ -1472,7 +1472,7 @@ function editionSerie(ex, i, j, statique) {
                     <input type="number" inputmode="none" readonly min="0" step="0.5" id="ed-poids" value="${s.poids ?? ""}" placeholder="kg" aria-label="Poids en kilogrammes">
                     ${statique
                       ? `<input type="number" inputmode="none" readonly min="1" step="5" id="ed-temps" value="${s.secondes ?? ""}" placeholder="secondes" aria-label="Temps de maintien en secondes">`
-                      : `<input type="number" inputmode="none" readonly min="1" step="1" id="ed-reps" value="${s.reps}" placeholder="reps" aria-label="Répétitions">
+                      : `<input type="number" inputmode="none" readonly min="1" step="1" id="ed-reps" value="${s.reps ?? ""}" placeholder="reps" aria-label="Répétitions">
                          <input type="number" inputmode="none" readonly min="0" step="1" id="ed-rir" value="${s.rir ?? ""}" placeholder="RIR" aria-label="Répétitions en réserve">`}
                     <button class="btn btn-primary btn-sm set-edit-save" data-i="${i}" data-j="${j}">Enregistrer</button>
                     <button class="btn btn-ghost btn-sm set-edit-cancel">Annuler</button>
@@ -2163,7 +2163,17 @@ function stepValue(btn) {
   if (typeof rebond === "function") rebond(champ, 0.94, 1.08, 260);
 }
 
+let derniereValidation = 0;
 function validateSet(i) {
+  /* Un double toucher rapide (iPhone) ne valide qu'une série. */
+  const instant = Date.now();
+  if (instant - derniereValidation < 700) return;
+  const champP = document.getElementById("poids-" + i);
+  /* Garde-fous : des valeurs absurdes (poids négatif, 99 999 kg, 5 000 répétitions) fausseraient records et statistiques. */
+  const pBrut = champP ? parseFloat(champP.value) : NaN;
+  if (Number.isFinite(pBrut) && (pBrut < 0 || pBrut > 1000)) { if (typeof toast === "function") toast("Poids : entre 0 et 1 000 kg.", 2500); focusChamp(champP); return; }
+  const rChamp = document.getElementById("reps-" + i);
+  if (rChamp && rChamp.value !== "" && (parseInt(rChamp.value, 10) > 500)) { if (typeof toast === "function") toast("Répétitions : 500 au maximum.", 2500); focusChamp(rChamp); return; }
   /* Personne ne pense au bouton « échauffement terminé » une barre à
      la main. Valider une série le dit à sa place. */
   if (warmupOn()) endWarmup();
@@ -2188,6 +2198,7 @@ function validateSet(i) {
     if (!reps || reps < 1) { focusChamp(document.getElementById("reps-" + i)); return; }
   }
   const now = Date.now();
+  derniereValidation = now;
 
   // bascule d'exercice courant + chronos
   if (live.currentIndex !== i) {
@@ -3233,7 +3244,7 @@ function renderSessionDetail(r) {
         <tbody>${ex.sets.map((s, j) => `
           <tr class="${s.note ? "set-noted" : ""}"><td>${j + 1}</td>${stat
             ? `<td>${s.secondes != null ? fmtSec(s.secondes) : "—"}</td><td>${s.poids != null ? s.poids + " kg" : "—"}</td>`
-            : `<td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps}</td><td>${s.rir != null ? s.rir : "—"}</td>`}
+            : `<td>${s.poids != null ? s.poids + " kg" : "—"}</td><td>${s.reps ?? "—"}</td><td>${s.rir != null ? s.rir : "—"}</td>`}
           <td>${s.restAfter != null ? fmtSec(s.restAfter) : "—"}</td></tr>
           ${s.note ? `<tr class="set-note-line"><td colspan="${stat ? 4 : 5}">${icon("message")} ${esc(s.note)}</td></tr>` : ""}`).join("")}
         </tbody>

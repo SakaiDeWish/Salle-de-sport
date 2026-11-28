@@ -1,0 +1,20 @@
+const { ouvrir } = require('./lib.js');
+(async () => {
+  const { b, p, err } = await ouvrir();
+  await p.evaluate(() => { window.__say=[]; window.SpeechSynthesisUtterance=function(t){this.text=t}; Object.defineProperty(window,'speechSynthesis',{value:{cancel(){},speak(u){window.__say.push(u.text+'@'+u.lang+'/'+u.volume)}},configurable:true}); });
+  await p.evaluate(() => { annonce(3); annonce(2); annonce(1); });
+  console.log('voix activée :', await p.evaluate(() => window.__say.join(' ')));
+  await p.evaluate(() => { window.__say.length=0; localStorage.setItem('gymcoach.restVoice','0'); annonce(3); });
+  console.log('voix coupée  :', await p.evaluate(() => window.__say.length));
+  await p.evaluate(() => { localStorage.setItem('gymcoach.restVoice','1'); localStorage.setItem('gymcoach.restSound','0'); annonce(3); });
+  console.log('son coupé    :', await p.evaluate(() => window.__say.length));
+  await p.evaluate(() => { localStorage.removeItem('gymcoach.restSound'); window.__say.length=0; const ex=allExercisesForUI(); startSession("T",[newLiveExercise(ex[0],'3 × 10',5)]); validateSet(0); });
+  await p.waitForTimeout(300);
+  await p.evaluate(() => { rest.startAt -= 2500; }); await p.waitForTimeout(1500);
+  await p.evaluate(() => { rest.startAt -= 1000; }); await p.waitForTimeout(1200);
+  console.log('en situation :', await p.evaluate(() => window.__say.join(' ')));
+  await p.evaluate(() => openSettings()); await p.waitForTimeout(300);
+  console.log('case réglage :', await p.evaluate(() => !!document.getElementById('set-voice')));
+  console.log('erreurs :', err.length ? err.join(' | ') : 'aucune');
+  await b.close();
+})();

@@ -1,0 +1,15 @@
+const { ouvrir } = require('./lib.js');
+(async () => { const { b, p, err } = await ouvrir();
+  await p.evaluate(() => { const L = allExercisesForUI(); startSession("T", [0,1].map(k => newLiveExercise(L[k], '3 × 10', 60))); activateView('seance'); expandedIndex = 0; openNext = 0; renderLiveExercises(); });
+  await p.waitForTimeout(500);
+  await p.evaluate(() => { document.getElementById('reps-0').value='10'; document.getElementById('poids-0').value='20'; });
+  await p.click('.step-btn[data-target="poids-0"][data-delta="1"]');
+  console.log('valeur qui rebondit :', await p.evaluate(() => document.getElementById('poids-0').getAnimations().length));
+  await p.click('.cb[data-check="0"]'); await p.waitForTimeout(40);
+  console.log('case cochée rebondit :', await p.evaluate(() => document.querySelectorAll('.cb.on').length + ' coche(s), animations :' + [...document.querySelectorAll('.cb.on')].map(c => c.getAnimations().length + '/' + (c.querySelector('.icon') ? c.querySelector('.icon').getAnimations().length : '-')).join(',')));
+  await p.waitForTimeout(500); await p.evaluate(() => endRest()); await p.waitForTimeout(400);
+  await p.evaluate(() => { openNext=0; renderLiveExercises(); }); await p.click('#poids-0'); await p.waitForTimeout(80);
+  await p.click('.pave-k[data-k="5"]');
+  console.log('chiffre du pavé :', await p.evaluate(() => document.getElementById('pave-val').getAnimations().length), '| feuille animée :', await p.evaluate(() => document.querySelector('.pave-feuille').getAnimations().length > 0));
+  console.log('erreurs :', err.length ? err.join(' | ') : 'aucune');
+  await b.close(); })();

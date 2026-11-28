@@ -73,3 +73,14 @@ Fait, sans serveur ni compte développeur :
 - [ ] Brancher le vrai paiement (`docs/feuille-de-route.md`, point 1) puis retirer l'essai gratuit local.
 - [ ] Décider de ce qui reste gratuit : les limites actuelles (2 programmes, 3 thèmes) sont des propositions.
 - [ ] Sauvegarde multi-appareils, Apple Santé, chrono sur écran verrouillé, Apple Watch, coach IA : voir la feuille de route ; ils demandent un serveur ou du code natif.
+
+## Finitions avant publication — v126
+
+- [x] Relecture de code : 10 points corrigés (semaines de volume décalées par le changement d'heure, essai gratuit renouvelable à l'infini, drapeau du pavé resté armé, export CSV et formules de tableur, thèmes premium conservés après l'essai, politique de confidentialité absente du paquet natif, état vide du Suivi sans poids de corps, rendu du Suivi en double, super sets sur un exercice répété, Régénérer qui créait un programme de plus).
+- [x] Stockage abîmé ou venu d'une autre version : l'app démarre toujours (données de mauvaise forme écartées au chargement ; 65 combinaisons testées).
+- [x] Fenêtres : le focus entre dans la fenêtre et revient à l'élément d'origine ; Échap ferme le sélecteur et l'éditeur.
+- [x] Double toucher sur la validation d'une série : une seule série. Poids hors de 0–1 000 kg et plus de 500 répétitions refusés.
+- [x] Textes « NaN » / « undefined » dans le détail d'anciennes séances corrigés.
+- [x] 5 thèmes × 7 écrans × 3 largeurs et 4 fenêtres : aucun débordement. Chargement : accueil affiché en 0,6 s avec un processeur 4 fois plus lent.
+- [x] Suite de tests rangée dans le dépôt (`tests/`, 26 scénarios, `bash tests/lancer.sh`).
+- [ ] **Au moment de publier** : `PREMIUM_VERROUILLE` (js/premium.js) est à `false` pour que tout reste ouvert pendant les tests ; le passer à `true` après avoir branché le paiement, et retirer l'essai gratuit local ainsi que le « mode développeur » (7 touchers sur la version dans Réglages).

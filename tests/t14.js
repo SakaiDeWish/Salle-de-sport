@@ -1,0 +1,28 @@
+const { ouvrir } = require('./lib.js');
+(async () => {
+  const { b, p, err } = await ouvrir();
+  await p.evaluate(() => { const ex = allExercisesForUI().find(e => e.materiel === 'barre'); startSession("T", [newLiveExercise(ex, '3 × 8', 60)]); expandedIndex = 0; renderLiveExercises(); });
+  await p.waitForTimeout(300);
+  await p.evaluate(() => { activateView('seance'); openNext = 0; renderLiveExercises(); }); await p.waitForTimeout(200);
+  const vis = () => p.evaluate(() => !document.getElementById('pave').classList.contains('hidden'));
+  console.log('champ poids présent :', await p.evaluate(() => !!document.getElementById('poids-0')));
+  await p.click('#poids-0'); await p.waitForTimeout(200);
+  console.log('pavé ouvert         :', await vis(), '| label :', await p.textContent('#pave-lab'));
+  for (const k of ['6','0']) await p.click(`.pave-k[data-k="${k}"]`);
+  console.log('60 tapé → champ     :', await p.inputValue('#poids-0'), '| disques :', await p.textContent('#pave-cote'));
+  await p.click('.pave-disque[data-disque="5"]');
+  console.log('+2×5 → champ        :', await p.inputValue('#poids-0'), '|', await p.textContent('#pave-cote'));
+  await p.click('.pave-chip[data-pave="barre"]'); console.log('barre 15 :', await p.textContent('.pave-chip[data-pave="barre"]'), '|', await p.textContent('#pave-cote'));
+  await p.click('[data-pave="plus"]'); console.log('+pas → champ        :', await p.inputValue('#poids-0'));
+  await p.click('.pave-ok'); console.log('fermé               :', !(await vis()));
+  await p.click('.step-pas'); console.log('puce pas            :', await p.textContent('.step-pas'), '| data-step', await p.getAttribute('.stepper[data-step]', 'data-step'));
+  await p.click('.step-btn[data-target="poids-0"][data-delta="1"]'); console.log('+ avec pas 5        :', await p.inputValue('#poids-0'));
+  await p.click('#reps-0'); await p.click('.pave-k[data-k="1"]'); await p.click('.pave-k[data-k="2"]'); await p.click('.pave-ok');
+  console.log('reps                :', await p.inputValue('#reps-0'));
+  await p.click('.cb[data-check="0"]'); await p.waitForTimeout(300);
+  console.log('série validée       :', await p.evaluate(() => JSON.stringify(live.exercises[0].sets.map(s => [s.poids, s.reps]))));
+  await p.evaluate(() => { const i = live.exercises[0]; }); 
+  console.log('erreurs :', err.length ? err.join(' | ') : 'aucune');
+  await p.screenshot({ path: 'pave.png' });
+  await b.close();
+})();

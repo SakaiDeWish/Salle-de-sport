@@ -1,0 +1,14 @@
+const { ouvrir } = require('./lib.js');
+(async () => { const { b, p, err } = await ouvrir();
+  await p.evaluate(() => applyTheme('opale')); await p.waitForTimeout(800);
+  await p.evaluate(() => { const W = innerWidth, H = innerHeight; const ang = 25 * Math.PI / 180; window.__meteores.push({ x0: W * 0.1, y0: H * 0.5, x1: W * 0.1 + Math.cos(ang) * 360, y1: H * 0.5 + Math.sin(ang) * 360, dir: 1, t0: performance.now(), dur: 2500, queue: 150 }); });
+  await p.waitForTimeout(500);
+  const pos = await p.evaluate(() => { const m = window.__meteores[0]; return window.__meteoreTete(m, (performance.now() - m.t0) / m.dur); });
+  await p.evaluate(([x, y]) => { const b = document.createElement('button'); b.id = 'tb'; b.style.cssText = `position:fixed;left:${x - 40}px;top:${y - 40}px;width:80px;height:80px;opacity:.01;z-index:500`; document.body.appendChild(b); }, [pos.x, pos.y]);
+  await p.mouse.click(pos.x, pos.y); await p.waitForTimeout(100);
+  console.log('tap sur un bouton : étoiles =', await p.evaluate(() => nbEtoiles()), '(0 attendu) | météore toujours là :', await p.evaluate(() => window.__meteores.length));
+  await p.evaluate(() => document.getElementById('tb').remove());
+  const pos2 = await p.evaluate(() => { const m = window.__meteores[0]; return window.__meteoreTete(m, (performance.now() - m.t0) / m.dur); });
+  await p.mouse.click(pos2.x, pos2.y); await p.waitForTimeout(100);
+  console.log('tap sur le fond : étoiles =', await p.evaluate(() => nbEtoiles()), '(1 attendu)');
+  console.log('erreurs :', err.join() || 'aucune'); await b.close(); })();
