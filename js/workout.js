@@ -2287,13 +2287,14 @@ function openPicker(cb) {
   elPicker.classList.remove("hidden");
   // le guidage de séance libre n'a pas de sens en mode sélection simple
   document.querySelector(".picker-suggest").classList.toggle("hidden", !!pickerCallback);
+  if (!focusRetour.picker) focusRetour.picker = document.activeElement;
   const input = document.getElementById("picker-search");
   input.value = "";
   renderPickerList("");
   if (!pickerCallback) renderSuggestions();
   input.focus();
 }
-function closePicker() { elPicker.classList.add("hidden"); }
+function closePicker() { elPicker.classList.add("hidden"); if (typeof focusRend === "function") focusRend("picker"); }
 
 function renderPickerList(query) {
   const q = normalize(query.trim());

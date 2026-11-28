@@ -196,6 +196,7 @@ function ouvrirPave(champ) {
 }
 function fermerPave() {
   if (!paveEl) return;
+  window.__validerApresPave = null;          // quelle que soit la façon de fermer (OK lit le drapeau avant d'appeler)
   paveEl.classList.add("hidden");
   const id = pave && pave.id;
   pave = null;

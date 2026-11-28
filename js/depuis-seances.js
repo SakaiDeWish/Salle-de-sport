@@ -9,6 +9,7 @@ let spModal = null, spOrdre = [];
    Convention : la ligne portant `superset` est enchaînée avec la suivante ; les deux doivent donc se suivre. */
 function programmeAppliquerLiens(lignes, liens) {
   for (const g of liens || []) {
+    if (new Set(g).size !== g.length) continue;           // même exercice deux fois dans le groupe : on ne devine pas
     const idx = g.map(id => lignes.findIndex(l => l.exercice.id === id)).filter(i => i >= 0);
     if (idx.length < 2) continue;
     const lignesG = idx.map(i => lignes[i]);

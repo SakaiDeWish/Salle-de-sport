@@ -37,6 +37,7 @@ function openViewPanel(view, titre) {
      elles seules reçoivent le panneau large et centré, les autres usages
      de ce même panneau (réglages, formulaires) gardent la bande latérale. */
   el.classList.toggle("panel-wide", view === "bibliotheque" || view === "nutrition");
+  focusEntre("panel", el.querySelector(".sheet-box") || el);
   requestAnimationFrame(() => el.classList.add("sheet-in"));
   const scroll = el.querySelector(".sheet-scroll");
   if (scroll) scroll.scrollTop = 0;
@@ -53,6 +54,7 @@ function closeViewPanel(immediat) {
   const el = panelEl();
   if (!el) return;
   el.classList.remove("sheet-in");
+  focusRend("panel");
   const rendre = () => {
     if (panelRetour) {
       const { noeud, parent, suivant } = panelRetour;
@@ -82,6 +84,7 @@ function openHtmlPanel(titre, html) {
   const el = panelEl();
   el.classList.remove("hidden");
   el.classList.remove("panel-wide");
+  focusEntre("panel", el.querySelector(".sheet-box") || el);
   requestAnimationFrame(() => el.classList.add("sheet-in"));
   const scroll = el.querySelector(".sheet-scroll");
   if (scroll) scroll.scrollTop = 0;
@@ -170,7 +173,7 @@ function applyTheme(theme) {
    Et leur désaccord n'est pas un risque, c'est le capteur : quand le
    service worker actif annonce une version différente de celle-ci, la
    page est en retard sur lui, et l'app le dit (voir tracking.js). */
-const APP_VERSION = "v124";
+const APP_VERSION = "v125";
 
 /* Recharger l'app pour prendre la dernière version : demande au service
    worker de chercher, lui dit de s'installer s'il attend, puis recharge la
@@ -191,7 +194,7 @@ function settingsHtml() {
     <div class="card set-card">
       <h3 class="set-h">Premium</h3>
       <div class="set-row">
-        <span class="set-lab">${estPremium() ? "Actif" : "Gratuit"}<span class="set-sub">${estPremium() ? "Merci ✦" : "Analyses, programmes illimités, thèmes, export CSV"}</span></span>
+        <span class="set-lab">${!PREMIUM_VERROUILLE ? "Version de test" : estPremium() ? "Actif" : "Gratuit"}<span class="set-sub">${!PREMIUM_VERROUILLE ? "Toutes les options sont débloquées" : estPremium() ? "Merci ✦" : "Analyses, programmes illimités, thèmes, export CSV"}</span></span>
         <button class="btn ${estPremium() ? "btn-ghost" : "btn-primary"} btn-sm" id="set-premium" aria-label="Premium">${icon("gem")}</button>
       </div>
     </div>

@@ -266,8 +266,7 @@ document.querySelectorAll('.seg[data-panel]').forEach(seg =>
     renderSuivi();
   }));
 
-document.querySelectorAll('.tab[data-view="suivi"]').forEach(tab =>
-  tab.addEventListener("click", renderSuivi));
+/* L'onglet Suivi se dessine via activateView (un seul chemin pour tous les accès). */
 
 function renderSuivi() {
   if (!document.getElementById("panel-dashboard").classList.contains("hidden")) renderDashboard();
@@ -285,23 +284,37 @@ function renderDashboard() {
   const prs = computePRs();
   const weights = loadJSON(STORAGE_KEYS.weights, []);
   const maxGroupe = Math.max(1, ...Object.values(stats.parGroupe));
-  if (!stats.total) {                       // premier lancement : rien à analyser, on renvoie vers l'action
-    document.getElementById("panel-dashboard").innerHTML = `
-      <div class="card empty-suivi">
-        <p class="chrono-label">Aucune séance pour l'instant</p>
-        <p>Tes statistiques, records et badges apparaîtront ici dès ta première séance.</p>
-        <button class="btn btn-primary" id="suivi-go" aria-label="Commencer une séance">${icon("play")} Commencer</button>
-      </div>`;
-    document.getElementById("suivi-go").addEventListener("click", () => activateView("seance"));
-    return;
-  }
-
   const badgesOK = badges.filter(b => b.ok).length;
   const lastW = weights.length ? weights[weights.length - 1] : null;
 
   /* Tableau de bord dense : chaque bloc montre une ligne de résumé et
      déplie ses détails + leur explication (A2/A3/A4). */
-  document.getElementById("panel-dashboard").innerHTML = `
+  const poidsHtml = `
+    <!-- Poids de corps -->
+    <div class="card">
+      ${disclosure("dash.weight", {
+        summary: `<span class="disc-title">Poids de corps${statInfo("poidsCorps")}</span>
+          <span class="disc-meta">${lastW ? lastW.kg + " kg le " + new Date(lastW.date).toLocaleDateString("fr-FR") : "aucun relevé"}</span>`,
+        label: "Relever",
+        detail: `<div class="weight-row">
+            <input type="number" id="weight-input" min="20" max="300" step="0.1" placeholder="Ex : 74.5">
+            <button class="btn btn-ghost" id="weight-add">Enregistrer</button>
+          </div>
+          ${weights.length >= 2 ? evolutionChart(weights.map(w => ({ date: w.date, poids: w.kg })), { w: 340, unit: "kg" }) : ""}
+          ${weights.length ? `<p class="video-hint">${weights.length} relevé${weights.length > 1 ? "s" : ""} enregistré${weights.length > 1 ? "s" : ""}.</p>` : ""}`
+      })}
+    </div>
+  `;
+  /* Premier lancement : rien à analyser. On renvoie vers l'action, en gardant le poids de corps. */
+  const vide = !stats.total;
+  const videHtml = `
+    <div class="card empty-suivi">
+      <p class="chrono-label">Aucune séance pour l'instant</p>
+      <p>Tes statistiques, records et badges apparaîtront ici dès ta première séance.</p>
+      <button class="btn btn-primary" id="suivi-go" aria-label="Commencer une séance">${icon("play")} Commencer</button>
+    </div>
+    ${poidsHtml}`;
+  document.getElementById("panel-dashboard").innerHTML = vide ? videHtml : `
     <!-- Objectif de la semaine + streak : le seul bloc ouvert d'office -->
     <div class="card goal-card">
       <div class="goal-sum"><span class="goal-big">${gs.doneThisWeek}<span class="goal-sep">/</span>${gs.goal}</span>${statInfo("objectif")}
@@ -395,23 +408,11 @@ function renderDashboard() {
       <div class="progress-track"><div class="progress-bar" style="width:${Math.round(level.into / level.need * 100)}%"></div></div>
     </div>
 
-    <!-- Poids de corps -->
-    <div class="card">
-      ${disclosure("dash.weight", {
-        summary: `<span class="disc-title">Poids de corps${statInfo("poidsCorps")}</span>
-          <span class="disc-meta">${lastW ? lastW.kg + " kg le " + new Date(lastW.date).toLocaleDateString("fr-FR") : "aucun relevé"}</span>`,
-        label: "Relever",
-        detail: `<div class="weight-row">
-            <input type="number" id="weight-input" min="20" max="300" step="0.1" placeholder="Ex : 74.5">
-            <button class="btn btn-ghost" id="weight-add">Enregistrer</button>
-          </div>
-          ${weights.length >= 2 ? evolutionChart(weights.map(w => ({ date: w.date, poids: w.kg })), { w: 340, unit: "kg" }) : ""}
-          ${weights.length ? `<p class="video-hint">${weights.length} relevé${weights.length > 1 ? "s" : ""} enregistré${weights.length > 1 ? "s" : ""}.</p>` : ""}`
-      })}
-    </div>
+    ${poidsHtml}
 
     ${typeof analysesCarte === "function" ? analysesCarte() : ""}
   `;
+  document.getElementById("suivi-go")?.addEventListener("click", () => activateView("seance"));
   if (typeof analysesLier === "function") analysesLier();
 
   // poids de corps
@@ -431,7 +432,7 @@ function exportData() {
   const data = {};
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
-    if (k && k.startsWith("gymcoach.")) data[k] = localStorage.getItem(k);
+    if (k && k.startsWith("gymcoach.") && k !== "gymcoach.premium" && k !== "gymcoach.essai") data[k] = localStorage.getItem(k);
   }
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
@@ -448,7 +449,7 @@ document.getElementById("import-file").addEventListener("change", e => {
   reader.onload = () => {
     try {
       const data = JSON.parse(reader.result);
-      const keys = Object.keys(data).filter(k => k.startsWith("gymcoach."));
+      const keys = Object.keys(data).filter(k => k.startsWith("gymcoach.") && k !== "gymcoach.premium" && k !== "gymcoach.essai");
       if (!keys.length) { alert("Fichier invalide : aucune donnée GymCoach trouvée."); return; }
       if (!confirm(`Restaurer ${keys.length} clé(s) de données ? Les données actuelles seront remplacées.`)) return;
       keys.forEach(k => localStorage.setItem(k, data[k]));

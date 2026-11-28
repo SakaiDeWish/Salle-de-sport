@@ -19,6 +19,31 @@ function saveJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+/* Une sauvegarde abîmée, modifiée à la main ou venue d'une autre version ne doit jamais empêcher l'app de démarrer :
+   toute donnée qui n'a pas la bonne forme est écartée avant que le moindre écran la lise. */
+(function assainirStockage() {
+  const lire = k => { try { return JSON.parse(localStorage.getItem(k)); } catch { return undefined; } };
+  const ecrire = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* stockage plein */ } };
+  const objet = v => v && typeof v === "object" && !Array.isArray(v);
+  const progOk = p => objet(p) && Array.isArray(p.days) && p.days.every(d => objet(d) && Array.isArray(d.exercices));
+  try {
+    for (const k of ["gymcoach.history", "gymcoach.programs", "gymcoach.weights", "gymcoach.customExercises"]) {
+      const v = lire(k);
+      if (v === undefined) { localStorage.removeItem(k); continue; }      // JSON illisible
+      if (v === null) continue;
+      if (!Array.isArray(v)) { localStorage.removeItem(k); continue; }
+      const propres = v.filter(x => k === "gymcoach.programs" ? progOk(x) : objet(x));
+      if (propres.length !== v.length) ecrire(k, propres);
+    }
+    const prog = lire("gymcoach.program");
+    if (prog !== null && !progOk(prog)) localStorage.removeItem("gymcoach.program");
+    const live = lire("gymcoach.liveSession");
+    if (live !== null && !(objet(live) && Array.isArray(live.exercises))) localStorage.removeItem("gymcoach.liveSession");
+    const vid = lire("gymcoach.videoOverrides");
+    if (vid !== null && !objet(vid)) localStorage.removeItem("gymcoach.videoOverrides");
+  } catch { /* stockage inaccessible : l'app tourne sans */ }
+})();
+
 function getCustomExercises() { return loadJSON(STORAGE_KEYS.custom, []); }
 function getVideoOverrides() { return loadJSON(STORAGE_KEYS.videos, {}); }
 
@@ -382,6 +407,10 @@ function closeModal() {
 modal.querySelector(".modal-close").addEventListener("click", closeModal);
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
+  /* Les fenêtres empilées se ferment de la plus haute à la plus basse. */
+  const ouvertF = id => { const el = document.getElementById(id); return el && !el.classList.contains("hidden"); };
+  if (ouvertF("picker")) { closePicker(); return; }
+  if (ouvertF("builder")) { if (confirm("Fermer l'éditeur sans enregistrer ?")) closeBuilder(); return; }
   // ne ferme la sous-fenêtre que si aucune vraie modale n'est ouverte au-dessus
   const blocking = ["picker", "builder", "session-modal", "onboarding"]
     .some(id => { const el = document.getElementById(id); return el && !el.classList.contains("hidden"); });
@@ -718,11 +747,16 @@ function renderProgram(pr) {
   document.getElementById("btn-regen")?.addEventListener("click", () => {
     const params = loadJSON(STORAGE_KEYS.profil, null);
     if (!params) return;
-    if (typeof programmeAutorise === "function" && !programmeAutorise()) return;
+    if (!confirm("Régénérer remplace les séances de ce programme par de nouvelles. Continuer ?")) return;
+    if (typeof syncActive === "function") syncActive();
     const program = generateProgram(params);
-    if (typeof registerGeneratedProgram === "function") registerGeneratedProgram(program);
-    else saveJSON(STORAGE_KEYS.program, program);
+    /* Le programme garde son identité : on remplace son contenu, on n'en crée pas un autre. */
+    program.id = pr.id || (typeof getActiveId === "function" ? getActiveId() : null) || ("prog-" + Date.now());
+    program.source = pr.source || "genere";
+    program.nom = pr.nom || ("Programme " + (program.objectifLabel || "généré"));
+    if (typeof setActiveProgram === "function") setActiveProgram(program); else saveJSON(STORAGE_KEYS.program, program);
     renderProgram(program);
+    if (typeof renderHome === "function") renderHome();
   });
   document.getElementById("btn-print")?.addEventListener("click", () => window.print());
 }
